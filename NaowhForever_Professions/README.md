@@ -176,6 +176,8 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
 - Blizzard's window stays open under ours at zero alpha: hiding it would close the trade skill (its
   OnHide calls CloseTradeSkill) and take the recipe data with it. Ours sits one strata higher, so
   nothing of Blizzard's can be clicked, and is never narrower or shorter than it.
+- It goes to zero alpha in its own OnShow, before it is drawn: ours takes over on the next frame, and
+  Blizzard's window, put back to full alpha whenever it closes, showed for that frame on every open.
 - Under Forever's Gamepad interface style (`ns.GamepadStandDown()`) the recipe window, Train Favorites
   and Favorite Recipe Marks stay off and the game's own windows are used. That style drives the
   profession, trainer and merchant windows with the D-pad from secure code, which the invisible

@@ -439,6 +439,11 @@ local function Refresh(reread)
     Queue()
 end
 
+local function OnBlizzardShow()
+    if On() then ProfessionsFrame:SetAlpha(0) end
+    Queue()
+end
+
 local function OnBlizzardHide()
     Links.End()
     Deactivate()
@@ -450,7 +455,7 @@ end
 
 local function HookBlizzard()
     hooked = true
-    ProfessionsFrame:HookScript("OnShow", Queue)
+    ProfessionsFrame:HookScript("OnShow", OnBlizzardShow)
     ProfessionsFrame:HookScript("OnHide", OnBlizzardHide)
     ProfessionsFrame:HookScript("OnSizeChanged", Queue)
     hooksecurefunc(ProfessionsFrame, "SetPoint", OnBlizzardPlaced)
