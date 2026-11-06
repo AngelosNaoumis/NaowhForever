@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 1.2.11
 
 ### Added
