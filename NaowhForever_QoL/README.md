@@ -685,9 +685,12 @@ NaowhForever_QoL/
   changes and restyling do not restart it. Combat and flying defer the alert until they end.
   Leaving the zone or disabling the reminder cancels its timer. Returning to the zone allows
   another entry alert. Nearby-town reminders still stay up until the node is learned or you leave.
-- Node world positions are projected into the current zone with `C_Map.GetMapPosFromWorldPos`.
-  Only coordinates inside that zone's map count for the entry alert, including when the taxi API
-  falls back to the continent. A flight point in another zone cannot trigger that alert.
+- The entry alert counts a node only when the continent's map puts it in the current zone: its
+  world position goes onto the continent with `C_Map.GetMapPosFromWorldPos`, and
+  `C_Map.GetMapInfoAtPosition` names the zone under it, the lookup the continent map's zone
+  highlight uses. A zone's map is a rectangle that takes in its neighbours' edges: The Barrens' holds
+  Brackenwall Village, Thunder Bluff, Sun Rock Retreat and Camp Mojache, so entering The Barrens
+  named Brackenwall Village. Zephras Isle, under no continent, still counts the inside of its own map.
 - Existing `TownMap.lua` flight-master pins add the learn reminder to their tooltip when the
   closest friendly taxi node within `TOWN_RANGE` is unlearned. Known nodes get no reminder,
   even if another unlearned node is nearby. The Town Pins and Flight Masters switches still

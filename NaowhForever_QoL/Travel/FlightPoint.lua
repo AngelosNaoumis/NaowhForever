@@ -164,8 +164,13 @@ end
 
 local function InZone(zone, world, continent)
     if not world or not continent then return false end
-    local _, pos = C_Map.GetMapPosFromWorldPos(continent, world, zone)
+    local top = Up(zone, CONTINENT)
+    local _, pos = C_Map.GetMapPosFromWorldPos(continent, world, top or zone)
     if not pos or Secret(pos.x) or Secret(pos.y) then return false end
+    if top then
+        local info = C_Map.GetMapInfoAtPosition(top, pos.x, pos.y)
+        return info ~= nil and info.mapID == zone
+    end
     return pos.x >= 0 and pos.x <= 1 and pos.y >= 0 and pos.y <= 1
 end
 

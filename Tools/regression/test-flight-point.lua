@@ -15,8 +15,9 @@ local function check(label, value) assert(value, label); checks = checks + 1 end
 
 local NEUTRAL, HORDE, ALLIANCE = 0, 1, 2
 local BARRENS, STORMWIND, UNDERCITY, CAVES = 1413, 1453, 1458, 9001
-local DARKSHORE, KALIMDOR, DUSKWOOD, EASTERN_KINGDOMS = 1439, 1414, 1431, 1415
+local DARKSHORE, KALIMDOR, DUSKWOOD, EASTERN_KINGDOMS, DUSTWALLOW = 1439, 1414, 1431, 1415, 1445
 local AUBERDINE, RATCHET, STORMWIND_FP, DARKSHIRE, THORIUM = 26, 80, 2, 12, 74
+local CROSSROADS, BRACKENWALL = 25, 55
 local EASTERN_TAXI, KALIMDOR_TAXI = 1463, 1464
 local UNREACHABLE, CURRENT = 2, 0
 local SECRET = "secret"
@@ -189,6 +190,12 @@ local env = {
         GetPlayerMapPosition = function() return state.pos end,
         GetMapPosFromWorldPos = function(_, world, map)
             return map, { x = world.x / 10000, y = world.y / 10000 }
+        end,
+        GetMapInfoAtPosition = function(map, x)
+            if x < 0 or x > 1 then return nil end
+            if map == EASTERN_KINGDOMS then return { mapID = DUSKWOOD } end
+            if x < 0.5 then return { mapID = BARRENS } end
+            return { mapID = x < 0.95 and DARKSHORE or DUSTWALLOW }
         end,
         GetWorldPosFromMapPos = function(_, pos)
             return 0, pos.normalized and { x = pos.x * 10000, y = pos.y * 10000 } or pos
@@ -426,6 +433,16 @@ check("direct zone data also excludes a point projected outside the zone",
 At(BARRENS, {})
 check("the other faction gets no zone-wide reminder",
     At(DARKSHORE, { Node("Enemy Town", HORDE, 8000, false, 99) }) == nil)
+state.faction = "Horde"
+local brackenwall = Node("Brackenwall Village, Dustwallow Marsh", HORDE, 9700, false, BRACKENWALL)
+check("a neighbour's point inside the zone's map but on another zone gets no entry alert",
+    At(BARRENS, { brackenwall }) == nil and #timers == 0)
+At(DARKSHORE, {})
+check("the zone's own point still gets the entry alert",
+    At(BARRENS, { brackenwall, Node("Crossroads, The Barrens", HORDE, 3000, false, CROSSROADS) })
+    == "Learn the Crossroads flight point")
+Expire()
+state.faction = "Alliance"
 
 At(BARRENS, {})
 Fire("PLAYER_REGEN_DISABLED")
