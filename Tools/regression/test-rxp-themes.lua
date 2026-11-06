@@ -1870,30 +1870,216 @@ do
         "each part is hooked once")
 end
 
--- RestedXP's settings are the player's: a login sets none of them, whatever an older version kept
+-- a character RestedXP has not met: what is turned on for the account is set for it once, and only if wished
 do
-    local function Run(window)
-        local profile = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "TOP", "UIParent", "TOP", 0, 0 } } } }
-        local env, ns, frames, boot = Load({ rxpThemes = true, rxpSetup = true }, true)
+    local function Rxp(profile)
         local rxp = { activeTheme = { name = "RXP Blue" }, themes = { ["RXP Blue"] = { name = "RXP Blue" } },
-            reloads = {}, settings = { profile = profile }, arrowFrame = { points = {} } }
+            registered = {}, reloads = {}, settings = { profile = profile }, arrowFrame = { points = {} } }
         function rxp.arrowFrame:ClearAllPoints() self.points = {} end
         function rxp.arrowFrame:SetPoint(...) self.points[#self.points + 1] = { ... } end
         function rxp:RegisterTheme(theme) self.themes[theme.name] = theme end
-        function rxp:ReloadTheme() self.reloads[#self.reloads + 1] = self.settings.profile.activeTheme end
-        env.RXP = rxp
-        env.UnitGUID = function() return "Player-1" end
-        local confirms = 0
-        ns.ConfirmReload = function() confirms = confirms + 1 end
-        ns.RXPWindowEnabled = function() return window end
-        Fire(frames, "NaowhForever")
-        Login(boot)
-        return profile.activeTheme == "RXP Blue" and profile.enableBetaFeatures == nil and profile.enableV2Interface == nil
-            and profile.framePositions.arrowFrame[1][1] == "TOP" and #rxp.arrowFrame.points == 0 and #rxp.reloads == 0
-            and confirms == 0
+        function rxp:ReloadTheme()
+            self.reloads[#self.reloads + 1] = self.settings.profile.activeTheme
+            self.activeTheme = self.themes[self.settings.profile.activeTheme]
+        end
+        return rxp
     end
-    Check(Run(true), "Set Up New Characters kept on from before, with the window: RestedXP's settings are left as they are")
-    Check(Run(false), "and with the theme (V1) alone")
+    local function Run(account, profile, guid, window, starting)
+        local env, ns, frames, boot = Load(account, true)
+        local rxp = Rxp(profile)
+        if not starting then env.RXP = rxp end
+        env.UnitGUID = function() return guid end
+        local confirms = {}
+        ns.ConfirmReload = function(text) confirms[#confirms + 1] = text end
+        local windowOn = window == true
+        ns.RXPWindowEnabled = function() return windowOn end
+        Fire(frames, "NaowhForever")
+        if starting then
+            env.RXP = rxp
+            for name, theme in pairs(env.RXPGuides_Themes or {}) do rxp.themes[name] = theme end
+        end
+        if profile and rxp.themes[profile.activeTheme] then rxp.activeTheme = rxp.themes[profile.activeTheme] end
+        Login(boot)
+        local function SetWindow(on) windowOn = on end
+        return rxp, ns, confirms, env, boot, SetWindow
+    end
+    local function Logout(boot)
+        if boot.events.PLAYER_LOGOUT and boot.OnEvent then boot.OnEvent(boot, "PLAYER_LOGOUT") end
+    end
+    local function Untouched(profile)
+        return profile.enableBetaFeatures == nil and profile.enableV2Interface == nil and profile.activeTheme == "RXP Blue"
+    end
+    local CURRENT = "NaowhForever:current"
+
+    -- not wished for: nothing is touched, as the other settings are
+    local profile = { activeTheme = "RXP Blue" }
+    local rxp, _, confirms, _, boot = Run({ rxpThemes = true }, profile, "Player-1", true)
+    Check(profile.activeTheme == "RXP Blue" and profile.enableV2Interface == nil and #confirms == 0 and #rxp.reloads == 0,
+        "not turned on: the character's settings are left as they are")
+    Check(not boot.events.PLAYER_LOGOUT, "and nothing waits for the reload")
+
+    -- wished for, on a character it has not seen: the interface and the theme, written as the UI unloads
+    profile = { activeTheme = "RXP Blue" }
+    local account = { rxpThemes = true, rxpSetup = true }
+    local ns
+    rxp, _, confirms, _, boot = Run(account, profile, "Player-1", true)
+    Check(Untouched(profile) and #rxp.reloads == 0,
+        "turned on with the window: RestedXP's settings are left alone while this UI runs")
+    Check(#confirms == 1, "a reload is asked for, to use the interface")
+    Check(boot.events.PLAYER_LOGOUT == true, "and the settings wait for the UI to unload")
+    Check(account.rxpSetUp == nil or account.rxpSetUp["Player-1"] == nil, "nothing is kept as done before then")
+    Logout(boot)
+    Check(profile.enableBetaFeatures == true and profile.enableV2Interface == true and profile.activeTheme == CURRENT,
+        "as the UI unloads: the interface and the Naowh theme are set for it")
+    Check(account.rxpSetUp["Player-1"] == true and #confirms == 1, "and it is kept that it was done")
+
+    -- seen: what the player changes after is theirs
+    profile.activeTheme, profile.enableV2Interface = "RXP Blue", false
+    _, _, confirms, _, boot = Run(account, profile, "Player-1", true)
+    Logout(boot)
+    Check(profile.activeTheme == "RXP Blue" and profile.enableV2Interface == false and #confirms == 0,
+        "the same character again: nothing is set again")
+
+    -- another character
+    local other = { activeTheme = "RXP Blue" }
+    _, _, confirms, _, boot = Run(account, other, "Player-2", true)
+    Check(Untouched(other) and #confirms == 1, "another one is asked to reload")
+    Logout(boot)
+    Check(other.enableV2Interface == true and other.activeTheme == CURRENT, "and is set up as the UI unloads")
+
+    -- RestedXP's AceDB strips its defaults at logout, often before us: its own theme then reads nil
+    local stripped = { activeTheme = "RXP Blue" }
+    _, _, _, _, boot = Run({ rxpSetup = true }, stripped, "Player-S", true)
+    stripped.activeTheme = nil
+    Logout(boot)
+    Check(stripped.enableV2Interface == true and stripped.activeTheme == CURRENT,
+        "RestedXP's defaults stripped before us: the Naowh theme is still set")
+    local strippedOurs = { activeTheme = "NaowhForever:crimson" }
+    _, _, _, _, boot = Run({ rxpSetup = true }, strippedOurs, "Player-S2", true)
+    Logout(boot)
+    Check(strippedOurs.activeTheme == "NaowhForever:crimson", "and one of ours is still left as it is")
+
+    -- the window turned off before the reload: nothing is written, and it is asked again another time
+    local undone = { activeTheme = "RXP Blue" }
+    local offAccount = { rxpSetup = true }
+    local setWindow
+    _, _, _, _, boot, setWindow = Run(offAccount, undone, "Player-U", true)
+    setWindow(false)
+    Logout(boot)
+    Check(Untouched(undone) and (offAccount.rxpSetUp == nil or offAccount.rxpSetUp["Player-U"] == nil),
+        "the window turned off before the reload: nothing is set, nothing kept as done")
+    _, _, confirms = Run(offAccount, undone, "Player-U", true)
+    Check(#confirms == 1, "and with the window on again, the next login asks for it again")
+
+    -- an arrow that cannot be moved as the UI unloads does not undo the rest
+    local stuck = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "TOP", "UIParent", "TOP", 0, 0 } } } }
+    local stuckAccount = { rxpSetup = true }
+    rxp, _, _, _, boot = Run(stuckAccount, stuck, "Player-X", true)
+    rxp.arrowFrame = nil
+    Check(not pcall(Logout, boot), "a RestedXP with no arrow frame fails at the arrow as the UI unloads")
+    Check(stuck.enableBetaFeatures == true and stuck.enableV2Interface == true and stuck.activeTheme == CURRENT
+        and stuckAccount.rxpSetUp["Player-X"] == true, "but the interface, the theme and the done mark are written first")
+
+    -- the theme alone: no interface to wait for, so the theme is reloaded
+    local themed = { activeTheme = "RXP Blue" }
+    rxp, _, confirms, _, boot = Run({ rxpThemes = true, rxpSetup = true }, themed, "Player-3", false)
+    Check(themed.activeTheme == CURRENT and themed.enableV2Interface == nil and #confirms == 0
+        and #rxp.reloads == 1 and rxp.reloads[1] == CURRENT, "the window not wished for: the theme only, and live")
+    Check(not boot.events.PLAYER_LOGOUT, "with nothing left for the reload")
+
+    -- RestedXP loading after us, which imports the themes itself: the theme is reloaded by the set up
+    local later = { activeTheme = "RXP Blue" }
+    rxp = Run({ rxpThemes = true, rxpSetup = true }, later, "Player-3b", false, true)
+    Check(later.activeTheme == CURRENT and #rxp.reloads == 1 and rxp.reloads[1] == CURRENT,
+        "RestedXP not up when we loaded: the theme is reloaded onto the new one")
+
+    -- the interface alone
+    local windowed = { activeTheme = "RXP Blue" }
+    _, _, confirms, _, boot = Run({ rxpSetup = true }, windowed, "Player-4", true)
+    Logout(boot)
+    Check(windowed.activeTheme == CURRENT and windowed.enableV2Interface == true and #confirms == 1,
+        "the window wished for without the V1 theme: the interface, and the Naowh theme for it")
+
+    -- the arrow: RestedXP puts it at the top of the screen, and a character set up has it in the middle
+    local middle = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "TOP", "UIParent", "TOP", 0, 0 } } } }
+    rxp, _, _, _, boot = Run({ rxpThemes = true, rxpSetup = true }, middle, "Player-A1", true)
+    Check(middle.framePositions.arrowFrame[1][1] == "TOP" and #rxp.arrowFrame.points == 0,
+        "the arrow is not moved while this UI runs")
+    Logout(boot)
+    local places = middle.framePositions.arrowFrame
+    Check(#places == 1 and places[1][1] == "CENTER" and places[1][2] == "UIParent" and places[1][3] == "CENTER"
+        and places[1][4] == 0 and places[1][5] == 0, "an arrow where RestedXP puts it is in the middle, in the profile")
+    local at = rxp.arrowFrame.points
+    Check(#at == 1 and at[1][1] == "CENTER" and at[1][3] == "CENTER", "and where it is now, so that it is not put back")
+    local own = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "LEFT", "UIParent", "LEFT", 40, -10 } } } }
+    rxp, _, _, _, boot = Run({ rxpThemes = true, rxpSetup = true }, own, "Player-A2", true)
+    Logout(boot)
+    Check(own.framePositions.arrowFrame[1][1] == "LEFT" and own.framePositions.arrowFrame[1][4] == 40
+        and #rxp.arrowFrame.points == 0, "an arrow the player has put somewhere is not moved")
+    local bottom = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "BOTTOM", "UIParent", "BOTTOM", 0, 0 } } } }
+    rxp, _, _, _, boot = Run({ rxpThemes = true, rxpSetup = true }, bottom, "Player-A2b", true)
+    Logout(boot)
+    Check(bottom.framePositions.arrowFrame[1][1] == "BOTTOM" and #rxp.arrowFrame.points == 0,
+        "one the player put at the bottom is not RestedXP's place either")
+    local fresh = { activeTheme = "RXP Blue" }
+    _, _, _, _, boot = Run({ rxpThemes = true, rxpSetup = true }, fresh, "Player-A3", true)
+    Logout(boot)
+    Check(fresh.framePositions and fresh.framePositions.arrowFrame[1][1] == "CENTER",
+        "a profile with no places yet has it in the middle")
+    local seen = { activeTheme = "RXP Blue", framePositions = { arrowFrame = { { "TOP", "UIParent", "TOP", 0, 0 } } } }
+    rxp, _, _, _, boot = Run({ rxpThemes = true, rxpSetup = true, rxpSetUp = { ["Player-A4"] = true } }, seen, "Player-A4", true)
+    Logout(boot)
+    Check(seen.framePositions.arrowFrame[1][1] == "TOP" and #rxp.arrowFrame.points == 0,
+        "a character already set up: the arrow is left where it is")
+    local by_hand = { activeTheme = "RXP Blue", enableBetaFeatures = true, enableV2Interface = true,
+        framePositions = { arrowFrame = { { "TOP", "UIParent", "TOP", 0, 0 } } } }
+    local _, handNs = Run({ rxpSetUp = { ["Player-A5"] = true } }, by_hand, "Player-A5", true)
+    handNs.RXPSetUpCharacter()
+    Check(by_hand.framePositions.arrowFrame[1][1] == "CENTER", "the button sets it up again, the arrow with it")
+
+    -- already as it should be
+    local done = { activeTheme = CURRENT, enableBetaFeatures = true, enableV2Interface = true }
+    rxp, _, confirms, _, boot = Run({ rxpThemes = true, rxpSetup = true }, done, "Player-5", true)
+    Check(#confirms == 0 and #rxp.reloads == 0 and not boot.events.PLAYER_LOGOUT,
+        "a character that is as it should be: nothing is asked")
+
+    -- nothing wished for at all
+    local none = { activeTheme = "RXP Blue" }
+    _, _, confirms = Run({ rxpSetup = true }, none, "Player-6", false)
+    Check(none.activeTheme == "RXP Blue" and none.enableV2Interface == nil and #confirms == 0,
+        "set up on, with no theme and no window wished for: nothing to set")
+
+    -- a theme of RestedXP's own choosing is not ours to keep, but the player's own pick of ours is
+    local picked = { activeTheme = "NaowhForever:crimson" }
+    Run({ rxpThemes = true, rxpSetup = true }, picked, "Player-7", false)
+    Check(picked.activeTheme == "NaowhForever:crimson", "a theme of ours already picked is not changed")
+    local pickedV2 = { activeTheme = "NaowhForever:crimson" }
+    _, _, _, _, boot = Run({ rxpSetup = true }, pickedV2, "Player-7b", true)
+    Logout(boot)
+    Check(pickedV2.enableV2Interface == true and pickedV2.activeTheme == "NaowhForever:crimson",
+        "nor with the interface to turn on")
+
+    -- by hand, with it off and the character seen
+    local manual = { activeTheme = "RXP Blue" }
+    account = { rxpThemes = true, rxpWindow = true, rxpSetUp = { ["Player-8"] = true } }
+    _, ns, confirms, _, boot = Run(account, manual, "Player-8", true)
+    Check(manual.enableV2Interface == nil and manual.activeTheme == "RXP Blue", "off and seen: login sets nothing")
+    local result = ns.RXPSetUpCharacter()
+    Check(result == "reload" and Untouched(manual) and #confirms == 1,
+        "the button asks for the reload, wished for or not, seen or not")
+    Logout(boot)
+    Check(manual.enableV2Interface == true and manual.activeTheme == CURRENT, "and sets it as the UI unloads")
+
+    -- what is missing raises nothing
+    _, _, confirms = Run({ rxpThemes = true, rxpSetup = true }, nil, "Player-9", true)
+    Check(#confirms == 0, "no profile: nothing")
+    _, ns, confirms = Run({ rxpThemes = true, rxpSetup = true }, { activeTheme = "RXP Blue" }, nil, true)
+    Check(#confirms == 0, "no character to say who it is: nothing")
+    ns.RXPSetUpEnabled()
+    ns.SetRXPSetUp(true)
+    Check(ns.RXPSetUpEnabled() == true, "the setting is kept")
+    ns.SetRXPSetUp(false)
+    Check(ns.AccountSettings().rxpSetup == nil and ns.RXPSetUpEnabled() == false, "and the default is not")
 end
 
 -- the old theme, the arrow and the window are each their own, and the theme and the window are never both on

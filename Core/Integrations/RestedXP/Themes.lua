@@ -10,6 +10,7 @@ local CURRENT_KEY, CURRENT_NAME = "current", ns.L("Naowh (current)")
 local RXP_DEFAULT = "Default"
 local TEXT_RXP_DEFAULT = ns.L("RestedXP (default)")
 local TEXT_CURRENT = ns.L("Current Theme")
+local TEXT_SETUP = ns.L("Naowh turned on RestedXP's new interface for this character. Reload UI to use it.")
 
 local RXP_TEXTURES = "Interface/AddOns/RXPGuides/Textures/"
 local TEXTURES = RXP_TEXTURES .. "DarkMode/"
@@ -67,6 +68,16 @@ function ns.RXPThemesEnabled()
     local on = ns.AccountSettings().rxpThemes
     if on == nil then return F.rxpThemes end
     return on == true
+end
+
+function ns.RXPSetUpEnabled()
+    local on = ns.AccountSettings().rxpSetup
+    if on == nil then return F.rxpSetup end
+    return on == true
+end
+
+function ns.SetRXPSetUp(on)
+    ns.AccountSettings().rxpSetup = on and true or nil
 end
 
 function ns.RXPArrowKept()
@@ -759,6 +770,73 @@ local function HookShown()
     end
 end
 
+local ARROW_FRAME, SCREEN, MIDDLE, EDGE = "arrowFrame", "UIParent", "CENTER", "TOP"
+
+local function InRestedXPsPlace(places)
+    if type(places) ~= "table" then return true end
+    if #places ~= 1 then return false end
+    local p = places[1]
+    return type(p) == "table" and p[1] == EDGE and p[2] == SCREEN and p[3] == EDGE and (p[4] or 0) == 0
+        and (p[5] or 0) == 0
+end
+
+local function CenterArrow(rxp, profile)
+    if type(profile.framePositions) ~= "table" then profile.framePositions = {} end
+    if not InRestedXPsPlace(profile.framePositions[ARROW_FRAME]) then return end
+    profile.framePositions[ARROW_FRAME] = { { MIDDLE, SCREEN, MIDDLE, 0, 0 } }
+    local frame = rxp[ARROW_FRAME]
+    frame:ClearAllPoints()
+    frame:SetPoint(MIDDLE, SCREEN, MIDDLE, 0, 0)
+end
+
+local setUpGuid
+
+local function SetUpDone()
+    local account = ns.AccountSettings()
+    if type(account.rxpSetUp) ~= "table" then account.rxpSetUp = {} end
+    return account.rxpSetUp
+end
+
+local function TurnOnV2()
+    local rxp = _G.RXP
+    local profile = Dig(rxp, "settings", "profile")
+    if type(profile) ~= "table" or not ns.RXPWindowEnabled() then return end
+    profile.enableBetaFeatures, profile.enableV2Interface = true, true
+    if not Ours(profile.activeTheme) then profile.activeTheme = NAME_PREFIX .. CURRENT_KEY end
+    SetUpDone()[setUpGuid] = true
+    CenterArrow(rxp, profile)
+end
+
+local function SetUp(force)
+    local rxp = _G.RXP
+    local profile = Dig(rxp, "settings", "profile")
+    local guid = UnitGUID("player")
+    if type(profile) ~= "table" or type(guid) ~= "string" then return end
+    local done = SetUpDone()
+    if done[guid] and not force then return end
+    if ns.RXPWindowEnabled() and not (profile.enableBetaFeatures and profile.enableV2Interface) then
+        setUpGuid = guid
+        boot:RegisterEvent("PLAYER_LOGOUT")
+        ns.ConfirmReload(TEXT_SETUP)
+        return "reload"
+    end
+    done[guid] = true
+    CenterArrow(rxp, profile)
+    if ns.RXPWindowEnabled() then Register() end
+    local current = NAME_PREFIX .. CURRENT_KEY
+    local changed = not Ours(profile.activeTheme) and rxp.themes[current] ~= nil
+    if changed then
+        profile.activeTheme = current
+        Reload()
+    end
+    if changed and not profile.enableThemeLiveReload then return "reload" end
+    return changed and "theme" or nil
+end
+
+function ns.RXPSetUpCharacter()
+    return SetUp(true)
+end
+
 local function OnBootEvent(self, event, name)
     if event == "ADDON_LOADED" then
         if name ~= ns.MODULE_KEY then return end
@@ -770,8 +848,11 @@ local function OnBootEvent(self, event, name)
     elseif event == "PLAYER_REGEN_ENABLED" then
         self:UnregisterEvent("PLAYER_REGEN_ENABLED")
         Reload()
+    elseif event == "PLAYER_LOGOUT" then
+        TurnOnV2()
     else
         self:UnregisterAllEvents()
+        if ns.RXPSetUpEnabled() then SetUp() end
         if late then Resume() end
         if ns.RXPArrowEnabled() then StartArrow() end
         if ns.RXPThemesEnabled() then

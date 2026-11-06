@@ -260,12 +260,32 @@ Core/Integrations/RestedXP/
   its icon is bigger by the bonus twice, as its text is bigger by it once; the column, the drop of the text
   and the row follow the icon's size of that row.
 - RestedXP keeps its settings by profile, which is a character's own unless the player shares one, so a
-  character it has not met has the V2 interface off, which the window needs. The player turns it on in
-  RestedXP's own settings (Beta Features, then the V2 interface), which reload at once; the addon never
-  writes RestedXP's settings for them. A Set Up that did (the interface, the Naowh theme and the arrow's
-  place, then a reload prompt) was removed after a player's game froze on that reload; the `rxpSetup` and
-  `rxpSetUp` account keys it kept are no longer read. The Naowh themes are still registered while the
-  window is on, so one can be picked in RestedXP's theme list.
+  character it has not met has its defaults: the V2 interface off, which the window needs, and its own
+  theme. Set Up New Characters (off to start, the first thing in the window's (V2) fold) sets a
+  character up at its first login for what is wished for: `enableBetaFeatures` and `enableV2Interface` for
+  the window, and the Naowh current theme for the window or the theme (V1); the next point says when they
+  are written. What the player changes after is theirs, as the characters done are kept (`rxpSetUp`, by
+  GUID). The button does it for the character played, seen or not.
+- When the interface has to be turned on, Set Up writes nothing while the UI runs: it asks for the
+  reload and writes RestedXP's settings at `PLAYER_LOGOUT`, which the game sends on a reload or a logout
+  just before saved variables are saved. RestedXP reads the interface switches once, when it loads, and
+  many of its parts check them again as they run, so switches turned on in a running session put it half
+  in each interface until the reload. A player who chose Later stayed that way, and a game froze on the
+  reload that followed. RestedXP's own switches reload in the same click; Set Up cannot, as the game
+  blocks an addon's own reload (Core's Reload UI). The window turned off before that reload cancels the
+  write, and the character is set up at its next login instead, for what is wished for then: the theme
+  (V1) and the arrow alone while the window stays off. The switches and the done mark are written before
+  the arrow is moved, so an arrow that cannot be moved does not leave the character asked again at every
+  login. RestedXP's AceDB strips the values that match its defaults
+  at `PLAYER_LOGOUT`, usually before Set Up's turn, so its own default theme reads nil then: Set Up picks
+  the Naowh current theme unless one of ours is picked, which a nil is not.
+- The Naowh themes are registered in RestedXP while the window is on as well as with the theme (V1), so
+  Set Up has the Naowh current theme to pick; one turned on since the last load is registered by Set Up
+  itself when the interface is already on, and at the next load otherwise. A theme picked with RestedXP's
+  live reload off waits for a reload, so the button asks for one. RestedXP puts its waypoint arrow at the
+  top of the screen (`framePositions.arrowFrame`, by profile), and a character that is set up has an arrow
+  that is still there in the middle: in the profile, which is read at load, and on the frame, so that the
+  position RestedXP saves when the game closes is not the old one. One the player moved is left where it is.
 - In the Forever skin (the addon is in it and the window's theme is the addon's, or the window's theme is Forever) the
   window is drawn in the skin's art where the client has it (`SkinParts`, `Skinned`): the bronze inset
   (`ForeverInset`) behind the step box with its border on and behind the window with its border on, in place
