@@ -30,7 +30,7 @@ local REREAD = { APPLY = true, ADDON_LOADED = true, TRADE_SKILL_SHOW = true, TRA
 local EVENTS = { "TRADE_SKILL_SHOW", "TRADE_SKILL_CLOSE", "TRADE_SKILL_LIST_UPDATE",
     "TRADE_SKILL_DATA_SOURCE_CHANGED", "TRADE_SKILL_NAME_UPDATE", "NEW_RECIPE_LEARNED",
     "SKILL_LINES_CHANGED", "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_REGEN_ENABLED",
-    "PLAYERBANKSLOTS_CHANGED", "AUCTION_HOUSE_SHOW", "AUCTION_HOUSE_CLOSED",
+    "PLAYER_REGEN_DISABLED", "PLAYERBANKSLOTS_CHANGED", "AUCTION_HOUSE_SHOW", "AUCTION_HOUSE_CLOSED",
     "TRACKED_RECIPE_UPDATE", "GROUP_ROSTER_UPDATE", "TRADE_SKILL_FAVORITES_CHANGED" }
 local REDRAW_KEYS = { vendorMaterials = true, bagReagents = true, bankReagents = true, ahSearch = true,
     skillThresholds = true,
@@ -329,9 +329,12 @@ local function OnDragStart(self)
     self:ClearAllPoints()
     self:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x, y)
     self:StartMoving()
+    Drag.moving = true
 end
 
 local function OnDragStop(self)
+    if not Drag.moving then return end
+    Drag.moving = false
     self:StopMovingOrSizing()
     Drag.Save()
     Drag.Follow()
@@ -349,6 +352,7 @@ local function FirstBuild(strata)
     win:RegisterForDrag("LeftButton")
     win:SetScript("OnDragStart", OnDragStart)
     win:SetScript("OnDragStop", OnDragStop)
+    win:HookScript("OnHide", OnDragStop)
     Drag.Place()
 end
 
@@ -479,6 +483,9 @@ local function OnEvent(_, event, name, loaded)
     if event == "ADDON_LOADED" then
         if name ~= PROFESSIONS_ADDON then return end
         events:UnregisterEvent("ADDON_LOADED")
+    elseif event == "PLAYER_REGEN_DISABLED" then
+        if Drag.moving and win:IsProtected() then OnDragStop(win) end
+        return
     elseif event == "PLAYER_REGEN_ENABLED" then
         if bookPending ~= nil then DockBook(bookPending) end
         if Drag.pending then Drag.Follow() end

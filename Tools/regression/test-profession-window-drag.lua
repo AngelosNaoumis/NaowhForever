@@ -98,4 +98,50 @@ win.shown = false
 Follow()
 check("hidden window leaves Blizzard's alone", pf.points[1][2] == ui)
 
+-- With the overview docked the window is protected, so StopMovingOrSizing is blocked in combat.
+-- A drag tried in combat is neither started nor stopped, and one still going on the protected
+-- window when combat starts is ended on PLAYER_REGEN_DISABLED, which fires before the lockdown.
+local stop = assert(source:find("local function OnDragStop(self)", first, true))
+local stopEnd = assert(source:find("\nend\n", stop, true))
+local dragFn = assert(loadstring("local win, tabsLeft\n" .. source:sub(first, stopEnd + 4)
+    .. "return function(w) win = w end, Drag, OnDragStart, OnDragStop"))
+setfenv(dragFn, getfenv(fn))
+local SetDragWin, DragState, OnDragStart, OnDragStop = dragFn()
+local moves, stops = 0, 0
+function win:StartMoving() moves = moves + 1 end
+function win:StopMovingOrSizing() stops = stops + 1 end
+SetDragWin(win)
+win.shown = true
+combat = true
+OnDragStart(win)
+OnDragStop(win)
+check("a drag tried in combat is not started", moves == 0)
+check("a drag tried in combat is not stopped", stops == 0)
+combat = false
+OnDragStart(win)
+check("a drag out of combat starts", moves == 1 and DragState.moving)
+OnDragStop(win)
+check("the drag is stopped once", stops == 1 and not DragState.moving)
+OnDragStop(win)
+check("a second stop does nothing", stops == 1)
+check("combat start is listened for", source:match("local EVENTS = (%b{})"):find('"PLAYER_REGEN_DISABLED"', 1, true))
+
+local onEvent = assert(source:find("local function OnEvent(", 1, true))
+local onEventEnd = assert(source:find("\nend\n", onEvent, true))
+local eventFn = assert(loadstring(source:sub(onEvent, onEventEnd + 4) .. "return OnEvent"))
+local protected, ended, queued = true, 0, 0
+setfenv(eventFn, setmetatable({
+    ns = { ProfBagChanges = 0 }, waiting = {}, QUIET = {}, REREAD = {}, W = {}, hooked = true,
+    win = { IsShown = function() return true end, IsProtected = function() return protected end },
+    Drag = { moving = true },
+    OnDragStop = function() ended = ended + 1 end,
+    Queue = function() queued = queued + 1 end,
+}, { __index = _G }))
+local OnEvent = eventFn()
+OnEvent(nil, "PLAYER_REGEN_DISABLED")
+check("combat start ends a drag on the protected window", ended == 1 and queued == 0)
+protected = false
+OnEvent(nil, "PLAYER_REGEN_DISABLED")
+check("a drag on an unprotected window carries on into combat", ended == 1 and queued == 0)
+
 print(("profession window drag: %d checks passed"):format(checks))

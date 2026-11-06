@@ -215,6 +215,8 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   atlas is missing it falls back to the red cross of `ReadyCheck-NotReady`, or the button shows nothing.
 - With the overview docked our window holds secure buttons and is protected, so closing it in combat
   makes it transparent instead of hiding it. Resizing waits for combat to end for the same reason.
+  It cannot be dragged in combat either, and a drag still going when combat starts ends there:
+  `PLAYER_REGEN_DISABLED` fires before the lockdown, while it can still be let go of.
 - Once dragged, Blizzard's window is moved to where ours was put, out of combat only (it holds secure
   buttons); anchoring it to ours instead would make ours protected. The panel manager places it
   again whenever any panel opens or closes, so its SetPoint is hooked. EllesmereUI's Shifter puts
