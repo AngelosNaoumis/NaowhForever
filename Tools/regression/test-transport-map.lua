@@ -310,6 +310,21 @@ local before = tower.Time.text
 ticking.scripts.OnUpdate(ticking, 0.5)
 Check(tower.Time.text ~= before, "the countdown is redrawn once a second")
 
+-- A zone link opens its map with C_Map.OpenWorldMap, which cannot be called in combat: a click there does nothing.
+local opened, combat = {}, true
+local openWorldMap = _G.C_Map.OpenWorldMap
+_G.C_Map.OpenWorldMap = function(id) opened[#opened + 1] = id end
+env.InCombatLockdown = function() return combat end
+tower:OnClick("LeftButton")
+tower:OnClick("RightButton")
+Check(#opened == 0, "a zone link clicked in combat leaves the map alone")
+combat = false
+tower:OnClick("LeftButton")
+tower:OnClick("RightButton")
+_G.C_Map.OpenWorldMap, env.InCombatLockdown = openWorldMap, nil
+Check(#opened == 2 and opened[1] == tower.link.linkedUiMapID and opened[2] == tower.link.rightUiMapID,
+    "out of combat a zone link opens its map, and a tower's right click its second one")
+
 S.Set("transportTimers", false)
 provider:RefreshAllData()
 Check(not acquired[1].Time or not acquired[1].Time.shown, "with the timers off the pin shows no countdown")

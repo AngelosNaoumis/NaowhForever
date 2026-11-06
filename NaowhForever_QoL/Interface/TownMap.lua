@@ -332,6 +332,7 @@ function NaowhForeverZoneLinkPinMixin:OnAcquired(link)
 end
 
 function NaowhForeverZoneLinkPinMixin:OnClick(button)
+    if InCombatLockdown() then return end
     local link = self.link
     if button == "RightButton" and link.rightUiMapID then
         C_Map.OpenWorldMap(link.rightUiMapID)
