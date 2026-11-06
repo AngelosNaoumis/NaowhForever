@@ -64,6 +64,7 @@ NaowhForever_Professions/
     Buyer.lua          Buy on AH's box (P.Buyer)
     BuyRow.lua         the Buy and Buy All row under the reagents (P.BuyRow)
     OrderPanel.lua     the order controls and the order column (P.OrderPanel)
+    CancelForm.lua     a druid's Create, Create All and Start leave the form first (P.CancelForm)
     Detail.lua         the middle column for one of your recipes (P.Detail)
     Learn.lua          the middle column for an unlearned recipe (P.Learn)
     Book.lua           the overview's profession cards (P.Book)
@@ -330,6 +331,16 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   Shopping List. Start Queue only selects the next ready entry, and each Craft Next hardware click starts
   one batch because Blizzard does not allow automated profession opening or unattended crafting. The
   window stays open when the profession window closes.
+- Forever keeps the classic rule that you cannot craft in a shapeshift form ("You are in shapeshift
+  form", seen on a druid 2026-11-06), and only secure code may leave a form. So for a druid, Create,
+  Create All and the Crafting Queue's Start each get a secure layer whose macro is `/cancelform`; its
+  PostClick runs the button's own click, so the craft goes out in the same click.
+- Holding that layer makes a window protected, so it is a child of its button only out of combat: it is
+  lifted onto UIParent on PLAYER_REGEN_DISABLED, the last moment that is still allowed, and put back on
+  PLAYER_REGEN_ENABLED. In combat the plain button takes the click and a craft in a form fails as before.
+- The layer passes hover through to its button (SetPropagateMouseMotion) and forwards the press, so the
+  button looks the same. It acts on the mouse-up only (both registered, `useOnKeyDown` false, as
+  Disenchant All) and does nothing while its button is disabled: PreClick clears its type.
 - Queue rows can be dragged within their section. Their order is kept with that character's GUID, while
   prerequisite crafts always remain ahead of regular crafts.
   The drop target is the row under the cursor when the drag stops (`GetMouseFoci`): the dragged row keeps

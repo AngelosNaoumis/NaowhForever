@@ -397,6 +397,7 @@ env = {
     GetMoney = function() return 10000000 end,
     UnitGUID = function() return "Player-1-SELF" end,
     UnitName = function() return "Tester" end,
+    UnitClass = function() return "Druid", "DRUID" end,
     UnitLevel = function() return 40 end,
     GetRealmName = function() return "Realm" end,
     UnitFactionGroup = function() return "Alliance" end,

@@ -11,6 +11,7 @@ local Queue = P.CraftQueue
 local Text = P.Text
 local Style = P.Style
 local Widgets = P.Widgets
+local CancelForm = P.CancelForm
 
 local PAGE = "Professions/Settings"
 local WIDTH, HEIGHT = 380, 320
@@ -289,6 +290,7 @@ local function BuildFooter()
     start:SetPoint("BOTTOMRIGHT", -INSET, FOOTER + PAD)
     ns.AccentBorder(start)
     ns.Tooltip(start, TEXT_START, TIP_START_HELP)
+    CancelForm.Cover(start, Queue.Click)
     addMissing = ns.Button(window, TEXT_ADD_MISSING, ADD_MISSING_W, BUTTON_H, Queue.AddMissingToShopping)
     addMissing:SetPoint("LEFT", clear, "RIGHT", PAD, 0)
     addMissing:SetPoint("RIGHT", start, "LEFT", -PAD, 0)

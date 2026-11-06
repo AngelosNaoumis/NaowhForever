@@ -450,6 +450,7 @@ ns.UIScale = function() return 1 end
 ns.Professions.Text = {}
 ns.Professions.Style = setmetatable({}, Zero)
 ns.Professions.Widgets = { Crop = function(texture) return texture end, EnableButton = Noop }
+ns.Professions.CancelForm = { Cover = Noop }
 env.GetMouseFoci = function() return { focus } end
 env.GameTooltip_Hide = Noop
 env.GameTooltip = {

@@ -13,6 +13,7 @@ local Favorites = P.Favorites
 local Text = P.Text
 local Style = P.Style
 local Widgets = P.Widgets
+local CancelForm = P.CancelForm
 local SetColor = Widgets.SetColor
 local EnableButton = Widgets.EnableButton
 
@@ -309,6 +310,7 @@ end
 local function BuildCraftControls(d)
     local create = ns.Button(d, TEXT_CREATE, CREATE_W, Style.BUTTON_H, OnCreate)
     create:SetPoint("BOTTOMRIGHT", -EDGE, EDGE)
+    CancelForm.Cover(create, OnCreate)
     win.create = create
     local qty = Widgets.QtyBox(d)
     win.qty = qty
@@ -319,6 +321,7 @@ local function BuildCraftControls(d)
     minus:SetPoint("RIGHT", qty, "LEFT", -Style.STEP_GAP, 0)
     win.createAll = ns.Button(d, TEXT_CREATE_ALL, CREATE_ALL_W, Style.BUTTON_H, OnCreateAll)
     win.createAll:SetPoint("BOTTOMLEFT", EDGE, EDGE)
+    CancelForm.Cover(win.createAll, OnCreateAll)
     win.craftControls = { create, qty, plus, minus, win.createAll }
 end
 
