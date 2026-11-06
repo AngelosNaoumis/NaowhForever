@@ -529,6 +529,11 @@ NaowhForever_QoL/
   wide (155, 2 in). Forever's rows differ from Classic Era's, so the zone takes the activity
   line's font and stops short of the role icons, measured on screen (the icons are scaled).
   The game sends only the leader's zone; other members show one if it is known elsewhere.
+- Chat Zones' sources can come back secret in an instance: a chat author, a search result's
+  fields, its players' names and zones, and the measurements of a row or the member tooltip once
+  the game has drawn secret text or icons in it, which can outlast the data's own secrecy. Each
+  is checked with `issecretvalue` before it is compared, used as a key or measured; a secret one
+  is skipped, and a row or tooltip whose zone or size is secret shows none.
 - Group Finder Roles never writes the Group Finder's results or calls its refresh: its list, totals,
   selection and right-click menu stay Blizzard's own, untainted. It hooks
   `LFGBrowseSearchEntry_Update` (after `Blizzard_GroupFinder_VanillaStyle` loads) and fades a row

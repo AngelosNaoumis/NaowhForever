@@ -61,14 +61,14 @@ local function Secret(v)
 end
 
 local function Key(name)
-    if not name or name == "" or Secret(name) then return nil end
+    if not name or Secret(name) or name == "" then return nil end
     return Ambiguate(name, "none")
 end
 
 local function Remember(name, zone, level)
     local key = Key(name)
-    if not key or not zone or zone == "" or Secret(zone) then return end
-    level = tonumber(level)
+    if not key or not zone or Secret(zone) or zone == "" then return end
+    level = not Secret(level) and tonumber(level) or nil
     known[key] = { zone = zone, level = level and level > 0 and level or nil, at = GetTime() }
 end
 
@@ -78,7 +78,7 @@ local function Fresh(key)
 end
 
 local function ClassColour(guid)
-    if not guid or guid == "" or Secret(guid) or not S.Get("chatZonesClassColour") then return nil end
+    if not guid or Secret(guid) or guid == "" or not S.Get("chatZonesClassColour") then return nil end
     local _, class = GetPlayerInfoByGUID(guid)
     return class and C_ClassColor.GetClassColor(class)
 end
@@ -93,7 +93,7 @@ end
 
 local function ReadGroupFinder(id)
     local info = C_LFGList.GetSearchResultInfo(id)
-    if not info or info.isDelisted then return end
+    if not info or Secret(info.isDelisted) or Secret(info.numMembers) or info.isDelisted then return end
     for i = 1, info.numMembers or 0 do
         local p = C_LFGList.GetSearchResultPlayerInfo(id, i)
         if p then Remember(p.name, p.areaName, p.level) end
@@ -253,7 +253,7 @@ local function Filter(_, event, msg, author, ...)
     local guid = select(GUID_ARG, ...)
     local entry = Fresh(key)
     if not entry then
-        if S.Get("chatZonesAsk") and guid and guid ~= "" and not Secret(guid) then Ask(key, guid) end
+        if S.Get("chatZonesAsk") and guid and not Secret(guid) and guid ~= "" then Ask(key, guid) end
         if event == "CHAT_MSG_WHISPER" and S.Get("chatZonesWhere") then
             return false, msg .. " " .. WhereLink(key), author, ...
         end
@@ -296,11 +296,13 @@ local LeftmostShown
 local function LeftmostOf(best, ...)
     for i = 1, select("#", ...) do
         local region = select(i, ...)
+        if Secret(best) then return best end
         if region:IsVisible() then
             if region.GetChildren then
                 best = LeftmostShown(region, best)
             else
                 local left = region:GetLeft()
+                if Secret(left) then return left end
                 if left then
                     left = left * region:GetEffectiveScale()
                     if not best or left < best then best = left end
@@ -318,14 +320,18 @@ end
 local function RowZoneWidth(entry)
     local stop = entry.DataDisplay and LeftmostShown(entry.DataDisplay)
     local start = entry.ActivityName:GetRight()
+    if Secret(stop) or Secret(start) then return nil end
     if stop and start then return (stop / entry:GetEffectiveScale()) - start - ROW_END_GAP end
-    return entry:GetWidth() - DATA_DISPLAY_SPACE - ROW_EDGE - entry.ActivityName:GetStringWidth()
+    local width, nameWidth = entry:GetWidth(), entry.ActivityName:GetStringWidth()
+    if Secret(width) or Secret(nameWidth) then return nil end
+    return width - DATA_DISPLAY_SPACE - ROW_EDGE - nameWidth
 end
 
 local function UpdateRow(entry)
     ScaleRoles(entry, FinderOn())
     local zone = FinderOn() and entry.resultID and entry:IsShown() and LeaderZone(entry.resultID)
-    if not zone or zone == "" or Secret(zone) then
+    local width = zone and not Secret(zone) and zone ~= "" and RowZoneWidth(entry)
+    if not width then
         if rowText[entry] then rowText[entry]:Hide() end
         return
     end
@@ -336,15 +342,18 @@ local function UpdateRow(entry)
     fs:SetTextColor(muted.r, muted.g, muted.b)
     fs:ClearAllPoints()
     fs:SetPoint("LEFT", entry.ActivityName, "RIGHT", ZONE_GAP, 0)
-    fs:SetWidth(math.max(1, RowZoneWidth(entry)))
+    fs:SetWidth(math.max(1, width))
     fs:SetText(zone)
     fs:Show()
 end
 
 local function LineRight(row)
     local right = row.Level and row.Level:IsShown() and row.Level:GetRight() or 0
+    if Secret(right) then return nil end
     for _, icon in ipairs(row.Roles or {}) do
-        if icon:IsShown() and icon:GetRight() then right = math.max(right, icon:GetRight()) end
+        local iconRight = icon:IsShown() and icon:GetRight()
+        if Secret(iconRight) then return nil end
+        if iconRight then right = math.max(right, iconRight) end
     end
     return right
 end
@@ -353,7 +362,9 @@ local function MemberZones(info, resultID)
     local zones = {}
     for i = 1, info.numMembers or 0 do
         local p = C_LFGList.GetSearchResultPlayerInfo(resultID, i)
-        if p and p.name and p.areaName and not Secret(p.areaName) then zones[p.name] = p.areaName end
+        if p and p.name and p.areaName and not Secret(p.name) and not Secret(p.areaName) then
+            zones[p.name] = p.areaName
+        end
     end
     return zones
 end
@@ -369,11 +380,12 @@ end
 
 local function ShowMemberZone(row, zones, right)
     local name = row.Name and row.Name:GetText()
+    if Secret(name) then return 0 end
     local key = Key(name)
     local cached = key and Fresh(key)
     local zone = name and zones[name] or cached and cached.zone
     local left = row:GetLeft()
-    if not (zone and left) then return 0 end
+    if not (zone and left) or Secret(left) then return 0 end
     local fs = ZoneString(tipText, row, "GameFontHighlightSmallLeft")
     fs:ClearAllPoints()
     fs:SetPoint("LEFT", row, "LEFT", right - left + TIP_GAP, 0)
@@ -385,18 +397,22 @@ end
 local function UpdateTooltip(tip, resultID)
     for _, fs in pairs(tipText) do fs:Hide() end
     local info = FinderOn() and resultID and C_LFGList.GetSearchResultInfo(resultID)
-    if not info then return end
+    if not info or Secret(info.numMembers) then return end
     local zones = MemberZones(info, resultID)
     local rows = MemberRows(tip)
     local right = 0
-    for _, row in ipairs(rows) do right = math.max(right, LineRight(row)) end
+    for _, row in ipairs(rows) do
+        local rowRight = LineRight(row)
+        if not rowRight then return end
+        right = math.max(right, rowRight)
+    end
     if right == 0 then return end
     local widest = 0
     for _, row in ipairs(rows) do widest = math.max(widest, ShowMemberZone(row, zones, right)) end
-    local tipLeft = tip:GetLeft()
-    if widest > 0 and tipLeft then
+    local tipLeft, tipWidth = tip:GetLeft(), tip:GetWidth()
+    if widest > 0 and tipLeft and not Secret(tipLeft) and not Secret(tipWidth) then
         local need = right - tipLeft + TIP_GAP + widest + TIP_PAD
-        if tip:GetWidth() < need then tip:SetWidth(need) end
+        if tipWidth < need then tip:SetWidth(need) end
     end
 end
 
