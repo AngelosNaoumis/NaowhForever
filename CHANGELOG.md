@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.2.11
+
+### Added
+- German: the Staff Member badge and the Quest List's two new states now show in German on German
+  clients.
 
 ## 1.2.10
 
