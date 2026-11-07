@@ -22,13 +22,13 @@ B.AURAS = {
 B.FURY = { key = "fury", ranks = { 25780 } }
 
 B.SEALS = {
-    { key = "sealRighteousness", ranks = { 20154 } },
-    { key = "sealCommand", ranks = { 20375 } },
-    { key = "sealFury", ranks = { 1311649 } },
-    { key = "sealCrusader", ranks = { 21082 } },
+    { key = "sealRighteousness", ranks = { 20154, 21084, 20287, 20288, 20289, 20290, 20291, 20292, 20293 } },
+    { key = "sealCommand", ranks = { 20375, 20915, 20918, 20919, 20920 } },
+    { key = "sealFury", ranks = { 1311649, 1311656, 20163, 20419, 20421, 20422, 20423 } },
+    { key = "sealCrusader", ranks = { 21082, 20162, 20305, 20306, 20307, 20308 } },
     { key = "sealJustice", ranks = { 20164 } },
-    { key = "sealLight", ranks = { 20165 } },
-    { key = "sealWisdom", ranks = { 20166 } },
+    { key = "sealLight", ranks = { 20165, 20347, 20348, 20349 } },
+    { key = "sealWisdom", ranks = { 20166, 20356, 20357 } },
 }
 
 B.SYMBOL_OF_KINGS = 21177

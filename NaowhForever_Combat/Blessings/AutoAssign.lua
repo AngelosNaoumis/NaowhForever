@@ -32,7 +32,9 @@ local function Paladins()
         for _, entry in ipairs(AURAS) do if Learned(entry) then known[entry.key] = true end end
         list[1] = { who = MyName(), known = known, you = true }
     end
-    for who, plan in pairs(others) do list[#list + 1] = { who = who, known = plan.known } end
+    for who, plan in pairs(others) do
+        list[#list + 1] = { who = who, known = plan.known, fixed = plan.pallyPower and plan or nil }
+    end
     for _, p in ipairs(list) do
         p.count = 0
         for _ in pairs(p.known) do p.count = p.count + 1 end
@@ -55,14 +57,31 @@ local function Pick(paladins, wanted, give)
     end
 end
 
+local function Untaken(wanted, fixed, given)
+    local out = {}
+    for _, key in ipairs(wanted) do
+        local taken = false
+        for _, plan in ipairs(fixed) do
+            if given(plan) == key then taken = true end
+        end
+        if not taken then out[#out + 1] = key end
+    end
+    return out
+end
+
 local function AutoPlans()
-    local paladins = Paladins()
+    local paladins, fixed = {}, {}
+    for _, p in ipairs(Paladins()) do
+        if p.fixed then fixed[#fixed + 1] = p.fixed else paladins[#paladins + 1] = p end
+    end
     local plans = {}
     for _, p in ipairs(paladins) do plans[p.who] = { classes = {} } end
     for _, class in ipairs(CLASSES) do
-        Pick(paladins, WANTED[class], function(p, key) plans[p.who].classes[class] = key end)
+        local wanted = Untaken(WANTED[class], fixed, function(plan) return plan.classes[class] end)
+        Pick(paladins, wanted, function(p, key) plans[p.who].classes[class] = key end)
     end
-    Pick(paladins, AURA_ORDER, function(p, key) plans[p.who].aura = key end)
+    local auras = Untaken(AURA_ORDER, fixed, function(plan) return plan.aura end)
+    Pick(paladins, auras, function(p, key) plans[p.who].aura = key end)
     return plans
 end
 
@@ -74,7 +93,7 @@ local function ApplyPlans(plans)
             for class, key in pairs(plan.classes) do store.classes[class] = key end
             store.aura = plan.aura
             B.BroadcastSoon()
-        elseif others[who] then
+        elseif others[who] and not others[who].pallyPower then
             B.SendPlan(who, plan.classes, plan.aura)
         end
     end
@@ -108,7 +127,10 @@ function B.ClearAll()
 end
 
 function B.CanPlanAll()
-    return next(others) == nil or CanAssign("player")
+    for _, plan in pairs(others) do
+        if not plan.pallyPower then return CanAssign("player") end
+    end
+    return true
 end
 
 function B.SavePreset()

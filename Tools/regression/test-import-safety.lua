@@ -228,6 +228,7 @@ do
         player = { "Me Self", "Me", "WARRIOR" },
         party1 = { "Holy Man", "Holy", "PALADIN" },
     }
+    local sent = {}
     local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = { Get = function() return true end, Set = function() end },
         THEME = { fg = {}, muted = {}, accent = {}, bg = {} }, AccountSettings = function() return account end,
         Print = function() end,
@@ -239,14 +240,19 @@ do
         GetRealmName = function() return "Forever" end, C_SpellBook = { IsSpellKnown = function() return true end },
         IsInRaid = function() return false end, GetNumSubgroupMembers = function() return 1 end,
         GetNumGroupMembers = function() return 2 end, GetNormalizedRealmName = function() return "Forever" end,
-        UnitFullName = function(u) return units[u] and units[u][1] end,
+        UnitFullName = function(u) if units[u] then return units[u][1], units[u][4] end end,
         UnitName = function(u) return units[u] and units[u][2] end,
         UnitClass = function(u) return units[u] and units[u][3], units[u] and units[u][3] end,
         UnitGUID = function(u) return units[u] and ("Player-1-" .. u) end,
         Ambiguate = function(name) return name end, issecretvalue = function() return false end,
         UnitIsGroupLeader = function() return false end, UnitIsGroupAssistant = function() return false end,
+        InCombatLockdown = function() return false end, IsInGroup = function() return true end,
+        C_ChatInfo = { SendAddonMessage = function(prefix, msg) sent[#sent + 1] = prefix .. " " .. msg end },
     }, { __index = _G })
     env._G = env
+    local senders = assert(loadfile("Core/Senders.lua"))
+    setfenv(senders, env)
+    senders()
     for _, path in ipairs(dofile("Tools/regression/toc_files.lua")("^NaowhForever_Combat/Blessings/.*%.lua$")) do
         if not path:find("/UI/Window%.lua$") then
             local chunk = assert(loadfile(path))
@@ -331,18 +337,114 @@ do
 
     units.player[3] = "PALADIN"
     local store = ns.Blessings.Store()
-    Send("S|Me Self-Forever|k---------")
+    Send("S|Player-1-player|k---------")
     check("a paladin who does not lead cannot plan for you", next(store.classes) == nil)
     store.free = true
     Send("S|Me Self-Forever|k---------")
+    check("an assignment addressed by name is not taken", next(store.classes) == nil)
+    Send("S|Player-1-player|k---------")
     check("with Free Assignment on, a paladin in the group can", store.classes.WARRIOR == "kings")
-    Send("S|Me Self-Forever|-m--------", "Stranger Danger")
+    Send("S|Player-1-party1|-m--------")
+    check("an assignment for another paladin is not taken", store.classes.PALADIN == nil)
+    Send("S|Player-1-player|-m--------", "Stranger Danger")
     check("with it on, someone who is not in the group still cannot", store.classes.WARRIOR == "kings"
         and store.classes.PALADIN == nil)
     units.party1[3] = "WARRIOR"
-    Send("S|Me Self-Forever|-m--------")
+    Send("S|Player-1-player|-m--------")
     check("with it on, a player who is not a paladin and not an assistant cannot", store.classes.PALADIN == nil)
     units.party1[3] = "PALADIN"
+
+    -- A party member's UnitFullName can give the first name and surname apart, while the sender is the whole name.
+    units.party1 = { "Holy", "Holy", "PALADIN", "Man" }
+    Send("F|m---------|mk")
+    local holyMan = ns.Blessings.Others()["Holy-Man"]
+    check("a paladin whose sender is spelled unlike the party list is heard", holyMan ~= nil
+        and holyMan.classes.WARRIOR == "might")
+    Send("F|k---------|mk", "Holy Man-Forever")
+    check("with the realm on the sender too", ns.Blessings.Others()["Holy-Man"].classes.WARRIOR == "kings")
+    Send("S|Player-1-player|w---------")
+    check("and can plan for you", store.classes.WARRIOR == "wisdom")
+    ns.Blessings.SendPlan("Holy-Man", { WARRIOR = "might" })
+    check("an assignment names its paladin by GUID", sent[#sent] == "NaowhBless S|Player-1-party1|m---------")
+
+    -- A paladin running PallyPower is read from its messages and never planned for.
+    local function PallyPower(text, sender, channel)
+        fire.scripts.OnEvent(fire, "CHAT_MSG_ADDON", "PLPWR", text, channel or "PARTY", sender)
+    end
+    env.GetNumSubgroupMembers = function() return 2 end
+    units.party2 = { "Lux", "Lux", "PALADIN", "Aeterna" }
+    ns.Blessings.AskPallyPower()
+    check("a paladin with no plan is asked for PallyPower's", sent[#sent] == "PLPWR REQ")
+    local requests = #sent
+    ns.Blessings.AskPallyPower()
+    check("a paladin who does not answer is asked only once", #sent == requests)
+    ns.Blessings.AskPallyPowerAgain()
+    ns.Blessings.AskPallyPower()
+    check("Refresh asks them again", #sent == requests + 1 and sent[#sent] == "PLPWR REQ")
+    PallyPower("SELF 607010nnnnnn@2213n4113", "Lux Aeterna", "WHISPER")
+    local lux = ns.Blessings.Others()["Lux-Aeterna"]
+    check("a PallyPower paladin's blessings are read, whispered too", lux ~= nil and lux.pallyPower
+        and lux.classes.WARRIOR == "might" and lux.classes.PRIEST == "wisdom" and lux.classes.DRUID == "kings")
+    check("a blessing Forever does not have is none", lux.classes.HUNTER == nil and lux.classes.PALADIN == nil)
+    check("what they know comes from their ranks", lux.known.might and lux.known.kings and not lux.known.devotion)
+    PallyPower("ASELF 70nn10nnnnnnnn@3", "Lux Aeterna")
+    check("their aura is read", lux.aura == "concentration" and lux.known.devotion and not lux.known.retribution)
+    PallyPower("FREEASSIGN NO | SYMCOUNT 12 | COOLDOWNS:3600:600:3600:n", "Lux Aeterna")
+    check("their Symbols and Lay on Hands are read", lux.status.symbols == 12 and lux.status.loh == 600
+        and lux.status.di == nil)
+    PallyPower("FREEASSIGN NO | SYMCOUNT 99999 | COOLDOWNS:3600:inf:3600:-5", "Lux Aeterna")
+    check("silly numbers are clamped or dropped", lux.status.symbols == 9999 and lux.status.loh == nil
+        and lux.status.di == nil)
+    PallyPower("SELF zz@99", "Lux Aeterna")
+    check("a malformed plan changes nothing", ns.Blessings.Others()["Lux-Aeterna"].classes.WARRIOR == "might")
+    PallyPower("SELF 607010nnnnnn@111111111", "Stranger Danger")
+    check("a sender outside the group is not read", ns.Blessings.Others()["Stranger Danger"] == nil)
+    PallyPower("SELF 607010nnnnnn@111111111", "Holy Man")
+    check("a paladin running Naowh Forever keeps that plan", not ns.Blessings.Others()["Holy-Man"].pallyPower
+        and ns.Blessings.Others()["Holy-Man"].classes.WARRIOR == "might")
+
+    -- Later changes come as PallyPower's assignment messages, taken by the rules its own clients use.
+    PallyPower("ASSIGN Lux Aeterna 1 3", "Lux Aeterna")
+    check("a PallyPower paladin's own change is read", lux.classes.WARRIOR == "kings")
+    PallyPower("ASSIGN Lux Aeterna 3 2", "Holy Man")
+    check("someone else's is not, without the lead or Free Assignment", lux.classes.PRIEST == "wisdom")
+    PallyPower("FREEASSIGN YES | SYMCOUNT 12 | COOLDOWNS:n:n:n:n", "Lux Aeterna")
+    PallyPower("ASSIGN Lux Aeterna 3 2", "Holy Man")
+    check("with their Free Assignment on it is", lux.free and lux.classes.PRIEST == "might")
+    PallyPower("MASSIGN Lux Aeterna 1", "Lux Aeterna")
+    check("MASSIGN sets every class", lux.classes.WARRIOR == "wisdom" and lux.classes.SHAMAN == "wisdom")
+    PallyPower("PASSIGN Lux Aeterna@2n3nnnnnn", "Lux Aeterna")
+    check("PASSIGN sets each class", lux.classes.WARRIOR == "might" and lux.classes.PRIEST == "kings"
+        and lux.classes.ROGUE == nil)
+    PallyPower("AASSIGN Lux Aeterna 2", "Lux Aeterna")
+    check("an aura they have not learned is none", lux.aura == nil)
+    PallyPower("AASSIGN Lux Aeterna 1", "Lux Aeterna")
+    check("AASSIGN sets their aura", lux.aura == "devotion")
+    PallyPower("ASSIGN Holy Man 1 3", "Lux Aeterna")
+    check("a change for a paladin running Naowh Forever is left alone",
+        ns.Blessings.Others()["Holy-Man"].classes.WARRIOR == "might")
+    PallyPower("CLEAR SKIP", "Holy Man")
+    check("CLEAR SKIP clears a Free Assignment paladin's classes and keeps the aura", next(lux.classes) == nil
+        and lux.aura == "devotion")
+    PallyPower("FREEASSIGN NO | SYMCOUNT 12 | COOLDOWNS:n:n:n:n", "Lux Aeterna")
+    PallyPower("PASSIGN Lux Aeterna@2n3nnnnnn", "Lux Aeterna")
+    PallyPower("CLEAR", "Holy Man")
+    check("CLEAR from someone without the lead leaves the rest alone", lux.classes.WARRIOR == "might")
+    env.UnitIsGroupLeader = function(u) return u == "party1" end
+    PallyPower("CLEAR", "Holy Man")
+    check("CLEAR from the leader clears classes and aura", next(lux.classes) == nil and lux.aura == nil)
+    env.UnitIsGroupLeader = function() return false end
+    local asked = #sent
+    ns.Blessings.AskPallyPower()
+    check("once every paladin has a plan nobody is asked", #sent == asked)
+    ns.Blessings.AutoAssign()
+    local toLux = false
+    for i = asked + 1, #sent do
+        if sent[i]:find("Player-1-party2", 1, true) then toLux = true end
+    end
+    check("Auto-Assign plans the others but never sends a PallyPower paladin a plan", #sent > asked and not toLux)
+    units.party2 = nil
+    env.GetNumSubgroupMembers = function() return 1 end
     units.player[3] = "WARRIOR"
 end
 

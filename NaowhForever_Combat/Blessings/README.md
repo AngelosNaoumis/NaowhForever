@@ -21,6 +21,7 @@ NaowhForever_Combat/Blessings/
   Memory.lua                   the blessings you cast in a battleground or arena, where auras are hidden
   Buffs.lua                    who has which blessing for how long, who is in range, who is next
   Plans.lua                    plans shared with the group's paladins over addon messages
+  PallyPower.lua               the plans of the group's paladins running PallyPower, read from its messages
   Status.lua                   your Symbols of Kings and Lay on Hands and Divine Intervention cooldowns
   Report.lua                   the paladins' blessings as lines of chat
   AutoAssign.lua               Auto-Assign and the saved preset
@@ -46,11 +47,13 @@ NaowhForever_Combat/Blessings/
   buttons hover the same way (`Parts.Hover`).
 - `blessLayout` is the bar's Growth Direction, on the Anchor card beside where the bar sits. It keeps its old saved values: `horizontal` grows Right and
   `vertical` grows Down (`ItemBar.GrowOf`), beside the new `LEFT` and `UP`, so no saved profile changes.
-- The ranks are lowest first, from Forever's spell data (build 1.60.1.69913).
-- Forever names carry a surname: `UnitName` gives only the first name ("Glyadin"), while
-  `UnitFullName` and addon message senders give the whole one ("Glyadin Skywolf"). Names are kept as
-  senders carry them: the realm only when it is not ours. Another paladin's plan is kept by that
-  name (realm when not ours): `{ classes, aura, known }`.
+- The ranks are lowest first, from Forever's spell data (build 1.60.1.69913); the seals' from the Training
+  Planner's trainer data (`Tools/data/training_cache.json`), with Seal of Command's first rank from its talent.
+- Forever names carry a surname: `UnitName` gives only the first name ("Glyadin"), and an addon
+  message's sender is the whole one ("Glyadin Skywolf"), which a party member's `UnitFullName` does not
+  spell the same way. Comparing the two read every other paladin as "No reply". A message is matched
+  to the member who sent it with `ns.SenderIsUnit` (Core/Senders.lua), and another paladin's plan is
+  kept under that member's roster name (`member.who`): `{ classes, aura, known }`.
 - With Blessings off a client neither listens nor replies, and the new-install preset turns it off,
   so a paladin who sends no plan reads as "No reply" rather than as not running the addon.
 - The saved plan once held only `{ CLASS = blessing }`, before per-player choices and auras; such a
@@ -116,6 +119,8 @@ NaowhForever_Combat/Blessings/
 - A plan travels as ten characters: a blessing code per class in `CLASSES` order, then the aura's,
   "-" for none. Per-player choices travel as GUID=code pairs in batches; "P|1|" starts the list over,
   so an empty one clears what the others had, and at most `MAX_PLAYER_CHOICES` are kept per paladin.
+  A plan set for another paladin travels as "S|<their GUID>|<plan>": their name as you see it need
+  not be the name they see for themselves.
 - Messages are parsed as data: only valid codes from a paladin in the group are kept, and only the
   leader or an assistant can set someone else's plan. Nothing is sent in combat: what would have
   been is kept, the latest per kind and target, and sent once combat ends. Every client asks on a
@@ -132,7 +137,27 @@ NaowhForever_Combat/Blessings/
   paladin with few blessings is not left with none, and each wanted blessing goes to the first paladin
   still free who knows it; one aura each. Another paladin's plan
   is kept here until their broadcast confirms it, and sent to them; planning everyone's needs the
-  leader or an assistant when another paladin is involved.
+  leader or an assistant when another paladin is involved. A paladin running PallyPower is never planned:
+  what they give each class and their aura count as taken, and everyone else is planned around them.
+- A paladin running PallyPower is read from its addon messages (prefix `PLPWR`), only while Blessings is on:
+  `SELF <rank pairs>@<a digit per class>` for the blessings, `ASELF` the same for the auras, and the status line
+  with `SYMCOUNT` and `COOLDOWNS:<duration>:<left>:<duration>:<left>` (Lay on Hands, then Divine Intervention).
+  Its class order is Warrior, Rogue, Priest, Druid, Paladin, Hunter, Mage, Warlock, Shaman; its blessings are
+  Wisdom, Might, Kings and three Forever no longer has, read as none; its auras are in our `AURAS` order. A rank
+  of `n` is a spell they have not learned. Their plan is shown, reported and planned around but never set from
+  here, and a paladin who also runs Naowh Forever keeps that plan; only `SELF` makes a PallyPower plan.
+- PallyPower sends `SELF` on joining and when asked, and every change after it as `ASSIGN <name> <class>
+  <blessing>`, `PASSIGN <name>@<a digit per class>`, `MASSIGN <name> <blessing>` (every class), `AASSIGN <name>
+  <aura>` or `CLEAR`, never a new `SELF`, so the plan would go stale without them. They are taken as its own
+  clients take them: from that paladin, the leader or an assistant, or anyone while the paladin's Free Assignment
+  is on (`FREEASSIGN YES` on their status line). `CLEAR` from the leader or an assistant clears every PallyPower
+  paladin, from anyone else only those with Free Assignment on, and `CLEAR SKIP` keeps the auras. A change naming
+  a paladin who runs Naowh Forever is left alone, as their client ignores it. Their per-player choices
+  (`NASSIGN`) are not read.
+- `REQ` asks for every PallyPower plan, and PallyPower answers it with all of its own messages, to the whole raid
+  in a raid instance and by whisper elsewhere, so whispers on its prefix are read too, from group members only.
+  A paladin in the group who has given no plan is asked once (by GUID), not on every sync: a paladin with
+  Blessings off or no addon never answers. Refresh asks again, and a sync skipped in combat asks once it ends.
 - Free Assignment is a flag on your plan (`X` in the known list, `free`): with it on, any paladin in the group
   may set your plan, not only the leader or an assistant (`MayPlan`); without it nothing changes. A paladin
   with it on shows as editable in everyone's Blessings window.
@@ -163,7 +188,9 @@ NaowhForever_Combat/Blessings/
   `NaowhForeverBlessNextGreater`, `NaowhForeverBlessAuto`, `NaowhForeverBlessAura`, `NaowhForeverBlessFury` and
   `NaowhForeverBlessSeal`. The wheel on the aura button cycles through the auras you know, and on the seal button
   through your seals, out of combat. The Seal Button (off) casts the seal you picked by name, so it is always your
-  highest rank; seals cannot be tracked in combat, so it shows no state. Class Buttons off hides every class
+  highest rank. Blizzard's managed aura display shows that seal and its time left while it is up, in combat too,
+  so every rank is listed: the aura is the rank you cast. A seal that is not up leaves the button as it is, not
+  red, since a seal lasts seconds and is not kept up out of combat. Class Buttons off hides every class
   button, leaving the Auto Buff button and the key bindings; Player List off removes the player list.
   Ctrl-click on a player in the list toggles their Main Tank mark (the secure `maintank` action).
 - Use in Party and Use When Solo (both on) hide the bar in a party or alone; a raid always shows it. Hide the
@@ -206,9 +233,12 @@ NaowhForever_Combat/Blessings/
 
 ## Checking
 
-- `lua Tools/regression/test-blessing-autoassign.lua`: Auto-Assign's plans.
+- `lua Tools/regression/test-blessing-autoassign.lua`: Auto-Assign's plans, around a PallyPower paladin's too.
 - `lua Tools/regression/test-blessing-names.lua`: the names a group header can find each member by.
 - `lua Tools/regression/test-blessing-range.lua`: what lights a class button, and its click queue.
 - `lua Tools/regression/test-blessing-preview.lua`: the settings preview and its edits.
-- `lua Tools/regression/test-import-safety.lua`: another paladin's per-player choices are capped.
+- `lua Tools/regression/test-import-safety.lua`: another paladin's per-player choices are capped, they
+  are heard however their sender spells their name, and a plan set for them names their GUID. A PallyPower
+  paladin's plan, aura, status and later changes are read by PallyPower's own rules, bad input changes nothing,
+  an unanswered paladin is asked once, and Auto-Assign never sends them a plan.
 - `lua Tools/regression/test-combat-perf.lua`: a bar refresh reads each member's buffs once.

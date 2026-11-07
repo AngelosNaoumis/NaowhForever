@@ -12,6 +12,7 @@ local Survey, CastSpell, BuffState, Roster, ClassName = B.Survey, B.CastSpell, B
 local RED, YELLOW, BLUE = Look.RED, Look.YELLOW, Look.BLUE
 
 local GROUP_CHANNELS = { PARTY = true, RAID = true, INSTANCE_CHAT = true }
+local WHISPER = "WHISPER"
 local GLOW_LIB, GLOW_KEY = "LibCustomGlow-1.0", "NaowhBless"
 local GLOW_LINES, GLOW_THICKNESS = 8, 1
 local HOME_Y = 230
@@ -237,6 +238,7 @@ local function PrepareSeal(btn, key)
     local id = BY_KEY[key].ranks[1]
     btn:SetAttribute("spell1", C_Spell.GetSpellName(id))
     btn.icon:SetTexture(C_Spell.GetSpellTexture(id))
+    B.SetWatch(btn, "player", key)
     Look.Self(btn, false)
 end
 
@@ -488,7 +490,11 @@ end
 
 local function OnAddonMessage(prefix, msg, channel, sender)
     if Secret(prefix) or Secret(msg) or Secret(channel) or Secret(sender) then return end
-    if prefix == B.PREFIX and GROUP_CHANNELS[channel] then B.OnMessage(msg, sender) end
+    if prefix == B.PREFIX and GROUP_CHANNELS[channel] then
+        B.OnMessage(msg, sender)
+    elseif prefix == B.PALLYPOWER_PREFIX and (GROUP_CHANNELS[channel] or channel == WHISPER) then
+        B.OnPallyPower(msg, sender)
+    end
 end
 
 local function OnCombatEnded()
@@ -579,6 +585,7 @@ end
 
 local function Listen()
     C_ChatInfo.RegisterAddonMessagePrefix(B.PREFIX)
+    C_ChatInfo.RegisterAddonMessagePrefix(B.PALLYPOWER_PREFIX)
     events:RegisterEvent("CHAT_MSG_ADDON")
     events:RegisterEvent("GROUP_ROSTER_UPDATE")
     events:RegisterEvent("PLAYER_ENTERING_WORLD")

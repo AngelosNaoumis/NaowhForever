@@ -60,4 +60,15 @@ check("two paladins: the one who knows less picks first", plans["Bram Hollow"].c
 check("two paladins: warriors get Might and Kings", plans["Bram Hollow"].classes.WARRIOR == "might"
     and plans["Glyadin Skywolf"].classes.WARRIOR == "kings")
 
+-- A paladin running PallyPower keeps their own plan, and you are planned around it.
+others["Bram Hollow"] = nil
+others["Lux Aeterna"] = { known = Set("might", "wisdom", "kings", "devotion"), pallyPower = true,
+    classes = { WARRIOR = "might", PRIEST = "wisdom" }, aura = "devotion" }
+plans = AutoPlans()
+check("a PallyPower paladin is not planned", plans["Lux Aeterna"] == nil)
+check("what they give a class is not given again", plans["Glyadin Skywolf"].classes.WARRIOR == "kings"
+    and plans["Glyadin Skywolf"].classes.PRIEST == "kings")
+check("a class they leave out is still planned", plans["Glyadin Skywolf"].classes.MAGE == "wisdom")
+check("nor is their aura", plans["Glyadin Skywolf"].aura == "retribution")
+
 print(("test-blessing-autoassign: %d checks passed"):format(checks))

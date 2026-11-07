@@ -33,6 +33,7 @@ local TEXT_YOU = ns.L("  (you)")
 local TEXT_AURA = ns.L("Aura")
 local TEXT_NOTHING = ns.L("Nothing assigned")
 local TEXT_CHANGE = ns.L("\nClick to change.")
+local TEXT_PALLYPOWER = ns.L("\nPlanned in PallyPower.")
 local TEXT_NONE = ns.L("None")
 local TEXT_CLEAR_ASK = ns.L("Clear every paladin's blessings and auras?")
 local TEXT_ASKED = ns.L("Asked the group's paladins for their plans.")
@@ -108,6 +109,7 @@ local function ClearAll()
 end
 
 local function AskPlans()
+    B.AskPallyPowerAgain()
     B.SyncSoon()
     ns.Print(TEXT_ASKED)
 end
@@ -178,7 +180,7 @@ local function Rows(roster)
         local plan = others[who]
         rows[#rows + 1] = { who = who, plan = plan, players = plan.players,
             can = function(entry) return plan.known[entry.key] end,
-            set = (lead or (mayFree and plan.free)) and function(column, key)
+            set = not plan.pallyPower and (lead or (mayFree and plan.free)) and function(column, key)
                 B.SetFor(who, column, key)
                 ns.UI:RefreshPage(true)
             end }
@@ -215,7 +217,7 @@ local function PlanCell(parent, x, y, column, row, roster)
     Cell(parent, x, y, key and B.SpellIcon(key) or EMPTY, key ~= nil, title,
         (key and B.SpellName(key) or TEXT_NOTHING)
             .. (aura and "" or Own(roster, row.players, column))
-            .. (onClick and TEXT_CHANGE or ""), onClick)
+            .. (onClick and TEXT_CHANGE or row.plan.pallyPower and TEXT_PALLYPOWER or ""), onClick)
 end
 
 local function PlanCells(parent, y, left, columns, row, roster)
