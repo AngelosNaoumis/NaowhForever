@@ -408,7 +408,9 @@ do
     })
     local treasure = Button(world, FIND_TREASURE)
     check("an off track is armed on the minimap list", treasure.trackIndex == 1 and treasure.attrs.spell1 == nil)
-    treasure.scripts.PostClick(treasure, "LeftButton")
+    treasure.scripts.PostClick(treasure, "LeftButton", true)
+    check("the press of a click turns nothing on, so the click casts once", track.index == nil)
+    treasure.scripts.PostClick(treasure, "LeftButton", false)
     check("left-click turns Find Treasure on", track.index == 1 and track.on == true)
     check("left-click does not hide the row", Named(world, "NaowhForeverTrackingReminder").shown == true)
 end

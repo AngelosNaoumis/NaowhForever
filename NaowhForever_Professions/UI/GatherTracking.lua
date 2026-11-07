@@ -22,7 +22,7 @@ local HIGHLIGHT_ALPHA = 0.15
 local HOME_X, HOME_Y = 260, 120
 local FRAME_NAME = "NaowhForeverGatherTracking"
 local MOVER_LABEL = "Tracking"
-local EVENTS = { "MINIMAP_UPDATE_TRACKING", "SPELLS_CHANGED", "LEARNED_SPELL_IN_TAB",
+local EVENTS = { "MINIMAP_UPDATE_TRACKING", "SPELLS_CHANGED", "LEARNED_SPELL_IN_SKILL_LINE",
     "PLAYER_ENTERING_WORLD", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_DEAD",
     "PLAYER_ALIVE", "PLAYER_UNGHOST", "PLAYER_CONTROL_LOST", "PLAYER_CONTROL_GAINED" }
 local TEXT_TRACK = ns.L("Track ")
@@ -182,7 +182,7 @@ function Apply()
     button:SetSize(size, size)
     Place()
     button.mover:SetShown(unlocked == true)
-    for _, event in ipairs(EVENTS) do pcall(events.RegisterEvent, events, event) end
+    for _, event in ipairs(EVENTS) do events:RegisterEvent(event) end
     Update()
 end
 

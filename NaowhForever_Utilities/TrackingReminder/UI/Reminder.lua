@@ -99,8 +99,8 @@ local function Suppressed()
     return IsInInstance() and not S.Get("inInstances")
 end
 
-local function OnPostClick(self, mouseButton)
-    if unlocked or InCombatLockdown() then return end
+local function OnPostClick(self, mouseButton, down)
+    if down or unlocked or InCombatLockdown() then return end
     if mouseButton == "RightButton" then
         snoozed = true
         row:Hide()
