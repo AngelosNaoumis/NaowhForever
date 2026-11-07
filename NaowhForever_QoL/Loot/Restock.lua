@@ -44,7 +44,8 @@ local AMMO_SLOT, RANGED_SLOT = 0, 18
 local WEAPON_CLASS, THROWN_SUBCLASS = 2, 16
 local THROWN_CLASSES = { ROGUE = true, WARRIOR = true }
 local PLAYER_CLASS = select(2, UnitClass("player"))
-local FOOD_CLASS, FOOD_SUBCLASS = 0, 5
+local FOOD_CLASS, FOOD_SUBCLASS, OTHER_SUBCLASS = 0, 5, 8
+local FOOD_SPELL = 433
 local DRINK_ITEM = 159
 local PLAIN_BAG = ns.QoLConstants.PLAIN_BAG
 local MAX_LEVEL = 60
@@ -167,14 +168,17 @@ local function InLevelRange(level)
     return level >= (S.Get("restockFoodMinLevel") or 0) and level <= (S.Get("restockFoodMaxLevel") or MAX_LEVEL)
 end
 
-local function IsFood(itemID)
+local function FoodSubclass(itemID)
     local _, _, _, _, _, classID, subclassID = C_Item.GetItemInfoInstant(itemID)
-    return classID == FOOD_CLASS and subclassID == FOOD_SUBCLASS
+    if classID == FOOD_CLASS and (subclassID == FOOD_SUBCLASS or subclassID == OTHER_SUBCLASS) then
+        return subclassID
+    end
 end
 
 local function ScanBags()
     local food, drink, junk, free = 0, 0, 0, 0
     local drinkSpell = C_Item.GetItemSpell(DRINK_ITEM)
+    local foodSpell = C_Spell.GetSpellName(FOOD_SPELL)
     for bag = 0, NUM_BAG_SLOTS do
         local slots, bagType = C_Container.GetContainerNumFreeSlots(bag)
         if bagType == PLAIN_BAG then free = free + slots end
@@ -184,11 +188,13 @@ local function ScanBags()
                 if info.quality == Enum.ItemQuality.Poor and not info.hasNoValue then
                     junk = junk + 1
                 end
-                local level = IsFood(info.itemID) and FoodLevel(info.itemID)
+                local subclass = FoodSubclass(info.itemID)
+                local level = subclass and FoodLevel(info.itemID)
                 if level and InLevelRange(level) then
-                    if drinkSpell and C_Item.GetItemSpell(info.itemID) == drinkSpell then
+                    local spell = C_Item.GetItemSpell(info.itemID)
+                    if drinkSpell and spell == drinkSpell then
                         drink = drink + info.stackCount
-                    else
+                    elseif subclass == FOOD_SUBCLASS or spell == foodSpell then
                         food = food + info.stackCount
                     end
                 end
