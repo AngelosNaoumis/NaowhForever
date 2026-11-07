@@ -146,6 +146,7 @@ function methods.GetEffectiveScale() return 1 end
 function methods.HasFocus() return false end
 function methods.GetChecked(self) return self.checked end
 function methods.SetChecked(self, v) self.checked = v end
+function methods.SetEnabled(self, v) self.enabled = v end
 function methods.GetParent(self) return self.parent end
 function methods.GetPoint() return nil end
 function methods.SetScript(self, name, fn)
@@ -405,6 +406,7 @@ env = {
     GetProfessions = function() return 1 end,
     GetProfessionInfo = function() return "Tailoring", 1, 150, 225, 0, 0, PROF, 0 end,
     SecondsToTime = function() return "1 min" end,
+    GetMoneyString = function(copper) return copper .. "c" end,
     GetMerchantNumItems = function() return 0 end,
     bit = { band = function() return 0 end },
     NUM_TOTAL_EQUIPPED_BAG_SLOTS = 4,
@@ -757,6 +759,46 @@ Report("full redraw with skill-up chances", Redraw, 4, 0.05)
 settings.skillUpChances = nil
 Redraw()
 check("off, the rows show no chance", RecipeRows()[1].chance.shown == false)
+
+-- Skill-up Plan: its title bar button opens the plan in the middle column.
+local function PlanButton()
+    for _, child in ipairs(win.children) do
+        if child.label and child.label.text == "Skill-up Plan" then return child end
+    end
+end
+check("off, the plan has no button", PlanButton() == nil)
+local state = ns.Professions.State
+local savedID, savedUnlearned = state.selectedID, state.selectedUnlearned
+settings.skillUpPlan = true
+Redraw()
+local planButton = PlanButton()
+check("on, the plan's button is on the title bar", planButton and planButton:IsShown())
+planButton.scripts.OnClick(planButton)
+local plan = ns.Professions.SkillUpPlan.Get()
+check("the plan runs from the skill toward the cap", plan.from == 150 and plan.to == 225 and plan.reach > plan.from)
+check("the plan shows in place of the recipe pane", win.plan and win.plan:IsShown() and not win.detail:IsShown())
+local planRows = 0
+for _, row in ipairs(win.plan.rows) do
+    if row:IsShown() and row.step then planRows = planRows + 1 end
+end
+check("each step is a row", planRows == math.min(#plan.steps, 18))
+local action = win.plan.action
+local training = ns.Professions.SkillUpPlan.NeedsTraining(plan)
+check("the plan's button waits for any training", action.enabled == (not training))
+Report("plan from skill to cap", function()
+    ns.Professions.SkillUpPlan.Invalidate()
+    ns.Professions.SkillUpPlan.Get()
+end, 15, 60)
+Report("full redraw with the plan open", Redraw, 4, 0.05)
+local firstRow = win.plan.rows[1]
+firstRow.scripts.OnClick(firstRow)
+check("a step's row opens its recipe", not win.plan:IsShown()
+    and (win.detail:IsShown() or win.learn:IsShown()))
+settings.skillUpPlan = nil
+Redraw()
+check("off, the plan's button hides", not planButton:IsShown())
+state.selectedID, state.selectedUnlearned = savedID, savedUnlearned
+Redraw()
 
 -------------------------------------------------------------------------------
 --  3b. Each trigger reads only what it can have changed. In game every recipe info, schematic

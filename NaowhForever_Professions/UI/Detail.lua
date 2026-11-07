@@ -186,6 +186,8 @@ end
 function Detail.Render()
     local d = win.detail
     if ns.ShoppingListRender then ns.ShoppingListRender(nil) end
+    if W.planOpen and P.SkillUpPlanView.Render() then return end
+    if win.plan then win.plan:Hide() end
     if W.selectedUnlearned then return ShowLearn() end
     win.learn:Hide()
     local info = R.SelectedInfo()

@@ -161,6 +161,7 @@ ns.FEATURES = {
         enabled = true,
         skillThresholds = false,
         skillUpChances = false,
+        skillUpPlan = false,
         recipeFinder = false,
         rankAlert = false,
         bagReagents = false,

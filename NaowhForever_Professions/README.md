@@ -43,6 +43,7 @@ NaowhForever_Professions/
   Auctions.lua         your active auction quantities, kept per character (P.Auctions)
   Filters.lua          the Filter menu's rules (P.Filters)
   Entries.lua          what the recipe list holds, by category and group (P.Entries)
+  SkillUpPlan.lua      the cheapest crafts from your skill to your cap, step by step (P.SkillUpPlan)
   Orders.lua           craft orders: value, tip, messages, sending (P.Orders)
   AuctionHouse.lua     the auction house open, searching it, Shift-click (P.AH)
   BagRoom.lua          how many crafts the bags have room for (ns.CraftBagRoom)
@@ -72,6 +73,7 @@ NaowhForever_Professions/
     Window.lua         the window: frame, title, skill bar, rank banner, search, Filter, drawing (P.Window)
     Takeover.lua       showing it over Blizzard's window, docking Blizzard's tabs and cards, dragging, events
     TitleButtons.lua   the feature buttons on its title bar, lined up left of the close button (P.TitleButtons)
+    SkillUpPlan.lua    the Skill-up Plan in the middle column, and its title bar button (P.SkillUpPlanView)
     ShoppingAdd.lua    Add to List under a recipe, and the button that opens the shopping list
     ShoppingWindow.lua the Shopping List window: crafts, other items, materials, docked beside the profession window or detached (ns.ToggleShoppingList)
     ShoppingConsumables.lua the Consumables picker beside the Shopping List: search and favourites
@@ -189,6 +191,24 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   left out because a craft made to level is often not worth listing. A recipe with an unpriced reagent, or
   a result whose sell price has not loaded yet, comes after the priced ones, by chance. The cost is cached
   per recipe with the profit, until the next full draw. The unlearned groups keep their own order.
+- Skill-up Plan is off by default; its title bar button and its pane are made the first time they are
+  needed, and its only hook is `Window.Render`, which places the button (as Disenchant does). Opening it
+  shows the plan in the middle column in place of the recipe; clicking a recipe in the list, or a step,
+  goes back to the recipe.
+- The plan walks from your skill to your cap a point at a time and takes, at each point, the craft with
+  the lowest cost per skill-up (as Best for Skill-ups ranks them), using your recipes and the trainer
+  recipes under Learnable now. It keeps the craft it is on until another is more than `STICKY` (10%)
+  cheaper a point, so two near-equal recipes do not take turns. Without prices, the likeliest craft wins.
+  A point's expected crafts are one over its chance; a step's crafts are their sum, rounded up.
+- A trainer recipe stays in the plan only if the plan without it costs more, its training included,
+  or reaches less far. The plan is tried again without each one it uses until none can go; a recipe's
+  training is counted once. Recipes on a cooldown are never planned. The plan stops early, and says so,
+  where nothing you know or can train gives a skill-up.
+- The plan is worked out when the pane opens and again only when the skill, the cap, the recipes or
+  the last price scan changes, not on every draw: it is a few thousand chance sums. Queue Plan queues
+  each step through the Crafting Queue (with its prerequisites and missing materials); without the
+  queue, Add Plan to List puts each step on the Shopping List. Both wait until every Train step is
+  learned. The disabled button keeps its tooltip (`SetMotionScriptsWhileDisabled`) to say why.
 - The on/off switches' defaults (`enabled` and each feature's switch) are read from
   `ns.FEATURES.professions`; their options keep their own defaults in `Professions.lua`.
 - Blizzard's window stays open under ours at zero alpha: hiding it would close the trade skill (its
@@ -545,6 +565,8 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
 - `luacheck NaowhForever_Professions` from the repo root.
 - `lua Tools/regression/test-professions-memory.lua` loads every file Professions.xml lists against
   stubs and times and weighs what runs while the window is open.
+- Skill-up ranges, chances and costs: `test-profession-skill-thresholds.lua`; the plan:
+  `test-profession-skill-up-plan.lua`.
 - The window's slices: `test-profession-combat-close.lua`, `test-profession-window-drag.lua`
   (Takeover.lua), `test-profession-link-view.lua` (LinkView.lua), `test-profession-shift-click.lua`
   (AuctionHouse.lua), `test-profession-merchant-events.lua` (Vendors.lua),

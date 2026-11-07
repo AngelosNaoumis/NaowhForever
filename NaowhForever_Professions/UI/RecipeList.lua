@@ -131,7 +131,7 @@ local function RedrawAll()
 end
 
 local function SelectRecipe(info)
-    W.selectedID, W.selectedUnlearned = info.recipeID, nil
+    W.selectedID, W.selectedUnlearned, W.planOpen = info.recipeID, nil, nil
     List.Render()
     P.Detail.Render()
 end
@@ -150,7 +150,7 @@ local function OnRowClick(self, button)
         Entries.Build()
         List.Render()
     elseif e.unlearned then
-        W.selectedUnlearned = e.unlearned
+        W.selectedUnlearned, W.planOpen = e.unlearned, nil
         List.Render()
         P.Detail.Render()
     elseif IsModifiedClick("CHATLINK") then

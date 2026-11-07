@@ -243,6 +243,14 @@ local function Count()
     return recipeCount
 end
 
+local function Learned()
+    return categories
+end
+
+local function Unlearned()
+    return unlearned
+end
+
 P.Entries = {
     list = entries,
     Collect = Collect,
@@ -250,4 +258,6 @@ P.Entries = {
     IsCollapsed = IsCollapsed,
     Toggle = Toggle,
     Count = Count,
+    Learned = Learned,
+    Unlearned = Unlearned,
 }
