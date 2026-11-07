@@ -363,7 +363,7 @@ end
 
 local function Build()
     pin = Look.NewPin(UIParent)
-    pin:SetFrameStrata("LOW")
+    pin:SetFrameStrata("BACKGROUND")
     pin:Hide()
     nav = Look.NewNav(UIParent, ns.ClearWaypoint)
     nav:SetFrameStrata("MEDIUM")
