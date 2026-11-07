@@ -803,6 +803,7 @@ L["XP"] = true
 L["Yes"] = true
 L["\nClick to change."] = true
 L["\nPlanned in PallyPower."] = true
+L["Paladins running PallyPower are listed too; their blessings can only be changed in PallyPower."] = true
 L["    Pin: waypoint"] = true
 L["    Pin: waypoint, the nearest spot"] = true
 L["   %d of %d down"] = true

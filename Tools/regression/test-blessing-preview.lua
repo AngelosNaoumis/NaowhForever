@@ -526,9 +526,11 @@ check("keeps the blessings you know and drops Light and Salvation", B.Store().cl
     and B.Store().classes.MAGE == nil and B.Store().classes.PRIEST == nil and B.Store().salv == nil)
 
 -- The seal button: seals are looked up like the other spells, picked from a menu and kept in your plan.
-check("the seals are indexed by key and spell", B.BY_KEY.sealCommand.ranks[1] == 20375 and B.FAMILY[20375] == "sealCommand")
+check("the seals are indexed by key and spell", B.BY_KEY.sealCommand.ranks[1] == 20375 and B.IDS.sealCommand[20375])
 check("every rank of a seal is watched, since its aura is the rank cast", B.IDS.sealRighteousness[20293]
-    and B.IDS.sealFury[20423] and B.FAMILY[20920] == "sealCommand")
+    and B.IDS.sealFury[20423] and B.IDS.sealCommand[20920])
+check("a seal cast is not one the blessing tracker follows", B.FAMILY[20375] == nil and B.FAMILY[20293] == nil
+    and B.FAMILY[B.BY_KEY.might.ranks[1]] == "might")
 check("a seal has a name and an icon", B.SpellName("sealFury") == "Spell 1311649" and B.SpellIcon("sealFury") == 1311649)
 B.SealMenu({})
 local sealLabels = {}

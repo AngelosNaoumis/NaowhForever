@@ -271,6 +271,17 @@ do
     local function Send(text, sender)
         fire.scripts.OnEvent(fire, "CHAT_MSG_ADDON", "NaowhBless", text, "PARTY", sender or "Holy Man")
     end
+    local queued = 0
+    env.C_Timer.After = function() queued = queued + 1 end
+    Send("R", "Me Self")
+    check("our own request is not answered", queued == 0)
+    Send("R", "Stranger Danger")
+    check("a request is answered even from a sender the roster cannot place", queued == 1)
+    local reads = 0
+    env.IsInRaid = function() reads = reads + 1 return false end
+    Send("F|----------|")
+    check("a plan message reads the group once", reads == 1)
+    env.IsInRaid = function() return false end
     local n = 0
     for batch = 1, 60 do
         local parts = {}
@@ -362,8 +373,11 @@ do
         and holyMan.classes.WARRIOR == "might")
     Send("F|k---------|mk", "Holy Man-Forever")
     check("with the realm on the sender too", ns.Blessings.Others()["Holy-Man"].classes.WARRIOR == "kings")
+    local printed
+    ns.Print = function(m) printed = m end
     Send("S|Player-1-player|w---------")
     check("and can plan for you", store.classes.WARRIOR == "wisdom")
+    check("the chat line names them as they are called", printed == "Holy Man updated your blessings.")
     ns.Blessings.SendPlan("Holy-Man", { WARRIOR = "might" })
     check("an assignment names its paladin by GUID", sent[#sent] == "NaowhBless S|Player-1-party1|m---------")
 
@@ -381,6 +395,9 @@ do
     ns.Blessings.AskPallyPowerAgain()
     ns.Blessings.AskPallyPower()
     check("Refresh asks them again", #sent == requests + 1 and sent[#sent] == "PLPWR REQ")
+    PallyPower("ASELF 70nn10nnnnnnnn@3", "Lux Aeterna")
+    PallyPower("FREEASSIGN YES | SYMCOUNT 3 | COOLDOWNS:n:n:n:n", "Lux Aeterna")
+    check("an aura or status before any plan makes no PallyPower plan", ns.Blessings.Others()["Lux-Aeterna"] == nil)
     PallyPower("SELF 607010nnnnnn@2213n4113", "Lux Aeterna", "WHISPER")
     local lux = ns.Blessings.Others()["Lux-Aeterna"]
     check("a PallyPower paladin's blessings are read, whispered too", lux ~= nil and lux.pallyPower
@@ -443,8 +460,15 @@ do
         if sent[i]:find("Player-1-party2", 1, true) then toLux = true end
     end
     check("Auto-Assign plans the others but never sends a PallyPower paladin a plan", #sent > asked and not toLux)
+    account.blessingPreset = { ["Lux-Aeterna"] = { classes = { WARRIOR = "kings" } } }
+    check("a preset holding only a PallyPower paladin loads nothing", ns.Blessings.LoadPreset() == false)
+    account.blessingPreset = nil
     units.party2 = nil
     env.GetNumSubgroupMembers = function() return 1 end
+    local before = #sent
+    ns.Blessings.SendPlan("Lux-Aeterna", { WARRIOR = "wisdom" })
+    check("a plan for a paladin who has left is neither kept nor sent", #sent == before
+        and ns.Blessings.Others()["Lux-Aeterna"].classes.WARRIOR ~= "wisdom")
     units.player[3] = "WARRIOR"
 end
 

@@ -151,7 +151,7 @@ function B.LoadPreset()
     local plans = {}
     for _, p in ipairs(Paladins()) do
         local saved = Presets()[p.who]
-        if saved then plans[p.who] = SavedPlan(p, saved) end
+        if saved and not p.fixed then plans[p.who] = SavedPlan(p, saved) end
     end
     ApplyPlans(plans)
     return next(plans) ~= nil

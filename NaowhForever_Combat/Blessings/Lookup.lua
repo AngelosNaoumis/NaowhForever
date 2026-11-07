@@ -7,11 +7,14 @@ local QUESTION = 134400
 
 local BY_KEY, BY_CODE, FAMILY, IDS, GREATER = {}, {}, {}, {}, {}
 
-local function Index(entry)
+local function Index(entry, untracked)
     BY_KEY[entry.key] = entry
     if entry.code then BY_CODE[entry.code] = entry end
     IDS[entry.key] = {}
-    for _, id in ipairs(entry.ranks) do FAMILY[id] = entry.key; IDS[entry.key][id] = true end
+    for _, id in ipairs(entry.ranks) do
+        if not untracked then FAMILY[id] = entry.key end
+        IDS[entry.key][id] = true
+    end
     for _, id in ipairs(entry.greater or {}) do
         FAMILY[id] = entry.key
         IDS[entry.key][id] = true
@@ -21,7 +24,7 @@ end
 
 for _, entry in ipairs(B.BLESSINGS) do entry.blessing = true; Index(entry) end
 for _, entry in ipairs(B.AURAS) do Index(entry) end
-for _, entry in ipairs(B.SEALS) do Index(entry) end
+for _, entry in ipairs(B.SEALS) do Index(entry, true) end
 Index(B.FURY)
 
 B.BY_KEY, B.BY_CODE, B.FAMILY, B.IDS, B.GREATER = BY_KEY, BY_CODE, FAMILY, IDS, GREATER

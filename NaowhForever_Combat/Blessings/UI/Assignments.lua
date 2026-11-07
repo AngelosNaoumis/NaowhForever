@@ -34,6 +34,8 @@ local TEXT_AURA = ns.L("Aura")
 local TEXT_NOTHING = ns.L("Nothing assigned")
 local TEXT_CHANGE = ns.L("\nClick to change.")
 local TEXT_PALLYPOWER = ns.L("\nPlanned in PallyPower.")
+local TEXT_PALLYPOWER_NOTE = ns.L("Paladins running PallyPower are listed too; their blessings can only be "
+    .. "changed in PallyPower.")
 local TEXT_NONE = ns.L("None")
 local TEXT_CLEAR_ASK = ns.L("Clear every paladin's blessings and auras?")
 local TEXT_ASKED = ns.L("Asked the group's paladins for their plans.")
@@ -280,11 +282,22 @@ local function PaladinCount()
     return n
 end
 
+local function PallyPowerListed()
+    for _, plan in pairs(B.Others()) do
+        if plan.pallyPower then return true end
+    end
+end
+
 function ns.BuildBlessingAssignmentsPage(parent, y)
     local UI = ns.UI
     local W = UI.Widgets
     local _, h = W:Note(parent, TEXT_INTRO, y)
-    y = Planning(parent, y - h)
+    y = y - h
+    if PallyPowerListed() then
+        _, h = W:Note(parent, TEXT_PALLYPOWER_NOTE, y)
+        y = y - h
+    end
+    y = Planning(parent, y)
     _, h = W:SectionHeader(parent, "ASSIGNMENTS", y)
     y = y - h
     local left = UI.CONTENT_PAD

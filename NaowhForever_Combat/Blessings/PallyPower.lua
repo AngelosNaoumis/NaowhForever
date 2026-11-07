@@ -13,14 +13,9 @@ local CHANGES = { ASSIGN = true, PASSIGN = true, MASSIGN = true, AASSIGN = true,
 local CLASSES = { "WARRIOR", "ROGUE", "PRIEST", "DRUID", "PALADIN", "HUNTER", "MAGE", "WARLOCK", "SHAMAN" }
 local BLESSINGS = { "wisdom", "might", "kings" }
 local AURAS = { "devotion", "retribution", "concentration", "shadow", "frost", "fire", "sanctity" }
-local MAX_SYMBOLS = 9999
 local MAX_COOLDOWN = 7200
 
 local asked = {}
-
-local function RefreshPage()
-    if ns.UI.RefreshPage then ns.UI:RefreshPage(true) end
-end
 
 local function Plan(who)
     local plan = others[who]
@@ -57,7 +52,7 @@ end
 local function OnStatus(plan, msg, symbols)
     local loh, di = msg:match("COOLDOWNS:[^:]*:([^:]*):[^:]*:([^:]*)$")
     plan.free = msg:find(FREE, 1, true) == 1 or nil
-    plan.status = { symbols = math.min(tonumber(symbols), MAX_SYMBOLS), loh = Ends(loh), di = Ends(di) }
+    plan.status = { symbols = math.min(tonumber(symbols), B.MAX_SYMBOLS), loh = Ends(loh), di = Ends(di) }
 end
 
 local function Target(name, from)
@@ -116,11 +111,11 @@ function B.OnPallyPower(msg, sender)
     if not from or from.guid == UnitGUID("player") then return end
     if change then
         OnChange(msg, from)
-        return RefreshPage()
+        return B.RefreshPage()
     end
     if from.class ~= "PALADIN" then return end
-    local plan = Plan(from.who)
-    if not plan then return end
+    local plan = ranks and Plan(from.who) or others[from.who]
+    if not (plan and plan.pallyPower) then return end
     if ranks then
         Known(plan, BLESSINGS, ranks)
         Classes(plan, given)
@@ -130,7 +125,7 @@ function B.OnPallyPower(msg, sender)
     else
         OnStatus(plan, msg, symbols)
     end
-    RefreshPage()
+    B.RefreshPage()
 end
 
 function B.AskPallyPower()

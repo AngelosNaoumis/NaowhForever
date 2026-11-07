@@ -53,7 +53,10 @@ NaowhForever_Combat/Blessings/
   message's sender is the whole one ("Glyadin Skywolf"), which a party member's `UnitFullName` does not
   spell the same way. Comparing the two read every other paladin as "No reply". A message is matched
   to the member who sent it with `ns.SenderIsUnit` (Core/Senders.lua), and another paladin's plan is
-  kept under that member's roster name (`member.who`): `{ classes, aura, known }`.
+  kept under that member's roster name (`member.who`): `{ classes, aura, known }`. The member found is
+  passed on, so a message reads the group once. "R" asks for nothing, so it is answered before any match:
+  a member the roster cannot place yet still gets our plan. "updated your blessings" names the sender as
+  the message carries it, not the roster name.
 - With Blessings off a client neither listens nor replies, and the new-install preset turns it off,
   so a paladin who sends no plan reads as "No reply" rather than as not running the addon.
 - The saved plan once held only `{ CLASS = blessing }`, before per-player choices and auras; such a
@@ -138,14 +141,19 @@ NaowhForever_Combat/Blessings/
   still free who knows it; one aura each. Another paladin's plan
   is kept here until their broadcast confirms it, and sent to them; planning everyone's needs the
   leader or an assistant when another paladin is involved. A paladin running PallyPower is never planned:
-  what they give each class and their aura count as taken, and everyone else is planned around them.
+  what they give each class and their aura count as taken, and everyone else is planned around them. Load
+  Preset skips them too, so a preset holding only them loads nothing and says nobody is here.
 - A paladin running PallyPower is read from its addon messages (prefix `PLPWR`), only while Blessings is on:
   `SELF <rank pairs>@<a digit per class>` for the blessings, `ASELF` the same for the auras, and the status line
   with `SYMCOUNT` and `COOLDOWNS:<duration>:<left>:<duration>:<left>` (Lay on Hands, then Divine Intervention).
   Its class order is Warrior, Rogue, Priest, Druid, Paladin, Hunter, Mage, Warlock, Shaman; its blessings are
-  Wisdom, Might, Kings and three Forever no longer has, read as none; its auras are in our `AURAS` order. A rank
+  Wisdom, Might, Kings and three Forever no longer has, read as none; its auras are Devotion, Retribution,
+  Concentration, Shadow, Frost, Fire and Sanctity. Both orders are PallyPower's own, listed in PallyPower.lua
+  apart from ours, so reordering `CLASSES` or `AURAS` here cannot change how its messages read. A rank
   of `n` is a spell they have not learned. Their plan is shown, reported and planned around but never set from
-  here, and a paladin who also runs Naowh Forever keeps that plan; only `SELF` makes a PallyPower plan.
+  here, and a paladin who also runs Naowh Forever keeps that plan. Only `SELF` makes a PallyPower plan: an
+  `ASELF` or status line from a paladin we have no plan for is dropped, so they stay unheard and can be asked.
+  While one is listed, a note under the window's intro says their blessings change only in PallyPower.
 - PallyPower sends `SELF` on joining and when asked, and every change after it as `ASSIGN <name> <class>
   <blessing>`, `PASSIGN <name>@<a digit per class>`, `MASSIGN <name> <blessing>` (every class), `AASSIGN <name>
   <aura>` or `CLEAR`, never a new `SELF`, so the plan would go stale without them. They are taken as its own
@@ -189,7 +197,8 @@ NaowhForever_Combat/Blessings/
   `NaowhForeverBlessSeal`. The wheel on the aura button cycles through the auras you know, and on the seal button
   through your seals, out of combat. The Seal Button (off) casts the seal you picked by name, so it is always your
   highest rank. Blizzard's managed aura display shows that seal and its time left while it is up, in combat too,
-  so every rank is listed: the aura is the rank you cast. A seal that is not up leaves the button as it is, not
+  so every rank is listed: the aura is the rank you cast. Seals go only into that watch's list (`IDS`), not
+  `FAMILY`, so a seal cast never runs the blessing cast tracker or the aura scan. A seal that is not up leaves the button as it is, not
   red, since a seal lasts seconds and is not kept up out of combat. Class Buttons off hides every class
   button, leaving the Auto Buff button and the key bindings; Player List off removes the player list.
   Ctrl-click on a player in the list toggles their Main Tank mark (the secure `maintank` action).
