@@ -11,6 +11,7 @@ local SameMap = ns.Shared.Places.SameMap
 local WIDTH, ROOM = 300, 10
 local STACK_ORDER = 6
 local TOWN_RANGE = 400
+local MASTER_REACH = 50
 local ZONE_HOLD = 10
 local PERCENT = ns.QoLConstants.PERCENT
 local ZONE = Enum.UIMapType.Zone
@@ -27,6 +28,8 @@ local LEARN, ASK = "learn", "ask"
 local TEXT_ALERT = "Flight Point Reminder"
 local SAMPLE_PLACE = "Ratchet"
 local RETIRED = { "zzOLD", "Quest Path", "[DNT]", "DEPRECATED" }
+local NO_DISCOVERY = { [59] = true, [60] = true, [62] = true, [63] = true, [84] = true, [85] = true, [86] = true,
+    [87] = true }
 local TAXI_ICON = "Interface\\GossipFrame\\TaxiGossipIcon"
 
 local TEXT = ns.L("Learn the %s flight point")
@@ -176,10 +179,13 @@ end
 
 local function Prepare(map, nodes, zone)
     local ready = {}
-    for i, node in ipairs(nodes) do
-        local world, blocked, continent = WorldOf(map, node.position)
-        if blocked then return nil, true end
-        ready[i] = { node = node, world = world, inZone = InZone(zone, world, continent) }
+    for _, node in ipairs(nodes) do
+        if not NO_DISCOVERY[node.nodeID] then
+            local world, blocked, continent = WorldOf(map, node.position)
+            if blocked then return nil, true end
+            ready[#ready + 1] = { node = node, world = world, continent = continent,
+                inZone = InZone(zone, world, continent) }
+        end
     end
     return ready
 end
@@ -194,12 +200,13 @@ local function NodesFor(zone)
         while info and info.parentMapID and info.parentMapID > 0 do
             local parent = info.parentMapID
             info = C_Map.GetMapInfo(parent)
+            if info and info.mapType < CONTINENT then break end
             local list = C_TaxiMap.GetTaxiNodesForMap(parent)
             if list[1] then
                 map, nodes = parent, list
                 break
             end
-            if not info or info.mapType <= CONTINENT then break end
+            if not info or info.mapType == CONTINENT then break end
         end
     end
     if not nodes then
@@ -212,10 +219,11 @@ local function NodesFor(zone)
     return map, ready
 end
 
-local function Candidate(entry, map, zone, zoneName, player, subzone, mine, seen, zoneWide)
+local function Candidate(entry, map, zone, zoneName, player, continent, subzone, mine, seen, zoneWide)
     local node = entry.node
     local kind = Kind(node, mine, seen)
     if not kind then return nil end
+    if continent and entry.continent and entry.continent ~= continent then return nil end
     local dist = player and entry.world and Yards(player, entry.world)
     local place = PlaceName(node.name)
     if ns.TownCapitals[zone] and (map == zone or zoneWide) then
@@ -229,10 +237,11 @@ local function Candidate(entry, map, zone, zoneName, player, subzone, mine, seen
     return kind, place, dist or math.huge
 end
 
-local function Scan(entries, map, zone, zoneName, player, subzone, mine, seen, zoneWide)
+local function Scan(entries, map, zone, zoneName, player, continent, subzone, mine, seen, zoneWide)
     local bestName, bestDist, bestNode, ask, askDist, askNode
     for _, entry in ipairs(entries) do
-        local kind, place, rank = Candidate(entry, map, zone, zoneName, player, subzone, mine, seen, zoneWide)
+        local kind, place, rank = Candidate(entry, map, zone, zoneName, player, continent, subzone, mine, seen,
+            zoneWide)
         local node = entry.node
         if kind == LEARN and (not bestName or rank < bestDist) then
             bestName, bestDist, bestNode = place, rank, node
@@ -241,7 +250,7 @@ local function Scan(entries, map, zone, zoneName, player, subzone, mine, seen, z
         end
     end
     local spoken = bestNode or askNode
-    return bestName, ask, spoken and spoken.nodeID, spoken
+    return bestName, ask, spoken and spoken.nodeID, spoken, bestNode and bestDist or askDist
 end
 
 local function Nearest(zoneWide)
@@ -249,16 +258,17 @@ local function Nearest(zoneWide)
     local zone = Up(SameMap(C_Map.GetBestMapForUnit(PLAYER)), ZONE)
     if not zone then return nil end
     local here = C_Map.GetBestMapForUnit(PLAYER)
-    local player, secret = WorldOf(here, here and C_Map.GetPlayerMapPosition(here, PLAYER))
+    local player, secret, continent = WorldOf(here, here and C_Map.GetPlayerMapPosition(here, PLAYER))
     if secret then return nil end
     local info = C_Map.GetMapInfo(zone)
     local subzone, mine = Subzone(), Mine()
     local seen = Seen(mine, zone)
     local map, entries, blocked = NodesFor(zone)
     if blocked or not map then return nil end
-    local best, ask, spoken, node = Scan(entries, map, zone, info and info.name or "", player, subzone, mine, seen, zoneWide)
-    if best then return best, nil, spoken, node end
-    return nil, ask, spoken, node
+    local best, ask, spoken, node, yards = Scan(entries, map, zone, info and info.name or "", player, continent,
+        subzone, mine, seen, zoneWide)
+    if best then return best, nil, spoken, node, yards end
+    return nil, ask, spoken, node, yards
 end
 
 local function LearnText(place)
@@ -328,8 +338,8 @@ end
 
 local function Spoke()
     if not TaxiGossip() then return end
-    local _, _, nodeID = Nearest()
-    if not nodeID then return end
+    local _, _, nodeID, _, yards = Nearest()
+    if not nodeID or yards ~= math.huge and yards > MASTER_REACH then return end
     local mine = Mine(true)
     if not mine then return end
     mine[nodeID] = true
@@ -388,13 +398,14 @@ function ns.FlightPointReminderForPin(map, npc)
     if not On() then return nil end
     local zone = Up(SameMap(map), ZONE)
     if not zone then return nil end
-    local world, secret = WorldOf(map, CreateVector2D(npc[1] / PERCENT, npc[2] / PERCENT))
+    local world, secret, continent = WorldOf(map, CreateVector2D(npc[1] / PERCENT, npc[2] / PERCENT))
     if secret or not world then return nil end
     local _, entries, blocked = NodesFor(zone)
     if blocked or not entries then return nil end
     local nearest, distance
     for _, entry in ipairs(entries) do
-        if Ours(entry.node.faction) and entry.node.name and not Retired(entry.node.name) and entry.world then
+        if Ours(entry.node.faction) and entry.node.name and not Retired(entry.node.name) and entry.world
+            and entry.continent == continent then
             local yards = Yards(world, entry.world)
             if yards <= TOWN_RANGE and (not distance or yards < distance) then
                 nearest, distance = entry.node, yards

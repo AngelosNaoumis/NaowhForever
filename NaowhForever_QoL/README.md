@@ -657,14 +657,22 @@ NaowhForever_QoL/
 - The Flight Timer's mover reports offsets in the timer's own scaled units; they are saved in
   screen units so the Scale slider resizes it in place.
 - Flight Point reads `C_TaxiMap.GetTaxiNodesForMap` for the zone, and the parent maps up through
-  the continent when that list is empty. That list keeps nodes the game has retired ("zzOLDPowderfuse
+  the continent when that list is empty, never past it (Zephras Isle sits straight under Azeroth). A
+  point on another instance than yours is never a reminder, nor a pin's hint: world yards repeat from
+  one instance to the next, and Alterac Valley, an orphan map under Hillsbrad, reads Hillsbrad's list
+  while its yards overlap Southshore's. That list keeps nodes the game has retired ("zzOLDPowderfuse
   Port"), so a name with one of the markers `Tools/build/journeys.py` drops (`RETIRED`) is never a
-  reminder, nor the nearest node to a flight master's pin. `isUndiscovered` is not set for a classic
+  reminder, nor the nearest node to a flight master's pin. It also keeps the flights no character
+  discovers (`NO_DISCOVERY`, the Alliance or Horde TaxiNodes rows with CharacterBitNumber 0): the
+  Alterac Valley flights, the Eastern Plaguelands towers and the druids' "Nighthaven, Moonglade",
+  which named the Nighthaven subzone for everyone. `isUndiscovered` is not set for a classic
   flight path you have not spoken to. Until this character opens a flight master's map on that continent
   (`GetAllTaxiNodes` only lists the open map's continent), a friendly point in range
   asks you to open one to save the points you know, and only a node the map marks undiscovered is
   named. Talking to a flight master (a gossip option with the taxi icon) records that town's node
-  as known, so the reminder hides without opening the flight map, and does not mark the snapshot
+  as known when it is within `MASTER_REACH` (50 yards) of you, or your position is unreadable: flight
+  masters stand within 11 yards of their node, and the druids' in Nighthaven is 345 yards from
+  Moonglade's. So the reminder hides without opening the flight map, and does not mark the snapshot
   complete. The snapshot is this character's GUID in `flightPoints` (`TAXIMAP_OPENED`), and opening
   the map still replaces every node from `GetAllTaxiNodes`. A name cannot tell two characters apart.
 - Opening a flight map saves both its taxi map ID and the player's real continent in
