@@ -257,6 +257,21 @@ local function Head(name)
 end
 Check(Text("Quality of Life / Interface") ~= nil and Head("Top Bar") ~= nil, "opens to QoL Interface, the Top Bar's card first")
 Check(Text("ADVENTURE") and Text("COMBAT") and Text("UTILITIES"), "grouped navigation")
+do
+    -- The game draws a scroll frame's rows only once it has measured them; the sidebar must measure on show.
+    local navScroll
+    for _, f in ipairs(frames) do
+        if f.text == "Quality of Life" and f.parent and f.parent.mod and f.parent.scripts.OnClick then
+            navScroll = f.parent.parent.parent
+        end
+    end
+    local measured = 0
+    navScroll.UpdateScrollChildRect = function() measured = measured + 1 end
+    navScroll.scripts.OnShow(navScroll)
+    navScroll.UpdateScrollChildRect = nil
+    Check(navScroll.kind == "ScrollFrame" and measured > 0,
+        "the sidebar measures its list when it shows, so its first row (Quality of Life) is drawn")
+end
 Check(not Text("Close") and Button("Reload UI") ~= nil, "no footer: Reload UI sits in the header, closing is the X")
 Check(not Text("Custom Reminders"), "unfinished module is absent from navigation")
 local damageMeterLabels = 0

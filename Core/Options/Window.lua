@@ -593,7 +593,7 @@ local function NavigationScroll(parent, top, bottom, width)
     child:SetSize(width - NAV_GUTTER, 1)
     scroll:SetScrollChild(child)
     scroll:HookScript("OnScrollRangeChanged", ClampNav)
-    scroll:SetScript("OnShow", RefreshNavRange)
+    scroll:HookScript("OnShow", RefreshNavRange)
     scroll:SetScript("OnSizeChanged", RefitNav)
     UI.SmoothWheel(scroll, NAV_H)
     return child
