@@ -183,10 +183,17 @@ options = { { orderIndex = 3, status = 0, icon = VENDOR, selectOptionWhenOnlyOpt
 Gossip("an option the game selects itself is left to it", false)
 options = { { orderIndex = 3, status = 2, icon = VENDOR } }
 Gossip("a locked option is left alone", false)
-options = { ONLY }
+options = { { orderIndex = 3, status = 0, icon = ICON_IDS.BankerGossipIcon } }
 forced = true
-Gossip("a window the game keeps open for a forced gossip is left alone", false)
+Gossip("a window the game forces open is picked: Forever forces a banker's", true)
+Reset()
+options = { { orderIndex = 3, status = 0, icon = VENDOR, selectOptionWhenOnlyOption = true } }
+Gossip("a flagged option in a forced window is picked: the game selects it only when not forced", true)
+Reset()
+options = { { orderIndex = 3, status = 0, icon = BINDER } }
+Gossip("a lone binder option in a forced window is left alone", false)
 forced = false
+options = { ONLY }
 availableQuests = { { questID = 9 } }
 Gossip("a quest on offer is left to the quest automation", false)
 availableQuests = {}

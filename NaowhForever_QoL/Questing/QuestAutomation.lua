@@ -203,14 +203,14 @@ end
 
 local function AutoGossip()
     if gossipPicked or not GetFileIDFromPath or not On("gossipAuto") or Blocked("gossipModifier", "gossipModifierMode")
-        or InCombatLockdown() or C_GossipInfo.ForceGossip() then
+        or InCombatLockdown() then
         return
     end
     if #C_GossipInfo.GetActiveQuests() > 0 or #C_GossipInfo.GetAvailableQuests() > 0 then return end
     local options = C_GossipInfo.GetOptions()
     local option = options[1]
-    if #options ~= 1 or option.selectOptionWhenOnlyOption or option.status ~= Enum.GossipOptionStatus.Available
-        or not SafeIcons()[option.icon] then
+    if #options ~= 1 or (option.selectOptionWhenOnlyOption and not C_GossipInfo.ForceGossip())
+        or option.status ~= Enum.GossipOptionStatus.Available or not SafeIcons()[option.icon] then
         return
     end
     gossipPicked = true
