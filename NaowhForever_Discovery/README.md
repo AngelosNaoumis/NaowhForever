@@ -49,20 +49,25 @@ keep their names for the rest of the addon.
 
 - `ns.LibraryBooks`: the 40 library books on WoW Forever. Positions from
   foreverchanges.pro/library-books (2026-09-24, build 1.60.1.70009), cross-checked with
-  zockify.com and Wowhead Forever; the turn-in quest IDs from Wowhead Forever's quests. Each book:
+  zockify.com and Wowhead Forever; the turn-in quest IDs from Wowhead Forever's quests. Ataeric's
+  spot and Magma or Lava?'s are their objects' spawns on Wowhead Forever (410299, 463206), and the
+  sides of Theocritus, Rumi and the Apothecary's Primer its quests' (both sides, both librarians take
+  them), 2026-11-07. Each book:
   `quest` (its turn-in, flagged completed once handed in), `item` (the book), `tier` (its set's
   quest level), `side` ("A", "H" or "B" for both), `turnIn` ("librarian", or "trainer": the level
   60 set goes to a mage trainer), and `spots`, each `{ uiMapID, x, y, place, note }`; a book with
   two spots lies in either. `unplaced`: nobody has found it on Forever yet; `missing`: it cannot be
   had on Forever. Both have no spots and are left off the map, and a missing book off every count.
-- The Stormwind and Eastern Plaguelands spots are on Forever's redrawn maps already. The Blackrock
+- The Eastern Plaguelands spots, and the Stormwind librarian and mage trainer, are on Forever's
+  redrawn maps (the trainer and librarian from Wowhead Forever's NPC spots; Classic's were about 200
+  yards off on Forever's Stormwind). The Blackrock
   Mountain books are pinned on the mountain in Burning Steppes, since the mountain's own map is not
   the zone you stand in.
 - `ns.LibraryGoals`: handing in 10, 20 and 25 books each earns a reward quest; the books count
   toward every one. `rewards` are the choice of items, `{ itemID, name }`, the name for before the
   client has the item; `level` the level the quest needs. `reported`: the book count is what
-  players report (method.gg, 2026-10-04); Wowhead Forever has the quest (82208, its rewards, level 30) but not
-  how many books it takes.
+  players report (method.gg, 2026-10-04); Wowhead Forever has the quest (82208, its rewards, level 35
+  since build 1.60.1.70170) but not how many books it takes. The 20-book quest needs level 20.
 - `ns.SleepingBag`: a hidden quest chain across Azeroth, each step a thing in the world to click,
   ending in the Cozy Sleeping Bag. From Wowhead Forever's quests (objects and spots) and its guide
   (the climbs and jumps), 2026-10-04. `steps[side]` in order: `object` to click, `map`, `x`, `y`,

@@ -1,7 +1,8 @@
 -- Regression test for the Library Books tracker (NaowhForever_Discovery/UI/BookTracker.lua) with
 -- Always Show on: its zone dropdown lists every zone with a book still to find, in the data's
 -- order, each with how many, and the zone picked kept at 0 once its last book is looted. Each
--- book's state is read once per redraw, not once per zone, and a redraw stays cheap.
+-- book's state is read once per redraw, not once per zone, and a redraw stays cheap. No two books
+-- share a spot.
 --   lua5.1 Tools/regression/test-library-tracker.lua
 
 local checks = 0
@@ -114,6 +115,15 @@ Load("NaowhForever_Discovery/Library.lua")
 Load("NaowhForever_Discovery/View/Style.lua")
 Load("NaowhForever_Discovery/UI/BookTracker.lua")
 local L = addon.Library
+
+local spotOf = {}
+for _, book in ipairs(addon.LibraryBooks) do
+    for _, spot in ipairs(book.spots) do
+        local key = spot[1] .. ":" .. spot[2] .. ":" .. spot[3]
+        Check(not spotOf[key], "no two books share a spot: " .. book.name .. " and " .. tostring(spotOf[key]))
+        spotOf[key] = book.name
+    end
+end
 
 local function Expected(keep)
     local out, seen = {}, {}
