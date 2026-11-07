@@ -20,6 +20,9 @@ the same: Wowhead's zone pages give some class quests no class (Anthion's Partin
 levels. Neither alone is taken, since each has its own slips, nor what both write for a value they
 lack (side 3, level 0, class 0): agreeing on that says nothing. --report FILE adds to FILE the values
 this takes that Quests.lua did not have yet, for the daily watch (.github/workflows/daily-watch.yml).
+Holiday and world event quests come off ForeverChanges' list first, so they are left out like any quest
+it does not list: the ones it files under an event's quest sort (EVENT_SORTS), and completo_fixes.json's
+"events".
 
 Answers are cached, so a run that dies on Wowhead's rate limit resumes where it stopped:
 completo_zones.json (each zone's quest rows) and completo_quests.json (each quest's
@@ -301,6 +304,29 @@ def known_quests(qids, known, where):
 
 # ForeverChanges files the camping quests under the game's Camping quest sort (QuestSort 666).
 CAMPING = ["sort", 666]
+# The quest sorts of holidays and world events: Seasonal (Winter Veil, Hallow's End, Love is in the Air,
+# the Harvest Festival), Darkmoon Faire, Ahn'Qiraj War, Lunar Festival and Midsummer. Their givers are
+# there only while the event runs, so their quests would pin all year. Tools/build/elsewhere_quests.py
+# keeps none of these sorts either.
+EVENT_SORTS = {22, 364, 365, 366, 369}
+
+
+def event_quests(listed, fixes, known):
+    """The holiday and world event quests: those ForeverChanges files under one of EVENT_SORTS, and
+    completo_fixes.json's "events", which it files elsewhere. An entry naming a quest the data lacks is
+    skipped with a warning, and one naming a quest already under an event's sort is warned of."""
+    out = {int(k) for k, q in listed["quests"].items()
+           if q["category"] and q["category"][0] == "sort" and q["category"][1] in EVENT_SORTS}
+    by_sort = set(out)
+    for entry in fixes:
+        if not known_quests(entry["quests"], known, f"events {entry['quests']}"):
+            continue
+        twice = sorted(by_sort.intersection(entry["quests"]))
+        if twice:
+            warn(f"events names quest {', '.join(map(str, twice))}, "
+                 "which ForeverChanges files under an event's sort already")
+        out.update(entry["quests"])
+    return out
 
 
 def shared_bits(rows):
@@ -627,6 +653,8 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
         zone["quests"].append(dict(quest, id=qid))
         existing.add(qid)
     if listed.get("quests"):
+        events = event_quests(listed, fixes.get("events", []), existing | {int(k) for k in listed["quests"]})
+        listed = dict(listed, quests={k: q for k, q in listed["quests"].items() if int(k) not in events})
         filed = {int(k): str(q["category"][1]) for k, q in listed["quests"].items()
                  if q["category"] and q["category"][0] == "zone" and str(q["category"][1]) in zones}
         moved = [q for area, z in zones.items() for q in z["quests"] if filed.get(q["id"], area) != area]

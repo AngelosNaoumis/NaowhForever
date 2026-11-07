@@ -75,6 +75,13 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
   On the maps Forever redrew (Stormwind, Mulgore, Redridge, the Eastern Plaguelands) many of
   its spots are Classic's positions unconverted (Bolvar Fordragon at 78, 18), so a giver there
   is never taken from it: those quests keep Wowhead's spot.
+- Holiday and world event quests are left out: their givers stand only while the event runs, so their
+  ! would show all year. They are the ones ForeverChanges files under Seasonal, Lunar Festival,
+  Midsummer, Darkmoon Faire or Ahn'Qiraj War (`EVENT_SORTS` in `Tools/build/completo_quests.py`), and
+  the ones `completo_fixes.json`'s `events` names: Children's Week, filed under Special with quests given
+  all year, the War Effort's and the Faire's quests filed under a zone or Reputation, and the Scourge
+  Invasion's and the Stranglethorn Fishing Extravaganza's, filed under Invasion and Fishing beside quests
+  given all year.
 - `D.Repeatable[questID] = true`: quests you can do again and again (Wowhead's repeatable flag).
 - `D.Dungeon[questID] = true`: dungeon, raid and battleground quests, listed in the zone their quest
   giver stands in. Wowhead files them under the instance, so no zone page has them: they come from

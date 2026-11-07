@@ -7,7 +7,7 @@ and the catalog agree: a class, level or side both give is taken, one alone is n
 write for a value they lack (side 3, level 0), and the build takes them for the quests ForeverChanges
 lists, in the zone it files them under, before it writes their rows, reporting the ones Quests.lua did
 not have yet; a quest ForeverChanges does not list kept when the fixes name it, warned of once it lists
-it; and the gating it writes: a quest's versions the game counts as one (one name, one completion
+it; holiday and world event quests left out, by their quest sort or the fixes; and the gating it writes: a quest's versions the game counts as one (one name, one completion
 bit), the camping quests of one name and the hand-kept groups are exclusive, a quest in one group at most, and the breadcrumbs, professions and camp recipes come from
 the fixes, an entry naming a quest the data lacks skipped with a warning. Offline. From the repo root:
 
@@ -182,6 +182,68 @@ class Unlisted(unittest.TestCase):
         self.assertIn("unlisted names quest 95161, which ForeverChanges lists already", err.getvalue())
 
 
+class Events(unittest.TestCase):
+    SIGNET = {"name": "One Commendation Signet", "level": 60, "reqlevel": 1, "side": 2, "reqclass": 0}
+
+    def write(self, fixes):
+        listed = {"quests": {"8815": dict(self.SIGNET, category=["sort", 367]),
+                             "6961": dict(self.SIGNET, name="Great-father Winter is Here!", category=["sort", 22])},
+                  "starts": {}}
+        elsewhere = {"8815": dict(self.SIGNET, reqrace=0, after=[], map=1454, x=30.8, y=73.7,
+                                  giver="Orgrimmar Commendation Officer", dungeon=False, battleground=False)}
+        zones = {"1637": {"name": "Orgrimmar", "quests": []}}
+        err = io.StringIO()
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "Quests.lua"
+            with mock.patch.object(completo_quests, "ROOT", Path(folder)), mock.patch.object(completo_quests, "OUT", out), \
+                    contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+                completo_quests.write(zones, {}, {}, {}, {}, elsewhere, {}, listed, fixes)
+            return out.read_text(), err.getvalue()
+
+    def test_an_elsewhere_quest_is_left_out_too(self):
+        text, _ = self.write({})
+        self.assertIn("    [8815] = true,", text)
+        text, err = self.write({"events": [{"quests": [8815]}]})
+        self.assertNotIn("8815", text)
+        self.assertEqual(err, "")
+
+    def test_an_entry_the_data_lacks_or_the_sort_has_warns(self):
+        text, err = self.write({"events": [{"quests": [8815, 1]}, {"quests": [6961]}]})
+        self.assertIn("[8815] = true,", text)
+        self.assertIn("events [8815, 1] names quest 1, which the data does not have; skipped", err)
+        self.assertIn("events names quest 6961, which ForeverChanges files under an event's sort already", err)
+
+    def test_holiday_and_event_quests_left_out(self):
+        winter = {"name": "Great-father Winter is Here!", "level": 60, "reqlevel": 10, "reqclass": 0}
+        zones = {"1637": {"name": "Orgrimmar", "quests": [
+            dict(winter, id=6961, side=3),
+            {"id": 172, "name": "Children's Week", "level": 60, "reqlevel": 10, "side": 2},
+            {"id": 3861, "name": "CLUCK!", "level": 1, "reqlevel": 1, "side": 1},
+            {"id": 936, "name": "Assisting Arch Druid Runetotem", "level": 50, "reqlevel": 47, "side": 2}]}}
+        listed = {"quests": {
+            "6961": dict(winter, side=2, category=["sort", 22]),
+            "172": {"name": "Children's Week", "level": 60, "reqlevel": 10, "side": 2, "reqclass": 0,
+                    "category": ["sort", 284]},
+            "3861": {"name": "CLUCK!", "level": 1, "reqlevel": 1, "side": 1, "reqclass": 0, "category": ["sort", 284]},
+            "936": {"name": "Assisting Arch Druid Runetotem", "level": 50, "reqlevel": 47, "side": 2, "reqclass": 0,
+                    "category": ["zone", 1637]},
+            "8677": {"name": "Darkhorn the Elder", "level": 60, "reqlevel": 1, "side": 3, "reqclass": 0,
+                     "category": ["sort", 366]}},
+            "starts": {"8677": [[1454, 41.1, 33.8, "Elder Darkhorn"]]}}
+        catalog = {"6961": dict(winter, side=2, zone=1637, zone_name="Orgrimmar", start=None, repeatable=False)}
+        fixes = {"events": [{"quests": [172]}]}
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "Quests.lua"
+            with mock.patch.object(completo_quests, "ROOT", Path(folder)), mock.patch.object(completo_quests, "OUT", out), \
+                    contextlib.redirect_stdout(io.StringIO()):
+                taken = completo_quests.write(zones, {}, {}, {}, {}, {}, catalog, listed, fixes)
+            text = out.read_text()
+        self.assertIn('name = "Orgrimmar", continent = 0, quests = { 936, 3861 } }', text)
+        for name in ("Great-father Winter", "Children's Week", "Darkhorn the Elder"):
+            self.assertNotIn(name, text)
+        self.assertEqual(taken, [])
+
+
 class Gating(unittest.TestCase):
     CAMP = {"category": ["sort", 666]}
 
@@ -264,7 +326,7 @@ class FixesFile(unittest.TestCase):
             self.assertTrue(fix.get("why"), qid)
             self.assertTrue(fix.get("add") or fix.get("drop"), qid)
         breadcrumbs = [b for k, b in fixes["breadcrumbs"].items() if not k.startswith("_")]
-        for entry in fixes["exclusive"] + breadcrumbs + fixes["professions"] + fixes["unlisted"]:
+        for entry in fixes["exclusive"] + breadcrumbs + fixes["professions"] + fixes["unlisted"] + fixes["events"]:
             self.assertTrue(entry.get("why"), entry)
 
 
