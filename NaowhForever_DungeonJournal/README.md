@@ -212,7 +212,8 @@ The rules, in plain words:
 - **Open or not.** A dungeon is open when the game's own tables have at least half of its
   instance's boss loot (Scarlet Monastery's four wings are one instance), or `"open"` on it in
   `Tools/data/journal_bosses.json` says so; an item the server sends on request does not count. One
-  not open says "Not open on Forever yet." at the top of its page (`closed` in its data).
+  not open says "Not open on Forever yet." at the top of its page (`closed` in its data). The
+  Drowned City is open by hand: no source has its bosses' loot yet, so there is none to count.
 - A boss nobody has loot for yet says so on its card. Keys and quest items are left out: the
   Journal lists gear (uncommon or better) and the recipes a boss drops (common or better).
 
@@ -298,7 +299,11 @@ the game's own tables, and what they can't settle is listed in the pull request 
   New Plague, and The Drowned City's two quests (no source has their givers yet), are by hand
   from Wowhead's Forever news, guide and quest pages (2026-11-06). The guide now links those
   chains where the quest starts, which `quest_chains.py` does not read, so they have no
-  `QuestPrereqs` entry.
+  `QuestPrereqs` entry. The Drowned City's other quests are by hand from their ForeverChanges
+  pages (2026-11-07), where only Ancient Gurubashi Idol has a giver, and Take Two With Water,
+  which ForeverChanges does not have yet, from Warcraft Tavern's dungeon guide; its level 30 is
+  the one every other quest there asks for. Locating the Lost City is the Horde's quest to find
+  the entrance.
 - Scarlet Monastery's four wings share one instance (189), each its own dungeon with classic's
   ranges. A quest goes under the wing it is done in: Hearts of Zeal (hearts from any wing) under
   the first, the two that kill Loksey, Herod, Mograine and Whitemane under the Cathedral.

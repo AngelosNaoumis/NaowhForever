@@ -170,7 +170,7 @@
       { "bosses": ["Tuten'kash", "Mordresh Fire Eye", "Glutton", "Amnennar the Coldbringer"],
         "rare": ["Ragglesnout", "Plaguemaw the Rotting"],
         "optional": ["Lady Falther'ess"] } ] },
-    { "key": "DrownedCity", "name": "The Drowned City", "new": true,
+    { "key": "DrownedCity", "name": "The Drowned City", "new": true, "open": true,
       "npcs": { "Zul'Alai": 270882, "Var'Taka": 270883, "Captain Dreadrise": 270884,
                 "Deathless Marrow": 270885, "Min'loth the Serpent": 270886 },
       "entranceZone": 33, "entrance": { "map": 1434, "x": 21.4, "y": 27.9, "source": "the game's terrain, build 1.60.1.70124: the underwater instance portal in The Vile Reef" },

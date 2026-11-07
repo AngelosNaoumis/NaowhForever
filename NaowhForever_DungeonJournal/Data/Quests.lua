@@ -158,7 +158,11 @@ J.QuestData = {
     } },
     { name = "The Drowned City", map = nil, levels = { 35, 40 }, quests = {
         { 95775, "The Drowned City", 30, "H", true, "TBD" },
+        { 95776, "The Only Good Brinescale...", 30, "H", true, "TBD" },
+        { 96774, "Ancient Gurubashi Idol", 30, "H", true, "Mulgore - Mazu'kon (32.4, 20.6)", 1412, 32.4, 20.6 },
+        { 95770, "Locating the Lost City", 30, "H", true, "TBD" },
         { 95788, "Magics of the Drowned City", 30, "A", true, "TBD" },
+        { 95787, "Take Two With Water", 30, "A", true, "TBD" },
     } },
     { name = "Uldaman", map = 70, levels = { 41, 51 }, quests = {
         { 2342, "Reclaimed Treasures", 33, "H", true, "Undercity, Center - Patrick Garrett (62.3, 48.6)", 1458, 62.3, 48.6 },
