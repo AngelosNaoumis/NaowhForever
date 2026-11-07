@@ -1013,6 +1013,14 @@ Check(Text("Quality of Life is turned off. Turn it on to change these settings."
     "its page says it is off and lists the settings found")
 input:SetText("auto rpair"); Flush()
 Check(TextHas("Auto Repair"), "a letter left out still finds the setting")
+-- Enter on its setting lands on Settings (the module is off); the page grew, so the game must measure it again.
+local measured
+methods.UpdateScrollChildRect = function(self) if self.child and Text("MODULES") then measured = true end end
+input:SetText("auto repair"); Flush()
+input.scripts.OnEnterPressed(input)
+methods.UpdateScrollChildRect = nil
+Check(measured and Text("MODULES") and not ns.UI.SearchTyped(),
+    "Enter on a setting of a module that is off opens Settings and measures its scroll area again")
 input:SetText(""); Flush()
 Check(not Text("TURNED OFF") and Text("MODULES"), "cleared, the group hides and the page goes back to Settings")
 missingAddOns.NaowhForever_QoL = nil

@@ -326,6 +326,7 @@ local function ShowPage(key)
     if PAGES[key].module then lastPages[PAGES[key].module.name] = key end
     LayoutContent()
     ShowWrapper(wrappers, scrollChild, key, UI.filter)
+    scrollFrame:UpdateScrollChildRect()
     scrollFrame:SetVerticalScroll(0)
     PaintNav()
 end
