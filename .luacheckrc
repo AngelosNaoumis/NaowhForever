@@ -24,6 +24,7 @@ globals = {
     "SLASH_NAOWHFOREVERQUESTLIST1", "SLASH_NAOWHFOREVERQUESTLIST2",
     "SLASH_NAOWHFOREVERCOPY1", "SLASH_NAOWHFOREVERCOPY2", "SLASH_NAOWHFOREVERAIM1",
     "BINDING_HEADER_NAOWHFOREVER", "BINDING_NAME_NAOWHFOREVER_BAGSPACE_PICKUP",
+    "NaowhForever_FishingGearOff", "BINDING_NAME_NAOWHFOREVER_FISHING_GEAR",
     "BINDING_NAME_NAOWHFOREVER_BOSSLOOT", "BINDING_NAME_NAOWHFOREVER_JOURNAL", "BINDING_NAME_NAOWHFOREVER_BIS", "BINDING_NAME_NAOWHFOREVER_COMPLETO",
     "NaowhForeverTownPinMixin", "NaowhForeverZoneLinkPinMixin", "NaowhForeverUnexploredPinMixin", "NaowhForeverSkybornePinMixin", "NaowhForeverLibraryPinMixin", "NaowhForeverJourneyRoutePinMixin", "NaowhForeverSleepingBagPinMixin", "NaowhForeverGatheredPinMixin", "NaowhForeverEntrancePinMixin", "NaowhForeverWaypointPreviewPinMixin",
     "NaowhForeverQuestGiverPinMixin",
@@ -36,6 +37,7 @@ globals = {
 -- how a misspelled global, or one Forever does not have, gets caught.
 read_globals = {
     "C_PlayerInfo", "GetLocale", "Screenshot", "AbbreviateLargeNumbers", "AbbreviateNumbers",
+    "SetOverrideBinding", "SetOverrideBindingClick", "ClearOverrideBindings",
     "CLASS_SORT_ORDER", "CreateAbbreviateConfig",
     "AcceptQuest", "ActionBarButtonEventsFrame", "ActionStatus", "AlertFrame", "Ambiguate",
     "AnchorUtil", "AuraContainerSortMethod", "AuraUtil", "BACKPACK_CONTAINER",

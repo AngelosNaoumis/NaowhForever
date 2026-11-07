@@ -117,6 +117,8 @@ local S = UI.ModuleSettings("qol", {
     restockFont = "", restockFontSize = 16, restockOutline = "OUTLINE", restockBackground = "none",
     wornReminders = F.wornReminders, fishingPoleReminder = F.fishingPoleReminder, fishingPoleWhere = "always",
     gearReminderSize = 48, gearReminderPos = { point = "TOP", relPoint = "TOP", x = 0, y = -290 },
+    fishingKey = F.fishingKey, fishingDoubleClick = false, fishingLure = false, fishingGear = false,
+    fishingGearSet = "", fishingSounds = F.fishingSounds,
     foodBar = F.foodBar, foodBarSize = 36, foodBarGrow = "RIGHT",
     foodBarShowCount = true, foodBarFont = "", foodBarFontSize = 12, foodBarTextColor = { r = 0.94, g = 0.95, b = 0.95 },
     foodBarTextPoint = "BOTTOMRIGHT", foodBarTextOutside = false, foodBarTextX = 0, foodBarTextY = 0,

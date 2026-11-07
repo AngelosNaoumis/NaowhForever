@@ -37,7 +37,8 @@ NaowhForever_Combat/GearSets/
 - The set an automatic swap replaced is kept per character in the account settings
   (`gearReturn`), so logging out in town or mounted still puts it back after the next login.
 - A set picked by hand is kept when the automatic swap ends. Mounted beats resting.
-- The automatic swap choices hold the set's name, so renaming a set updates them.
+- The automatic swap choices hold the set's name, so renaming a set updates them, and One-Key Fishing's
+  Fishing Gear (`fishingGearSet`, QoL) with them.
 - A set swap fires `PLAYER_EQUIPMENT_CHANGED` once per slot; one redraw on the next frame covers
   the burst.
 - The bar's Show (Always, In Combat, Out of Combat) is ignored in the HUD Editor, which always

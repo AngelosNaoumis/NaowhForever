@@ -121,6 +121,10 @@ NaowhForever_QoL/
     LootFeed.lua        the Loot Feed, gold per hour and quick loot (ns.ResetLootFeedSession)
     Restock.lua         the Restock Reminder, Auto Repair and Auto Sell Junk
     GearReminders.lua   Gear Reminders: an icon while you wear Cloak of Hermitic Bliss in Wailing Caverns or a fishing pole
+    FishingData.lua     the Fishing spells by rank and the lures by the skill they add (ns.FishingData)
+    FishingGear.lua     the fishing gear One-Key Fishing puts on first, and putting back what it replaced (ns.FishingGear)
+    Fishing.lua         One-Key Fishing: the key, double right-click, the lure and gear steps
+    FishingSounds.lua   Louder Splash
     ScrapMarker.lua     the Junk Marker (ns.ScrapMarker), read by Bag Space and the Junk List
     ScrapList.lua       the Junk List window (ns.OpenScrapList, /nf junk)
     Mail.lua            Alts and Attach buttons at the mailbox, the expiring mail warning
@@ -1507,6 +1511,67 @@ NaowhForever_QoL/
 - Check it offline: `lua Tools/regression/test-glimmer.lua`: reading the target, skill-up colors, the game settings
   saved and put back, combat, the nameplate it opens, the minimap icons and the gathered pins, against
   stubs of the game's API.
+
+### Fishing
+- One-Key Fishing is a secure button (`NaowhForeverFish`) on its key binding. Its PreClick picks what this
+  press does, out of combat: your fishing gear if it is not on, then a lure if the pole has none, then Fishing.
+  One press does one thing, as the game's addon rules ask. While you cast or channel anything it does nothing,
+  so a press can never recast over a line that is out.
+- The press acts on the key going down (`AnyDown`, `useOnKeyDown`), so letting go is not a second press.
+- Reeling in is the game's own Interact With Target (`INTERACTTARGET`). While your Fishing channel runs and
+  the soft interact target is a bobber (object 35591, Glimmer's `BOBBER`), the fishing key's keys are
+  overridden to it. With any other soft target, or none, the key does nothing, so it never talks to or
+  attacks your hard target. Every bobber is object 35591, so another player's bobber close in front of you
+  can be picked instead of yours; nothing in its GUID says whose it is.
+- To find the bobber, the soft target settings are raised for the channel only, with `C_CVar.SetTempCVar`:
+  the range to 20 yards and the arc to in front of you (1), as the game's gamepad mode sets them, and Enable
+  Interact Key to 3, since the gamepad's 1 leaves mouse and keyboard out. A temp value is never saved, and
+  only the ones raised are removed when the channel ends. Under the Gamepad interface style none are touched:
+  the game sets its own there, and removing ours would remove those.
+- The temp values set are noted in the account settings (`fishingReelTemps`, `fishingLoudTemps`), so a
+  /reload during a cast still removes them.
+- Fishing is the channel of spells 7620, 7731, 7732 and 18248, Apprentice to Artisan (7620 is Professions'
+  `skillSpell`); the key casts the highest one known. That the channel carries the cast's spell ID is not yet
+  checked in the client.
+- The lures are Shiny Bauble, Nightcrawlers, Aquadynamic Fish Lens, Bright Baubles, Flesh Eating Worm and
+  Aquadynamic Fish Attractor, their names checked on Wowhead Forever 2026-11-06. Their bonuses are the
+  Classic ones, not yet read in the client. The best one you have and can use (`C_Item.IsUsableItem`) goes on.
+- A lure is the secure item action with `target-slot` 16: using the lure starts the item targeting, and the
+  button then uses the main hand. The pole counts as lured when `C_Item.GetWeaponEnchantInfo(0)` lists a
+  `Temporary` enchant; an `Imbue` there is a class spell, not a lure. The enchant shows a moment after the
+  lure's cast succeeds, so the key waits `LURE_SETTLE` seconds from then before it offers another.
+- A lure whose cast failed, or that is still missing from the pole on the next press, is a miss; after
+  `LURE_TRIES` misses in a row it is not offered again until you reload, since `C_Item.IsUsableItem` is not
+  known to cover the Fishing skill a lure needs. An interrupted cast (you moved) is not a miss.
+- Fishing gear is one of your gear sets (the game's equipment manager, as Gear Sets uses) or your best
+  fishing pole: the highest item level in your bags that your level can equip. What it replaces is noted per
+  character (`fishingReturn`, by GUID, since surnames let two characters share a first name): only the slots
+  the set changes, and both hands for a pole. It is kept through a logout. Gear Sets renames
+  `fishingGearSet` with the set, as it does its own picks.
+- The gear is asked for once until your equipment or bags change, so gear the game will not put on (a full
+  bag, a missing piece) never holds the key: the next press goes on to the lure and the cast. A set with a
+  piece missing never counts as worn, so once a pole is in your hand with gear noted, it counts as on.
+- A noted slot is let go once its item is back on (`PLAYER_EQUIPMENT_CHANGED`). Taking the pole out of your
+  main hand yourself ends it all: what you put on then is yours, and nothing old is put back over it later.
+  An item no longer in your bags is let go with a line in chat, and one the game would not put on stays
+  noted for the next try.
+- Combat puts the weapons back as it starts, on `PLAYER_REGEN_DISABLED` before the lockdown, since weapons
+  can change in combat and armor cannot; the rest goes back when combat ends. Nothing is equipped during the
+  lockdown, as Gear Sets does: Put Gear Back pressed in a fight waits for it to end. A slot that was empty
+  before stays filled.
+- Double Right-Click to Cast reads `GLOBAL_MOUSE_DOWN`, registered only while it is on. A second right-click
+  on the world within `DOUBLE_CLICK` seconds, with a fishing pole in your main hand, binds the right button to
+  a second secure button (`NaowhForeverFishClick`, acting on the release) for that release. The binding goes
+  after `CLICK_HOLD` seconds whether or not the release came, so a release lost to alt-tab cannot keep it.
+- A unit under the mouse, or the game's tooltip showing for something there (a mailbox, a herb, a chest),
+  leaves the click to the game. That the tooltip shows for every object is not yet checked in the client,
+  nor is the double-click itself. While the line is out it does nothing: right-click the bobber as usual.
+- In combat both buttons are emptied and the reel binding cleared (`PLAYER_REGEN_DISABLED`, before the
+  lockdown), so the keys do nothing until the fight ends.
+- Louder Splash turns game sound volume up to full and music and ambience to 0 while the channel runs, with
+  temp values as well, so your own volume settings are never rewritten. Master volume and the sound
+  switches are left as you set them: a muted game stays muted.
+- Check it offline: `lua Tools/regression/test-fishing.lua`.
 
 ### QoL defaults (Core/Settings.lua)
 - Every on/off switch default in the QoL store is read from `ns.FEATURES.qol`; the values are unchanged.

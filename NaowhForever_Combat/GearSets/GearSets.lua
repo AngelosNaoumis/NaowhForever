@@ -4,7 +4,7 @@ local ns = _G.NaowhForever
 local S = ns.QoLSettings
 
 local TEXT_AFTER_COMBAT = ns.L("Gear set equips when combat ends.")
-local SWAP_KEYS = { "gearMounted", "gearResting" }
+local SWAP_KEYS = { "gearMounted", "gearResting", "fishingGearSet" }
 local OLD_ADDON = "NaowhForever_GearSets"
 local OLD_COPY = C_AddOns.DoesAddOnExist(OLD_ADDON) and C_AddOns.GetAddOnEnableState(OLD_ADDON) > 0
 

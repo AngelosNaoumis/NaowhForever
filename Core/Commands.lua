@@ -93,6 +93,8 @@ _G["BINDING_NAME_CLICK NaowhForeverBlessNextGreater:LeftButton"] = ns.L("Next Gr
 _G["BINDING_NAME_CLICK NaowhForeverFoodBarFood:LeftButton"] = ns.L("Use Best Food")
 _G["BINDING_NAME_CLICK NaowhForeverFoodBarDrink:LeftButton"] = ns.L("Use Best Drink")
 _G["BINDING_NAME_CLICK NaowhForeverDisenchantAll:LeftButton"] = ns.L("Disenchant Next Item")
+_G["BINDING_NAME_CLICK NaowhForeverFish:LeftButton"] = ns.L("One-Key Fishing")
+BINDING_NAME_NAOWHFOREVER_FISHING_GEAR = ns.L("Put Fishing Gear Back")
 
 local function SwitchedOff(name)
     return function() ns.Print(TEXT_SWITCHED_OFF:format(ns.L(name))) end
@@ -103,6 +105,7 @@ NaowhForever_ToggleBis = SwitchedOff("BiS List")
 NaowhForever_ToggleGroupInspect = SwitchedOff("Group Inspect")
 NaowhForever_ToggleCompleto = SwitchedOff("Discovery")
 NaowhForever_BagSpacePickUp = SwitchedOff("Quality of Life")
+NaowhForever_FishingGearOff = SwitchedOff("Quality of Life")
 NaowhForever_ToggleTraining = SwitchedOff("Training Planner")
 
 SLASH_NAOWHFOREVERQUESTLIST1 = "/nfquests"
