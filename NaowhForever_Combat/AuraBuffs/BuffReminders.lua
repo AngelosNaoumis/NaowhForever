@@ -347,7 +347,7 @@ local function RaidBuffs(list, playerBuffs)
             if missing > 0 then
                 list[#list + 1] = { icon = C_Spell.GetSpellTexture(family.spells[1]), key = family,
                     spell = spell or nil, unit = spell and first or nil, count = memberCount > 1 and missing,
-                    rangeUnits = units, rangeSpell = units and spell }
+                    single = missing == 1, solo = memberCount == 1, rangeUnits = units, rangeSpell = units and spell }
             end
         end
     end
@@ -554,17 +554,28 @@ function Reminders.WatchesImbue()
     return false
 end
 
-function Reminders.CastCovers(key, spellID)
-    for _, family in ipairs(D.PERSONAL) do
-        if family == key then
-            if family.weapons or family.target or family.others then return false end
-            for _, id in ipairs(family.spells) do
-                if id == spellID then return true end
-            end
-            return false
-        end
+local function Casts(family, spellID)
+    for _, id in ipairs(family.spells) do
+        if id == spellID then return true end
     end
     return false
+end
+
+function Reminders.CastCovers(key, spellID, onSelf)
+    for _, family in ipairs(D.PERSONAL) do
+        if family == key then
+            return not family.weapons and (onSelf or not family.others) and Casts(family, spellID)
+        end
+    end
+    for _, family in ipairs(D.RAID) do
+        if family == key then return onSelf == true and Casts(family, spellID) end
+    end
+    return false
+end
+
+function Reminders.WeaponCovered(key)
+    if key == "weapon" then return MissingSlot(WeaponSlots(), S.Get("consumablesMinutes") * SECONDS) == nil end
+    return type(key) == "table" and key.weapons ~= nil and MissingSlot(key.weapons, PersonalWarn()) == nil
 end
 
 function Reminders.NoteImbueCast(spellID)

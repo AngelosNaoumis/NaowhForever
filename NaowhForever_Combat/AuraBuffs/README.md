@@ -90,8 +90,19 @@ NaowhForever_Combat/AuraBuffs/
 - A `UNIT_AURA` unit arrives secret while auras are restricted; `PLAYER_REGEN_ENABLED` catches up.
 - A personal buff cast while the row is frozen (Lightning Shield recast mid-pull) fades its reminder to
   alpha 0, the one change a secure cell allows in combat, read from the `UNIT_SPELLCAST_SUCCEEDED`
-  spell ID when it is not secret. Weapon buffs, target debuffs and Thorns (`others`, it may have gone on
-  someone else) are left; the next refresh puts the alpha back.
+  spell ID when it is not secret; the next refresh puts the alpha back. Hunter's Mark fades on any cast
+  of it, since a mark goes on an enemy.
+- Thorns (`others`) and a raid buff may have gone on someone else, so they fade only on a cast known to
+  be yours:
+  - one cast from the reminder itself. `UNIT_SPELLCAST_SENT` fires during the secure click, so the
+    cell's PostClick in the same frame claims that castGUID, and the click casts on you (`unit1 =
+    "player"`) or on the member missing. A raid buff fades on its claimed cast only when one member was
+    missing (`single`).
+  - one sent at you, when SENT's `target` is readable (it is `ConditionalSecret`) and is your name. A
+    raid buff fades on that only while solo (`solo`).
+- A weapon reminder fades once every weapon it covers is enchanted (`MissingSlot`), re-read on
+  `WEAPON_ENCHANT_CHANGED` and `UNIT_INVENTORY_CHANGED`: a poison on one hand leaves the other's.
+  `C_Item.GetWeaponEnchantInfo` returns no secrets.
 - The reminders watch the built-in consumables only (`D.DEFAULT_GROUPS`): Naowh had the hand-made list
   and its window removed. A list an older profile still holds (`utilityReminders.consumables`, the
   profile string's old Consumables part) is left in place and not read.
