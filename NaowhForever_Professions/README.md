@@ -53,7 +53,7 @@ NaowhForever_Professions/
   Patterns.lua         favourites at a trainer, and their patterns to buy (P.Patterns, ns.TrainerServiceInfo)
   Disenchant.lua       the bag items Disenchant can take, the ones you keep, the next one (P.Disenchant)
   DisenchantDeals.lua  resumable auction-scan searches for profitable and low-cost items (P.DisenchantDeals)
-  NodeScan.lua         the herbs and veins the minimap's tracking dots show, and the skill each needs (P.NodeScan)
+  NodeScan.lua         the herbs and veins a minimap tooltip names, and the skill each needs (P.NodeScan)
   View/
     Style.lua          the module's own look, over Shared/Style.lua (P.Style)
     Widgets.lua        flat checkbox, skill bar, star, count box, Search AH button (P.Widgets)
@@ -85,7 +85,7 @@ NaowhForever_Professions/
     FavoritePatterns.lua Search Favorites AH beside the auction house
     CraftTimer.lua     Total Craft Timer
     GatherTracking.lua the Tracking Reminder
-    NodeIcons.lua      Minimap Node Icons: an item picture on each tracked herb and vein, the skill on its tooltip
+    NodeTooltip.lua    Minimap Node Tooltips: the skill a herb or vein needs, on its minimap tooltip
     NodeToast.lua      New Herbs and Ores: a toast naming the herbs or veins a skill-up has just reached
     Disenchant.lua     the Disenchant window and its button on the Enchanting window (ns.ToggleDisenchant)
     DisenchantDeals.lua Disenchant Deals beside the auction house, with click-confirmed purchases
@@ -96,50 +96,24 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
 
 ## Why
 
-- Minimap Node Icons cannot ask the game where a tracked herb or vein is: the dots are drawn by
-  the minimap itself, not frames. It reads them as the game's own tooltip does, by moving the
-  minimap's soft cursor (`Minimap:SetUsingSoftCursor`, `Minimap:UpdateMouseoverAtPoint`) over a
-  grid of points, 60 a frame, and asking `C_TooltipInfo.GetMinimapMouseover` what is under each.
-  Points that hit the same name and touch become one node at their middle. The soft cursor is on
-  only while probing, and a scan waits while the real mouse is over the minimap, so the game's
-  own tooltip there is never moved.
-- A scan is about 350 probes, more on a bigger minimap, and each one builds a tooltip table, so it
-  does not run all the time: once Find Herbs or Find Minerals is tracked, then again after
-  `RESCAN_SECONDS` (5) or as soon as the player is `RESCAN_YARDS` (20) from where the last one ran.
-  Its OnUpdate is set only while a Find is tracked (`MINIMAP_UPDATE_TRACKING`), so the feature costs
-  nothing while off, or while on with nothing tracked.
-- The grid is 7 minimap units apart, small enough that every dot is hit at least once. Two nodes
-  of the same name close enough for their dots to touch show as one icon between them.
-- A grid scan alone puts a node only near its dot: which grid points land on the dot changes as the
-  player moves, so an icon placed fresh at every scan jumped a few pixels each half second. Each node
-  is kept instead: a later scan's find of the same name within 12 units is the same node, and leaves
-  its icon where it is. A new node gets a fine probe, one unit apart across its dot and then down it,
-  and its icon goes on the middle of that; a node found again is not probed again.
-- A node is kept in yards on the current map (`C_Map.GetPlayerMapPosition` and `GetMapWorldSize`), and
-  `Parts.MinimapLayer` (Shared/UI/MinimapPins.lua) places the icons, as it does Glimmer's: they move
-  only while the player moves or a rotating minimap turns. A new map or zone clears the icons and scans
-  again. With no map position, as in an instance, nothing is scanned and no icons show. The icons are
-  not snapped to the pixel grid, so they glide with the minimap instead of stepping a pixel at a time.
-- The game's own dot cannot be hidden: Forever's minimap has no `SetBlipTexture` or any other way to
-  change one kind of blip (its `MinimapFrameAPI` documentation, build 1.60.1.70450, lists only
-  `SetIconScale`, which sizes every blip), and the client does not read local copies of its art. So
-  the icon covers the dot instead, as far as its size allows: Icon Size goes from 10 to 24 (12 by
-  default), and below about 18 a sliver of the dot can show round it (at 14 it did, at 10 more). The
-  small white arrow the game draws beside a node higher or lower than the player can also peek out.
-- With Glimmer's Minimap Icons on as well, a live node is drawn only by Node Icons: Glimmer leaves out
-  its icon for a spot within `COVER_YARDS` (8) of one (`ns.NodeIconAt`, and `ns.NodeIconsChanged` when
-  the live nodes change), so one node never shows both. Spots with nothing up keep Glimmer's ring.
-  Node Icons wins because it shows what is up now, over the dot Glimmer leaves open for it.
-- It does not scan in combat; the icons it has stay. The minimap tooltip names a node in the client's
-  language and the locale files have no node names, so `Data/GatherNodes.lua` is keyed by the English
-  name and Minimap Node Icons works only on an English client (`enUS`, `enGB`). On any other its card is
-  not shown and it stays off, even with a profile that has it on, so it never looks on while doing nothing.
+- Minimap Node Tooltips only adds a line to the game's own minimap tooltip (`TooltipDataProcessor`,
+  `MinimapMouseover`), which the minimap redraws every frame while hovered, so the skills it compares
+  are read on `SKILL_LINES_CHANGED` instead. It was Minimap Node Icons, which drew each node's item over
+  its tracking dot. No API says where those dots are, so it found them by moving the minimap's soft cursor
+  (`Minimap:SetUsingSoftCursor`, `Minimap:UpdateMouseoverAtPoint`) over a grid and asking
+  `C_TooltipInfo.GetMinimapMouseover` what was under each point. A Forever update in November 2026 stopped
+  that: the probe now names a node only under the real cursor (#918), so the pictures, their Icon Size and
+  Glimmer's hand-off to them were removed. The switch keeps its saved key, `nodeIcons`.
+- The minimap tooltip names a node in the client's language and the locale files have no node names, so
+  `Data/GatherNodes.lua` is keyed by the English name and Minimap Node Tooltips works only on an English
+  client (`enUS`, `enGB`). On any other its card is not shown and it stays off, even with a profile that
+  has it on, so it never looks on while doing nothing.
 - `Data/GatherNodes.lua` repeats Glimmer's herb and vein names and skills (`Tools/build/glimmer_nodes.py`,
   from Wowhead Forever) instead of reading `ns.Glimmer.NODES`: Glimmer is in Quality of Life, which
   Professions does not depend on, and its table is keyed by object ID while the minimap gives only a
-  name. `test-node-icons.lua` checks the two match. Each item ID is the game's own `ItemSparse` row of
-  that name (Copper Ore for Copper Vein). Chunk of Amber has no item there, so it shows the Find
-  Minerals icon.
+  name. `test-node-tooltip.lua` checks the two match. Each item ID is the game's own `ItemSparse` row of
+  that name (Copper Ore for Copper Vein). Chunk of Amber has no item there, so New Herbs and Ores shows
+  the Find Minerals icon for it.
 - The skill compared is the profession's rank plus its `skillModifier`: gear, enchant and racial bonuses
   count toward a node's requirement, and the game's own rank bar shows them as part of the skill.
   Glimmer compares the same. The tooltip line is red below the node's skill, then orange, yellow, green
@@ -152,7 +126,7 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   same nodes twice. Unlearning a profession forgets its highest, so learning it again shows its nodes anew
   as it climbs. One icon per item, so Silver Vein and its Ooze Covered twin share Silver Ore's. It
   is the shared toast (`Parts.Toast`) and goes after 20 seconds, as the Level-Up Toast does. It names nodes
-  as Minimap Node Icons reads them, in English, so it too is offered only on an English client.
+  as the minimap tooltip does, in English, so it too is offered only on an English client.
 - Skill-up Thresholds is off by default. It creates its line only when an enabled recipe pane first
   needs it. Selection and skill updates use the existing redraw path; this feature adds no events,
   hooks, timers, route planning or polling.

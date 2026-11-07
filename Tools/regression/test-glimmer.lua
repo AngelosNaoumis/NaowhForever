@@ -773,24 +773,6 @@ do
     check("Find Herbs alone leaves a vein's icon in the middle", pin.icon.point[2] == nil)
 end
 
--- Minimap Node Icons drawing a live node on a spot: Glimmer's pin there is left out until the node goes.
-do
-    local m = Session({ enabled = true, minimapIcons = true })
-    local covered = false
-    m.ns.NodeIconAt = function() return covered end
-    m.ns.NodeIconsChanged = function() end
-    m.Login()
-    local pin
-    for _, f in ipairs(m.frames) do if f.ring and f.shown and f.id then pin = f end end
-    check("no live node icon: the pin is drawn", pin.alpha == 1)
-    covered = true
-    m.ns.NodeIconsChanged()
-    check("a live node icon on its spot: the pin is not drawn", pin.alpha == 0)
-    covered = false
-    m.ns.NodeIconsChanged()
-    check("the node gone: the pin is back", pin.alpha == 1)
-end
-
 -- Gathered: noted on loot, at the spot it grows, and shown on the world map.
 do
     local g = Session({ enabled = true, gatheredPins = true })

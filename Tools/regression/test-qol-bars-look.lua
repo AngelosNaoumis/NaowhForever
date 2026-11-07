@@ -116,7 +116,7 @@ do -- Total Craft Timer, drawn on its card's preview
         if c.id == "craftTimer" then card = c end
         if c.id == "nodeIcons" then nodeIcons = c end
     end
-    check("a client whose node names are not English has no Minimap Node Icons card", nodeIcons == nil)
+    check("a client whose node names are not English has no Minimap Node Tooltips card", nodeIcons == nil)
     local preview = card.studio.new(Widget("Frame"))
     card.studio.paint(preview, "crafting")
     check("craft timer default: the Naowh Gradient", preview.track.texture

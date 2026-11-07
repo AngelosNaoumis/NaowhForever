@@ -15,7 +15,7 @@ local OWN_KEYS = { enabled = true, minimapIcons = true, minimapSize = true, myPr
     herb = true, skillColors = true, oreColor = true, herbColor = true }
 local TEXT_LINE = "%s (%d)"
 
-local layer, events, kinds, here, watching
+local layer, events, kinds
 local spots = {}
 local tracked = {}
 
@@ -49,6 +49,7 @@ local function NewPin()
     pin.icon:SetTexCoord(St.ICON_CROP, St.ICON_CROP_HIGH, St.ICON_CROP, St.ICON_CROP_HIGH)
     pin:SetScript("OnEnter", OnEnter)
     pin:SetScript("OnLeave", OnLeave)
+    pin:EnableMouse(true)
     return pin
 end
 
@@ -71,10 +72,6 @@ local function Paint(pin, list, i)
     local tier = S.Get("skillColors") and Spots.Tier(id)
     local c = tier and St.TIER_RGB[tier] or S.Get(node[1] .. "Color")
     pin.ring:SetVertexColor(c.r, c.g, c.b)
-    local x, y = Spots.XY(list, i)
-    local covered = ns.NodeIconAt and ns.NodeIconAt(here, x, y)
-    pin:SetAlpha(covered and 0 or 1)
-    pin:EnableMouse(not covered)
 end
 
 local function Track()
@@ -102,12 +99,7 @@ local function Refresh()
     Track()
     layer = layer or ns.Shared.Parts.MinimapLayer({ max = C.MINIMAP_MAX, new = NewPin, paint = Paint, xy = Spots.XY })
     local mapID = C_Map.GetBestMapForUnit("player")
-    here = mapID
     layer:Set(mapID, spots, mapID and Spots.ForMap(mapID, spots) or 0)
-end
-
-local function Repaint()
-    if layer then layer:Repaint() end
 end
 
 local function OnEvent(_, event)
@@ -130,10 +122,6 @@ local function Apply()
             events:SetScript("OnEvent", OnEvent)
         end
         for _, event in ipairs(C.MAP_EVENTS) do events:RegisterEvent(event) end
-        if ns.NodeIconsChanged and not watching then
-            watching = true
-            hooksecurefunc(ns, "NodeIconsChanged", Repaint)
-        end
     elseif events then
         events:UnregisterAllEvents()
     end
