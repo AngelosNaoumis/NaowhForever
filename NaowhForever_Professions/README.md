@@ -36,6 +36,7 @@ NaowhForever_Professions/
   Recipes.lua          the open profession, reagents, what a recipe makes, bag counts (P.Recipes, ns.ProfWindowAPI)
   Vendors.lua          vendor reagents, sellers, prices seen or built in, buying (P.Vendors)
   Prices.lua           buy prices, a craft's value, profit and return on investment (P.Prices)
+  SkillUps.lua         each recipe's skill-up range, its chance at your skill, what a skill-up costs (P.SkillUps)
   Favorites.lua        favourite recipes (P.Favorites, ns.ProfFavorites)
   RecipeFinder.lua     the unlearned recipes, what they need and where they come from (ns.RecipeFinder)
   RankAlert.lua        a profession ready for its next rank, in the window and once in chat (ns.ProfessionRank)
@@ -57,7 +58,7 @@ NaowhForever_Professions/
     Widgets.lua        flat checkbox, skill bar, star, count box, Search AH button (P.Widgets)
     Popup.lua          the small window beside the trainer or the auction house (P.Popup)
   UI/
-    SkillThresholds.lua the optional difficulty line beneath a selected recipe (P.SkillThresholds)
+    SkillThresholds.lua the optional difficulty line beneath a selected recipe, learned or not (P.SkillThresholds)
     RecipeList.lua     the recipe list and its scrollbar (P.List)
     Reagents.lua       a recipe's reagent rows (P.Reagents)
     ProfitLines.lua    lined-up amounts and the crafting profit (P.Lines)
@@ -159,18 +160,35 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   exist rather than in a table of their own, which cost about 165 KB at login and 415 KB more once used;
   on the entries they add about 55 KB. Rerun the tool when `wago.BUILD` changes or recipes are added: it
   rewrites only those two fields. Only crafting skill lines and recipe categories are read;
-  contradictory ranges and conflicting duplicate spell rows are left out.
+  contradictory ranges and conflicting duplicate spell rows are left out. A yellow equal to its grey is
+  kept: such a recipe (Forever's 35 to 40 recipes, some smelting) is orange until it turns grey.
 - Orange starts at the skill the recipe is learned at (`skill`), not the table's `MinSkillLineRank`,
   which is 1 for nearly every recipe. A recipe learned past its yellow is yellow from the start, so
   yellow and green are at least the learn skill. Green is the rounded-down midpoint of yellow and grey.
   A positive live `maxTrivialLevel` replaces the bundled grey, and green is recalculated with it.
-  A grey at or below yellow or the learn skill draws no line. The marker's percentage estimates
-  skill-up chance as `(grey - skill) / (grey - yellow)`, clamped to 0-100% and rounded to a whole
-  percent. This is a formula-based estimate, not a measured probability. The recipe name's colour still comes from the game's
+  A grey below yellow, or at or below the learn skill, draws no line; a grey equal to yellow draws
+  orange straight into grey. The marker's percentage estimates skill-up chance as
+  `(grey - skill) / (grey - yellow)`, clamped to 0-100% and rounded to a whole percent, with the data's own
+  yellow: a recipe learned past its yellow is under 100% from the start, as its yellow band says. This is a
+  formula-based estimate, not a measured probability. The recipe name's colour still comes from the game's
   `relativeDifficulty`.
-- The line is drawn below the icon, with the description and reagents beneath it. Its current-skill
-  marker adds the profession's `skillModifier`. Linked professions have no marker or range: their
+- The line is drawn below the icon, with the description and reagents beneath it, for an unlearned recipe
+  too: what it would give if learned now. Its current-skill marker adds the profession's `skillModifier`;
+  below the learn skill it has no percentage. Linked professions have no marker or range: their
   recipes belong to someone else, not the current character.
+- Skill-up Chances is off by default and adds no events, hooks or timers: the list reads the chance as it
+  draws its visible rows, with the skill read once a draw. A learned recipe the game colours orange is
+  100% and grey 0%, whatever the data says, so the number never disagrees with the name; yellow and green
+  use the formula above. An unlearned recipe has a chance only under Learnable now. Each percentage's text
+  is made once and reused. Recipes are found in `RecipeData` through an index of only the professions
+  opened, built on first use.
+- Best for Skill-ups lists your recipes in one group, without categories, and leaves out those with no
+  chance. It orders them by cost per skill-up: the reagents, at the cheaper of a merchant and the last
+  price scan and leaving out the ones you marked as had, less what the result sells to a vendor for,
+  divided by the chance. Vendoring is what a levelling craft is sure to fetch; the auction house price is
+  left out because a craft made to level is often not worth listing. A recipe with an unpriced reagent, or
+  a result whose sell price has not loaded yet, comes after the priced ones, by chance. The cost is cached
+  per recipe with the profit, until the next full draw. The unlearned groups keep their own order.
 - The on/off switches' defaults (`enabled` and each feature's switch) are read from
   `ns.FEATURES.professions`; their options keep their own defaults in `Professions.lua`.
 - Blizzard's window stays open under ours at zero alpha: hiding it would close the trade skill (its

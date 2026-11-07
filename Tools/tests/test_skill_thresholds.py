@@ -28,7 +28,13 @@ class ThresholdTests(unittest.TestCase):
         self.assertEqual(st.collect([row()]), {10: (95, 130)})
 
     def test_invalid_noncrafting_and_nonrecipe_rows_are_omitted(self):
-        self.assertEqual(st.collect([row(first=100), row(grey=95), row(line=356), row(category=0)]), {})
+        self.assertEqual(st.collect([row(first=100), row(grey=90), row(line=356), row(category=0)]), {})
+
+    def test_a_recipe_orange_until_grey_keeps_its_range(self):
+        self.assertEqual(st.collect([row(first=35, yellow=40, grey=40)]), {10: (40, 40)})
+
+    def test_a_row_with_no_range_is_omitted(self):
+        self.assertEqual(st.collect([row(first=0, yellow=0, grey=0)]), {})
 
     def test_conflicting_spell_rows_are_omitted_in_any_order(self):
         rows = [row(), row(grey=135), row()]

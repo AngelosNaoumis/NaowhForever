@@ -3,8 +3,9 @@ client's SkillLineAbility table.
 
 Uses the project's wago reader, with the selected build's hotfixes. The low trivial rank
 is yellow, the high trivial rank is grey. The display starts orange at the recipe's learn skill
-and derives green from the yellow and grey midpoint. Conflicting duplicate spell rows and
-contradictory ranges are omitted rather than guessed; a recipe without a range loses its old one.
+and derives green from the yellow and grey midpoint. A recipe whose yellow is its grey is orange
+until it turns grey. Conflicting duplicate spell rows and contradictory ranges are omitted rather
+than guessed; a recipe without a range loses its old one.
 Run: python Tools/build/skill_thresholds.py [--build VERSION] [--csv FILE] [--recipes FILE]
 """
 import argparse
@@ -35,7 +36,7 @@ def collect(rows):
         spell = int(row["Spell"])
         first, yellow, grey = (int(row[field]) for field in (
             "MinSkillLineRank", "TrivialSkillLineRankLow", "TrivialSkillLineRankHigh"))
-        if spell <= 0 or not 0 <= first <= yellow < grey:
+        if spell <= 0 or grey <= 0 or not 0 <= first <= yellow <= grey:
             continue
         bounds = (yellow, grey)
         if spell in values and values[spell] != bounds:

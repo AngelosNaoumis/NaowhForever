@@ -6,7 +6,8 @@ local S = P.Settings
 local Settings = ns.Shared.Settings
 local Group = Settings.Group
 
-local RECIPE_KEYS = { "recipeFinder", "rankAlert", "bagReagents", "bankReagents", "trainFavorites", "skillThresholds" }
+local RECIPE_KEYS = { "recipeFinder", "rankAlert", "bagReagents", "bankReagents", "trainFavorites", "skillThresholds",
+    "skillUpChances" }
 local GATHER_LIFT = 8
 local GATHER_STAGE_H = 130
 local CRAFT_STAGE_H = 100
@@ -153,12 +154,15 @@ page:Card({
     id = "recipeWindow", name = "Recipe Window", order = ORDER_RECIPES, switchWhy = ns.GamepadWhy,
     help = "What Naowh's profession window adds to each recipe: the ones you have not learned yet, your next "
         .. "rank, and how many of each reagent you have.",
-    search = "filter favorites favourites have materials skill-up skill up profitable boe bop bind on equip pickup "
+    search = "filter favorites favourites have materials skill-up skill up chance sort level leveling profitable boe "
+        .. "bop bind on equip pickup "
         .. "star right-click right click track recipe create all bags full chat link shift ctrl click",
     summary = RecipeSummary,
     rows = {
         { key = "skillThresholds", label = "Skill-up Thresholds", toggle = true, needs = On, why = TEXT_OFF,
           help = "Shows when the selected recipe turns yellow, green and grey beneath its name." },
+        { key = "skillUpChances", label = "Skill-up Chances", toggle = true, needs = On, why = TEXT_OFF,
+          help = "Shows each recipe's skill-up chance in the list, and a Best for Skill-ups sort in Filter." },
         { key = "recipeFinder", label = "Unlearned Recipes", toggle = true, needs = On, why = TEXT_OFF,
           help = "Lists the recipes you have not learned yet below your own. Click one to see the skill it "
               .. "needs, what it costs and where it comes from: the nearest trainers, the vendor selling its "

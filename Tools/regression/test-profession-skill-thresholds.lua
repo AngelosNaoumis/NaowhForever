@@ -8,7 +8,7 @@ local ns = {
     Shared = { Parts = {} },
     THEME = { fg = { r = 1, g = 1, b = 1 } },
     Professions = {
-        Settings = { Get = function(key) return settings[key] end }, State = {},
+        Settings = { Get = function(key) return settings[key] end }, State = {}, Prices = {},
         Style = { SKILL_BAR_GAP = 8, PANE_INNER_W = 372, DIFFICULTY_RGB = {} },
         Recipes = { Profession = function() return { skill = currentSkill, modifier = modifier } end },
     },
@@ -18,11 +18,13 @@ local ns = {
             { spell = 11, skill = 45, yellow = 30, grey = 65 },
             { spell = 12, skill = 300, yellow = 280, grey = 300 },
             { spell = 13, skill = 1 },
+            { spell = 14, skill = 35, yellow = 40, grey = 40 },
         } },
     },
 }
 _G.NaowhForever = ns
 _G.CreateFrame = function() error("frames must not be built while disabled") end
+dofile("NaowhForever_Professions/SkillUps.lua")
 dofile("NaowhForever_Professions/UI/SkillThresholds.lua")
 local ranges = ns.Professions.SkillThresholds
 Check("disabled feature reads nothing", ranges.Read({ recipeID = 10 }) == nil)
@@ -40,6 +42,8 @@ Check("contradictory live grey is not drawn", ranges.Read({ recipeID = 10, maxTr
 Check("a recipe grey once learned is not drawn", ranges.Read({ recipeID = 12 }) == nil)
 Check("a recipe without a range is not guessed", ranges.Read({ recipeID = 13 }) == nil)
 Check("unknown recipe is not guessed", ranges.Read({ recipeID = 20 }) == nil)
+a, b, c, d = ranges.Read({ recipeID = 14 })
+Check("a recipe orange until grey has no yellow or green band", a == 35 and b == 40 and c == 40 and d == 40)
 local parent = { icon = {} }
 ns.Shared.Parts.ThresholdLine = function()
     builds = builds + 1
@@ -68,6 +72,18 @@ Check("chance uses the live grey threshold", line.chance == "62%")
 currentSkill = 150
 ranges.Render(parent, { recipeID = 10 })
 Check("chance never becomes negative", line.chance == "0%")
+currentSkill = 45
+ranges.Render(parent, { recipeID = 11 })
+Check("a recipe learned past its yellow is not sure at its learn skill", line.chance == "57%")
+currentSkill = 38
+ranges.Render(parent, { recipeID = 14 })
+Check("an orange-until-grey recipe is sure below its grey", line.chance == "100%")
+currentSkill = 40
+ranges.Render(parent, { recipeID = 14 })
+Check("and gives none from its grey", line.chance == "0%")
+currentSkill = 70
+ranges.Render(parent, { recipeID = 10 })
+Check("below the learn skill the line has no chance", line.chance == nil and line.bounds[5] == 70)
 Check("line is built once and shown", builds == 1 and line.shown)
 settings.skillThresholds = false
 Check("turning off hides the line", ranges.Render(parent, { recipeID = 10 }) == nil and not line.shown)
@@ -76,6 +92,23 @@ ranges.Render(parent, { recipeID = 10 })
 Check("re-enabling reuses the line", builds == 1 and line.shown)
 settings.enabled = false
 Check("module off hides the line", ranges.Render(parent, { recipeID = 10 }) == nil and not line.shown)
+
+local SkillUps = ns.Professions.SkillUps
+local chance, band = SkillUps.ForRecipe({ recipeID = 10, relativeDifficulty = 0 }, 200)
+Check("the game's orange wins over the data", chance == 1 and band == 0)
+chance, band = SkillUps.ForRecipe({ recipeID = 10, relativeDifficulty = 3 }, 50)
+Check("the game's grey wins over the data", chance == 0 and band == 3)
+chance, band = SkillUps.ForRecipe({ recipeID = 10, relativeDifficulty = 1 }, 112)
+Check("a yellow recipe's chance comes from its range", math.floor(chance * 100 + 0.5) == 51 and band == 1)
+Check("a recipe without a range has no chance", SkillUps.ForRecipe({ recipeID = 13, relativeDifficulty = 1 }, 50) == nil)
+chance, band = SkillUps.ForUnlearned(ns.RecipeData[197].recipes[1], 120)
+Check("an unlearned recipe's chance is read at your skill", math.floor(chance * 100 + 0.5) == 29 and band == 2)
+Check("an unlearned recipe without a range has none", SkillUps.ForUnlearned(ns.RecipeData[197].recipes[4], 50) == nil)
+ns.Professions.Prices.NetCost = function(id) return ({ [10] = 300, [11] = -40 })[id] end
+Check("a skill-up costs a craft over its chance", SkillUps.CostPerPoint(10, 0.5) == 600)
+Check("a craft that sells for more than it costs earns per skill-up", SkillUps.CostPerPoint(11, 1) == -40)
+Check("an unpriced craft has no cost", SkillUps.CostPerPoint(12, 1) == nil)
+Check("a craft with no chance has no cost", SkillUps.CostPerPoint(10, 0) == nil)
 
 local function Frame()
     return {

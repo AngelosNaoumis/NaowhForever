@@ -4,6 +4,7 @@ local ns = _G.NaowhForever
 local T = ns.THEME
 
 local P = ns.Professions
+local S = P.Settings
 local C = P.C
 local W = P.State
 local R = P.Recipes
@@ -47,6 +48,7 @@ local TIP_FAVORITE_HELP = ns.L("Makes this recipe a favourite, or no longer one.
 local TIP_SEARCH_HELP = ns.L("Searches the auction house for the item this recipe makes.")
 local TIP_SEARCH_RECIPE_HELP = ns.L("Searches the auction house for the recipe itself, to learn it.")
 
+local learnInfo = {}
 local win
 
 local Learn = {}
@@ -129,10 +131,18 @@ local function ShowLine(l, nLine, entry, y)
     return y - LINE_STEP
 end
 
-local function Describe(l, r)
+local function TextTop(l, r)
+    if not (S.Get("skillThresholds") or l.skillThresholds) then return TEXT_TOP end
+    learnInfo.recipeID = r.spell
+    local range = P.SkillThresholds.Render(l, learnInfo)
+    if not range then return TEXT_TOP end
+    return TEXT_TOP - Style.SKILL_BAR_GAP - range:GetHeight()
+end
+
+local function Describe(l, r, top)
     for _, fs in ipairs(l.paras) do fs:Hide() end
     for _, line in ipairs(l.lines) do line:Hide() end
-    local y, nPara, nLine = TEXT_TOP, 0, 0
+    local y, nPara, nLine = top, 0, 0
     for _, entry in ipairs(ns.RecipeFinder.Describe(r)) do
         local nextY
         if entry.para then
@@ -173,7 +183,7 @@ function Learn.Render(r)
     P.Lines.RenderProfit(l.profit, r.spell, output, made)
     Widgets.ShowSearch(l.searchRecipe, R.ItemName(r.recipe))
     PlaceSearches(l)
-    FillReagents(l, r, Describe(l, r))
+    FillReagents(l, r, Describe(l, r, TextTop(l, r)))
 end
 
 local function BuildIcon(l)

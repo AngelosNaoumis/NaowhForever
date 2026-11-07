@@ -707,6 +707,57 @@ end, 0.5, 0.05)
 
 Report("recipe list re-read", function() Fire("NEW_RECIPE_LEARNED"); Step() end, 4, 0.05)
 
+-- Skill-up Chances: a chance on each recipe row, and the Best for Skill-ups sort.
+local function RecipeRows()
+    local out = {}
+    for _, row in ipairs(list.children) do
+        if row.entry and row.entry.recipe and row:IsShown() then out[#out + 1] = row end
+    end
+    return out
+end
+settings.skillUpChances = true
+Redraw()
+local sure, none = 0, 0
+for _, row in ipairs(RecipeRows()) do
+    local difficulty = row.entry.recipe.relativeDifficulty
+    if difficulty == 0 then
+        sure = sure + 1
+        check("an orange recipe is sure to skill up", row.chance.text == "100%")
+    elseif difficulty == 3 then
+        none = none + 1
+        check("a grey recipe gives no skill-up", row.chance.text == "0%")
+    end
+end
+check("the list shows orange and grey recipes with their chances", sure > 0 and none > 0)
+settings.sortSkillUps = true
+Redraw()
+local SkillUps = ns.Professions.SkillUps
+local skill = SkillUps.Skill()
+local listed = ns.Professions.Entries.list
+check("the sort heads its list Best for Skill-ups", listed[1].cat and listed[1].cat.name == "Best for Skill-ups")
+local lastCost, ordered, anyGrey, priced = -math.huge, true, false, 0
+for i = 2, #listed do
+    local info = listed[i].recipe
+    if not info then break end
+    if info.relativeDifficulty == 3 then anyGrey = true end
+    local cost = SkillUps.CostPerPoint(info.recipeID, (SkillUps.ForRecipe(info, skill)))
+    if cost then
+        priced = priced + 1
+        if cost < lastCost then ordered = false end
+        lastCost = cost
+    else
+        lastCost = math.huge
+    end
+end
+check("the sort leaves out recipes with no skill-up", not anyGrey)
+check("the sort lists the cheapest skill-ups first, the unpriced after", ordered and priced > 0)
+Report("full redraw with skill-up chances, sorted", Redraw, 4, 0.05)
+settings.sortSkillUps = nil
+Report("full redraw with skill-up chances", Redraw, 4, 0.05)
+settings.skillUpChances = nil
+Redraw()
+check("off, the rows show no chance", RecipeRows()[1].chance.shown == false)
+
 -------------------------------------------------------------------------------
 --  3b. Each trigger reads only what it can have changed. In game every recipe info, schematic
 --  and container slot read is a new table: the client's share of the garbage.

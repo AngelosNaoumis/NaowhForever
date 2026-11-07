@@ -6,12 +6,14 @@ local R = P.Recipes
 local S = P.Settings
 local W = P.State
 local Filters = P.Filters
+local SkillUps = P.SkillUps
 
 local OTHER_ORDER = 999
 local TEXT_OTHER = OTHER or ns.L("Other")
 
 local LEARNED = { name = ns.L("Learned"), key = "profLearnedCollapsed", closed = false }
 local UNLEARNED = { name = ns.L("Unlearned"), key = "profUnlearnedCollapsed", closed = false }
+local BEST = { name = ns.L("Best for Skill-ups"), key = LEARNED.key, closed = false }
 local UNLEARNED_GROUPS = {
     { status = "ready", name = ns.L("Learnable now"), key = "profUnlearnedReadyCollapsed", closed = false, sub = true },
     { status = "later", name = ns.L("Needs more skill"), key = "profUnlearnedLaterCollapsed", closed = true, sub = true },
@@ -23,11 +25,24 @@ local categories, entries, unlearned = {}, {}, EMPTY
 local collapsed = {}
 local catPool, byID, learned, entryPool = {}, {}, {}, {}
 local shown, shownUnlearned, inGroup, status = {}, {}, {}, {}
+local chanceOf, costOf = {}, {}
 local recipeCount = 0
 
 local function ByOrder(a, b)
     if a.order ~= b.order then return a.order < b.order end
     return a.name < b.name
+end
+
+local function BySkillUp(a, b)
+    local ca, cb = costOf[a], costOf[b]
+    if ca and cb then
+        if ca ~= cb then return ca < cb end
+    elseif ca or cb then
+        return ca ~= nil
+    end
+    local pa, pb = chanceOf[a] or -1, chanceOf[b] or -1
+    if pa ~= pb then return pa > pb end
+    return a.recipeID < b.recipeID
 end
 
 local function Category(catID, used)
@@ -142,6 +157,40 @@ local function AddLearned()
     return first, found
 end
 
+local function SortSkillUps()
+    return S.Get("skillUpChances") and S.Get("sortSkillUps") and not W.linked
+end
+
+local function AddBest()
+    local at = #entries + 1
+    Add("cat", BEST)
+    wipe(shown)
+    wipe(chanceOf)
+    wipe(costOf)
+    local skill = SkillUps.Skill()
+    for _, cat in ipairs(categories) do
+        for _, info in ipairs(cat.recipes) do
+            local chance = SkillUps.ForRecipe(info, skill)
+            if chance ~= 0 and Matches(info) and Filters.Passes(info) then
+                shown[#shown + 1] = info
+                chanceOf[info] = chance
+                costOf[info] = SkillUps.CostPerPoint(info.recipeID, chance)
+            end
+        end
+    end
+    table.sort(shown, BySkillUp)
+    BEST.count = #shown
+    local open = not IsCollapsed(BEST)
+    local first, found
+    for _, info in ipairs(shown) do
+        first = first or info.recipeID
+        if info.recipeID == W.selectedID then found = true end
+        if open then Add("recipe", info) end
+    end
+    if #shown == 0 then entries[at] = nil end
+    return first, found
+end
+
 local function AddGroup(group, open)
     local found = false
     wipe(inGroup)
@@ -179,7 +228,12 @@ end
 
 local function Build()
     wipe(entries)
-    local first, found = AddLearned()
+    local first, found
+    if SortSkillUps() then
+        first, found = AddBest()
+    else
+        first, found = AddLearned()
+    end
     local foundUnlearned = AddUnlearned()
     if not foundUnlearned then W.selectedUnlearned = nil end
     if not found then W.selectedID = first end

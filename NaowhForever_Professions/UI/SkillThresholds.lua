@@ -3,8 +3,8 @@ local ns = _G.NaowhForever
 
 local P = ns.Professions
 local S = P.Settings
-local R = P.Recipes
 local W = P.State
+local SkillUps = P.SkillUps
 local Parts = ns.Shared.Parts
 local Style = P.Style
 
@@ -15,31 +15,15 @@ local TEXT_CHANCE = "%d%%"
 local Thresholds = {}
 P.SkillThresholds = Thresholds
 
-local function Entry(spell)
-    for _, data in pairs(ns.RecipeData) do
-        for _, r in ipairs(data.recipes) do
-            if r.spell == spell then return r end
-        end
-    end
-end
-
 function Thresholds.Read(info)
     if not S.Get("enabled") or not S.Get("skillThresholds") or W.linked then return nil end
-    local r = Entry(info.recipeID)
-    if not r or not r.yellow then return nil end
-    local learn, yellow, grey = r.skill, r.yellow, r.grey
-    if type(info.maxTrivialLevel) == "number" and info.maxTrivialLevel > 0 then grey = info.maxTrivialLevel end
-    if yellow >= grey or learn >= grey then return nil end
-    return learn, math.max(learn, yellow), math.max(learn, math.floor((yellow + grey) * HALF)), grey
-end
-
-local function Skill()
-    local profession = R.Profession()
-    return profession and profession.skill + profession.modifier
+    local learn, yellow, grey = SkillUps.Range(info.recipeID, info.maxTrivialLevel)
+    if not learn or learn >= grey then return nil end
+    return learn, math.max(learn, yellow), math.max(learn, math.floor((yellow + grey) * HALF)), grey, yellow
 end
 
 function Thresholds.Render(parent, info)
-    local first, yellow, green, grey = Thresholds.Read(info)
+    local first, yellow, green, grey, rawYellow = Thresholds.Read(info)
     local line = parent.skillThresholds
     if not first then
         if line then line:Hide() end
@@ -51,9 +35,9 @@ function Thresholds.Render(parent, info)
         line:SetWidth(Style.PANE_INNER_W)
         parent.skillThresholds = line
     end
-    local skill = Skill()
-    local chance = skill and math.max(0, math.min(1, (grey - skill) / (grey - yellow)))
-    local text = chance and TEXT_CHANCE:format(math.floor(chance * PERCENT + HALF))
+    local skill = SkillUps.Skill()
+    local chance = skill and skill >= first and SkillUps.Chance(skill, rawYellow, grey)
+    local text = chance and TEXT_CHANCE:format(math.floor(chance * PERCENT + HALF)) or nil
     line:Fill(first, yellow, green, grey, skill, Style.DIFFICULTY_RGB, text)
     line:Show()
     return line

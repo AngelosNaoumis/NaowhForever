@@ -46,6 +46,9 @@ local TEXT_UNLEARNED = ns.L("Unlearned Recipes")
 local TEXT_RESET = ns.L("Reset Filters")
 local TEXT_SHOW_ROI = ns.L("Show ROI")
 local TEXT_ROI_SETTINGS = ns.L("ROI Color Thresholds...")
+local TEXT_SORT = ns.L("Sort")
+local TEXT_SORT_CATEGORIES = ns.L("By Category")
+local TEXT_SORT_SKILL_UPS = ns.L("Best for Skill-ups")
 local TEXT_SEARCH = SEARCH or ns.L("Search")
 local TEXT_NO_MATCH = ns.L("No recipes match.")
 
@@ -148,6 +151,15 @@ local function AddFilter(root, f)
     end)
 end
 
+local function SortIs(skillUps)
+    return (S.Get("sortSkillUps") == true) == skillUps
+end
+
+local function SortBy(skillUps)
+    S.Set("sortSkillUps", skillUps)
+    Refilter()
+end
+
 local function OpenROISettings()
     ns.OpenOptionsWindow(SETTINGS_PAGE)
     ns.UI.GoToSetting(SETTINGS_PAGE, nil, SETTINGS_PAGE .. ":buying")
@@ -157,6 +169,12 @@ local function FilterMenu(_, root)
     root:CreateTitle(TEXT_FILTER)
     for _, f in ipairs(Filters.LIST) do AddFilter(root, f) end
     root:CreateDivider()
+    if S.Get("skillUpChances") and not W.linked then
+        root:CreateTitle(TEXT_SORT)
+        root:CreateRadio(TEXT_SORT_CATEGORIES, SortIs, SortBy, false)
+        root:CreateRadio(TEXT_SORT_SKILL_UPS, SortIs, SortBy, true)
+        root:CreateDivider()
+    end
     if S.Get("craftProfit") then
         root:CreateCheckbox(TEXT_SHOW_ROI, function() return S.Get("craftROI") == true end,
             function() ToggleSetting("craftROI") end)

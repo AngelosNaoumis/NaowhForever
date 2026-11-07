@@ -10,10 +10,11 @@ local AH_CUT = 0.05
 local FROM_VENDOR, FROM_AH = "vendor", "ah"
 local DEFAULT_ROI_GREY_BELOW, DEFAULT_ROI_GREEN_FROM = 10, 30
 local PERCENT = 100
+local SELL_PRICE = 11
 local TEXT_ROI = ns.L("(%.0f%% ROI)")
 
 local EMPTY = {}
-local profitCache = {}
+local profitCache, netCache = {}, {}
 
 local function AuctionPrice(itemID)
     return ns.AuctionPrice and ns.AuctionPrice(itemID)
@@ -91,6 +92,29 @@ local function RecipeProfit(recipeID, output, made)
     return profit or nil
 end
 
+local function SellValue(output, made)
+    if not output then return 0 end
+    local each = select(SELL_PRICE, C_Item.GetItemInfo(output))
+    if each then return each * made end
+    R.ItemName(output)
+end
+
+local function NetCost(recipeID)
+    local net = netCache[recipeID]
+    if net == nil then
+        net = false
+        local ok, reagents = pcall(R.Reagents, recipeID)
+        if ok and #reagents > 0 then
+            local cost, missing = ReagentCost(reagents)
+            local output, made = R.OutputItem(recipeID)
+            local sell = SellValue(output, made or 1)
+            if missing == 0 and sell then net = cost - sell end
+        end
+        netCache[recipeID] = net
+    end
+    return net or nil
+end
+
 local function ROI(profit, cost)
     if type(profit) ~= "number" or type(cost) ~= "number" or cost <= 0 then return end
     return profit / cost * PERCENT
@@ -118,6 +142,7 @@ end
 
 local function ClearCache()
     wipe(profitCache)
+    wipe(netCache)
 end
 
 P.Prices = {
@@ -126,6 +151,7 @@ P.Prices = {
     ProfitShown = ProfitShown,
     CraftValue = CraftValue,
     RecipeProfit = RecipeProfit,
+    NetCost = NetCost,
     ROI = ROI,
     ROIThresholds = ROIThresholds,
     ROIBand = ROIBand,

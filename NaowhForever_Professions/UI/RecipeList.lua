@@ -14,6 +14,7 @@ local Auctions = P.Auctions
 local Entries = P.Entries
 local Orders = P.Orders
 local Queue = P.CraftQueue
+local SkillUps = P.SkillUps
 local Text = P.Text
 local Style = P.Style
 local Widgets = P.Widgets
@@ -22,6 +23,7 @@ local entries = Entries.list
 
 local ROW_H = Style.ROW_H
 local ROUND = P.C.ROUND
+local PERCENT = P.C.PERCENT
 local SCROLL_W = 6
 local SCROLL_INSET = 2
 local SCROLL_STEP = 2
@@ -34,6 +36,7 @@ local TEXT_GAP = 6
 local STAR_GAP = 4
 local STAR_SIZE = 12
 local MARK_GAP = 4
+local CHANCE_W = 32
 local BAG_ICON = "Interface\\Icons\\INV_Misc_Bag_08"
 local LIST_ICON = "Interface\\Icons\\INV_Misc_Note_01"
 local QUEUE_ICON = "Interface\\Icons\\Trade_BlackSmithing"
@@ -50,12 +53,27 @@ local TEXT_BANK = ns.L("In Bank")
 local TEXT_SHOPPING = ns.L("Shopping List")
 local TEXT_QUEUE = ns.L("Crafting Queue")
 local TEXT_AUCTIONS = ns.L("On Auction House")
+local TEXT_PERCENT = "%d%%"
+local TEXT_TIP_CHANCE = ns.L("Skill-up chance: %s")
+local TEXT_TIP_COST = ns.L("Per skill-up: %s, after selling what it makes to a vendor")
 
 local win
 local rows = {}
+local percents = {}
+local chancesOn, skill
 
 local List = {}
 P.List = List
+
+local function Percent(chance)
+    local n = math.floor(chance * PERCENT + ROUND)
+    local text = percents[n]
+    if not text then
+        text = TEXT_PERCENT:format(n)
+        percents[n] = text
+    end
+    return text
+end
 
 local function VisibleRows()
     return math.max(1, math.floor((win.list:GetHeight()) / ROW_H))
@@ -143,6 +161,13 @@ local function OnRowClick(self, button)
     end
 end
 
+local function AddChanceLines(spell, chance)
+    if not (chancesOn and chance) then return end
+    GameTooltip:AddLine(TEXT_TIP_CHANCE:format(Percent(chance)), 1, 1, 1)
+    local cost = SkillUps.CostPerPoint(spell, chance)
+    if cost then GameTooltip:AddLine(TEXT_TIP_COST:format(Text.Money(cost)), T.muted.r, T.muted.g, T.muted.b) end
+end
+
 local function OnRowEnter(self)
     local r = self.entry.unlearned
     if r then
@@ -150,6 +175,7 @@ local function OnRowEnter(self)
         GameTooltip:SetSpellByID(r.spell)
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(TEXT_REQUIRED:format(ns.RecipeFinder.Skill(r), ns.RecipeFinder.Tag(r)), 1, 1, 1)
+        AddChanceLines(r.spell, self.chanceValue)
         GameTooltip:Show()
         return
     end
@@ -158,6 +184,7 @@ local function OnRowEnter(self)
     if not pcall(GameTooltip.SetRecipeResultItem, GameTooltip, self.entry.recipe.recipeID) then
         GameTooltip:SetSpellByID(self.entry.recipe.recipeID)
     end
+    AddChanceLines(self.entry.recipe.recipeID, self.chanceValue)
     GameTooltip:Show()
 end
 
@@ -214,6 +241,11 @@ local function NewRow(i)
     row.hl:SetAllPoints()
     row.icon = Widgets.Crop(row:CreateTexture(nil, "ARTWORK"))
     row.icon:SetSize(ROW_H - ICON_SHRINK, ROW_H - ICON_SHRINK)
+    row.chance = ns.Font(row, Style.FONT, nil)
+    row.chance:SetPoint("RIGHT", -TEXT_GAP, 0)
+    row.chance:SetWidth(CHANCE_W)
+    row.chance:SetJustifyH("RIGHT")
+    row.chance:Hide()
     row.profit = ns.Font(row, Style.FONT, nil)
     row.profit:SetPoint("RIGHT", -TEXT_GAP, 0)
     row.profit:SetJustifyH("RIGHT")
@@ -290,6 +322,28 @@ local function TextBeforeStatus(row, fav, shopping, bags, bank, queued, auctions
     row.text:SetPoint("RIGHT", anchor, "LEFT", marked and -MARK_GAP or -TEXT_GAP, 0)
 end
 
+local function PlaceChance(row)
+    if row.chanceShown == chancesOn then return end
+    row.chanceShown = chancesOn
+    row.chance:SetShown(chancesOn)
+    row.profit:ClearAllPoints()
+    if chancesOn then
+        row.profit:SetPoint("RIGHT", row.chance, "LEFT", -TEXT_GAP, 0)
+    else
+        row.profit:SetPoint("RIGHT", -TEXT_GAP, 0)
+    end
+end
+
+local function SetChance(row, chance, band)
+    row.chanceValue = chance
+    if not chance then
+        row.chance:SetText("")
+        return
+    end
+    row.chance:SetText(Percent(chance))
+    SetColor(row.chance, Style.DIFFICULTY_RGB[band] or T.fg)
+end
+
 local function FillHeader(row, cat)
     local label = cat.count and TEXT_HEAD:format(cat.name, cat.count) or cat.name
     row.text:SetText((Entries.IsCollapsed(cat) and TEXT_CLOSED or TEXT_OPEN) .. label)
@@ -297,6 +351,7 @@ local function FillHeader(row, cat)
     row.text:SetPoint("LEFT", cat.sub and SUB_HEAD_X or HEAD_X, 0)
     row.count:SetText("")
     row.profit:SetText("")
+    SetChance(row, nil)
     row.icon:Hide()
     row.fav:Hide()
     if row.bag then row.bag:Hide() end
@@ -321,6 +376,9 @@ local function FillUnlearned(row, r)
     local profit, color = ListProfit(r.spell, r.item or read, made)
     row.profit:SetText(profit)
     SetColor(row.profit, color)
+    local chance, band
+    if chancesOn and ns.RecipeFinder.Status(r) == "ready" then chance, band = SkillUps.ForUnlearned(r, skill) end
+    SetChance(row, chance, band)
     TextBeforeStatus(row, Favorites.Is(r), 0, 0, 0, 0, 0)
     row.head:Hide()
     row.sel:SetShown(r == W.selectedUnlearned)
@@ -348,6 +406,9 @@ local function FillRecipe(row, info)
     local profit, color = ListProfit(info.recipeID, output)
     row.profit:SetText(profit)
     SetColor(row.profit, color)
+    local chance, band
+    if chancesOn then chance, band = SkillUps.ForRecipe(info, skill) end
+    SetChance(row, chance, band)
     row.head:Hide()
     row.sel:SetShown(not W.selectedUnlearned and info.recipeID == W.selectedID)
 end
@@ -359,6 +420,7 @@ local function FillRow(i, e)
         rows[i] = row
     end
     row.entry = e
+    PlaceChance(row)
     row.icon:ClearAllPoints()
     if e.cat then
         FillHeader(row, e.cat)
@@ -383,6 +445,8 @@ local function SyncScrollbar(visible)
 end
 
 function List.Render()
+    chancesOn = S.Get("skillUpChances") and not W.linked or false
+    skill = chancesOn and SkillUps.Skill() or nil
     local visible = VisibleRows()
     W.offset = math.min(W.offset, math.max(0, #entries - visible))
     for i = 1, visible do
