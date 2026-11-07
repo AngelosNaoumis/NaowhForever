@@ -1,9 +1,21 @@
 # Changelog
 
-## Unreleased
+## 1.2.14
+
+### Added
+- Professions: Unlearned Recipes remembers the prices merchants ask for recipes, Merchant's Favor
+  too, and shows them with how much of that currency you have.
+- Professions: Skill-up Plan (Recipe Window settings) adds a button that plans the cheapest crafts
+  from your skill to your cap, ready to queue or put on the Shopping List.
+- Professions: the Filter menu can show only the unlearned recipes you get from a trainer, a vendor,
+  a drop or a quest.
 
 ### Changed
 - Dungeon Journal: its data is updated to WoW Forever build 1.60.1.70862.
+
+### Fixed
+- Campfire: on German, Spanish, French, Portuguese, Russian, Korean and Chinese clients, your camp
+  bonuses (+34 Str, +25 Int and the rest) show again instead of the camp tooltip's own text.
 
 ## 1.2.13
 
