@@ -44,6 +44,7 @@ local QUEST_NEAR, QUEST_LEAVE = 40, 55
 local CHECK_SHARE = 0.6
 local ROUND = ns.QoLConstants.ROUND
 local MINUTE = ns.QoLConstants.SECONDS_PER_MINUTE
+local DAY = ns.QoLConstants.SECONDS_PER_DAY
 local PERCENT = ns.QoLConstants.PERCENT
 local SAME_SPOT = 0.05
 local DOWN = -math.pi / 2
@@ -87,6 +88,7 @@ end
 
 local function Walk(seconds)
     seconds = math.floor(seconds + ROUND)
+    if seconds >= DAY then return "" end
     return TEXT_WALK:format(math.floor(seconds / MINUTE), seconds % MINUTE)
 end
 

@@ -255,6 +255,9 @@ now = now + 1
 nav.distance = 312
 driver.scripts.OnUpdate(driver, 0)
 Check(pin.card.time.text == "about 0:45", "a jump in the distance (a new spot) is not a pace")
+speed = 1e-20
+driver.scripts.OnUpdate(driver, 0)
+Check(pin.card.time.text == "" and pin.card.dist.text == "312 yd", "a time of a day or more is not a walk: no time")
 speed = 14
 nav.distance = 312
 Check(navBar:IsShown() and navBar.name.text == "Mage Trainer" and navBar.sub.text == "Thunder Bluff",
