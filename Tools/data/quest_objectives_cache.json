@@ -242,6 +242,11 @@
   "npcs": [],
   "text": "Use the Empty Leaden Collection Phial on Irradiated Invaders or Irradiated Pillagers to collect radioactive fallout. Once it is full, take it back to Ozzie Togglevolt in Kharanos. Full Leaden Collection Phial ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(9284, 0, 1, null, null)); Provided item: Empty Leaden Collection Phial ( 1 ) WH.ge('icon-list-icon2').appendChild(g_items.createIcon(9283, 0, 0, null, null));"
  },
+ "2927": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Speak with Ozzie Togglevolt in Kharanos."
+ },
  "2928": {
   "npcs": [],
   "text": "Bring twenty-four Robo-mechanical Guts to Shoni in Stormwind. Robo-mechanical Guts ( 24 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(9309, 0, 24, null, null));"
@@ -377,6 +382,11 @@
  "391": {
   "npcs": [],
   "text": "Kill Bazil Thredd and bring his head back to Warden Thelwater at the Stockade . Head of Bazil Thredd ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(2926, 0, 1, null, null));"
+ },
+ "3911": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Travel to Blackrock Depths and recover 10 Essence of the Elements. Your first inclination is to search the golems and golem makers. You remember Vivian Lagrave also muttering something about elementals.\r\n"
  },
  "3981": {
   "npcs": [],
@@ -889,6 +899,11 @@
   "npcs": [],
   "text": "Venture to the Molten Core entry portal in Blackrock Depths and recover a Core Fragment . Return to Lothos Riftwaker in Blackrock Mountain when you have recovered the Core Fragment . Core Fragment ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(18412, 0, 1, null, null));"
  },
+ "78916": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Bring the Blackfathom Pearl to Dawnwatcher Selgorm in Darnassus."
+ },
  "8945": {
   "npcs": [
    16031
@@ -939,6 +954,28 @@
   ],
   "text": "Slay the Mana Elemental in the City of Dalaran for High Sorcerer Andromath in Stormwind City. Arcanic Enigma slain ( 1 )"
  },
+ "92753": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [
+   253370
+  ],
+  "text": "Find the forge hidden in the Deadmines, and plant the Extra-Destructive Explosives nearby. Then, meet up with Alba Fairmoon at the Deadmines exit."
+ },
+ "94982": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Infiltrate Krol'dok Stronghold and return to Commander Brant with proof of their leader's demise."
+ },
+ "94984": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Kill Nar'gurk within Krol'dok Stronghold and recover any valuable information."
+ },
+ "95036": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Speak with Trevan Rol in the Sepulcher and bring him the materials he requires."
+ },
  "95195": {
   "npcs": [],
   "text": "Collect 10 Bloodied Insignias and take them to General Marcus Jonathan in Stormwind City. Bloodied Insignia (Provided) ( 10 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(268540, 0, 10, null, null));"
@@ -965,6 +1002,11 @@
   ],
   "text": "Find Ardin Grassman in the Excavation Sites. Learn what happened to Ardin Grassman ( 1 )"
  },
+ "95663": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Travel to the Wetlands and meet the Deathstalker Agent in the hills above the Dragonmaw camp."
+ },
  "95664": {
   "npcs": [],
   "text": "Take the Titan Relic to the Elder Rise in Thunder Bluff and look for someone who can tell you more about it. Titan Relic ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(270866, 0, 1, null, null));"
@@ -980,9 +1022,49 @@
   "npcs": [],
   "text": "Enter the Excavation Sites in the Wetlands and bring back Thicket Raptor Meat . Thicket Raptor Meat ( 4 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(271100, 0, 4, null, null));"
  },
+ "95737": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Speak with Caitlin Grassman in Menethil Harbor."
+ },
  "95772": {
   "npcs": [],
   "text": "Look for Dorin Songblade 's brother, Daewyn, in Whelgar's Excavation Site."
+ },
+ "95775": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Use the hide and charcoal to create rubbings of the tablets found in the Drowned City."
+ },
+ "95776": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [
+   258924
+  ],
+  "text": "Slay Var'Taka in the Drowned City."
+ },
+ "95787": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Use the hide and charcoal to create rubbings of the tablets found in the Drowned City."
+ },
+ "95788": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Collect $1oa I'lalai Fetishes from trolls in the Drowned City."
+ },
+ "95789": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Collect $1oa Voodoo Infused Artifacts from Saltseer pirates in the Drowned City."
+ },
+ "95791": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [
+   260042,
+   260353
+  ],
+  "text": "Slay 3 Saltseer Coroners and Captain Dreadrise in the Drowned City."
  },
  "95809": {
   "npcs": [],
@@ -999,6 +1081,11 @@
  "962": {
   "npcs": [],
   "text": "Apothecary Zamah in Thunder Bluff wants you to collect 10 Serpentbloom . Serpentbloom ( 10 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(5339, 0, 10, null, null));"
+ },
+ "96337": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Use the note provided by Mason Connery to find his hidden treasure."
  },
  "96393": {
   "npcs": [],
@@ -1021,6 +1108,33 @@
   "npcs": [],
   "text": "Collect 8 Dwarven Heirlooms from the Hall of Thanes . Dwarven Heirloom ( 8 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(274289, 0, 8, null, null));"
  },
+ "96771": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [
+   268423
+  ],
+  "text": "Travel to Krol'dok Stronghold and slay Zalfan Moonshadow."
+ },
+ "96772": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover Zarla's Journal from the depths of Alcaz Prison."
+ },
+ "96774": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover an Ancient Gurubashi Idol from the Drowned City."
+ },
+ "96776": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover the crystal known as An'she's Radiance from Maraudon."
+ },
+ "96800": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Retrieve the book The Lost Magic of the Runemasters from the Scarlet Monastery."
+ },
  "96984": {
   "npcs": [],
   "text": "Collect the Arcane Mote in the City of Dalaran for Magus Wordeen Voidglare in Tarren Mill. Arcane Mote ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(251961, 0, 1, null, null)); Provided item: Dalaran Sewer Key ( 1 ) WH.ge('icon-list-icon2').appendChild(g_items.createIcon(277507, 0, 0, null, null));"
@@ -1042,6 +1156,21 @@
  "971": {
   "npcs": [],
   "text": "Bring the Lorgalis Manuscript to Gerrig Bonegrip in the Forlorn Cavern in Ironforge. Lorgalis Manuscript ( 1 ) WH.ge('icon-list-icon1').appendChild(g_items.createIcon(5359, 0, 1, null, null));"
+ },
+ "97130": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover an Ancient Gurubashi Idol from the Drowned City."
+ },
+ "97173": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover a Blackmaw Ritual Totem from Blackmaw Hold."
+ },
+ "97196": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "npcs": [],
+  "text": "Recover The Coldbringer's Eye from Razorfen Downs."
  },
  "97288": {
   "npcs": [],

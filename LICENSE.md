@@ -654,6 +654,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## EG Link output: World of Warcraft: Forever
+
+**Path**: NaowhForever_DungeonJournal/Data/Quests.lua and QuestChains.lua (dungeon quests, their
+required levels, sharing and one quest giver, from https://github.com/JIVESCORP/eg-link-output-wowf,
+reduced to those facts)
+
+### License
+
+Data from [Efficient Games](https://efficient.games), licensed under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changed: only the facts above are used.
+
 ## JetBrains Mono
 
 **Path**: NaowhForever/Core/Media/Fonts/JetBrainsMonoNL-Regular.ttf

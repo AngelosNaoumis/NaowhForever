@@ -304,6 +304,25 @@ the game's own tables, and what they can't settle is listed in the pull request 
   which ForeverChanges does not have yet, from Warcraft Tavern's dungeon guide; its level 30 is
   the one every other quest there asks for. Locating the Lost City is the Horde's quest to find
   the entrance.
+- Checked against the server's own quest data on 2026-11-07: EG Link's record of what players'
+  games were sent (build 1.60.1.70840, CC BY 4.0, credited in `LICENSE.md`). The quests it files
+  under The Drowned City, Krol'dok Stronghold, Alcaz Prison and Blackmaw Hold that no other source
+  has are from there, as is Take Two With Water's giver, whom its quest text names. Shareable is
+  the quest's own flag there. Quest givers come from ForeverChanges' pins, except on the four
+  redrawn maps (Stormwind, Mulgore, Redridge, the Eastern Plaguelands), where its spots are
+  Classic's. An entry in `Tools/data/quest_info.json` with `from` has its required level from that
+  source instead of Wowhead's page: the server's where the cached page is out of date, and
+  ForeverChanges' (else the server's) for quests the cache has no page for.
+- The quests ForeverChanges and the server file under a dungeon that the guide left out are in
+  too (2026-11-07): a quest with its own start is a row (Dire Maul's class books, the Valthalak
+  amulet pieces in the dungeon each spirit is summoned in, The Challenge under Blackrock Depths,
+  where it is fought), and a step of a listed quest's chain is in that chain (Precarious
+  Predicament, A Crumpled Up Note, the Sparklematic and Platinum Discs versions, the libram and
+  Gordok repeatables). A chain in `Tools/data/quest_chains.json` with `from` is the Quest List's
+  (`NaowhForever_DiscoveryData/Quests.lua`, `D.Chains`), where Wowhead's cached Series had none
+  or only part of it. An item that starts a quest is the game's `ItemSparse.StartQuestID`. Quests
+  no source gives a start for and the server has no data on (When Dreams Turn to Nightmares,
+  Waking Naralex, the second Unfinished Gordok Business) are left out.
 - Scarlet Monastery's four wings share one instance (189), each its own dungeon with classic's
   ranges. A quest goes under the wing it is done in: Hearts of Zeal (hearts from any wing) under
   the first, the two that kill Loksey, Herod, Mograine and Whitemane under the Cathedral.

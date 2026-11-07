@@ -104,8 +104,14 @@
   "reqlevel": 22
  },
  "1160": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Test of Lore",
-  "reqlevel": 25
+  "reqlevel": 26
+ },
+ "1193": {
+  "from": "ForeverChanges",
+  "name": "A Broken Trap",
+  "reqlevel": 56
  },
  "1197": {
   "name": "The Sacred Flame",
@@ -138,6 +144,11 @@
  "1360": {
   "name": "Reclaimed Treasures",
   "reqlevel": 33
+ },
+ "1442": {
+  "from": "ForeverChanges",
+  "name": "Seeking the Kor Gem",
+  "reqlevel": 20
  },
  "1445": {
   "name": "The Temple of Atal'Hakkar",
@@ -363,6 +374,11 @@
   "name": "Gnogaine",
   "reqlevel": 20
  },
+ "2927": {
+  "from": "ForeverChanges",
+  "name": "The Day After",
+  "reqlevel": 20
+ },
  "2928": {
   "name": "Gyrodrillmatic Excavationators",
   "reqlevel": 20
@@ -507,6 +523,11 @@
   "name": "The Stockade Riots",
   "reqlevel": 16
  },
+ "3911": {
+  "from": "ForeverChanges",
+  "name": "The Last Element",
+  "reqlevel": 48
+ },
  "396": {
   "name": "An Audience with the King",
   "reqlevel": 16
@@ -534,6 +555,11 @@
  "4082": {
   "name": "KILL ON SIGHT: High Ranking Dark Iron Officials",
   "reqlevel": 50
+ },
+ "4083": {
+  "from": "ForeverChanges",
+  "name": "The Spectral Chalice",
+  "reqlevel": 40
  },
  "4122": {
   "name": "Grark Lorkrub",
@@ -586,6 +612,11 @@
  "4286": {
   "name": "The Good Stuff",
   "reqlevel": 50
+ },
+ "4295": {
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua)",
+  "name": "Rocknot's Ale",
+  "reqlevel": 42
  },
  "4322": {
   "name": "Jail Break!",
@@ -1047,8 +1078,58 @@
   "name": "Lethtendris's Web",
   "reqlevel": 54
  },
+ "7498": {
+  "from": "ForeverChanges",
+  "name": "Garona: A Study on Stealth and Treachery",
+  "reqlevel": 54
+ },
+ "7499": {
+  "from": "ForeverChanges",
+  "name": "Codex of Defense",
+  "reqlevel": 54
+ },
+ "7500": {
+  "from": "ForeverChanges",
+  "name": "The Arcanist's Cookbook",
+  "reqlevel": 54
+ },
+ "7501": {
+  "from": "ForeverChanges",
+  "name": "The Light and How To Swing It",
+  "reqlevel": 54
+ },
+ "7502": {
+  "from": "ForeverChanges",
+  "name": "Harnessing Shadows",
+  "reqlevel": 54
+ },
+ "7503": {
+  "from": "ForeverChanges",
+  "name": "The Greatest Race of Hunters",
+  "reqlevel": 54
+ },
+ "7504": {
+  "from": "ForeverChanges",
+  "name": "Holy Bologna: What the Light Won't Tell You",
+  "reqlevel": 54
+ },
+ "7505": {
+  "from": "ForeverChanges",
+  "name": "Frost Shock and You",
+  "reqlevel": 54
+ },
+ "7506": {
+  "from": "ForeverChanges",
+  "name": "The Emerald Dream...",
+  "reqlevel": 54
+ },
  "7507": {
   "name": "Foror's Compendium",
+  "reqlevel": 60
+ },
+ "7604": {
+  "from": "ForeverChanges",
+  "name": "A Binding Contract",
   "reqlevel": 60
  },
  "7668": {
@@ -1074,6 +1155,11 @@
  "7848": {
   "name": "Attunement to the Core",
   "reqlevel": 55
+ },
+ "78916": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "The Heart of the Void",
+  "reqlevel": 25
  },
  "824": {
   "name": "Je'neu of the Earthen Ring",
@@ -1115,6 +1201,11 @@
   "name": "Isha Awak",
   "reqlevel": 10
  },
+ "8733": {
+  "from": "ForeverChanges",
+  "name": "Eranikus, Tyrant of the Dream",
+  "reqlevel": 60
+ },
  "89": {
   "name": "The Everstill Bridge",
   "reqlevel": 15
@@ -1127,9 +1218,59 @@
   "name": "Dead Man's Plea",
   "reqlevel": 58
  },
+ "8966": {
+  "from": "ForeverChanges",
+  "name": "The Left Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8967": {
+  "from": "ForeverChanges",
+  "name": "The Left Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8968": {
+  "from": "ForeverChanges",
+  "name": "The Left Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8969": {
+  "from": "ForeverChanges",
+  "name": "The Left Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8989": {
+  "from": "ForeverChanges",
+  "name": "The Right Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8990": {
+  "from": "ForeverChanges",
+  "name": "The Right Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8991": {
+  "from": "ForeverChanges",
+  "name": "The Right Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8992": {
+  "from": "ForeverChanges",
+  "name": "The Right Piece of Lord Valthalak's Amulet",
+  "reqlevel": 58
+ },
+ "8995": {
+  "from": "ForeverChanges",
+  "name": "Mea Culpa, Lord Valthalak",
+  "reqlevel": 58
+ },
  "9": {
   "name": "The Killing Fields",
   "reqlevel": 8
+ },
+ "9015": {
+  "from": "ForeverChanges",
+  "name": "The Challenge",
+  "reqlevel": 58
  },
  "906": {
   "name": "Betrayal from Within",
@@ -1175,6 +1316,11 @@
   "name": "Confront Lorthuna",
   "reqlevel": 7
  },
+ "92753": {
+  "from": "ForeverChanges",
+  "name": "Destruction in Deadmines",
+  "reqlevel": 9
+ },
  "93835": {
   "name": "Confront Lorthuna",
   "reqlevel": 7
@@ -1186,6 +1332,21 @@
  "94468": {
   "name": "Call of Fire",
   "reqlevel": 10
+ },
+ "94982": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Eye of Mugg",
+  "reqlevel": 40
+ },
+ "94984": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Tome of Twilight",
+  "reqlevel": 39
+ },
+ "95036": {
+  "from": "ForeverChanges",
+  "name": "A Moon-Kissed Blade",
+  "reqlevel": 20
  },
  "95126": {
   "name": "The Moonsilver Blade",
@@ -1200,24 +1361,118 @@
   "reqlevel": 15
  },
  "95195": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Bloodied Insignia",
-  "reqlevel": 16
+  "reqlevel": 15
  },
  "95204": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Crest of Lordaeron",
-  "reqlevel": 16
+  "reqlevel": 15
  },
  "95216": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "The New Plague",
-  "reqlevel": 16
+  "reqlevel": 15
  },
  "95250": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Abominable Creatures",
-  "reqlevel": 16
+  "reqlevel": 15
  },
  "95508": {
   "name": "Unwelcome Guests",
   "reqlevel": 14
+ },
+ "95646": {
+  "from": "ForeverChanges",
+  "name": "Horrors in the Highland",
+  "reqlevel": 24
+ },
+ "95647": {
+  "from": "ForeverChanges",
+  "name": "Lost in the Thicket Things",
+  "reqlevel": 24
+ },
+ "95663": {
+  "from": "ForeverChanges",
+  "name": "Dragonmaw Rumors",
+  "reqlevel": 24
+ },
+ "95664": {
+  "from": "ForeverChanges",
+  "name": "Elder Knowledge",
+  "reqlevel": 24
+ },
+ "95682": {
+  "from": "ForeverChanges",
+  "name": "Open the Maw",
+  "reqlevel": 24
+ },
+ "95697": {
+  "from": "ForeverChanges",
+  "name": "Changing Tastes",
+  "reqlevel": 24
+ },
+ "95737": {
+  "from": "ForeverChanges",
+  "name": "Seeking Caitlin",
+  "reqlevel": 24
+ },
+ "95770": {
+  "from": "ForeverChanges",
+  "name": "Locating the Lost City",
+  "reqlevel": 30
+ },
+ "95772": {
+  "from": "ForeverChanges",
+  "name": "Songblade Search",
+  "reqlevel": 24
+ },
+ "95775": {
+  "from": "ForeverChanges",
+  "name": "The Drowned City",
+  "reqlevel": 30
+ },
+ "95776": {
+  "from": "ForeverChanges",
+  "name": "The Only Good Brinescale...",
+  "reqlevel": 30
+ },
+ "95787": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Take Two With Water",
+  "reqlevel": 30
+ },
+ "95788": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Magics of the Drowned City",
+  "reqlevel": 30
+ },
+ "95789": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Shady Saltseers",
+  "reqlevel": 34
+ },
+ "95791": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "The Saltseer Captain",
+  "reqlevel": 34
+ },
+ "95795": {
+  "from": "ForeverChanges",
+  "name": "Fallen in the Fen",
+  "reqlevel": 24
+ },
+ "95809": {
+  "from": "ForeverChanges",
+  "name": "Heartwoven",
+  "reqlevel": 24
+ },
+ "95810": {
+  "from": "ForeverChanges",
+  "name": "Lost Relic Carry",
+  "reqlevel": 24
  },
  "95885": {
   "name": "The Offering of Blood",
@@ -1247,6 +1502,16 @@
   "name": "For Love Eternal",
   "reqlevel": 11
  },
+ "96337": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "More Valuable Than Gold",
+  "reqlevel": 48
+ },
+ "96377": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "State Secrets",
+  "reqlevel": 48
+ },
  "96393": {
   "name": "Old Ironforge Incursion",
   "reqlevel": 9
@@ -1262,6 +1527,31 @@
  "96403": {
   "name": "Important Heirlooms",
   "reqlevel": 10
+ },
+ "96771": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Vengeance of the Highborne",
+  "reqlevel": 37
+ },
+ "96772": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "The Dragon's Journal",
+  "reqlevel": 46
+ },
+ "96774": {
+  "from": "ForeverChanges",
+  "name": "Ancient Gurubashi Idol",
+  "reqlevel": 30
+ },
+ "96776": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "An'she's Radiance",
+  "reqlevel": 43
+ },
+ "96800": {
+  "from": "ForeverChanges",
+  "name": "Past Due",
+  "reqlevel": 30
  },
  "96984": {
   "name": "Heart of Disruption",
@@ -1280,8 +1570,24 @@
   "reqlevel": 24
  },
  "971": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Knowledge in the Deeps",
-  "reqlevel": 10
+  "reqlevel": 18
+ },
+ "97130": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Ancient Gurubashi Secrets",
+  "reqlevel": 34
+ },
+ "97173": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "Blackmaw Magic",
+  "reqlevel": 52
+ },
+ "97196": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
+  "name": "The Coldbringer's Eye",
+  "reqlevel": 34
  },
  "97250": {
   "name": "Wrongly Blamed, Justly Corrected",
@@ -1292,8 +1598,9 @@
   "reqlevel": 10
  },
  "97288": {
+  "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Unending Torment",
-  "reqlevel": 16
+  "reqlevel": 15
  },
  "97290": {
   "name": "Unending Torment",
@@ -1346,6 +1653,21 @@
  "98545": {
   "name": "Leonid's Letter",
   "reqlevel": 10
+ },
+ "98815": {
+  "from": "ForeverChanges",
+  "name": "Highland Hides",
+  "reqlevel": 24
+ },
+ "98823": {
+  "from": "ForeverChanges",
+  "name": "Earthen Echo",
+  "reqlevel": 24
+ },
+ "98824": {
+  "from": "ForeverChanges",
+  "name": "Prehistoric Prism",
+  "reqlevel": 24
  },
  "994": {
   "name": "Escape Through Force",

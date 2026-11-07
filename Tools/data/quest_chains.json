@@ -689,15 +689,22 @@
     2201
    ],
    [
+    3375,
     2204
+   ],
+   [
+    2361
    ]
   ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
   "names": {
    "2198": "The Shattered Necklace",
    "2199": "Lore for a Price",
    "2200": "Back to Uldaman",
    "2201": "Find the Gems",
-   "2204": "Restoring the Necklace"
+   "2204": "Restoring the Necklace",
+   "2361": "Restoring the Necklace",
+   "3375": "Replacement Phial"
   }
  },
  "2202": {
@@ -764,7 +771,57 @@
    "2258": "Badlands Reagent Run"
   }
  },
- "2278": null,
+ "2278": {
+  "chain": [
+   [
+    2278
+   ],
+   [
+    2279,
+    2280
+   ],
+   [
+    2439,
+    2440
+   ],
+   [
+    2963,
+    2965
+   ],
+   [
+    2946,
+    2966
+   ],
+   [
+    2954
+   ],
+   [
+    2967,
+    2977
+   ],
+   [
+    2964,
+    2968
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "2278": "The Platinum Discs",
+   "2279": "The Platinum Discs",
+   "2280": "The Platinum Discs",
+   "2439": "The Platinum Discs",
+   "2440": "The Platinum Discs",
+   "2946": "Seeing What Happens",
+   "2954": "The Stone Watcher",
+   "2963": "Portents of Uldum",
+   "2964": "A Future Task",
+   "2965": "Portents of Uldum",
+   "2966": "Seeing What Happens",
+   "2967": "Return to Thunder Bluff",
+   "2968": "A Future Task",
+   "2977": "Return to Ironforge"
+  }
+ },
  "2283": {
   "chain": [
    [
@@ -778,13 +835,26 @@
    ],
    [
     2338
+   ],
+   [
+    2339
+   ],
+   [
+    2340
+   ],
+   [
+    2341
    ]
   ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
   "names": {
    "2283": "Necklace Recovery",
    "2284": "Necklace Recovery, Take 2",
    "2318": "Translating the Journal",
-   "2338": "Translating the Journal"
+   "2338": "Translating the Journal",
+   "2339": "Find the Gems and Power Source",
+   "2340": "Deliver the Gems",
+   "2341": "Necklace Recovery, Take 3"
   }
  },
  "2342": null,
@@ -946,7 +1016,44 @@
    "2925": "Klockmort's Essentials"
   }
  },
- "2926": null,
+ "2926": {
+  "chain": [
+   [
+    2927
+   ],
+   [
+    2926
+   ],
+   [
+    2962
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "2926": "Gnogaine",
+   "2927": "The Day After",
+   "2962": "The Only Cure is More Green Glow"
+  }
+ },
+ "2927": {
+  "chain": [
+   [
+    2927
+   ],
+   [
+    2926
+   ],
+   [
+    2962
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "2926": "Gnogaine",
+   "2927": "The Day After",
+   "2962": "The Only Cure is More Green Glow"
+  }
+ },
  "2928": null,
  "2929": null,
  "2930": {
@@ -1016,7 +1123,37 @@
   }
  },
  "2945": null,
- "2951": null,
+ "2951": {
+  "chain": [
+   [
+    2951,
+    4601,
+    4602
+   ],
+   [
+    2952,
+    4605,
+    4606
+   ],
+   [
+    2953,
+    4603,
+    4604
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "2951": "The Sparklematic 5200!",
+   "2952": "The Sparklematic 5200!",
+   "2953": "More Sparklematic Action",
+   "4601": "The Sparklematic 5200!",
+   "4602": "The Sparklematic 5200!",
+   "4603": "More Sparklematic Action",
+   "4604": "More Sparklematic Action",
+   "4605": "The Sparklematic 5200!",
+   "4606": "The Sparklematic 5200!"
+  }
+ },
  "296": {
   "chain": [
    [
@@ -1035,7 +1172,25 @@
    "296": "Ormer's Revenge"
   }
  },
- "2962": null,
+ "2962": {
+  "chain": [
+   [
+    2927
+   ],
+   [
+    2926
+   ],
+   [
+    2962
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "2926": "Gnogaine",
+   "2927": "The Day After",
+   "2962": "The Only Cure is More Green Glow"
+  }
+ },
  "2988": {
   "chain": [
    [
@@ -1581,7 +1736,33 @@
    "4128": "Ragnar Thunderbrew"
   }
  },
- "4132": null,
+ "4132": {
+  "chain": [
+   [
+    4081
+   ],
+   [
+    4082
+   ],
+   [
+    4122
+   ],
+   [
+    4121
+   ],
+   [
+    4132
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "4081": "KILL ON SIGHT: Dark Iron Dwarves",
+   "4082": "KILL ON SIGHT: High Ranking Dark Iron Officials",
+   "4121": "Precarious Predicament",
+   "4122": "Grark Lorkrub",
+   "4132": "Operation: Death to Angerforge"
+  }
+ },
  "4134": {
   "chain": [
    [
@@ -1813,15 +1994,72 @@
  "4322": {
   "chain": [
    [
+    4182
+   ],
+   [
+    4183
+   ],
+   [
+    4184
+   ],
+   [
+    4185
+   ],
+   [
+    4186
+   ],
+   [
+    4223
+   ],
+   [
+    4224
+   ],
+   [
+    4241
+   ],
+   [
+    4242
+   ],
+   [
+    4264
+   ],
+   [
+    4282
+   ],
+   [
     4322
    ],
    [
     6402
+   ],
+   [
+    6403
+   ],
+   [
+    6501
+   ],
+   [
+    6502
    ]
   ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
   "names": {
+   "4182": "Dragonkin Menace",
+   "4183": "The True Masters",
+   "4184": "The True Masters",
+   "4185": "The True Masters",
+   "4186": "The True Masters",
+   "4223": "The True Masters",
+   "4224": "The True Masters",
+   "4241": "Marshal Windsor",
+   "4242": "Abandoned Hope",
+   "4264": "A Crumpled Up Note",
+   "4282": "A Shred of Hope",
    "4322": "Jail Break!",
-   "6402": "Stormwind Rendezvous"
+   "6402": "Stormwind Rendezvous",
+   "6403": "The Great Masquerade",
+   "6501": "The Dragon's Eye",
+   "6502": "Drakefire Amulet"
   }
  },
  "4341": null,
@@ -1923,7 +2161,49 @@
    "4907": "Tinkee Steamboil"
   }
  },
- "4735": null,
+ "4735": {
+  "chain": [
+   [
+    4726
+   ],
+   [
+    4808
+   ],
+   [
+    4809
+   ],
+   [
+    4810
+   ],
+   [
+    4734,
+    4907
+   ],
+   [
+    4735,
+    5522
+   ],
+   [
+    5531
+   ],
+   [
+    4771
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "4726": "Broodling Essence",
+   "4734": "Egg Freezing",
+   "4735": "Egg Collection",
+   "4771": "Dawn's Gambit",
+   "4808": "Felnok Steelspring",
+   "4809": "Chillwind Horns",
+   "4810": "Return to Tinkee",
+   "4907": "Tinkee Steamboil",
+   "5522": "Leonid Barthalomew",
+   "5531": "Betina Bigglezink"
+  }
+ },
  "4740": null,
  "4742": {
   "chain": [
@@ -2474,8 +2754,36 @@
    "5515": "Krastinov's Bag of Horrors"
   }
  },
- "5518": null,
- "5525": null,
+ "5518": {
+  "chain": [
+   [
+    5518
+   ],
+   [
+    5519
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "5518": "The Gordok Ogre Suit",
+   "5519": "The Gordok Ogre Suit"
+  }
+ },
+ "5525": {
+  "chain": [
+   [
+    5525
+   ],
+   [
+    7429
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "5525": "Free Knot!",
+   "7429": "Free Knot!"
+  }
+ },
  "5526": {
   "chain": [
    [
@@ -2789,6 +3097,35 @@
  "6602": {
   "chain": [
    [
+    4903
+   ],
+   [
+    4941
+   ],
+   [
+    4974
+   ],
+   [
+    6566
+   ],
+   [
+    6567
+   ],
+   [
+    6568
+   ],
+   [
+    6569
+   ],
+   [
+    6570
+   ],
+   [
+    6582,
+    6583,
+    6584
+   ],
+   [
     6585
    ],
    [
@@ -2798,7 +3135,19 @@
     6602
    ]
   ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
   "names": {
+   "4903": "Warlord's Command",
+   "4941": "Eitrigg's Wisdom",
+   "4974": "For The Horde!",
+   "6566": "What the Wind Carries",
+   "6567": "The Champion of the Horde",
+   "6568": "The Testament of Rexxar",
+   "6569": "Oculus Illusions",
+   "6570": "Emberstrife",
+   "6582": "The Test of Skulls, Scryer",
+   "6583": "The Test of Skulls, Somnus",
+   "6584": "The Test of Skulls, Chronalis",
    "6585": "The Test of Skulls, Axtroz",
    "6601": "Ascension...",
    "6602": "Blood of the Black Dragon Champion"
@@ -2944,17 +3293,60 @@
     7461
    ],
    [
+    7462,
     7877
    ]
   ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
   "names": {
    "7461": "The Madness Within",
+   "7462": "The Treasure of the Shen'dralar",
    "7877": "The Treasure of the Shen'dralar"
   }
  },
  "7463": null,
- "7481": null,
- "7482": null,
+ "7481": {
+  "chain": [
+   [
+    7481,
+    7482
+   ],
+   [
+    7483,
+    7484,
+    7485
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "7481": "Elven Legends",
+   "7482": "Elven Legends",
+   "7483": "Libram of Rapidity",
+   "7484": "Libram of Focus",
+   "7485": "Libram of Protection"
+  }
+ },
+ "7482": {
+  "chain": [
+   [
+    7481,
+    7482
+   ],
+   [
+    7483,
+    7484,
+    7485
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "7481": "Elven Legends",
+   "7482": "Elven Legends",
+   "7483": "Libram of Rapidity",
+   "7484": "Libram of Focus",
+   "7485": "Libram of Protection"
+  }
+ },
  "7488": {
   "chain": [
    [
@@ -2983,7 +3375,25 @@
    "7492": "Camp Mojache"
   }
  },
- "7507": null,
+ "7507": {
+  "chain": [
+   [
+    7507
+   ],
+   [
+    7508
+   ],
+   [
+    7509
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "7507": "Nostro's Compendium",
+   "7508": "The Forging of Quel'Serrar",
+   "7509": "The Forging of Quel'Serrar"
+  }
+ },
  "7667": {
   "chain": [
    [
@@ -3145,6 +3555,109 @@
    "913": "Cry of the Thunderhawk"
   }
  },
+ "8733": {
+  "chain": [
+   [
+    8286
+   ],
+   [
+    8288
+   ],
+   [
+    8301
+   ],
+   [
+    8302,
+    8303
+   ],
+   [
+    8305
+   ],
+   [
+    8519
+   ],
+   [
+    8555
+   ],
+   [
+    8575,
+    8730,
+    8733
+   ],
+   [
+    8576,
+    8734
+   ],
+   [
+    8577,
+    8584,
+    8597,
+    8735
+   ],
+   [
+    8578,
+    8585,
+    8598,
+    8736
+   ],
+   [
+    8586,
+    8606,
+    8741
+   ],
+   [
+    8587,
+    8620
+   ],
+   [
+    8728
+   ],
+   [
+    8729
+   ],
+   [
+    8742
+   ],
+   [
+    8743,
+    8745
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8286": "What Tomorrow Brings",
+   "8288": "Only One May Rise",
+   "8301": "The Path of the Righteous",
+   "8302": "The Hand of the Righteous",
+   "8303": "Anachronos",
+   "8305": "Long Forgotten Memories",
+   "8519": "A Pawn on the Eternal Board",
+   "8555": "The Charge of the Dragonflights",
+   "8575": "Azuregos's Magical Ledger",
+   "8576": "Translating the Ledger",
+   "8577": "Stewvul, Ex-B.F.F.",
+   "8578": "Scrying Goggles? No Problem!",
+   "8584": "Never Ask Me About My Business",
+   "8585": "The Isle of Dread!",
+   "8586": "Dirge's Kickin' Chimaerok Chops",
+   "8587": "Return to Narain",
+   "8597": "Draconic for Dummies",
+   "8598": "rAnS0m",
+   "8606": "Decoy!",
+   "8620": "The Only Prescription",
+   "8728": "The Good News and The Bad News",
+   "8729": "The Wrath of Neptulon",
+   "8730": "Nefarius's Corruption",
+   "8733": "Eranikus, Tyrant of the Dream",
+   "8734": "Tyrande and Remulos",
+   "8735": "The Nightmare's Corruption",
+   "8736": "The Nightmare Manifests",
+   "8741": "The Champion Returns",
+   "8742": "The Might of Kalimdor",
+   "8743": "Bang a Gong!",
+   "8745": "Treasure of the Timeless One"
+  }
+ },
  "89": null,
  "891": null,
  "8922": {
@@ -3273,7 +3786,2777 @@
    "8950": "The Instigator's Enchantment"
   }
  },
+ "8966": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8967": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8968": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8969": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8989": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8990": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8991": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8992": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
+ "8995": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
  "9": null,
+ "9015": {
+  "chain": [
+   [
+    8905,
+    8906,
+    8907,
+    8908,
+    8909,
+    8910,
+    8911,
+    8912,
+    8913,
+    8914,
+    8915,
+    8916,
+    8917,
+    8918,
+    8919,
+    8920
+   ],
+   [
+    8922,
+    8923
+   ],
+   [
+    8921
+   ],
+   [
+    8924
+   ],
+   [
+    8925
+   ],
+   [
+    8928
+   ],
+   [
+    8977,
+    8978
+   ],
+   [
+    8926,
+    8927,
+    8931,
+    8932,
+    8933,
+    8934,
+    8935,
+    8936,
+    8937,
+    8938,
+    8939,
+    8940,
+    8941,
+    8942,
+    8943,
+    8944
+   ],
+   [
+    8929,
+    8930
+   ],
+   [
+    8945
+   ],
+   [
+    8946
+   ],
+   [
+    8947
+   ],
+   [
+    8948
+   ],
+   [
+    8949
+   ],
+   [
+    8950
+   ],
+   [
+    9015
+   ],
+   [
+    8951,
+    8952,
+    8953,
+    8954,
+    8955,
+    8956,
+    8957,
+    8958,
+    8959,
+    9016,
+    9017,
+    9018,
+    9019,
+    9020,
+    9021,
+    9022
+   ],
+   [
+    8960,
+    9032
+   ],
+   [
+    8961
+   ],
+   [
+    8962,
+    8963,
+    8964,
+    8965
+   ],
+   [
+    8966,
+    8967,
+    8968,
+    8969
+   ],
+   [
+    8970
+   ],
+   [
+    8985,
+    8986,
+    8987,
+    8988
+   ],
+   [
+    8989,
+    8990,
+    8991,
+    8992
+   ],
+   [
+    8994
+   ],
+   [
+    8995
+   ],
+   [
+    8996
+   ],
+   [
+    8997,
+    8998
+   ],
+   [
+    8999,
+    9000,
+    9001,
+    9002,
+    9003,
+    9004,
+    9005,
+    9006,
+    9007,
+    9008,
+    9009,
+    9010,
+    9011,
+    9012,
+    9013,
+    9014
+   ]
+  ],
+  "from": "the Quest List (NaowhForever_DiscoveryData/Quests.lua, D.Chains)",
+  "names": {
+   "8905": "An Earnest Proposition",
+   "8906": "An Earnest Proposition",
+   "8907": "An Earnest Proposition",
+   "8908": "An Earnest Proposition",
+   "8909": "An Earnest Proposition",
+   "8910": "An Earnest Proposition",
+   "8911": "An Earnest Proposition",
+   "8912": "An Earnest Proposition",
+   "8913": "An Earnest Proposition",
+   "8914": "An Earnest Proposition",
+   "8915": "An Earnest Proposition",
+   "8916": "An Earnest Proposition",
+   "8917": "An Earnest Proposition",
+   "8918": "An Earnest Proposition",
+   "8919": "An Earnest Proposition",
+   "8920": "An Earnest Proposition",
+   "8921": "The Ectoplasmic Distiller",
+   "8922": "A Supernatural Device",
+   "8923": "A Supernatural Device",
+   "8924": "Hunting for Ectoplasm",
+   "8925": "A Portable Power Source",
+   "8926": "Just Compensation",
+   "8927": "Just Compensation",
+   "8928": "A Shifty Merchant",
+   "8929": "In Search of Anthion",
+   "8930": "In Search of Anthion",
+   "8931": "Just Compensation",
+   "8932": "Just Compensation",
+   "8933": "Just Compensation",
+   "8934": "Just Compensation",
+   "8935": "Just Compensation",
+   "8936": "Just Compensation",
+   "8937": "Just Compensation",
+   "8938": "Just Compensation",
+   "8939": "Just Compensation",
+   "8940": "Just Compensation",
+   "8941": "Just Compensation",
+   "8942": "Just Compensation",
+   "8943": "Just Compensation",
+   "8944": "Just Compensation",
+   "8945": "Dead Man's Plea",
+   "8946": "Proof of Life",
+   "8947": "Anthion's Strange Request",
+   "8948": "Anthion's Old Friend",
+   "8949": "Falrin's Vendetta",
+   "8950": "The Instigator's Enchantment",
+   "8951": "Anthion's Parting Words",
+   "8952": "Anthion's Parting Words",
+   "8953": "Anthion's Parting Words",
+   "8954": "Anthion's Parting Words",
+   "8955": "Anthion's Parting Words",
+   "8956": "Anthion's Parting Words",
+   "8957": "Anthion's Parting Words",
+   "8958": "Anthion's Parting Words",
+   "8959": "Anthion's Parting Words",
+   "8960": "Bodley's Unfortunate Fate",
+   "8961": "Three Kings of Flame",
+   "8962": "Components of Importance",
+   "8963": "Components of Importance",
+   "8964": "Components of Importance",
+   "8965": "Components of Importance",
+   "8966": "The Left Piece of Lord Valthalak's Amulet",
+   "8967": "The Left Piece of Lord Valthalak's Amulet",
+   "8968": "The Left Piece of Lord Valthalak's Amulet",
+   "8969": "The Left Piece of Lord Valthalak's Amulet",
+   "8970": "I See Alcaz Island In Your Future...",
+   "8977": "Return to Deliana",
+   "8978": "Return to Mokvar",
+   "8985": "More Components of Importance",
+   "8986": "More Components of Importance",
+   "8987": "More Components of Importance",
+   "8988": "More Components of Importance",
+   "8989": "The Right Piece of Lord Valthalak's Amulet",
+   "8990": "The Right Piece of Lord Valthalak's Amulet",
+   "8991": "The Right Piece of Lord Valthalak's Amulet",
+   "8992": "The Right Piece of Lord Valthalak's Amulet",
+   "8994": "Final Preparations",
+   "8995": "Mea Culpa, Lord Valthalak",
+   "8996": "Return to Bodley",
+   "8997": "Back to the Beginning",
+   "8998": "Back to the Beginning",
+   "8999": "Saving the Best for Last",
+   "9000": "Saving the Best for Last",
+   "9001": "Saving the Best for Last",
+   "9002": "Saving the Best for Last",
+   "9003": "Saving the Best for Last",
+   "9004": "Saving the Best for Last",
+   "9005": "Saving the Best for Last",
+   "9006": "Saving the Best for Last",
+   "9007": "Saving the Best for Last",
+   "9008": "Saving the Best for Last",
+   "9009": "Saving the Best for Last",
+   "9010": "Saving the Best for Last",
+   "9011": "Saving the Best for Last",
+   "9012": "Saving the Best for Last",
+   "9013": "Saving the Best for Last",
+   "9014": "Saving the Best for Last",
+   "9015": "The Challenge",
+   "9016": "Anthion's Parting Words",
+   "9017": "Anthion's Parting Words",
+   "9018": "Anthion's Parting Words",
+   "9019": "Anthion's Parting Words",
+   "9020": "Anthion's Parting Words",
+   "9021": "Anthion's Parting Words",
+   "9022": "Anthion's Parting Words",
+   "9032": "Bodley's Unfortunate Fate"
+  }
+ },
  "906": {
   "chain": [
    [

@@ -371,16 +371,19 @@ def main():
         if found and found[0] == "same":
             add(prereqs(found[1], walking))
         elif found:
+            cut = None
             for step in found[1]:
                 at = next((k for k, row in enumerate(tail) if set(step) & set(row)), None)
                 if at is not None:
-                    # It starts within the quest's own Series: that covers it.
-                    tail = tail[at:]
+                    # It starts within the quest's own Series: that covers it, from the earliest one.
+                    cut = at if cut is None else min(cut, at)
                     continue
                 for i in step:
                     if i in own and i != quest_id:
                         add(prereqs(i, walking))
                 add(fragment(step, quest_id))
+            if cut is not None:
+                tail = tail[cut:]
         # A Series that begins with another dungeon quest carries that quest's own.
         for i in tail[0] if tail else []:
             if i in own:
