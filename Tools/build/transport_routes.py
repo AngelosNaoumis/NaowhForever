@@ -6,10 +6,15 @@ efabdb82d11c771e0acac2deb562caba9908e0e5):
 
     python Tools/build/transport_routes.py path/to/NauticusClassicResurrected/data.lua
 
-Each route keeps its measured round trip, each dock's arrival and departure in its cycle, and the
-trigger segments a rider passes. NauticusClassic stores places on the whole-world map; they are turned
-into world yards by a fit per continent on the docks it shares with TransportData.lua. Points tagged
-rawp are already world yards on their own continent, with x and y the other way round from ours.
+Each route keeps its measured round trip, the zones NauticusClassic watches it in, each dock's arrival
+and departure in its cycle, and trigger segments: the recorded path for WINDOW seconds either side of
+each trigger point, in CHORD second pieces. A ship with no trigger points gets one at the middle of each
+leg, on the longest stretch of it on one continent. A piece that comes within CLEARANCE yards of another
+ship's is dropped, so a ride past it cannot time the wrong ship.
+
+NauticusClassic stores places on the whole-world map; they are turned into world yards by a fit per
+continent on the docks it shares with TransportData.lua. Points tagged rawp are already world yards on
+their own continent, with x and y the other way round from ours.
 """
 
 import math
@@ -46,6 +51,9 @@ ROUTES = [
 # NauticusClassic's whole-world map holds Kalimdor left of the middle and the Eastern Kingdoms right of it.
 KALIMDOR, EASTERN_KINGDOMS, MIDDLE = 1, 0, 0.5
 MAX_DOCK_MISS = 20
+WINDOW, CHORD = 4.0, 2.0
+CLEARANCE = 40
+MIN_SPEED = 8
 
 OUTPUT = paths.ROOT / "NaowhForever_QoL" / "Travel" / "TransportRoutes.lua"
 STOPS = paths.ROOT / "NaowhForever_QoL" / "Travel" / "TransportData.lua"
@@ -80,6 +88,15 @@ def read_routes(text):
             rows.append({"x": x, "y": y, "dt": float(fields[2]), "offset": offset, "tags": fields[5:]})
         routes[tid] = {"period": rtts[tid - 1], "rows": rows, "raw": raw.get(tid)}
     return routes
+
+
+def read_zones(text):
+    zones = {}
+    for name in ("transitZones", "transitZones_forever"):
+        for zone, body in re.findall(r"^\s*\[(\d+)\]\s*=\s*\{([^}]*)\}", section(text, name), re.M):
+            for tid in re.findall(r"\[(\d+)\] = true", body):
+                zones.setdefault(int(tid), set()).add(int(zone))
+    return zones
 
 
 def read_stops(text):
@@ -121,10 +138,93 @@ def dock_rows(route, count):
     return [found[n] for n in range(1, count + 1)]
 
 
+def is_trigger(row):
+    return any(tag.startswith("trig") for tag in row["tags"])
+
+
+def centres(route, plats, place):
+    """The rows the trigger segments are taken around: the middle row of each run of trigger rows, or
+    with none, the middle by time of each leg's longest stretch on one continent."""
+    rows = route["rows"]
+    found, run = [], []
+    for index, row in enumerate(rows):
+        if is_trigger(row):
+            run.append(index)
+        elif run:
+            found.append(run[len(run) // 2])
+            run = []
+    if run:
+        found.append(run[len(run) // 2])
+    if found:
+        return found
+    assert plats[0] == 0, "a ship without trigger points starts its path at a dock"
+    for start, end in zip(plats, plats[1:] + [len(rows)]):
+        pieces = [[]]
+        for index in range(start + 1, end):
+            if pieces[-1] and (place(rows[index])[0] != place(rows[pieces[-1][-1]])[0] or "jump" in rows[index]["tags"]):
+                pieces.append([])
+            pieces[-1].append(index)
+        piece = max(pieces, key=lambda p: rows[p[-1]]["offset"] - rows[p[0]]["offset"])
+        middle = (rows[piece[0]]["offset"] + rows[piece[-1]]["offset"]) / 2
+        found.append(min(piece, key=lambda i: abs(rows[i]["offset"] - middle)))
+    return found
+
+
+def window(route, centre, place):
+    """Trigger segments over the path within WINDOW seconds of the centre row, on its continent and
+    between its docks and continent jumps."""
+    rows = route["rows"]
+    cont, at = place(rows[centre])[0], rows[centre]["offset"]
+
+    def inside(index):
+        row = rows[index]
+        return (0 < index < len(rows) and "jump" not in row["tags"] and not any(t.startswith("plat") for t in row["tags"])
+                and place(row)[0] == cont and abs(row["offset"] - at) <= WINDOW)
+
+    first = last = centre
+    while inside(first - 1):
+        first -= 1
+    while inside(last + 1):
+        last += 1
+    picks = [first]
+    for index in range(first + 1, last + 1):
+        if rows[index]["offset"] - rows[picks[-1]]["offset"] >= CHORD or index == last:
+            picks.append(index)
+    segments = []
+    for a, b in zip(picks, picks[1:]):
+        _, ax, ay = place(rows[a])
+        _, bx, by = place(rows[b])
+        span = rows[b]["offset"] - rows[a]["offset"]
+        assert math.hypot(bx - ax, by - ay) / span >= MIN_SPEED, f"a trigger segment at row {b + 1} barely moves"
+        segments.append((cont, ax, ay, bx, by, rows[a]["offset"], span))
+    return segments
+
+
+def apart(one, two):
+    """The closest two trigger segments come, in yards."""
+    def to_segment(px, py, ax, ay, bx, by):
+        sx, sy = bx - ax, by - ay
+        t = max(0.0, min(1.0, ((px - ax) * sx + (py - ay) * sy) / (sx * sx + sy * sy)))
+        return math.hypot(ax + sx * t - px, ay + sy * t - py)
+
+    def side_of(px, py, ax, ay, bx, by):
+        return (bx - ax) * (py - ay) - (by - ay) * (px - ax)
+
+    _, ax, ay, bx, by, _, _ = one
+    _, cx, cy, dx, dy, _, _ = two
+    if (side_of(cx, cy, ax, ay, bx, by) * side_of(dx, dy, ax, ay, bx, by) < 0
+            and side_of(ax, ay, cx, cy, dx, dy) * side_of(bx, by, cx, cy, dx, dy) < 0):
+        return 0.0
+    return min(to_segment(cx, cy, ax, ay, bx, by), to_segment(dx, dy, ax, ay, bx, by),
+               to_segment(ax, ay, cx, cy, dx, dy), to_segment(bx, by, cx, cy, dx, dy))
+
+
 def main():
     if len(sys.argv) != 2:
         sys.exit(__doc__)
-    routes = read_routes(open(sys.argv[1], encoding="utf-8-sig").read())
+    text = open(sys.argv[1], encoding="utf-8-sig").read()
+    routes = read_routes(text)
+    zones = read_zones(text)
     stops = read_stops(STOPS.read_text(encoding="utf-8"))
 
     def is_raw(route, row):
@@ -149,6 +249,24 @@ def main():
         u, v = row["x"], row["y"]
         return cont, fx[0] * u + fx[1] * v + fx[2], fy[0] * u + fy[1] * v + fy[2]
 
+    triggers = {}
+    for tid, _, docks in ROUTES:
+        route = routes[tid]
+        triggers[tid] = [segment for centre in centres(route, dock_rows(route, len(docks)), lambda row: world(route, row))
+                         for segment in window(route, centre, lambda row: world(route, row))]
+    dropped = set()
+    for one in triggers:
+        for two in triggers:
+            if one < two:
+                for i, a in enumerate(triggers[one]):
+                    for j, b in enumerate(triggers[two]):
+                        if a[0] == b[0] and apart(a, b) < CLEARANCE:
+                            dropped.update({(one, i), (two, j)})
+    for tid in triggers:
+        kept = [segment for i, segment in enumerate(triggers[tid]) if (tid, i) not in dropped]
+        print(f"  transport {tid}: {len(kept)} trigger segments, {len(triggers[tid]) - len(kept)} too near another ship's")
+        triggers[tid] = kept
+
     lines = [
         "-- TransportRoutes.lua: the ships NauticusClassic timed (MIT, psynct), generated by Tools/build/transport_routes.py.",
         "local ns = _G.NaowhForever",
@@ -165,18 +283,12 @@ def main():
             assert cont == stops[key][0] and miss < MAX_DOCK_MISS, f"{name} docks {miss:.1f} yd from {key}"
             arrive = rows[row_index - 1]["offset"] if row_index > 0 else 0.0
             placed.append((key, place, arrive, rows[row_index]["offset"]))
-        triggers = []
-        for index, row in enumerate(rows):
-            if any(tag.startswith("trig") for tag in row["tags"]):
-                cont, bx, by = world(route, row)
-                cont_a, ax, ay = world(route, rows[index - 1])
-                assert cont == cont_a, f"{name}'s trigger at row {index + 1} crosses continents"
-                triggers.append((cont, ax, ay, bx, by, rows[index - 1]["offset"], row["dt"]))
-        lines.append(f'    ["{name}"] = {{ period = {route["period"]:.6f}, docks = {{')
+        zone_list = ", ".join(str(zone) for zone in sorted(zones[tid]))
+        lines.append(f'    ["{name}"] = {{ period = {route["period"]:.6f}, zones = {{ {zone_list} }}, docks = {{')
         for key, place, arrive, leave in placed:
             lines.append(f'        {{ stop = "{key}", place = "{place}", arrive = {arrive:.3f}, leave = {leave:.3f} }},')
         lines.append("    }, triggers = {")
-        for cont, ax, ay, bx, by, at, span in triggers:
+        for cont, ax, ay, bx, by, at, span in triggers[tid]:
             lines.append(f"        {{ continent = {cont}, ax = {ax:.1f}, ay = {ay:.1f}, bx = {bx:.1f}, by = {by:.1f},"
                          f" at = {at:.3f}, span = {span:.3f} }},")
         lines.append("    } },")

@@ -222,7 +222,9 @@ Check(#timers == 1, "the guild is answered at most once every half minute")
 -- The world map's countdown and tooltip lines, from the same timings.
 account.transportRides.Realm[OTHER] = nil
 local UC, GG = "1411:Zeppelin to Undercity", "1411:Zeppelin to Grom'gol"
-local BOAT = "2521:Zeppelin to Mulgore"
+local BOAT = "1426:Boat to Auberdine"
+ns.TransportData[BOAT] = { map = 1426, continent = 0, x = -5000, y = -500, side = "A", period = 300, dwell = 60,
+    routes = { "Boat to Auberdine" } }
 Check(ns.TransportTimer("1424:Boat to Menethil Harbor", now) == nil, "a label with no stop has no timer")
 local seconds = ns.TransportTimer(BOAT, now)
 Check(seconds == false, "an untimed stop says so")
@@ -242,8 +244,8 @@ Check(#tip == 3 and tip[1]:find("^Zeppelin to Grom'gol | Departs in %d:%d%d$")
 Check(not tip[1]:find("~", 1, true), "a measured ship's countdown is not marked as an estimate")
 tip = {}
 ns.TransportTimerTip(tooltip, now, BOAT, nil)
-Check(#tip == 2 and tip[1] == "Zeppelin to Mulgore | Not timed yet" and tip[2] == "Time it from its minimap pin at the dock.",
-    "a ship with no trigger points says where to time it")
+Check(#tip == 2 and tip[1] == "Boat to Auberdine | Not timed yet" and tip[2] == "Time it from its minimap pin at the dock.",
+    "a ship the routes do not hold (none today) says where to time it")
 Check(inDock.arrive == 0, "the first dock of a ship starts its cycle")
 
 -- The town map's dock pins: a stop for each destination, a countdown under the pin and a clock while the map is open.

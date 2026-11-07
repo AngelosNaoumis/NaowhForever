@@ -132,7 +132,7 @@ ns.Journeys, ns.JourneyNetwork = nil, nil
 
 -- The ships NauticusClassic timed: every dock is a stop above, and one ride or click times the whole ship.
 dofile("NaowhForever_QoL/Travel/TransportRoutes.lua")
-local ships, riders = 0, 0
+local ships = 0
 for name, route in pairs(ns.TransportRoutes) do
     ships = ships + 1
     Check(english:find('L["' .. name .. '"]', 1, true), "ship name is in enUS: " .. name)
@@ -149,11 +149,25 @@ for name, route in pairs(ns.TransportRoutes) do
     Check(last < route.period, name .. " leaves its last dock inside its cycle")
     for _, trigger in ipairs(route.triggers) do
         Check(trigger.span > 0 and trigger.at > route.docks[1].leave and trigger.at < route.period,
-            name .. "'s trigger point is on the way, inside its cycle")
+            name .. "'s trigger segment is on the way, inside its cycle")
     end
-    if route.triggers[1] then riders = riders + 1 end
+    for i, dock in ipairs(route.docks) do
+        local nextDock = route.docks[i % #route.docks + 1]
+        local from, to = dock.leave, nextDock.arrive + (i == #route.docks and route.period or 0)
+        local covered = false
+        for _, trigger in ipairs(route.triggers) do
+            local at = trigger.at < from and trigger.at + route.period or trigger.at
+            if at > from and at + trigger.span < to then covered = true end
+        end
+        Check(covered, name .. " has a trigger segment on its way from " .. dock.place)
+    end
+    local zones = {}
+    for _, map in ipairs(route.zones) do zones[map] = true end
+    for _, dock in ipairs(route.docks) do
+        Check(zones[ns.TransportData[dock.stop].map], name .. " is watched for at " .. dock.stop)
+    end
 end
-Check(ships == 12 and riders == 10, "twelve ships are timed, ten of them from a ride")
+Check(ships == 12, "twelve ships are timed from a ride or a click")
 
 dofile("NaowhForever_QoL/Travel/TransportTimes.lua")
 Times = ns.TransportTimes
@@ -454,12 +468,13 @@ Event("ZONE_CHANGED_NEW_AREA")
 Check(#Pins() == 1 and PinFor(MULGORE), "on Zephras Isle's second map, 2665, the island's zeppelin shows")
 local isle = PinFor(MULGORE)
 isle.scripts.OnEnter(isle)
-Check(tip.lines[1] == "Zephras Isle - Mulgore" and tip.lines[6] == "Left-click when it arrives",
-    "a ship without trigger points is timed at its pin, not from a ride: " .. table.concat(tip.lines, " | "))
+Check(tip.lines[1] == "Zephras Isle - Mulgore" and tip.lines[6] == "Ride it once to time it.",
+    "the skycutter is timed from a ride too: " .. table.concat(tip.lines, " | "))
 isle.scripts.OnLeave(isle)
-playerMap = 2521
+Check(not tickers[#tickers].cancelled, "Zephras Isle's second map watches for rides, as its first does")
+playerMap = 1421
 Event("ZONE_CHANGED_NEW_AREA")
-Check(tickers[#tickers].cancelled, "and its docks watch for no ride")
+Check(not tickers[#tickers].cancelled, "so does a zone a ship crosses with no dock of its own (Silverpine Forest)")
 playerMap = 1411
 playerWorld = { ns.TransportData[UC].x, ns.TransportData[UC].y }
 Event("ZONE_CHANGED_NEW_AREA")
@@ -489,11 +504,11 @@ Check(account.transportRides.Realm[SHIP], "a login after the weekly reset keeps 
 account.transportRides = nil
 local trigger = ship.triggers[1]
 local ax, ay, bx, by = trigger.ax, trigger.ay, trigger.bx, trigger.by
-local function Pass(x1, y1, x2, y2)
+local function Pass(x1, y1, x2, y2, seconds)
     clock = clock + 100
     playerWorld = { x1, y1 }
     tickers[#tickers].fn()
-    clock = clock + 1
+    clock = clock + (seconds or trigger.span)
     playerWorld = { x2, y2 }
     tickers[#tickers].fn()
 end
@@ -503,7 +518,7 @@ Check(Untimed(), "walking past the trigger point times nothing")
 Pass(bx + (bx - ax), by + (by - ay), bx, by)
 Check(Untimed(), "passing it the other way times nothing")
 Pass(ax + 30, ay, bx + 30, by)
-Check(Untimed(), "riding beside the route, out of reach of the point, times nothing")
+Check(Untimed(), "riding beside the route, out of reach of the segment, times nothing")
 taxi = true
 Pass(ax, ay, bx, by)
 taxi = false
@@ -512,15 +527,26 @@ Pass(ax, ay, bx, by)
 Dock(1, now, ship.period - (trigger.at + trigger.span), "arrival")
 local timedAt = account.transportRides.Realm[SHIP].at
 Check(math.abs(timedAt - (now - trigger.at - trigger.span)) < 1e-6,
-    "riding through the point times the ship from where that point is in its cycle")
+    "riding along the segment times the ship from where its end is in the cycle")
 now = now + 5
 clock = clock + 9
 playerWorld = { ax, ay }
 tickers[#tickers].fn()
-clock = clock + 1
+clock = clock + trigger.span
 playerWorld = { bx, by }
 tickers[#tickers].fn()
 Check(account.transportRides.Realm[SHIP].at == timedAt, "the same ride is not timed twice within the lockout")
+account.transportRides = nil
+local length = math.sqrt((bx - ax) ^ 2 + (by - ay) ^ 2)
+local nx, ny = -(by - ay) / length * 15, (bx - ax) / length * 15
+Pass(ax + nx, ay + ny, ax + (bx - ax) / 2 + nx, ay + (by - ay) / 2 + ny, trigger.span / 2)
+local offPath = Times.Dock(SHIP, 1, now) and account.transportRides.Realm[SHIP].at
+Check(offPath and math.abs(offPath - (now - trigger.at - trigger.span / 2)) < 1e-6,
+    "riding 15 yards off the path, halfway along a segment, times the ship from that point")
+account.transportRides = nil
+Pass(bx + (bx - ax) * 5, by + (by - ay) * 5, bx + (bx - ax) * 6, by + (by - ay) * 6)
+Check(Untimed(), "riding on past the end of the trigger segments times nothing")
+Pass(ax, ay, bx, by)
 playerMap = 1429
 Event("ZONE_CHANGED_NEW_AREA")
 Check(tickers[#tickers].cancelled, "leaving the docks' zones stops the ride watch")

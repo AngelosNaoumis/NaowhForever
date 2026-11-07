@@ -2,106 +2,153 @@
 local ns = _G.NaowhForever
 
 ns.TransportRoutes = {
-    ["The Thundercaller"] = { period = 356.288364, docks = {
+    ["The Thundercaller"] = { period = 356.288364, zones = { 1411, 1420, 1454, 1458 }, docks = {
         { stop = "1411:Zeppelin to Undercity", place = "Orgrimmar", arrive = 0.000, leave = 60.000 },
         { stop = "1420:Zeppelin to Orgrimmar", place = "Undercity", arrive = 191.139, leave = 251.139 },
     }, triggers = {
-        { continent = 1, ax = 1273.5, ay = -5222.7, bx = 1271.6, by = -5255.1, at = 103.048, span = 1.000 },
-        { continent = 0, ax = 3120.2, ay = 278.6, bx = 3148.0, by = 296.9, at = 301.562, span = 1.000 },
+        { continent = 1, ax = 1277.6, ay = -5130.4, bx = 1275.2, by = -5191.2, at = 100.048, span = 2.000 },
+        { continent = 1, ax = 1275.2, ay = -5191.2, bx = 1271.6, by = -5255.1, at = 102.048, span = 2.000 },
+        { continent = 1, ax = 1271.6, ay = -5255.1, bx = 1267.8, by = -5319.1, at = 104.048, span = 2.000 },
+        { continent = 1, ax = 1267.8, ay = -5319.1, bx = 1265.4, by = -5374.6, at = 106.048, span = 2.000 },
+        { continent = 0, ax = 3042.2, ay = 244.5, bx = 3097.1, by = 267.4, at = 298.562, span = 2.000 },
+        { continent = 0, ax = 3097.1, ay = 267.4, bx = 3148.0, by = 296.9, at = 300.562, span = 2.000 },
+        { continent = 0, ax = 3148.0, ay = 296.9, bx = 3190.8, by = 339.9, at = 302.562, span = 2.000 },
+        { continent = 0, ax = 3190.8, ay = 339.9, bx = 3218.9, by = 373.6, at = 304.562, span = 2.000 },
     } },
-    ["The Iron Eagle"] = { period = 303.467135, docks = {
+    ["The Iron Eagle"] = { period = 303.467135, zones = { 1411, 1434, 1454 }, docks = {
         { stop = "1411:Zeppelin to Grom'gol", place = "Orgrimmar", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Zeppelin to Orgrimmar", place = "Grom'gol", arrive = 138.314, leave = 198.314 },
     }, triggers = {
-        { continent = 1, ax = 1452.8, ay = -5211.7, bx = 1451.5, by = -5238.6, at = 94.973, span = 1.000 },
-        { continent = 0, ax = -12647.3, ay = 787.3, bx = -12640.7, by = 820.0, at = 242.304, span = 1.000 },
+        { continent = 1, ax = 1458.4, ay = -5118.2, bx = 1452.8, by = -5211.7, at = 91.974, span = 2.999 },
+        { continent = 1, ax = 1452.8, ay = -5211.7, bx = 1450.4, by = -5272.1, at = 94.973, span = 2.000 },
+        { continent = 1, ax = 1450.4, ay = -5272.1, bx = 1450.2, by = -5328.0, at = 96.973, span = 2.000 },
+        { continent = 1, ax = 1450.2, ay = -5328.0, bx = 1450.5, by = -5343.2, at = 98.973, span = 1.000 },
+        { continent = 0, ax = -12667.1, ay = 691.1, bx = -12654.1, by = 754.3, at = 239.304, span = 2.000 },
+        { continent = 0, ax = -12654.1, ay = 754.3, bx = -12640.7, by = 820.0, at = 241.304, span = 2.000 },
+        { continent = 0, ax = -12640.7, ay = 820.0, bx = -12628.9, by = 880.3, at = 243.304, span = 2.000 },
+        { continent = 0, ax = -12628.9, ay = 880.3, bx = -12621.8, by = 920.1, at = 245.304, span = 2.000 },
     } },
-    ["The Purple Princess"] = { period = 335.298269, docks = {
+    ["The Purple Princess"] = { period = 335.298269, zones = { 1420, 1434, 1458 }, docks = {
         { stop = "1420:Zeppelin to Grom'gol", place = "Undercity", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Zeppelin to Undercity", place = "Grom'gol", arrive = 155.978, leave = 215.978 },
     }, triggers = {
-        { continent = 0, ax = 1886.6, ay = -333.6, bx = 1874.5, by = -365.4, at = 95.982, span = 1.000 },
-        { continent = 0, ax = -11514.4, ay = -392.4, bx = -11485.7, by = -391.2, at = 271.979, span = 1.000 },
+        { continent = 0, ax = 1916.5, ay = -244.0, bx = 1898.0, by = -302.1, at = 92.982, span = 2.000 },
+        { continent = 0, ax = 1898.0, ay = -302.1, bx = 1874.5, by = -365.4, at = 94.982, span = 2.000 },
+        { continent = 0, ax = 1874.5, ay = -365.4, bx = 1850.7, by = -426.2, at = 96.982, span = 2.000 },
+        { continent = 0, ax = 1850.7, ay = -426.2, bx = 1831.1, by = -476.2, at = 98.982, span = 2.000 },
+        { continent = 0, ax = -11578.0, ay = -395.0, bx = -11514.4, by = -392.4, at = 269.979, span = 2.000 },
+        { continent = 0, ax = -11514.4, ay = -392.4, bx = -11459.9, by = -390.1, at = 271.979, span = 2.000 },
+        { continent = 0, ax = -11459.9, ay = -390.1, bx = -11371.2, by = -391.1, at = 273.979, span = 2.999 },
     } },
-    ["The Maiden's Fancy"] = { period = 350.823333, docks = {
+    ["The Maiden's Fancy"] = { period = 350.823333, zones = { 1413, 1434 }, docks = {
         { stop = "1413:Boat to Booty Bay", place = "Ratchet", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Boat to Ratchet", place = "Booty Bay", arrive = 166.808, leave = 226.808 },
     }, triggers = {
-        { continent = 1, ax = -1524.7, ay = -5017.8, bx = -1548.9, by = -5037.3, at = 121.173, span = 1.000 },
-        { continent = 0, ax = -14778.3, ay = 848.8, bx = -14809.2, by = 846.8, at = 278.347, span = 1.000 },
+        { continent = 1, ax = -1457.4, ay = -4958.5, bx = -1501.2, by = -4998.0, at = 118.173, span = 2.000 },
+        { continent = 1, ax = -1501.2, ay = -4998.0, bx = -1548.9, by = -5037.3, at = 120.173, span = 2.000 },
+        { continent = 1, ax = -1548.9, ay = -5037.3, bx = -1598.4, by = -5074.1, at = 122.173, span = 2.000 },
+        { continent = 1, ax = -1598.4, ay = -5074.1, bx = -1647.6, by = -5106.4, at = 124.173, span = 1.999 },
+        { continent = 0, ax = -14678.5, ay = 854.9, bx = -14746.1, by = 850.8, at = 275.348, span = 2.000 },
+        { continent = 0, ax = -14746.1, ay = 850.8, bx = -14838.3, by = 844.9, at = 277.348, span = 2.999 },
+        { continent = 0, ax = -14838.3, ay = 844.9, bx = -14889.9, by = 841.3, at = 280.347, span = 2.000 },
+        { continent = 0, ax = -14889.9, ay = 841.3, bx = -14911.8, by = 839.7, at = 282.347, span = 1.000 },
     } },
-    ["The Bravery"] = { period = 486.226000, docks = {
+    ["The Bravery"] = { period = 486.226000, zones = { 1424, 1437, 1439 }, docks = {
         { stop = "1437:Boat to Southshore", place = "Menethil Harbor", arrive = 0.000, leave = 60.000 },
         { stop = "1424:Boat to Auberdine", place = "Southshore", arrive = 202.265, leave = 262.276 },
         { stop = "1439:Boat to Menethil Harbor", place = "Auberdine", arrive = 345.796, leave = 404.997 },
     }, triggers = {
-        { continent = 0, ax = -2602.3, ay = -898.5, bx = -2585.8, by = -916.5, at = 129.244, span = 0.790 },
-        { continent = 0, ax = -2585.8, ay = -916.5, bx = -2567.8, by = -933.1, at = 130.034, span = 0.800 },
-        { continent = 0, ax = -2567.8, ay = -933.1, bx = -2548.2, by = -948.0, at = 130.834, span = 0.811 },
-        { continent = 0, ax = -2548.2, ay = -948.0, bx = -2529.7, by = -959.7, at = 131.645, span = 0.787 },
-        { continent = 0, ax = -2529.7, ay = -959.7, bx = -2511.1, by = -970.1, at = 132.432, span = 0.812 },
-        { continent = 1, ax = 6231.0, ay = 693.6, bx = 6248.8, by = 691.9, at = 324.694, span = 0.804 },
-        { continent = 1, ax = 6248.8, ay = 691.9, bx = 6265.9, by = 691.6, at = 325.498, span = 0.822 },
-        { continent = 1, ax = 6265.9, ay = 691.6, bx = 6281.5, by = 692.8, at = 326.320, span = 0.821 },
-        { continent = 1, ax = 6281.5, ay = 692.8, bx = 6295.2, by = 695.6, at = 327.141, span = 0.796 },
-        { continent = 1, ax = 6295.2, ay = 695.6, bx = 6308.3, by = 700.4, at = 327.937, span = 0.807 },
-        { continent = 1, ax = 6407.6, ay = 969.0, bx = 6402.9, by = 982.6, at = 422.192, span = 0.796 },
-        { continent = 1, ax = 6402.9, ay = 982.6, bx = 6396.9, by = 995.5, at = 422.988, span = 0.802 },
-        { continent = 1, ax = 6396.9, ay = 995.5, bx = 6389.8, by = 1008.2, at = 423.790, span = 0.800 },
-        { continent = 1, ax = 6389.8, ay = 1008.2, bx = 6381.4, by = 1021.2, at = 424.590, span = 0.791 },
-        { continent = 1, ax = 6381.4, ay = 1021.2, bx = 6371.3, by = 1034.7, at = 425.381, span = 0.808 },
+        { continent = 0, ax = -2617.9, ay = -879.0, bx = -2567.8, by = -933.1, at = 128.441, span = 2.393 },
+        { continent = 0, ax = -2567.8, ay = -933.1, bx = -2511.1, by = -970.1, at = 130.834, span = 2.410 },
+        { continent = 0, ax = -2511.1, ay = -970.1, bx = -2450.2, by = -998.4, at = 133.244, span = 2.389 },
+        { continent = 1, ax = 6212.3, ay = 696.5, bx = 6265.9, by = 691.6, at = 323.887, span = 2.433 },
+        { continent = 1, ax = 6265.9, ay = 691.6, bx = 6308.3, by = 700.4, at = 326.320, span = 2.424 },
+        { continent = 1, ax = 6308.3, ay = 700.4, bx = 6332.0, by = 715.6, at = 328.744, span = 1.615 },
+        { continent = 1, ax = 6410.9, ay = 955.5, bx = 6396.9, by = 995.5, at = 421.395, span = 2.395 },
+        { continent = 1, ax = 6396.9, ay = 995.5, bx = 6371.3, by = 1034.7, at = 423.790, span = 2.399 },
+        { continent = 1, ax = 6371.3, ay = 1034.7, bx = 6333.6, by = 1074.4, at = 426.189, span = 2.401 },
     } },
-    ["The Lady Mehley"] = { period = 329.316297, docks = {
+    ["The Lady Mehley"] = { period = 329.316297, zones = { 1437, 1445 }, docks = {
         { stop = "1437:Boat to Theramore", place = "Menethil Harbor", arrive = 0.000, leave = 60.000 },
         { stop = "1445:Boat to Menethil Harbor", place = "Theramore", arrive = 164.003, leave = 224.003 },
     }, triggers = {
-        { continent = 0, ax = -4026.4, ay = 233.9, bx = -4026.9, by = 265.6, at = 105.544, span = 1.000 },
-        { continent = 1, ax = -3347.7, ay = -5233.6, bx = -3314.7, by = -5240.6, at = 270.137, span = 1.000 },
+        { continent = 0, ax = -4019.7, ay = 135.9, bx = -4025.3, by = 201.4, at = 102.544, span = 2.000 },
+        { continent = 0, ax = -4025.3, ay = 201.4, bx = -4026.9, by = 265.6, at = 104.544, span = 2.000 },
+        { continent = 0, ax = -4026.9, ay = 265.6, bx = -4026.5, by = 350.4, at = 106.544, span = 2.999 },
+        { continent = 0, ax = -4026.5, ay = 350.4, bx = -4026.6, by = 373.5, at = 109.543, span = 1.000 },
+        { continent = 1, ax = -3445.3, ay = -5214.9, bx = -3381.3, by = -5226.7, at = 267.137, span = 2.000 },
+        { continent = 1, ax = -3381.3, ay = -5226.7, bx = -3314.7, by = -5240.6, at = 269.137, span = 2.000 },
+        { continent = 1, ax = -3314.7, ay = -5240.6, bx = -3230.6, by = -5259.5, at = 271.137, span = 2.999 },
+        { continent = 1, ax = -3230.6, ay = -5259.5, bx = -3216.0, by = -5262.8, at = 274.136, span = 1.000 },
     } },
-    ["The Moonspray"] = { period = 316.254199, docks = {
+    ["The Moonspray"] = { period = 316.254199, zones = { 1438, 1439 }, docks = {
         { stop = "1438:Boat to Auberdine", place = "Rut'theran Village", arrive = 0.000, leave = 60.000 },
         { stop = "1439:Boat to Rut'theran Village", place = "Auberdine", arrive = 164.465, leave = 224.465 },
     }, triggers = {
-        { continent = 1, ax = 7571.1, ay = 737.5, bx = 7542.8, by = 729.9, at = 111.332, span = 1.000 },
-        { continent = 1, ax = 7307.2, ay = 1234.8, bx = 7335.8, by = 1246.6, at = 268.330, span = 1.000 },
+        { continent = 1, ax = 7659.5, ay = 751.6, bx = 7599.4, by = 743.7, at = 108.332, span = 2.000 },
+        { continent = 1, ax = 7599.4, ay = 743.7, bx = 7542.8, by = 729.9, at = 110.332, span = 2.000 },
+        { continent = 1, ax = 7542.8, ay = 729.9, bx = 7458.2, by = 701.4, at = 112.332, span = 2.999 },
+        { continent = 1, ax = 7458.2, ay = 701.4, bx = 7429.8, by = 690.9, at = 115.331, span = 1.000 },
+        { continent = 1, ax = 7221.9, ay = 1197.7, bx = 7278.6, by = 1222.7, at = 265.330, span = 2.000 },
+        { continent = 1, ax = 7278.6, ay = 1222.7, bx = 7335.8, by = 1246.6, at = 267.330, span = 2.000 },
+        { continent = 1, ax = 7335.8, ay = 1246.6, bx = 7392.1, by = 1268.6, at = 269.330, span = 2.000 },
+        { continent = 1, ax = 7392.1, ay = 1268.6, bx = 7446.0, by = 1288.1, at = 271.330, span = 2.000 },
     } },
-    ["Feathermoon Ferry"] = { period = 317.045200, docks = {
+    ["Feathermoon Ferry"] = { period = 317.045200, zones = { 1444 }, docks = {
         { stop = "1444:Boat to the Feralas coast", place = "Feathermoon Stronghold", arrive = 0.000, leave = 60.000 },
         { stop = "1444:Boat to Feathermoon Stronghold", place = "The Forgotten Coast", arrive = 119.881, leave = 179.881 },
     }, triggers = {
-        { continent = 1, ax = -4203.1, ay = 2884.9, bx = -4205.7, by = 2858.0, at = 88.232, span = 1.000 },
-        { continent = 1, ax = -5109.4, ay = 3636.3, bx = -5102.9, by = 3663.8, at = 247.230, span = 1.000 },
+        { continent = 1, ax = -4197.7, ay = 2970.6, bx = -4200.8, by = 2911.2, at = 85.232, span = 2.000 },
+        { continent = 1, ax = -4200.8, ay = 2911.2, bx = -4205.7, by = 2858.0, at = 87.232, span = 2.000 },
+        { continent = 1, ax = -4205.7, ay = 2858.0, bx = -4212.4, by = 2796.1, at = 89.232, span = 2.000 },
+        { continent = 1, ax = -4212.4, ay = 2796.1, bx = -4219.5, by = 2734.0, at = 91.232, span = 2.000 },
+        { continent = 1, ax = -5125.0, ay = 3546.1, bx = -5115.3, by = 3607.3, at = 244.230, span = 2.000 },
+        { continent = 1, ax = -5115.3, ay = 3607.3, bx = -5102.9, by = 3663.8, at = 246.230, span = 2.000 },
+        { continent = 1, ax = -5102.9, ay = 3663.8, bx = -5087.0, by = 3718.2, at = 248.230, span = 2.000 },
+        { continent = 1, ax = -5087.0, ay = 3718.2, bx = -5063.1, by = 3776.9, at = 250.230, span = 2.000 },
     } },
-    ["Stormwind Harbor - Auberdine"] = { period = 246.500000, docks = {
+    ["Stormwind Harbor - Auberdine"] = { period = 246.500000, zones = { 1439, 1453 }, docks = {
         { stop = "1453:Boat to Auberdine", place = "Stormwind Harbor", arrive = 17.469, leave = 77.105 },
         { stop = "1439:Boat to Stormwind Harbor", place = "Auberdine", arrive = 135.092, leave = 195.091 },
     }, triggers = {
-        { continent = 1, ax = 6651.2, ay = 935.4, bx = 6640.1, by = 933.2, at = 118.957, span = 0.798 },
-        { continent = 1, ax = 6640.1, ay = 933.2, bx = 6629.8, by = 932.0, at = 119.755, span = 0.836 },
-        { continent = 1, ax = 6629.8, ay = 932.0, bx = 6620.0, by = 931.4, at = 120.591, span = 0.871 },
-        { continent = 1, ax = 6620.0, ay = 931.4, bx = 6611.1, by = 931.2, at = 121.462, span = 0.874 },
-        { continent = 1, ax = 6611.1, ay = 931.2, bx = 6603.3, by = 931.2, at = 122.336, span = 0.826 },
-        { continent = 1, ax = 6438.6, ay = 1033.9, bx = 6431.9, by = 1044.8, at = 212.375, span = 0.818 },
-        { continent = 1, ax = 6431.9, ay = 1044.8, bx = 6425.2, by = 1056.8, at = 213.193, span = 0.798 },
-        { continent = 1, ax = 6425.2, ay = 1056.8, bx = 6418.6, by = 1070.0, at = 213.991, span = 0.781 },
-        { continent = 1, ax = 6418.6, ay = 1070.0, bx = 6412.1, by = 1085.8, at = 214.772, span = 0.820 },
-        { continent = 1, ax = 6412.1, ay = 1085.8, bx = 6406.5, by = 1103.7, at = 215.592, span = 0.808 },
+        { continent = 1, ax = 6665.4, ay = 939.6, bx = 6629.8, by = 932.0, at = 118.064, span = 2.527 },
+        { continent = 1, ax = 6629.8, ay = 932.0, bx = 6603.3, by = 931.2, at = 120.591, span = 2.571 },
+        { continent = 1, ax = 6603.3, ay = 931.2, bx = 6586.8, by = 931.9, at = 123.162, span = 1.704 },
+        { continent = 1, ax = 6452.2, ay = 1013.0, bx = 6431.9, by = 1044.8, at = 210.788, span = 2.405 },
+        { continent = 1, ax = 6431.9, ay = 1044.8, bx = 6412.1, by = 1085.8, at = 213.193, span = 2.399 },
+        { continent = 1, ax = 6412.1, ay = 1085.8, bx = 6399.9, by = 1135.2, at = 215.592, span = 2.401 },
     } },
-    ["Zephras Isle - Mulgore"] = { period = 347.000000, docks = {
+    ["Zephras Isle - Mulgore"] = { period = 347.000000, zones = { 1412, 2521 }, docks = {
         { stop = "2521:Zeppelin to Mulgore", place = "Windshapers Dock", arrive = 0.000, leave = 29.597 },
         { stop = "1412:Zeppelin to Zephras Isle", place = "Skywatch Plateau", arrive = 182.432, leave = 242.436 },
     }, triggers = {
+        { continent = 2991, ax = 2209.8, ay = 948.8, bx = 2167.4, by = 890.7, at = 63.997, span = 2.410 },
+        { continent = 2991, ax = 2167.4, ay = 890.7, bx = 2112.2, by = 846.8, at = 66.407, span = 2.390 },
+        { continent = 2991, ax = 2112.2, ay = 846.8, bx = 2045.5, by = 819.9, at = 68.797, span = 2.396 },
+        { continent = 1, ax = -1045.1, ay = 519.7, bx = -1090.4, by = 502.8, at = 267.233, span = 2.401 },
+        { continent = 1, ax = -1090.4, ay = 502.8, bx = -1138.5, by = 467.2, at = 269.634, span = 2.396 },
+        { continent = 1, ax = -1138.5, ay = 467.2, bx = -1192.6, by = 416.3, at = 272.030, span = 2.394 },
     } },
-    ["Zephras Isle - Dalaran"] = { period = 353.000000, docks = {
+    ["Zephras Isle - Dalaran"] = { period = 353.000000, zones = { 1416, 1421, 1424, 2521 }, docks = {
         { stop = "2521:Zeppelin to Dalaran", place = "High Order Dock", arrive = 0.000, leave = 59.200 },
         { stop = "1416:Zeppelin to Zephras Isle", place = "Dalaran", arrive = 183.953, leave = 243.972 },
     }, triggers = {
+        { continent = 0, ax = 288.2, ay = -85.3, bx = 343.9, by = -39.3, at = 147.173, span = 2.396 },
+        { continent = 0, ax = 343.9, ay = -39.3, bx = 403.7, by = 9.2, at = 149.569, span = 2.394 },
+        { continent = 0, ax = 403.7, ay = 9.2, bx = 457.6, by = 55.5, at = 151.963, span = 2.404 },
+        { continent = 2991, ax = 1903.0, ay = 248.7, bx = 1973.9, by = 251.2, at = 320.036, span = 2.392 },
+        { continent = 2991, ax = 1973.9, ay = 251.2, bx = 2021.7, by = 294.3, at = 322.428, span = 2.405 },
+        { continent = 2991, ax = 2021.7, ay = 294.3, bx = 2021.0, by = 344.3, at = 324.833, span = 2.400 },
     } },
-    ["Powderfuse Port - Steamwheedle Port"] = { period = 271.412500, docks = {
+    ["Powderfuse Port - Steamwheedle Port"] = { period = 271.412500, zones = { 1446, 2548 }, docks = {
         { stop = "2548:Boat to Steamwheedle Port", place = "Powderfuse Port", arrive = 0.000, leave = 60.000 },
         { stop = "1446:Boat to Powderfuse Port", place = "Steamwheedle Port", arrive = 133.442, leave = 193.442 },
     }, triggers = {
-        { continent = 1, ax = -6740.5, ay = -5080.1, bx = -6743.2, by = -5075.8, at = 111.045, span = 0.263 },
-        { continent = 0, ax = -8156.1, ay = -5891.9, bx = -8157.5, by = -5883.7, at = 254.078, span = 0.528 },
+        { continent = 1, ax = -6703.7, ay = -5155.9, bx = -6731.5, by = -5095.1, at = 107.847, span = 2.400 },
+        { continent = 1, ax = -6731.5, ay = -5095.1, bx = -6757.4, by = -5054.8, at = 110.247, span = 2.400 },
+        { continent = 1, ax = -6757.4, ay = -5054.8, bx = -6781.9, by = -5020.8, at = 112.647, span = 2.394 },
+        { continent = 0, ax = -8157.3, ay = -5943.3, bx = -8154.8, by = -5905.7, at = 251.167, span = 2.103 },
+        { continent = 0, ax = -8154.8, ay = -5905.7, bx = -8161.8, by = -5867.4, at = 253.270, span = 2.415 },
+        { continent = 0, ax = -8161.8, ay = -5867.4, bx = -8174.6, by = -5840.6, at = 255.685, span = 2.381 },
     } },
 }

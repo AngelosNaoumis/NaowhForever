@@ -133,10 +133,10 @@ NaowhForever_QoL/
     Flight.lua          the Flight Timer, Flight Games and flight times on the flight map
     FlightPoint.lua     zone-entry and nearby-town flight point reminders
     TransportData.lua   each boat and zeppelin stop with its period and dwell, generated from Journeys data
-    TransportRoutes.lua the ships NauticusClassic timed: cycle, docks and trigger points (ns.TransportRoutes), generated
+    TransportRoutes.lua the ships NauticusClassic timed: cycle, zones, docks and trigger segments (ns.TransportRoutes), generated
     TransportSchedule.lua a timing of each ship from a ride on Forever, used until it is timed in game (ns.TransportSchedule)
     TransportTimes.lua  saved per-realm server-clock sightings and ride timings (ns.TransportTimes)
-    TransportRide.lua   times a ship as the player rides past one of its trigger points (ns.TransportRide)
+    TransportRide.lua   times a ship as the player rides along one of its trigger segments (ns.TransportRide)
     TransportShare.lua  ride timings sent to and kept from your group and guild
     Transport.lua       Boat and Zeppelin Timers: its minimap pins, their tooltips, the world map's dock times, the Zone Timer and Travel settings
     AimTrainer.lua      the Aim Trainer (/nfaim, ns.AimRules, ns.AimPlay, ns.AimOffer)
@@ -981,26 +981,39 @@ NaowhForever_QoL/
   Powderfuse Port-Steamwheedle Port) used to be click-only on Journeys' estimates, which ran 12 to 23%
   long; the Bravery's, Stormwind Harbor's and the Dalaran skycutter's were outside `REFINE_BAND`, so
   a second sighting could never correct them.
-- The Zephras Isle skycutters have no trigger points in the data (NauticusClassicResurrected times
-  them from the dockmaster's arrival announcement), so a click at a dock times them, their tooltips
-  say so instead of asking for a ride, and their docks start no ride watch.
 - The Forever ships are unnamed in the data, so each is named by its docks.
 - NauticusClassic keeps places on the whole-world map, so the generator fits world yards per continent
   on the docks both share and stops if one is 20 yards or more from ours; all twenty-five are within
   14. The fit uses every dock: on the classic docks alone, Powderfuse Port is 26 yards out. Points
   tagged `rawp` (the Zephras Isle side) are already world yards on Zephras Isle's own continent, with
-  x and y swapped. Each Forever trigger is a run of five points, since a single point registered no
-  ride in NauticusClassicResurrected's testing; each point is its own trigger segment.
+  x and y swapped.
+- A trigger segment is a piece of the recorded path, not a point: the path for `WINDOW` (4 s) either
+  side of each of NauticusClassic's trigger points, in `CHORD` (2 s) pieces. A single point misses
+  rides: polled every 0.8 s at about 30 yards a second, a rider standing 15 yards off the recorded line
+  has about one sample inside a point's 20 yards, and often none. That is the likely reason two
+  Alliance boats never timed for a player who rode them all; NauticusClassicResurrected's single point
+  on the Stormwind Harbor boat "tested at zero live registrations", and it recorded the Forever
+  triggers as runs of five points.
+- The Zephras Isle skycutters have no trigger points in the data (NauticusClassicResurrected times
+  them from the dockmaster's arrival announcement), so each of their legs gets one at its middle, on
+  the longest stretch of it on one continent.
+- A piece within `CLEARANCE` (40 yards) of another ship's piece is dropped, so a ride past one cannot
+  time the wrong ship; none is that close today. A piece slower than `MIN_SPEED` (8 yards a second)
+  stops the generator: the ship is docked there.
 - Their round trips replace Journeys' estimate for those ships, and the wiki's 3:59 for Undercity-
   Orgrimmar: a player's tooltip from the game had the Thundercaller about 2:10 in the air, as a
   356 second cycle gives and a 239 second one cannot.
-- No event says where the player is, so while the feature is on in a zone a ship with trigger points
-  docks in, or out at sea, `TransportRide.lua` reads `UnitPosition` every `POLL` (0.8 s) and stops in any
-  other zone. A ride counts when the player is within `TRIGGER_RADIUS` (20 yards) of a trigger
-  point, moved within `SPEED_BAND` (35%) of the ship's speed on that segment and heading its way
-  (`HEADING_MATCH`), and is not on a flight path or swimming: walking, flying or swimming past the
-  point times nothing. Where along the segment the player is gives the moment in the ship's cycle.
-  A ship is timed at most once every `LOCKOUT` (30 s).
+- No event says where the player is, so while the feature is on in a zone a ship passes through, or
+  out at sea, `TransportRide.lua` reads `UnitPosition` every `POLL` (0.8 s) and stops in any other zone.
+  The zones are NauticusClassic's for each ship (`zones`): every dock's, the cities beside the
+  zeppelin towers, and Hillsbrad Foothills and Silverpine Forest under the Dalaran skycutter. A map
+  goes through `SameMap` first, so Zephras Isle's second map (2665) counts as the island.
+- A ride counts when the player is within `TRIGGER_RADIUS` (20 yards) of a trigger segment, between
+  its ends, moved within `SPEED_BAND` (35%) of the ship's speed on that segment and heading its way
+  (`HEADING_MATCH`), and is not on a flight path or swimming: walking, flying or swimming past it times
+  nothing. Where along the segment the player is gives the moment in the ship's cycle; standing at
+  the bow or the stern of a 40 yard deck is under a second either way. A ship is timed at most once
+  every `LOCKOUT` (30 s).
 - Rides are kept per realm in the account settings (`transportRides`), as one cycle start. A ride
   within `RIDE_MISS` (3 s) of a whole number of cycles from the first one keeps it and measures the
   cycle from all of them, when that lands within `RIDE_BAND` (2%) of the data's; one that does not fit

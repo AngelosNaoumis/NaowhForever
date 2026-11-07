@@ -1,9 +1,10 @@
--- TransportRide.lua: times a boat or zeppelin from where the player rides past one of its trigger points (ns.TransportRide).
+-- TransportRide.lua: times a boat or zeppelin from where the player rides along one of its trigger segments (ns.TransportRide).
 local ns = _G.NaowhForever
 
 local GetServerTime, GetTime, UnitPosition = GetServerTime, GetTime, UnitPosition
 local Times = ns.TransportTimes
 local Routes = ns.TransportRoutes
+local SameMap = ns.Shared.Places.SameMap
 
 local PLAYER = "player"
 local POLL = 0.8
@@ -17,9 +18,7 @@ ns.TransportRide = Ride
 
 local watched = {}
 for _, route in pairs(Routes) do
-    if route.triggers[1] then
-        for _, dock in ipairs(route.docks) do watched[ns.TransportData[dock.stop].map] = true end
-    end
+    for _, map in ipairs(route.zones) do watched[map] = true end
 end
 
 local ticker, last
@@ -33,13 +32,14 @@ local function Check(x, y, continent, dx, dy, elapsed, now)
             for _, trigger in ipairs(route.triggers) do
                 local sx, sy = trigger.bx - trigger.ax, trigger.by - trigger.ay
                 local length = math.sqrt(sx * sx + sy * sy)
-                local fx, fy = x - trigger.bx, y - trigger.by
-                if trigger.continent == continent and fx * fx + fy * fy <= TRIGGER_RADIUS * TRIGGER_RADIUS then
+                local along = ((x - trigger.ax) * sx + (y - trigger.ay) * sy) / (length * length)
+                local fx, fy = trigger.ax + sx * along - x, trigger.ay + sy * along - y
+                if trigger.continent == continent and along >= 0 and along <= 1
+                    and fx * fx + fy * fy <= TRIGGER_RADIUS * TRIGGER_RADIUS then
                     local speed = length / trigger.span
                     local ours = moved / elapsed
                     if math.abs(ours - speed) <= SPEED_BAND * speed
                         and (dx * sx + dy * sy) / (moved * length) >= HEADING_MATCH then
-                        local along = ((x - trigger.ax) * sx + (y - trigger.ay) * sy) / (length * length)
                         timed[name] = now
                         Times.Ride(name, GetServerTime() - (trigger.at + trigger.span * along))
                         return
@@ -74,7 +74,7 @@ local function AtSea(map)
 end
 
 function Ride.Watch(map)
-    local wanted = map and (watched[map] or AtSea(map))
+    local wanted = map and (watched[SameMap(map)] or AtSea(map))
     if wanted and not ticker then
         ticker = C_Timer.NewTicker(POLL, Tick)
     elseif not wanted and ticker then
