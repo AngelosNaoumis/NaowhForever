@@ -417,7 +417,15 @@ local function OnEvent(_, event, itemID)
     end
 end
 
+local function MigrateFoodLevel()
+    local db = S.DB()
+    if db.restockFoodLevelMigrated then return end
+    db.restockFoodLevelMigrated = true
+    if db.restockFoodMaxLevel == 0 then db.restockFoodMaxLevel = nil end
+end
+
 local function Apply()
+    MigrateFoodLevel()
     events:UnregisterAllEvents()
     if S.Get("enabled") and (S.Get("restock") or S.Get("autoRepair") or S.Get("sellJunk")) then
         events:RegisterEvent("MERCHANT_SHOW")

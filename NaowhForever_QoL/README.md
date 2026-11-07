@@ -1206,6 +1206,7 @@ NaowhForever_QoL/
   permanent single weapons are not ammunition. Uncached item data is requested once and the
   existing GET_ITEM_INFO_RECEIVED path checks again, without guessing a restock target.
 - Food and drink are Consumable: Food & Drink (`FOOD_CLASS`, `FOOD_SUBCLASS`). Drink is told apart by its spell: `DRINK_ITEM` (159, Refreshing Spring Water) carries the localized Drink spell, so its data is asked for up front.
+- The Installer's Naowh profile shipped Food Maximum Required Level at 0 until November 2026. No food or drink passes that, so the reminder said Food 0 left in every rested area. `MigrateFoodLevel` puts a saved 0 back to the default once per profile (`restockFoodLevelMigrated`); a 0 chosen after that stays.
 - Quivers, ammo pouches and soul bags do not count as room: only plain bags (`PLAIN_BAG`) add free slots.
 - The reminder pulses `FLASH_LOOPS` times when it appears, then stays solid until it is dealt with; refreshed as bags change, only a new appearance pulses.
 - It shows on reaching a rested area, and again `SETTLE_DELAY` after a vendor closes if anything is still short: bags settle a moment after the last purchase or sale. Restocked from the bank, mail or a trade, the list follows while it is up.
