@@ -1,9 +1,40 @@
 # Changelog
 
-## Unreleased
+## 1.2.12
+
+### Added
+- Blessings: paladins running PallyPower show in the Blessings window with their blessings, aura and
+  cooldowns, and Auto-Assign plans around them.
+- Blessings: the Seal Button shows your seal and its time left while it is up.
+- Buffs & Consumables: Warn With Seconds Left under Personal Buffs gives your class buffs, like
+  Battle Shout, their own warning time. Until you set it, it follows Warn With Minutes Left. Find it
+  in Auras & Buffs > Buffs & Consumables.
 
 ### Changed
 - Dungeon Journal: its data is updated to WoW Forever build 1.60.1.70840.
+- Blessings: the Blessings window notes when paladins running PallyPower are listed, since their
+  blessings can only be changed in PallyPower.
+
+### Fixed
+- Professions: as a druid in a form, Create, Create All and the Crafting Queue's Start now leave the
+  form and craft, instead of failing with "You are in shapeshift form".
+- Professions: opening a profession no longer flashes Blizzard's window before Naowh's.
+- Professions: dragging the profession window in combat no longer raises a blocked-action error, and
+  a drag that combat interrupts ends where the window is.
+- RestedXP Naowh Window (V2): Set Up New Characters and the This Character Set Up button are back,
+  and Set Up now turns on RestedXP's new interface and the Naowh theme as you reload, never before.
+- Flight Point Reminder: entering a zone no longer reminds you of a flight point in the next zone
+  over, such as Brackenwall Village when you enter The Barrens.
+- Chat Zones: no more Lua errors in instances from secret chat names, Group Finder listings or their
+  tooltips.
+- Map Pins: clicking a zone exit or dock pin on the world map in combat no longer raises a
+  blocked-action error.
+- Waypoint Pin: the card's outline no longer draws over the minimap when the spot is behind it.
+- Blessings: paladins in your group running Naowh Forever no longer show as "No reply" in the
+  Blessings window, and plans the leader sets for them now reach them.
+- Blessings: Load Preset no longer says it loaded when the only paladins it found run PallyPower.
+- NPC Gossip: bankers now open the bank straight away, as the card says.
+- Waypoint Pin: an impossible distance or speed from the game no longer throws a Lua error.
 
 ## 1.2.11
 
