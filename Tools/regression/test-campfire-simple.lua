@@ -943,6 +943,42 @@ do
         and l.tipText():find("+2.5% Critical Strike | Zhuozi", 1, true))
 end
 
+-- Other client languages, as wago.tools build 1.60.1.70840 spells them: Camp Benefits names each line after
+-- the camp object, as its craft spell is named, never as the bonus aura is (Fuerza extra).
+do
+    local CRAFT = { [WHEEL] = 1230171, [KIT] = 1230117, [CANDLE] = 1229705, [BANNER] = 1229504 }
+    local es = Fixture({ campStyle = "simple" })
+    es.spellNames[WHEEL], es.spellNames[KIT] = "Fuerza extra", "Aguante mejorado"
+    es.spellNames[CANDLE], es.spellNames[BANNER] = "Intelecto mejorado", "Esp\195\173ritu mejorado"
+    es.spellNames[CRAFT[WHEEL]], es.spellNames[CRAFT[KIT]] = "Rueda de afilar", "Equipo de primeros auxilios"
+    es.spellNames[CRAFT[CANDLE]], es.spellNames[CRAFT[BANNER]] = "Vela de incienso", "Estandarte de facci\195\179n"
+    es.fire("PLAYER_LOGIN")
+    es.camp({ "Obtienes los siguientes beneficios de campamento:", "Rueda de afilar: Aumenta la fuerza en 34.",
+        "Equipo de primeros auxilios: Aumenta el aguante en 56.", "Vela de incienso: Aumenta el intelecto en 25.",
+        "Estandarte de facci\195\179n: Aumenta el esp\195\173ritu en 32." })
+    local esBar = es.bar()
+    check("Spanish: each line matched by its object's craft spell, with its amount",
+        es.labels(esBar) == "+34 Str +56 Sta +25 Int +32 Spi")
+    es.tips = {}
+    esBar.scripts.OnEnter(esBar)
+    check("Spanish: the tooltip names each object as the client does",
+        es.tipText():find("+34 Strength | Rueda de afilar", 1, true)
+        and es.tipText():find("+32 Spirit | Estandarte de facci\195\179n", 1, true))
+
+    local fr = Fixture({ campStyle = "simple" })
+    fr.spellNames[WHEEL], fr.spellNames[CRAFT[WHEEL]] = "Force suppl\195\169mentaire", "Meule \195\160 aiguiser"
+    fr.fire("PLAYER_LOGIN")
+    fr.camp({ "Meule \195\160 aiguiser\194\160: Force augment\195\169e de 34." })
+    check("French: the no-break space before the colon is not part of the name", fr.labels(fr.bar()) == "+34 Str")
+
+    local de = Fixture({ campStyle = "simple" })
+    de.spellNames[KIT], de.spellNames[CRAFT[KIT]] = "Verbesserte Ausdauer", "Verbandtasche"
+    de.fire("PLAYER_LOGIN")
+    de.camp({ "Sanit\195\164tskasten: Ausdauer um56 erh\195\182ht." })
+    check("German: the First Aid Kit's line, named unlike its craft spell, is still read",
+        de.labels(de.bar()) == "+56 Sta")
+end
+
 -- No bonuses read, Resting, and every state sharing one layout.
 do
     local s = Fixture({ campStyle = "simple" })

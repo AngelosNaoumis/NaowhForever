@@ -10,6 +10,7 @@ local BIT_BASE = 2
 local THOUSANDS = 3
 local FIRST_LINE = 2
 local LINE = { PATTERN = "^%s*(.-)%s*:%s*(%S.-)%s*$", WIDE = "^%s*(.-)%s*\239\188\154%s*(%S.-)%s*$",
+    NO_BREAK = "^%s*(.-)%s*\194\160:%s*(%S.-)%s*$",
     NUMBER = "(%d+)([%.,]?)(%d*)", MAX_UNKNOWN = 4, SHORT_EFFECT = 28, RETRY = 5 }
 local COLOR_CODE, COLOR_END = "|c%x%x%x%x%x%x%x%x", "|r"
 local WHOLE, DECIMAL = "%d", "%.1f"
@@ -77,21 +78,24 @@ local function Hidden(feature)
     return feature and hidden and hidden[feature.id] and true or false
 end
 
+local function Learn(GetSpellName, feature, field, id)
+    if feature[field] then return true end
+    local name = GetSpellName(id)
+    if name == nil or Secret(name) or type(name) ~= "string" or name == "" then return false end
+    feature[field] = name
+    featureByName[name] = feature
+    return true
+end
+
 function Reader.Names()
     local GetSpellName = C_Spell and C_Spell.GetSpellName
     if Reader.named or not GetSpellName then return end
     local all = true
     for i = 1, #FEATURES do
         local feature = FEATURES[i]
-        if not feature.localName then
-            local name = GetSpellName(feature.id)
-            if name ~= nil and not Secret(name) and type(name) == "string" and name ~= "" then
-                feature.localName = name
-                featureByName[name] = feature
-            else
-                all = false
-            end
-        end
+        local named = Learn(GetSpellName, feature, "localName", feature.id)
+        if feature.craft then named = Learn(GetSpellName, feature, "craftName", feature.craft) and named end
+        all = all and named
     end
     Reader.named = all
 end
@@ -142,7 +146,8 @@ function Reader.Unknown(text)
 end
 
 function Reader.Line(row)
-    local label, effect = row:match(LINE.PATTERN)
+    local label, effect = row:match(LINE.NO_BREAK)
+    if not label then label, effect = row:match(LINE.PATTERN) end
     if not label then label, effect = row:match(LINE.WIDE) end
     if not label or label == "" or label:find("[%d|]") or label:find("ID$") then return false end
     local feature = Reader.FeatureOf(label, effect)

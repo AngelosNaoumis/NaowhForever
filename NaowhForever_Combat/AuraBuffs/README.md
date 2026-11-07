@@ -280,6 +280,12 @@ NaowhForever_Combat/AuraBuffs/
   it, its numbers read in the description's order (the Lute's armor, stats, resistances; the Mana
   Well's mana, then its 5 seconds). The tooltip is kept once per Camp Benefits as soon as a read
   finds anything; an empty read is tried again at most every `LINE.RETRY` seconds.
+- A tooltip line is named after the camp object (Rueda de afilar), never the bonus aura (Fuerza
+  extra), and the object's Tier 1 craft spell (`craft`) has that name in each client language
+  (wago.tools build 1.60.1.70840). The English `aliases` alone left every other language
+  unread. First Aid Kit's line is the exception in German (Sanitaetskasten, its spell Verbandtasche)
+  and Traditional Chinese, so those two names are among its aliases, as byte escapes. French puts a
+  no-break space before the colon, which `%s` does not match (`LINE.NO_BREAK`).
 - The Round countdown and ring use `SetCooldownFromExpirationTime` with the aura's deadline and
   full duration. A buff that was already running before login can have a negative reconstructed
   start, so it is not handed to the cooldown's start-time setter. Missing, zero or expired
