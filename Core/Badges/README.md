@@ -26,7 +26,8 @@ Core/Badges/
 ## Staff list
 
 Keyed by region (`GetCurrentRegion`), then character GUID. A tier is "naowh", "developer",
-"moderator", "staff" or "ellesmere", or a table with a personal title. `/nf badges id` gives the code to
+"moderator", "staff" or "ellesmere", or a table with a personal title. A supporter given a badge by
+hand, outside Patreon, takes "legendary", "epic" or "basic". `/nf badges id` gives the code to
 add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patron one.
 
 | GUID                   | Who      |
@@ -45,6 +46,27 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-6948-003D9C6A   | Ns       |
 | Player-6940-006C8853   | Grim     |
 | Player-6940-007D2D74   | Grim     |
+| Player-6931-0061A63C   | Mulk     |
+| Player-6931-0061A6B9   | Mulk     |
+| Player-4618-00D9A04C   | Mulk     |
+| Player-4618-00EB8379   | Mulk     |
+| Player-4618-016333B4   | Mulk     |
+| Player-4618-01633CAE   | Mulk     |
+| Player-4618-01634AC6   | Mulk     |
+| Player-4618-016DB1C9   | Mulk     |
+| Player-4618-01709804   | Mulk     |
+| Player-4618-017AC192   | Mulk     |
+| Player-4618-017E4E00   | Mulk     |
+| Player-4618-01857A6C   | Mulk     |
+| Player-4618-0186A019   | Mulk     |
+| Player-4618-018705FA   | Mulk     |
+| Player-4618-018708BB   | Mulk     |
+| Player-4618-01889589   | Mulk     |
+| Player-4618-01889A30   | Mulk     |
+| Player-4618-018ABDA1   | Mulk     |
+| Player-4618-01920693   | Mulk     |
+| Player-4618-01921AD0   | Mulk     |
+| Player-4618-0193A583   | Mulk     |
 
 ## Why
 
@@ -97,6 +119,9 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
   addon chat is locked down.
 - The other faction cannot be whispered on Forever, so it sees patron badges as the list has
   them, unconfirmed. The team's badges are reviewed in a pull request and need no confirmation.
+- A supporter given a badge by hand is in Staff.lua under a patron tier: reviewed in the pull
+  request like the team's, so it needs no claim and every faction sees it. It does not make them
+  the team, so previews and test banners stay closed to them.
 - A stranger's first chat line shows without the badge (lines cannot be changed once printed);
   the next one has it. The group banner waits for the yes.
 - The Your Badge card sits at the top of Profiles, since your badge belongs to you rather than to a

@@ -196,7 +196,8 @@ end
 
 local function IsStaff(guid)
     for _, list in pairs(ns.BADGE_STAFF or {}) do
-        if list[guid] then return true end
+        local entry = list[guid]
+        if entry and not PATRON_TIER[type(entry) == "table" and entry.tier or entry] then return true end
     end
     return false
 end
