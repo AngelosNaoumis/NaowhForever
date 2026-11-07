@@ -137,7 +137,8 @@ NaowhForever_Combat/ConsumableBar/
   its own, NF Health healthstones and healing potions, NF Healthstone and NF Health Potion one of
   those each, NF Mana mana potions, NF Food food and drink (food alone with Macros' Food Only on),
   NF Drink drinks, NF Bandage bandages. Scan Bags and Ask to Add skip what is covered; adding one
-  by hand asks first.
+  by hand asks first. A food that is a drink too (`ns.IsFoodAndDrink`, an Enriched Manna Biscuit) is
+  covered by the food button and by the drink button and NF Drink, which can use it.
 - Either Food & Drink button on the bar counts as the buttons being there (`CB.HasFoodButtons`), so
   one left alone still keeps the Food & Drink Bar aside and its keys working. The drink button
   counts only for a class with mana: a warrior on a caster's profile does not see it, so it does not

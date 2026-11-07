@@ -42,8 +42,10 @@ local KNOWN = {
 }
 
 -- Food and drink by the spell they cast, as Shared/Game/Consumables.lua reads them.
-local SPELL_NAMES = { [8932] = 'Food', [21023] = 'Food', [8766] = 'Drink', [1179] = 'Drink' }
+local SPELL_NAMES = { [8932] = 'Food', [21023] = 'Food', [8766] = 'Drink', [1179] = 'Drink',
+    [13724] = 'Enriched Manna Biscuit' }
 KNOWN[8766] = { 132794, 0, 1135, 5 }   -- Morning Glory Dew
+KNOWN[13724] = { 133989, 0, 1226814, 5 } -- Enriched Manna Biscuit, food and drink in one
 KNOWN[1179] = { 132794, 0, 430, 5 }    -- Ice Cold Milk
 KNOWN[13444] = { 134854, 0, 17531, 1 } -- Major Mana Potion
 
@@ -2330,13 +2332,14 @@ do
         and pointed[1] == 8932 and pointed[2] == 8766)
     s.bags[0] = {}
     check('and holds NF Food back', s.pageRow('adding', 'NF Food').needs() == false)
-    s.bags[0] = { 8932, 8766 }
+    s.bags[0] = { 8932, 8766, 13724 }
     s.CB.ScanBags()
-    check('it covers drinks, not food', table.concat(s.settings.consumableBarItems, ',') == 'smart:drink,8932')
+    check('it covers drinks and a food that is a drink too, not food',
+        table.concat(s.settings.consumableBarItems, ',') == 'smart:drink,8932')
     s.set('consumableBarItems', { 'smart:food' })
     s.CB.ScanBags()
-    check('the food button alone covers food, not drinks', table.concat(s.settings.consumableBarItems, ',')
-        == 'smart:food,8766')
+    check('the food button alone covers food and a food that is a drink too, not drinks',
+        table.concat(s.settings.consumableBarItems, ',') == 'smart:food,8766')
     local box = s.editor()
     s.cursor = { 'item', 8932 }
     box.scripts.OnReceiveDrag(box)

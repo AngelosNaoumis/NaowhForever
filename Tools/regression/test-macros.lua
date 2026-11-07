@@ -32,6 +32,8 @@ local ITEMS = {
     [8932] = { FOOD, 45 },    -- Alterac Swiss
     [5349] = { FOOD, 1 },     -- Conjured Muffin
     [4599] = { FOOD, 35 },    -- Cured Ham Steak
+    [13724] = { "Enriched Manna Biscuit", 45 },   -- its own spell, starting a Food and a Drink
+    [238638] = { FOOD, 55 },  -- Filet o' Flank
 }
 
 local function Fixture(opts)
@@ -409,6 +411,26 @@ do
     t.Bags({ 5349, 8932 })
     t.Fire("BAG_UPDATE_DELAYED")
     Check("conjured food first, no drink", t.Body("NF Food"), "#showtooltip\n/use item:5349")
+end
+
+-- A food that is also a drink fills both, used once by NF Food, over food and drink of its level.
+do
+    local t = Fixture({ settings = { food = true, drink = true }, qol = { foodBar = true },
+        bags = { 8932, 8766, 13724 } })
+    t.Fire("PLAYER_ENTERING_WORLD")
+    Check("biscuit is food and drink, used once", t.Body("NF Food"), "#showtooltip\n/use item:13724")
+    Check("biscuit is the drink", t.Body("NF Drink"), "#showtooltip\n/use item:13724")
+    Check("bar's food is the biscuit", t.FoodBar().buttons[1].attrs.item1, "item:13724")
+    Check("bar's drink is the biscuit", t.FoodBar().buttons[2].attrs.item1, "item:13724")
+    t.Bags({ 13724, 8079 })
+    t.Fire("BAG_UPDATE_DELAYED")
+    Check("conjured drink still first", t.Body("NF Food"), "#showtooltip\n/use item:13724\n/use item:8079")
+    t.Bags({ 13724, 238638 })
+    t.Fire("BAG_UPDATE_DELAYED")
+    Check("a higher level food still first", t.Body("NF Food"), "#showtooltip\n/use item:238638\n/use item:13724")
+    t = Fixture({ class = "WARRIOR", qol = { foodBar = true }, bags = { 8932, 13724 } })
+    t.Fire("PLAYER_ENTERING_WORLD")
+    Check("no mana, no lead over food of its level", t.FoodBar().buttons[1].attrs.item1, "item:8932")
 end
 
 -- Nothing carried: a bare #showtooltip macro is made to place on a bar, and an existing one is left as it was.

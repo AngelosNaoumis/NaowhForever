@@ -118,7 +118,7 @@ local BODIES = {
     mana = function() return UseLines(ItemLine(FirstCarried(ns.MANA_POTIONS))) end,
     food = function()
         local food, drink = ns.BestFoodAndDrink()
-        if S.Get("foodOnly") then drink = nil end
+        if S.Get("foodOnly") or drink == food then drink = nil end
         return UseLines(ItemLine(food), ItemLine(drink))
     end,
     drink = function() return UseLines(ItemLine((select(2, ns.BestFoodAndDrink())))) end,

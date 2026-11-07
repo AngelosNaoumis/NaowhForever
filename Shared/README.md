@@ -312,6 +312,7 @@ Colors and sizes come from `ns.THEME` and `Style.lua`, never written as numbers 
   (EventToastManagerFrame), so a toast waits for that to close, and for any other toast shown, then takes its
   place. A toast turned off while it waits is skipped and the next one in line shows. Training's Level-Up Toast keeps its own window and is not one of these.
 - `ConsumableLevelAllowed` checks the fifth `C_Item.GetItemInfo` return (minimum level), not item level. Unknown or secret requirements are skipped until item data is available. Food and drink keep their existing ranking among eligible items.
+- Some items restore health and mana in one (`FOOD_AND_DRINK`, `ns.IsFoodAndDrink`): the Enriched Manna Biscuit casts a spell of its own that starts a Food and a Drink, others restore both in one spell, and a few Food spells restore mana too, so their spell name does not say it and they are known by ID. That is every such item in Forever's tables but the battleground rations, which work only in their battleground (SpellCastingRequirements). `BestFoodAndDrink` offers each as food and as drink, and for a class that uses mana half a level above its required level: over food and drink of its own level, never over a higher level or a conjured one. `ns.IsDrink` stays false for them, so a warrior or rogue still gets them as food.
 
 
 What a comment in the code used to say, in short. The house rules behind it are in

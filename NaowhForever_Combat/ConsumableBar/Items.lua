@@ -42,15 +42,19 @@ local function NotADrink(itemID)
     return not ns.IsDrink(itemID)
 end
 
+local function Drinkable(itemID)
+    return ns.IsDrink(itemID) or ns.IsFoodAndDrink(itemID)
+end
+
 local COVERS = {
     [CB.FOOD] = { ask = ns.L("The food button already uses your best food. Add %s too?"), category = "food",
         also = NotADrink },
     [CB.DRINK] = { ask = ns.L("The drink button already uses your best drink. Add %s too?"), category = "food",
-        also = ns.IsDrink },
+        also = Drinkable },
     ["macro:food"] = { ask = ns.L("NF Food already uses your best food and drink. Add %s too?"),
         category = "food", also = NotADrinkForFoodOnly },
     ["macro:drink"] = { ask = ns.L("NF Drink already uses your best drink. Add %s too?"), category = "food",
-        also = ns.IsDrink },
+        also = Drinkable },
     ["macro:health"] = { ask = ns.L("NF Health already uses your best healthstone or healing potion. Add %s too?"),
         category = "healthstone", list = "HEALING_POTIONS" },
     ["macro:healthstone"] = { ask = ns.L("NF Healthstone already uses your best healthstone. Add %s too?"),
