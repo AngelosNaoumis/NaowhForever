@@ -692,8 +692,13 @@ local function PaintRow(row)
     end
     badge:SetTexture(tier.chat)
     badge:ClearAllPoints()
-    local width = math.min(name:GetStringWidth(), name:GetWidth())
-    badge:SetPoint("LEFT", name, "LEFT", width + LIST.gap, -BADGE_DROP)
+    local rank = row.NameFrame.RankIcon
+    if rank:IsShown() then
+        badge:SetPoint("LEFT", rank, "RIGHT", LIST.gap, -BADGE_DROP)
+    else
+        local width = math.min(name:GetStringWidth(), name:GetWidth())
+        badge:SetPoint("LEFT", name, "LEFT", width + LIST.gap, -BADGE_DROP)
+    end
     badge:Show()
 end
 

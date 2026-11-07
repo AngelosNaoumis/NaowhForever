@@ -187,6 +187,7 @@ local function fixture(withChatUtil, settings, flag)
             name.GetWidth = function() return 120 end
             local nameFrame = frame()
             nameFrame.Name = name
+            nameFrame.RankIcon = frame()
             nameFrame.CreateTexture = function()
                 local t = frame()
                 t.SetPoint = function(texture, point, relativeTo, _, x)
@@ -746,6 +747,9 @@ do  -- the guild and community member list
     check("a row reused for someone else hides its badge", not badge:IsShown())
     scroll:Fill(dev, "Player-1-DEV")
     check("and shows it again for a badged member", badge:IsShown())
+    dev.NameFrame.RankIcon:Show()
+    scroll:Fill(dev, "Player-1-DEV")
+    check("an officer's badge goes after the rank icon", badge.relativeTo == dev.NameFrame.RankIcon)
     s.S.Set("badgeChat", false)
     s.ns.Apply()
     check("badges off: the list is no longer followed", scroll.callbacks.OnInitializedFrame == nil)
