@@ -955,7 +955,51 @@ check("a vendor's recipe starts with the item's name, then its price",
         == recipeName .. "\nSold for <money 500> by:")
 check("a vendor with no recorded price, behind a reputation",
     Learn({ source = "vendor", recipe = RECIPE_ITEM, rep = "Argent Dawn - Honored",
-        vendors = { { 1, "Vendor", "A", 0, 0, 0 } } }) == recipeName .. "\nSold (needs Argent Dawn - Honored) by:")
+        vendors = { { 1, "Vendor", "A", 0, 0, 0 } } })
+        == recipeName .. "\nSold (needs Argent Dawn - Honored) by (visit one to see its price):")
+
+-- A merchant's recipe prices are kept as the merchant window shows them: gold, and a currency or token.
+local FAVOR, GOLD_RECIPE = 3402, 4293
+local merchantItems = { RECIPE_ITEM, GOLD_RECIPE, 2589 }
+local saved = { env.GetMerchantNumItems, env.GetMerchantItemID, env.C_MerchantFrame, env.GetMerchantItemCostInfo,
+    env.GetMerchantItemCostItem, env.C_CurrencyInfo, env.C_Item.GetItemInfoInstant }
+env.GetMerchantNumItems = function() return #merchantItems end
+env.GetMerchantItemID = function(i) return merchantItems[i] end
+env.C_MerchantFrame = { GetItemInfo = function(i)
+    if i == 1 then return { price = 0, stackCount = 1, numAvailable = -1, hasExtendedCost = true } end
+    return { price = i == 2 and 4000 or 10, stackCount = 1, numAvailable = -1, hasExtendedCost = false }
+end }
+env.GetMerchantItemCostInfo = function(i) return i == 1 and 1 or 0 end
+env.GetMerchantItemCostItem = function() return 1, 40, "|Hcurrency:3402|h", "Merchant's Favor" end
+env.C_CurrencyInfo = {
+    GetCurrencyIDFromLink = function(link) return tonumber(link:match("currency:(%d+)")) end,
+    GetCurrencyInfo = function(id) if id == FAVOR then return { name = "Merchant's Favor", quantity = 12 } end end,
+}
+env.C_Item.GetItemInfoInstant = function(id)
+    return id, nil, nil, nil, nil, (id == RECIPE_ITEM or id == GOLD_RECIPE) and 9 or 7
+end
+env.Enum.ItemClass.Recipe = 9
+local refreshes = 0
+local refresh = ns.ProfWindowRefresh
+ns.ProfWindowRefresh = function(...) refreshes = refreshes + 1 return refresh(...) end
+Fire("MERCHANT_SHOW")
+local costs = account.profRecipeCosts or {}
+check("a recipe sold for a currency is kept with its amount",
+    costs[RECIPE_ITEM] and costs[RECIPE_ITEM].currency == FAVOR and costs[RECIPE_ITEM].amount == 40
+    and costs[RECIPE_ITEM].price == 0)
+check("a recipe sold for gold is kept with its price", costs[GOLD_RECIPE] and costs[GOLD_RECIPE].price == 4000
+    and costs[GOLD_RECIPE].currency == nil)
+check("a merchant's other goods are not kept", costs[2589] == nil)
+local seenRefreshes = refreshes
+Fire("MERCHANT_UPDATE")
+check("the same prices seen again redraw nothing", refreshes == seenRefreshes)
+check("the Learn pane names the currency and what you have",
+    Learn({ source = "vendor", recipe = RECIPE_ITEM, vendors = { { 1, "Vendor", "A", 0, 0, 0 } } })
+        == recipeName .. "\nSold for 40 Merchant's Favor (you have 12) by:")
+ns.ProfWindowRefresh = refresh
+env.GetMerchantNumItems, env.GetMerchantItemID, env.C_MerchantFrame, env.GetMerchantItemCostInfo,
+    env.GetMerchantItemCostItem, env.C_CurrencyInfo, env.C_Item.GetItemInfoInstant = unpack(saved)
+account.profRecipeCosts = nil
 local sold = RF.Describe({ spell = 1, skill = 1, source = "vendor", recipe = RECIPE_ITEM,
     sellers = { { "Seller", "AH", 1, 1500 }, { "Horde Seller", "H", 1 } } })
 check("a seller named by its zone only: its price, no waypoint, none of the other faction",

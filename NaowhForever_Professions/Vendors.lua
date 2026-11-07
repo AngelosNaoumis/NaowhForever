@@ -364,6 +364,7 @@ end
 
 P.Vendors = {
     IsVendorItem = IsVendorItem,
+    MerchantInfo = MerchantInfo,
     Price = VendorPrice,
     CraftableWithVendor = CraftableWithVendor,
     Open = Open,

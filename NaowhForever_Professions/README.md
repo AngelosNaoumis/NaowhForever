@@ -313,6 +313,13 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   Cooking, Fishing, First Aid, as Blizzard's book does.
 - Profession trainers on Forever ask less than Wowhead lists, so what a trainer window asks is kept
   account-wide, matched by name within its profession (the service list has no spell IDs).
+- Merchants teach recipe prices the same way: while Unlearned Recipes is on, each recipe item a merchant
+  lists is kept account-wide (`profRecipeCosts`) with its gold price and its first currency or token
+  cost. Forever sells many recipes for Merchant's Favor, a price no data file holds; the Learn pane names
+  the amount and how much you have, and a vendor recipe with no price yet asks you to visit a seller.
+  A currency is told from a token by `GetMerchantItemCostItem`'s currency name, as Blizzard's merchant
+  frame does. A cost whose data has not loaded is skipped until MERCHANT_UPDATE, so a token recipe is
+  never kept as a gold one, and prices seen again unchanged redraw nothing.
 - Forever's GetTrainerServiceInfo returns its values in another order than documented (the third is
   the icon's file ID, seen 2026-09-30), so the kind is whichever value is one of its words and the
   icon the first number over 1000. A trainer's services can arrive a moment after it opens with no

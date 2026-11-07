@@ -6,11 +6,13 @@ local T = ns.THEME
 local P = ns.Professions
 local S = P.Settings
 local C = P.C
+local V = P.Vendors
 local Hex = P.Text.Hex
 
 local NEAREST = 3
 local PERCENT = C.PERCENT
 local TRAINER_SCAN_DELAY = 0.2
+local CLASS_INDEX = 6
 local NO_MAP = 0
 local HORDE, ALLIANCE, ANY = "H", "A", "-"
 local ENGLISH = "enUS"
@@ -39,7 +41,10 @@ local TEXT_ALSO_QUEST = ns.L(" Also a reward from the quest ")
 local TEXT_TEACHER = ns.L("Taught for free by the Artisan doctor:")
 local TEXT_VENDOR_OTHER = ns.L("%s\nOnly the other faction sells it; try the Auction House.")
 local TEXT_SOLD_FOR = ns.L("%s\nSold for %s%s by:")
-local TEXT_SOLD = ns.L("%s\nSold%s by:")
+local TEXT_SOLD = ns.L("%s\nSold%s by (visit one to see its price):")
+local TEXT_COST_PART = "%d %s"
+local TEXT_COST_JOIN = " + "
+local TEXT_HAVE = ns.L(" (you have %d)")
 local TEXT_NEEDS = ns.L(" (needs %s)")
 local TEXT_DROPS_FROM = ns.L("%s\nDrops from:")
 local TEXT_BOSS = "%s - %s"
@@ -116,6 +121,12 @@ local function Overrides()
     local account = ns.AccountSettings()
     account.profTrainerReq = account.profTrainerReq or {}
     return account.profTrainerReq
+end
+
+local function SeenCosts()
+    local account = ns.AccountSettings()
+    account.profRecipeCosts = account.profRecipeCosts or {}
+    return account.profRecipeCosts
 end
 
 local function Skill(r)
@@ -268,6 +279,20 @@ local function DescribeTeacher(out)
     end
 end
 
+local function CostText(seen)
+    local currency = seen.currency and C_CurrencyInfo.GetCurrencyInfo(seen.currency)
+    local part
+    if currency and currency.name then
+        part = TEXT_COST_PART:format(seen.amount, currency.name) .. TEXT_HAVE:format(currency.quantity or 0)
+    elseif seen.item then
+        part = TEXT_COST_PART:format(seen.amount, ItemName(seen.item, TEXT_UNKNOWN))
+            .. TEXT_HAVE:format(C_Item.GetItemCount(seen.item, true) or 0)
+    end
+    if not part then return Money(seen.price) end
+    if seen.price > 0 then return Money(seen.price) .. TEXT_COST_JOIN .. part end
+    return part
+end
+
 local function DescribeVendor(r, out)
     local sellers = Nearest(r.vendors or EMPTY)
     local unplaced = {}
@@ -279,9 +304,12 @@ local function DescribeVendor(r, out)
         return
     end
     local name = ItemName(r.recipe, TEXT_RECIPE)
+    local seen = r.recipe and SeenCosts()[r.recipe]
     local price = sellers[1] and sellers[1][NPC_PRICE] or unplaced[1] and unplaced[1][SELLER_PRICE]
     local needs = r.rep and TEXT_NEEDS:format(r.rep) or ""
-    if price then
+    if seen then
+        Para(out, TEXT_SOLD_FOR:format(name, CostText(seen), needs))
+    elseif price then
         Para(out, TEXT_SOLD_FOR:format(name, Money(price), needs))
     else
         Para(out, TEXT_SOLD:format(name, needs))
@@ -423,6 +451,46 @@ local function ScanTrainer()
     if changed and ns.ProfWindowRefresh then ns.ProfWindowRefresh(true) end
 end
 
+local function ExtendedCost(i)
+    for j = 1, GetMerchantItemCostInfo(i) or 0 do
+        local texture, amount, link, currencyName = GetMerchantItemCostItem(i, j)
+        if texture and link then
+            if currencyName then
+                local currency = C_CurrencyInfo.GetCurrencyIDFromLink(link)
+                if currency and currency > 0 then return currency, nil, amount end
+            else
+                local item = C_Item.GetItemInfoInstant(link)
+                if item then return nil, item, amount end
+            end
+        end
+    end
+end
+
+local function Remember(costs, itemID, price, currency, item, amount)
+    local old = costs[itemID]
+    if old and old.price == price and old.currency == currency and old.item == item and old.amount == amount then
+        return false
+    end
+    costs[itemID] = { price = price, currency = currency, item = item, amount = amount }
+    return true
+end
+
+local function ScanMerchant()
+    local costs, changed = SeenCosts(), false
+    for i = 1, GetMerchantNumItems() do
+        local itemID = GetMerchantItemID(i)
+        if itemID and select(CLASS_INDEX, C_Item.GetItemInfoInstant(itemID)) == Enum.ItemClass.Recipe then
+            local price, _, _, extended = V.MerchantInfo(i)
+            local currency, item, amount
+            if extended then currency, item, amount = ExtendedCost(i) end
+            if price and (not extended or amount) and Remember(costs, itemID, price, currency, item, amount) then
+                changed = true
+            end
+        end
+    end
+    if changed and ns.ProfWindowRefresh then ns.ProfWindowRefresh() end
+end
+
 local function RunTrainerScan()
     trainerQueued = false
     ScanTrainer()
@@ -502,6 +570,13 @@ local function Apply()
     if not On() then return end
     events:RegisterEvent("TRAINER_SHOW")
     events:RegisterEvent("TRAINER_UPDATE")
+    events:RegisterEvent("MERCHANT_SHOW")
+    events:RegisterEvent("MERCHANT_UPDATE")
+end
+
+local function OnEvent(_, event)
+    if event == "MERCHANT_SHOW" or event == "MERCHANT_UPDATE" then return ScanMerchant() end
+    QueueTrainerScan()
 end
 
 local function OnSettingChanged(key)
@@ -510,7 +585,7 @@ local function OnSettingChanged(key)
     if ns.ProfWindowRefresh then ns.ProfWindowRefresh(true) end
 end
 
-events:SetScript("OnEvent", QueueTrainerScan)
+events:SetScript("OnEvent", OnEvent)
 hooksecurefunc(S, "Set", OnSettingChanged)
 hooksecurefunc(ns, "Apply", Apply)
 
