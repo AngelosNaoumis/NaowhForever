@@ -222,9 +222,13 @@ NaowhForever_Combat/AuraBuffs/
   is chosen or food needs it (Only If I Carry One off for food). Icon Size defaults to 48 and goes to 96; a profile that saved a
   size keeps it. The row is sized to its icons and anchored by its centre, so reminders spread left
   and right of the saved spot, and one sits on it.
-- Warn With Minutes Left covers personal buffs too, except a buff no longer than the warning
-  (Battle Shout's 2 minutes), which would otherwise show the moment it is cast. Poisons last 30
-  minutes and Forever's imbues 60, past the slider's 10.
+- Warn With Minutes Left covers personal buffs too, until Warn With Seconds Left is set, except a buff
+  no longer than the warning (Battle Shout's 2 minutes), which would otherwise show the moment it is
+  cast. Poisons last 30 minutes and Forever's imbues 60, past the slider's 10.
+- Warn With Seconds Left (`personalBuffsSeconds`) is Yaou's: a 3 minute Battle Shout is longer than the
+  2 minute warning, so it reminded a minute after the cast. It starts `false`, which follows Warn With
+  Minutes Left (`A.Buffs.PersonalWarn`), so profiles keep what they did. It goes up to the minutes slider's 10,
+  so the value it follows always fits on it.
 - The card lists every class's personal buffs, the player's own class first: its label in the class
   color, the others grey with the class named in its color beside the switch. Picks are stored under
   the buff's own key (`personalBuffPicks.demonArmor`), so a Warlock buff switched off on a Priest is

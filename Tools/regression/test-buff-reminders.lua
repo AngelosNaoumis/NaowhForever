@@ -107,7 +107,7 @@ local function Fixture(opts)
         consumablesWorld = false, consumablesDungeon = true, consumablesRaid = true, consumablesMinutes = 2,
         onlyIfCarried = true, carriedPicks = {}, hideResting = true,
         raidBuffsWorld = true, raidBuffsDungeon = true, raidBuffsRaid = true,
-        personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true,
+        personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true, personalBuffsSeconds = false,
         consumablesMaxHide = false, raidBuffsMaxHide = false, personalBuffsMaxHide = false,
         raidBuffs = false, raidBuffsOwn = true, raidBuffRange = false, iconSize = 36, buffIconMode = "default",
         buffsFont = "", buffsFontSize = 14, buffsOutline = "OUTLINE",
@@ -1316,6 +1316,28 @@ do
         auras = { player = { { 6673, 60, 120 } } } })
     w.Login()
     Check("two minute shout is not nagged early", w.Shown(), "")
+end
+
+-- Warn With Seconds Left follows the minutes until it is set, then times personal buffs on its own.
+do
+    local t = Fixture({ page = true, instance = "raid", units = { player = "WARRIOR" }, known = { [6673] = true },
+        bags = { 13931 }, auras = { player = { { 1249520, 60, 900 }, { 6673, 100, 180 } } } })
+    t.Login()
+    local Settings = t.ns.Shared.Settings
+    local row
+    for _, r in ipairs(Settings.pages["AuraBuffs/Settings"].cards.buffs.rows) do
+        if r.key == "personalBuffsSeconds" then row = r end
+    end
+    Check("unset, the slider shows the minutes", row.get(), 120)
+    Check("unset, nothing is changed", Settings.Changed(row), false)
+    Check("a three minute shout warns at two minutes", t.Shown(), "item:13931(t) spell:6673(t)")
+    row.set(15)
+    Check("set, the slider shows its own", row.get(), 15)
+    Check("the shout waits, the food still warns", t.Shown(), "item:13931(t)")
+    t.Advance(90)
+    Check("woken at fifteen seconds left", t.Shown(), "item:13931(t) spell:6673(t)")
+    Settings.ResetRow(row)
+    Check("reset follows the minutes again", row.get(), 120)
 end
 
 -- A class with no personal buff: the card still lists other classes'.

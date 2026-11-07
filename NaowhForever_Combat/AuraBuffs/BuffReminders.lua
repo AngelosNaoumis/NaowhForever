@@ -358,6 +358,10 @@ local function PersonalPicked(family)
     return S.Get("personalBuffPicks")[family.key] ~= false
 end
 
+local function PersonalWarn()
+    return S.Get("personalBuffsSeconds") or S.Get("consumablesMinutes") * SECONDS
+end
+
 local function Lasts(left, warn, duration)
     if not left or left <= 0 then return true end
     if duration and duration <= warn then warn = 0 end
@@ -462,7 +466,7 @@ end
 local function PersonalBuffs(list, buffs)
     if UnitIsDeadOrGhost("player") or S.Get("hideResting") and IsResting() then return end
     local _, class = UnitClass("player")
-    local warn = S.Get("consumablesMinutes") * SECONDS
+    local warn = PersonalWarn()
     for _, family in ipairs(D.PERSONAL) do
         local spell = family.class == class and PersonalPicked(family) and Knows(family.spells)
         if spell then
@@ -492,6 +496,7 @@ Reminders.Carried = Carried
 Reminders.Left = Left
 Reminders.Picked = Picked
 Reminders.PersonalPicked = PersonalPicked
+Reminders.PersonalWarn = PersonalWarn
 Reminders.Secret = Secret
 Reminders.ShowsHere = ShowsHere
 
