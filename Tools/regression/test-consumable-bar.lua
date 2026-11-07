@@ -43,10 +43,12 @@ local KNOWN = {
 
 -- Food and drink by the spell they cast, as Shared/Game/Consumables.lua reads them.
 local SPELL_NAMES = { [8932] = 'Food', [21023] = 'Food', [8766] = 'Drink', [1179] = 'Drink',
-    [13724] = 'Enriched Manna Biscuit' }
+    [13724] = 'Enriched Manna Biscuit', [249866] = 'Nutritious Drink' }
+local SPELL_IDS = { [430] = 'Drink', [433] = 'Food', [1249500] = 'Nutritious Food', [1249920] = 'Nutritious Drink' }
 KNOWN[8766] = { 132794, 0, 1135, 5 }   -- Morning Glory Dew
 KNOWN[13724] = { 133989, 0, 1226814, 5 } -- Enriched Manna Biscuit, food and drink in one
 KNOWN[1179] = { 132794, 0, 430, 5 }    -- Ice Cold Milk
+KNOWN[249866] = { 132794, 0, 1249920, 5 } -- Royal Tea, a Drink and Well Fed
 KNOWN[13444] = { 134854, 0, 17531, 1 } -- Major Mana Potion
 
 local function fixture(settings, noMacros, class)
@@ -331,7 +333,7 @@ local function fixture(settings, noMacros, class)
         GetCursorPosition = function() return 300, 200 end,
         RANGE_INDICATOR = 'RANGE',
         wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
-        C_Spell = { GetSpellName = function(id) return id == 430 and 'Drink' or id == 433 and 'Food' or 'Spell' end },
+        C_Spell = { GetSpellName = function(id) return SPELL_IDS[id] or 'Spell' end },
         UnitClass = function() return 'Class', class or 'MAGE' end,
         UnitLevel = function() return s.level end,
         GetBindingKey = function(command) return s.bindings[command] end,
@@ -2043,6 +2045,7 @@ do
     s.bags[0] = { 8766, 13444, 13446 }
     s.CB.ScanBags()
     check('Scan Bags skips drinks and mana potions', table.concat(s.settings.consumableBarItems, ',') == '13446')
+    check('a tea needs mana too', s.CB.ManaOnly(249866) and not s.CB.ManaOnly(13446))
     local box = s.editor()
     s.cursor = { 'item', 8766 }
     box.scripts.OnReceiveDrag(box)
