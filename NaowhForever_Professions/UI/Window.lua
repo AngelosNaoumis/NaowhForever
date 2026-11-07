@@ -43,6 +43,7 @@ local TEXT_SCAN_FIRST = ns.L("Scan the auction house (Scan Prices) first.")
 local TEXT_AUCTIONS_FIRST = ns.L("Turn on Your Auctions in Professions settings first.")
 local TEXT_VISIT_AH = ns.L("Visit the Auction House once to read your listings.")
 local TEXT_UNLEARNED = ns.L("Unlearned Recipes")
+local TEXT_FROM = ns.L("Unlearned")
 local TEXT_RESET = ns.L("Reset Filters")
 local TEXT_SHOW_ROI = ns.L("Show ROI")
 local TEXT_ROI_SETTINGS = ns.L("ROI Color Thresholds...")
@@ -167,8 +168,17 @@ end
 
 local function FilterMenu(_, root)
     root:CreateTitle(TEXT_FILTER)
-    for _, f in ipairs(Filters.LIST) do AddFilter(root, f) end
+    for _, f in ipairs(Filters.LIST) do
+        if not f.source then AddFilter(root, f) end
+    end
     root:CreateDivider()
+    if S.Get("recipeFinder") and not W.linked then
+        root:CreateTitle(TEXT_FROM)
+        for _, f in ipairs(Filters.LIST) do
+            if f.source then AddFilter(root, f) end
+        end
+        root:CreateDivider()
+    end
     if S.Get("skillUpChances") and not W.linked then
         root:CreateTitle(TEXT_SORT)
         root:CreateRadio(TEXT_SORT_CATEGORIES, SortIs, SortBy, false)

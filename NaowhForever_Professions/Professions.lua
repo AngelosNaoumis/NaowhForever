@@ -30,6 +30,7 @@ local S = ns.UI.ModuleSettings("professions", {
     disenchantDealsTooltipAllCharacters = false, disenchantDealsTooltipAuctionOnly = false,
     filterMaterials = false, filterSkillUp = false, filterProfit = false,
     filterNotSelling = false, filterBoE = false, filterBoP = false, filterFavorite = false,
+    filterFromTrainer = false, filterFromVendor = false, filterFromDrop = false, filterFromQuest = false,
 })
 ns.ProfessionSettings = S
 ns.ProfBagChanges = 0

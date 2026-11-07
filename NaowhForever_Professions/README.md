@@ -286,6 +286,10 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   switch is on; bag totals are read from bag slots so equipped gear is never counted as bag stock.
   The list redraws on a Shopping List change only while the window is open: `/nf shopping` can
   change the list before the recipe window was ever built.
+- The Filter menu's Unlearned sources (Trainer, Vendor, Drop, Quest) show only while Unlearned Recipes is
+  on, and narrow only the unlearned recipes: your own are not "from" anywhere. Ticked sources add up, the
+  Artisan doctor's free First Aid counts as a trainer, and a recipe with no recorded source shows only
+  while none is ticked. With Unlearned Recipes off they neither filter nor count on the Filter button.
 - Your Auctions is opt-in. It reads the owner list only while the auction house is open, keeps the
   latest active item quantities under the character's GUID, as the Shopping List does, and
   builds row markers only when needed. It asks for the owner list on opening the auction house and

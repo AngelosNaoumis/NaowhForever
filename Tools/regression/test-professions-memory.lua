@@ -602,6 +602,39 @@ check("a legacy false shopping entry is ignored", pcall(ns.Professions.List.Rend
 shopping[recipes[1].spell] = savedCraft
 settings.recipeAvailability = false
 
+-- The Filter menu's Unlearned sources keep the unlearned recipes from the ticked sources only.
+local Entries, Filters = ns.Professions.Entries, ns.Professions.Filters
+local function Listed()
+    local learnedRows, sources = 0, {}
+    for _, e in ipairs(Entries.list) do
+        if e.recipe then learnedRows = learnedRows + 1 end
+        if e.unlearned then sources[e.unlearned.source] = (sources[e.unlearned.source] or 0) + 1 end
+    end
+    return learnedRows, sources
+end
+Entries.Build()
+local learnedBefore, sourcesBefore = Listed()
+local others = 0
+for source, n in pairs(sourcesBefore) do if source ~= "vendor" then others = others + n end end
+check("unfiltered, the unlearned recipes come from more than vendors", (sourcesBefore.vendor or 0) > 0 and others > 0)
+settings.filterFromVendor = true
+Entries.Build()
+local learnedAfter, sourcesAfter = Listed()
+local onlyVendors = true
+for source in pairs(sourcesAfter) do if source ~= "vendor" then onlyVendors = false end end
+check("Vendor keeps only vendor recipes among the unlearned", onlyVendors and (sourcesAfter.vendor or 0) > 0)
+check("and leaves your own recipes as they were", learnedAfter == learnedBefore)
+check("and counts in the Filter button", Filters.Active() == 1)
+settings.filterFromTrainer = true
+Entries.Build()
+local _, both = Listed()
+check("two sources show either", (both.vendor or 0) > 0 and ((both.trainer or 0) + (both.teacher or 0)) > 0
+    and not both.drop)
+settings.recipeFinder = false
+check("without unlearned recipes the sources neither count nor filter", Filters.Active() == 0)
+settings.recipeFinder, settings.filterFromVendor, settings.filterFromTrainer = true, nil, nil
+Entries.Build()
+
 -- A pass of every hot path, also the warm-up before measuring.
 local list = win.list
 local function Scroll()

@@ -21,11 +21,17 @@ local FILTERS = {
     { key = "filterNotSelling", text = ns.L("Not Selling"), auctions = true },
     { key = "filterBoE", text = ns.L("Bind on Equip"), bind = 2, divider = true },
     { key = "filterBoP", text = ns.L("Bind on Pickup"), bind = 1 },
+    { key = "filterFromTrainer", text = ns.L("Trainer"), source = "trainer" },
+    { key = "filterFromVendor", text = ns.L("Vendor"), source = "vendor" },
+    { key = "filterFromDrop", text = ns.L("Drop"), source = "drop" },
+    { key = "filterFromQuest", text = ns.L("Quest"), source = "quest" },
 }
 for _, f in ipairs(FILTERS) do FILTERS[f.key] = f end
+local SOURCE_OF = { teacher = "trainer" }
 
 local function Available(f)
     return (not f.profit or Prices.ProfitShown()) and (not f.auctions or Auctions.Ready())
+        and (not f.source or S.Get("recipeFinder"))
 end
 
 local function FilterOn(f)
@@ -62,8 +68,20 @@ local function PassesLearned(info)
     return true
 end
 
+local function PassesSource(r)
+    local source, any = SOURCE_OF[r.source] or r.source, false
+    for _, f in ipairs(FILTERS) do
+        if f.source and FilterOn(f) then
+            if f.source == source then return true end
+            any = true
+        end
+    end
+    return not any
+end
+
 local function PassesUnlearned(r)
     if FilterOn(FILTERS.filterMaterials) or FilterOn(FILTERS.filterNotSelling) then return false end
+    if not PassesSource(r) then return false end
     if FilterOn(FILTERS.filterProfit) then
         local read, made = R.OutputItem(r.spell)
         if not Profitable(r.spell, r.item or read, made) then return false end
