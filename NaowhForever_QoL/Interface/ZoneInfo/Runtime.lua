@@ -114,9 +114,8 @@ local function AddMap()
     if WorldMapFrame:IsShown() then provider:OnShow() else provider:OnHide() end
 end
 
-local function SavePosition(frame)
-    local point, _, relativePoint, x, y = frame:GetPoint()
-    S.Set("zoneInfoPos", { point = point, relPoint = relativePoint, x = x, y = y })
+local function SavePosition(pos)
+    S.Set("zoneInfoPos", pos)
 end
 
 local function ApplyHUD()

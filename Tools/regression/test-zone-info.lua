@@ -32,7 +32,6 @@ local function Fixture(runtime)
         function f:UnregisterAllEvents() Wipe(self.events) end
         function f:SetSize(w, h) self.w, self.h = w, h end
         function f:SetPoint(...) self.point = { ... } end
-        function f:GetPoint() return "TOPRIGHT", parent, "TOPRIGHT", -30, -60 end
         function f:ClearAllPoints() self.point = nil end
         function f:Show() self.shown = true end
         function f:Hide() self.shown = false end
@@ -260,8 +259,11 @@ do
     local count = #f.frames
     S.Set("zoneInfo", true)
     Check(#f.frames == count, "repeated enables reuse frames")
-    f.save(f.hud)
+    f.save({ point = "CENTER", relPoint = "CENTER", x = -30, y = 12 })
     Check(S.Get("zoneInfoPos").x == -30, "HUD movement persists through the settings store")
+    f.Event("ZONE_CHANGED")
+    local at = f.hud.point
+    Check(at[1] == "CENTER" and at[3] == "CENTER" and at[4] == -30 and at[5] == 12, "HUD is placed at the saved spot")
     map.shown = false; map.provider:OnHide()
     before = f.queries; f.Tick(1)
     Check(f.queries == before, "map close stops all hover work")
