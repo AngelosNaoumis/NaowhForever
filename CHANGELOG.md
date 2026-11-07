@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.2.13
+
+### Added
+- Professions: Skill-up Chances (Recipe Window settings) shows each recipe's chance to raise your
+  skill in the recipe list, and adds a Best for Skill-ups sort to the Filter menu.
+- Professions: Skill-up Thresholds also shows on recipes you have not learned yet.
+
+### Fixed
+- Professions: recipes that stay orange until they turn grey now have a Skill-up Thresholds line.
+- Professions: Skill-up Thresholds no longer shows 100% for a recipe learned past its yellow.
 
 ## 1.2.12
 
