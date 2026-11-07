@@ -11,6 +11,7 @@ local Times = ns.TransportTimes
 local Data = ns.TransportData
 local Routes = ns.TransportRoutes
 local Ride = ns.TransportRide
+local Calls = ns.TransportCalls
 
 local PIN_SIZE = 16
 local MAX_PINS = 3
@@ -317,6 +318,7 @@ local function Refresh()
         table.sort(zoneSpots)
     end
     Ride.Watch(map)
+    Calls.Watch(map)
     ShowZone()
     if not layer and #spots == 0 then return end
     layer = layer or ns.Shared.Parts.MinimapLayer({ max = MAX_PINS, new = NewPin, paint = Paint, xy = XY })

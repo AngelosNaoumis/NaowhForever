@@ -129,6 +129,7 @@ ns.Shared.Parts.MinimapLayer = function() return { Set = function() end } end
 ns.TownTravelIcon = function() end
 dofile("NaowhForever_QoL/Travel/TransportRide.lua")
 dofile("NaowhForever_QoL/Travel/TransportShare.lua")
+dofile("NaowhForever_QoL/Travel/TransportCalls.lua")
 dofile("NaowhForever_QoL/Travel/Transport.lua")
 Check(#frames == 1 and #prefixes == 0 and #sent == 0, "default off: no event frame, no prefix, nothing sent")
 Check(Times.OnTimed == nil, "default off: rides are not announced")
@@ -363,7 +364,8 @@ Check(Read("Core/Features.lua"):find("transportTimers = false", 1, true), "Boat 
 Check(Read("NaowhForever_QoL/QoL.xml"):find('TransportRoutes.lua"/>\n    <Script file="Travel\\TransportSchedule.lua"/>\n'
     .. '    <Script file="Travel\\TransportTimes.lua"/>', 1, true), "the schedule loads before the times that read it")
 Check(Read("NaowhForever_QoL/QoL.xml"):find('TransportRide.lua"/>\n    <Script file="Travel\\TransportShare.lua"/>\n'
-    .. '    <Script file="Travel\\TransportPeers.lua"/>\n    <Script file="Travel\\Transport.lua"/>', 1, true),
-    "the sharing and the other addons' timings load between the ride watch and the timers")
+    .. '    <Script file="Travel\\TransportPeers.lua"/>\n    <Script file="Travel\\TransportCalls.lua"/>\n'
+    .. '    <Script file="Travel\\Transport.lua"/>', 1, true),
+    "the sharing, the other addons' timings and the dockmaster calls load between the ride watch and the timers")
 
 print("transport map: " .. checks .. " checks passed")

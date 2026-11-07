@@ -139,6 +139,7 @@ NaowhForever_QoL/
     TransportRide.lua   times a ship as the player rides along one of its trigger segments (ns.TransportRide)
     TransportShare.lua  ride timings sent to and kept from your group and guild
     TransportPeers.lua  timings heard from ForeverTransport's and NauticusClassic's users, and asked of them
+    TransportCalls.lua  the Dalaran skycutter timed from its dockmasters' arrival calls (ns.TransportCalls)
     Transport.lua       Boat and Zeppelin Timers: its minimap pins, their tooltips, the world map's dock times, the Zone Timer and Travel settings
     AimTrainer.lua      the Aim Trainer (/nfaim, ns.AimRules, ns.AimPlay, ns.AimOffer)
     AimBoard.lua        the Aim Trainer's leaderboard (ns.AimBoard)
@@ -998,6 +999,22 @@ NaowhForever_QoL/
 - The Zephras Isle skycutters have no trigger points in the data (NauticusClassicResurrected times
   them from the dockmaster's arrival announcement), so each of their legs gets one at its middle, on
   the longest stretch of it on one continent.
+- The Dalaran skycutter is also timed from its dockmasters' arrival calls (`TransportCalls.lua`), as
+  NauticusClassicResurrected does: Arcanist Laurain (256306) at Dalaran and the High Order Dockmaster
+  (275269) on Zephras Isle, NPC IDs from warcraft.wiki.gg. A call is matched by the speaker's NPC ID
+  from its GUID, not its text, so it works in every language. The game sends the line as monster
+  chat (`CHAT_MSG_MONSTER_SAY`, YELL, EMOTE or the raid boss emote, all four heard), and it is the
+  ship's arrival: NauticusClassicResurrected measured three calls in a row exactly 347.0 s apart.
+  - Laurain says a second, unrelated line 5 s after the call, so a dockmaster's lines after one are
+    ignored until the ship has left and `QUIET` (5 s) more; a departure line would be ignored too.
+    Someone who comes within earshot between her two lines takes the second as the arrival, 5 s late,
+    until their next ride or call corrects it.
+  - The chat's GUID is secret in chat messaging lockdown (`SecretInChatMessagingLockdown`), which
+    the docks are never in; a secret one is skipped.
+  - The events are registered only on the two dockmasters' maps (`Calls.Watch`, from the same zone
+    refresh as the ride watch), so the rest of the world's NPC chatter costs nothing.
+  - The Windshapers Dockmaster, who calls the Mulgore skycutter, is not in it: no source gives its
+    NPC ID yet. Targeting it and `/run print(UnitGUID("target"))` gives the ID to add to `CALLERS`.
 - A piece within `CLEARANCE` (40 yards) of another ship's piece is dropped, so a ride past one cannot
   time the wrong ship; none is that close today. A piece slower than `MIN_SPEED` (8 yards a second)
   stops the generator: the ship is docked there.

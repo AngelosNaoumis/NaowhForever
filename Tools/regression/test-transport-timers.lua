@@ -340,6 +340,7 @@ ns.QoLSettings = {
     end,
 }
 dofile("NaowhForever_QoL/Travel/TransportRide.lua")
+dofile("NaowhForever_QoL/Travel/TransportCalls.lua")
 dofile("NaowhForever_QoL/Travel/Transport.lua")
 Check(made == 0 and mapReads == 0 and layers == 0 and #tickers == 0,
     "default off builds no frames, reads no maps and watches no rides")
