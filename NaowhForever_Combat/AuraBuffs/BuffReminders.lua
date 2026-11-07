@@ -480,7 +480,7 @@ local function PersonalBuffs(list, buffs)
                     entry.items, entry.item = family.items, FirstCarried(family.items)
                     entry.slot = MissingSlot(family.weapons, warn)
                 else
-                    entry.spell, entry.unit = spell, family.target and "target" or nil
+                    entry.spell, entry.unit = spell, family.target and "target" or "player"
                 end
                 list[#list + 1] = entry
             end

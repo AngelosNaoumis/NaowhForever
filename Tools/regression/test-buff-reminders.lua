@@ -1269,7 +1269,7 @@ do
     Check("no poison carried: nothing to use", Clicks(t), " nil nil")
     t = Fixture({ units = { player = "MAGE" }, known = { [168] = true } })
     t.Login()
-    Check("a personal buff is cast", Clicks(t), "spell 168 nil")
+    Check("a personal buff is cast on yourself, whatever you target", Clicks(t), "spell 168 player")
     t = Fixture({ settings = { raidBuffs = true }, units = { player = "MAGE", party1 = "PRIEST" }, group = "party",
         known = { [10157] = true },
         auras = { player = { { 10157, 3000, 3600 } } } })

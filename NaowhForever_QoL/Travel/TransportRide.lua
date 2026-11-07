@@ -17,7 +17,9 @@ ns.TransportRide = Ride
 
 local watched = {}
 for _, route in pairs(Routes) do
-    for _, dock in ipairs(route.docks) do watched[ns.TransportData[dock.stop].map] = true end
+    if route.triggers[1] then
+        for _, dock in ipairs(route.docks) do watched[ns.TransportData[dock.stop].map] = true end
+    end
 end
 
 local ticker, last

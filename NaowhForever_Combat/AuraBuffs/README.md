@@ -76,7 +76,9 @@ NaowhForever_Combat/AuraBuffs/
   using it alone only asks which item to put it on); a right-click puts it on the other hand, and the
   hover menu's items go on the same weapon. A rogue's Poisons reminder uses the best poison carried
   (`D.POISON_ITEMS`, the strongest first) and offers the rest in the menu; with none carried it does
-  nothing. A personal buff casts its spell (Hunter's Mark on the target), and a raid buff you know is
+  nothing. A personal buff casts its spell on you (`unit1 = "player"`; with no unit the secure button
+  casts on whatever is targeted, so Thorns went on a targeted friend or NPC), Hunter's Mark on the
+  target, and a raid buff you know is
   cast on the first group member missing it, read when the row last refreshed, out of combat. A raid
   buff only another class can cast does nothing.
 - In combat the client refuses addons the player's auras outright (`GetAuraDataByIndex` errors,

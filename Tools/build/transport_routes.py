@@ -1,13 +1,15 @@
 """Builds NaowhForever_QoL/Travel/TransportRoutes.lua: the boats and zeppelins NauticusClassic timed.
 
-Run from the repo root with NauticusClassic's data.lua (MIT, github.com/psynct/NauticusClassic, commit
-504bc4c248e13696756e920b359f6a95b8e9eda4):
+Run from the repo root with NauticusClassicResurrected's data.lua (MIT, psynct's NauticusClassic with the
+Forever ships added, github.com/sam-k-taylor/NauticusClassicResurrected, commit
+efabdb82d11c771e0acac2deb562caba9908e0e5):
 
-    python Tools/build/transport_routes.py path/to/NauticusClassic/data.lua
+    python Tools/build/transport_routes.py path/to/NauticusClassicResurrected/data.lua
 
-Each route keeps its measured round trip, both docks' arrival and departure in its cycle, and the two
+Each route keeps its measured round trip, each dock's arrival and departure in its cycle, and the
 trigger segments a rider passes. NauticusClassic stores places on the whole-world map; they are turned
-into world yards by a fit per continent on the docks it shares with TransportData.lua.
+into world yards by a fit per continent on the docks it shares with TransportData.lua. Points tagged
+rawp are already world yards on their own continent, with x and y the other way round from ours.
 """
 
 import math
@@ -18,18 +20,28 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import paths  # noqa: E402
 
-# NauticusClassic's transport id, its ship's name, then the TransportData stop at its first and second dock.
-# The Bravery (5) is left out: on Forever it calls at Southshore on the way, so its path no longer fits.
+# NauticusClassic's transport id, the ship's name, then each dock in the order of its plat tags: the
+# TransportData stop and the place. The Forever ships are unnamed in the data, so their docks name them.
 ROUTES = [
-    (1, "The Thundercaller", "1411:Zeppelin to Undercity", "Orgrimmar", "1420:Zeppelin to Orgrimmar", "Undercity"),
-    (2, "The Iron Eagle", "1411:Zeppelin to Grom'gol", "Orgrimmar", "1434:Zeppelin to Orgrimmar", "Grom'gol"),
-    (3, "The Purple Princess", "1420:Zeppelin to Grom'gol", "Undercity", "1434:Zeppelin to Undercity", "Grom'gol"),
-    (4, "The Maiden's Fancy", "1413:Boat to Booty Bay", "Ratchet", "1434:Boat to Ratchet", "Booty Bay"),
-    (6, "The Lady Mehley", "1437:Boat to Theramore", "Menethil Harbor", "1445:Boat to Menethil Harbor", "Theramore"),
-    (7, "The Moonspray", "1438:Boat to Auberdine", "Rut'theran Village", "1439:Boat to Rut'theran Village",
-     "Auberdine"),
-    (8, "Feathermoon Ferry", "1444:Boat to the Feralas coast", "Feathermoon Stronghold",
-     "1444:Boat to Feathermoon Stronghold", "The Forgotten Coast"),
+    (1, "The Thundercaller", [("1411:Zeppelin to Undercity", "Orgrimmar"), ("1420:Zeppelin to Orgrimmar", "Undercity")]),
+    (2, "The Iron Eagle", [("1411:Zeppelin to Grom'gol", "Orgrimmar"), ("1434:Zeppelin to Orgrimmar", "Grom'gol")]),
+    (3, "The Purple Princess", [("1420:Zeppelin to Grom'gol", "Undercity"), ("1434:Zeppelin to Undercity", "Grom'gol")]),
+    (4, "The Maiden's Fancy", [("1413:Boat to Booty Bay", "Ratchet"), ("1434:Boat to Ratchet", "Booty Bay")]),
+    (5, "The Bravery", [("1437:Boat to Southshore", "Menethil Harbor"), ("1424:Boat to Auberdine", "Southshore"),
+                        ("1439:Boat to Menethil Harbor", "Auberdine")]),
+    (6, "The Lady Mehley", [("1437:Boat to Theramore", "Menethil Harbor"), ("1445:Boat to Menethil Harbor", "Theramore")]),
+    (7, "The Moonspray", [("1438:Boat to Auberdine", "Rut'theran Village"),
+                          ("1439:Boat to Rut'theran Village", "Auberdine")]),
+    (8, "Feathermoon Ferry", [("1444:Boat to the Feralas coast", "Feathermoon Stronghold"),
+                              ("1444:Boat to Feathermoon Stronghold", "The Forgotten Coast")]),
+    (11, "Stormwind Harbor - Auberdine", [("1453:Boat to Auberdine", "Stormwind Harbor"),
+                                          ("1439:Boat to Stormwind Harbor", "Auberdine")]),
+    (12, "Zephras Isle - Mulgore", [("2521:Zeppelin to Mulgore", "Windshapers Dock"),
+                                    ("1412:Zeppelin to Zephras Isle", "Skywatch Plateau")]),
+    (13, "Zephras Isle - Dalaran", [("2521:Zeppelin to Dalaran", "High Order Dock"),
+                                    ("1416:Zeppelin to Zephras Isle", "Dalaran")]),
+    (14, "Powderfuse Port - Steamwheedle Port", [("2548:Boat to Steamwheedle Port", "Powderfuse Port"),
+                                                 ("1446:Boat to Powderfuse Port", "Steamwheedle Port")]),
 ]
 # NauticusClassic's whole-world map holds Kalimdor left of the middle and the Eastern Kingdoms right of it.
 KALIMDOR, EASTERN_KINGDOMS, MIDDLE = 1, 0, 0.5
@@ -39,22 +51,34 @@ OUTPUT = paths.ROOT / "NaowhForever_QoL" / "Travel" / "TransportRoutes.lua"
 STOPS = paths.ROOT / "NaowhForever_QoL" / "Travel" / "TransportData.lua"
 
 
+def section(text, name):
+    start = text.index(f"NauticusClassic.{name} = {{")
+    return text[start:text.index("\n}", start)]
+
+
+def packed(text, name, end=None):
+    start = text.index(f"NauticusClassic.{name} = {{")
+    body = text[start:text.index(f"NauticusClassic.{end} = {{", start)] if end else text[start:]
+    blocks = re.split(r"^\s*\[(\d+)\] = \{", body, flags=re.M)[1:]
+    return {int(blocks[i]): re.findall(r'^\s*"([^"]+)"', blocks[i + 1], re.M) for i in range(0, len(blocks), 2)}
+
+
 def read_routes(text):
-    rtts = [float(v) for v in re.findall(r"^\s*([0-9.]+), -- \[\d+\]",
-                                         text[text.index("NauticusClassic.rtts"):text.index("NauticusClassic.transitZones")],
-                                         re.M)]
-    body = text[text.index("NauticusClassic.packedData"):]
-    blocks = re.split(r"^\[(\d+)\] = \{", body, flags=re.M)[1:]
+    rtts = [float(v) for v in re.findall(r"^\s*([0-9.]+), -- \[\d+\]", section(text, "rtts"), re.M)]
+    for tid, rtt in re.findall(r"^\s*\[(\d+)\] = ([0-9.]+),", section(text, "rtts_forever"), re.M):
+        rtts[int(tid) - 1] = float(rtt)
+    raw = {int(tid): int(cont) for tid, cont in re.findall(r"^\[(\d+)\] = (\d+),", section(text, "rawInstance"), re.M)}
+    data = packed(text, "packedData")
+    data.update({tid: rows for tid, rows in packed(text, "packedData_forever", "packedData").items() if rows})
     routes = {}
-    for i in range(0, len(blocks), 2):
+    for tid, lines in data.items():
         rows, x, y, offset = [], 0.0, 0.0, 0.0
-        for packed in re.findall(r'"([^"]+)"', blocks[i + 1]):
-            fields = packed.split(":")
+        for line in lines:
+            fields = line.split(":")
             x, y = x + float(fields[0]), y + float(fields[1])
             offset += float(fields[2])
-            rows.append({"x": x, "y": y, "dt": float(fields[2]), "offset": offset,
-                         "tag": fields[5] if len(fields) > 5 else ""})
-        routes[int(blocks[i])] = {"period": rtts[int(blocks[i]) - 1], "rows": rows}
+            rows.append({"x": x, "y": y, "dt": float(fields[2]), "offset": offset, "tags": fields[5:]})
+        routes[tid] = {"period": rtts[tid - 1], "rows": rows, "raw": raw.get(tid)}
     return routes
 
 
@@ -87,12 +111,14 @@ def solve(points, pick):
     return [b[i] / m[i][i] for i in range(3)]
 
 
-def dock_rows(route):
+def dock_rows(route, count):
     found = {}
     for index, row in enumerate(route["rows"]):
-        if row["tag"].startswith("plat"):
-            found[int(row["tag"][4:])] = index
-    return found[1], found[2]
+        for tag in row["tags"]:
+            if tag.startswith("plat"):
+                found[int(tag[4:])] = index
+    assert sorted(found) == list(range(1, count + 1)), f"plat tags {sorted(found)} for {count} docks"
+    return [found[n] for n in range(1, count + 1)]
 
 
 def main():
@@ -101,17 +127,23 @@ def main():
     routes = read_routes(open(sys.argv[1], encoding="utf-8-sig").read())
     stops = read_stops(STOPS.read_text(encoding="utf-8"))
 
+    def is_raw(route, row):
+        return "rawp" in row["tags"]
+
     pairs = {KALIMDOR: [], EASTERN_KINGDOMS: []}
-    for tid, _, first, _, second, _ in ROUTES:
-        rows = routes[tid]["rows"]
-        for row_index, key in zip(dock_rows(routes[tid]), (first, second)):
-            row = rows[row_index]
-            cont, x, y = stops[key]
-            assert side(row["x"]) == cont, f"{key} is on the other continent in NauticusClassic"
-            pairs[cont].append(((row["x"], row["y"]), (x, y)))
+    for tid, _, docks in ROUTES:
+        route = routes[tid]
+        for row_index, (key, _) in zip(dock_rows(route, len(docks)), docks):
+            row = route["rows"][row_index]
+            if not is_raw(route, row):
+                cont, x, y = stops[key]
+                assert side(row["x"]) == cont, f"{key} is on the other continent in NauticusClassic"
+                pairs[cont].append(((row["x"], row["y"]), (x, y)))
     fits = {cont: (solve(p, lambda w: w[0]), solve(p, lambda w: w[1])) for cont, p in pairs.items()}
 
-    def world(row):
+    def world(route, row):
+        if is_raw(route, row):
+            return route["raw"], row["y"], row["x"]
         cont = side(row["x"])
         fx, fy = fits[cont]
         u, v = row["x"], row["y"]
@@ -123,28 +155,25 @@ def main():
         "",
         "ns.TransportRoutes = {",
     ]
-    for tid, name, first, first_place, second, second_place in ROUTES:
+    for tid, name, docks in ROUTES:
         route = routes[tid]
         rows = route["rows"]
-        one, two = dock_rows(route)
-        for row_index, key in ((one, first), (two, second)):
-            _, x, y = world(rows[row_index])
+        placed = []
+        for row_index, (key, place) in zip(dock_rows(route, len(docks)), docks):
+            cont, x, y = world(route, rows[row_index])
             miss = math.hypot(x - stops[key][1], y - stops[key][2])
-            assert miss < MAX_DOCK_MISS, f"{name} docks {miss:.1f} yd from {key}"
-        docks = [
-            (first, first_place, 0.0, rows[one]["offset"]),
-            (second, second_place, rows[two - 1]["offset"], rows[two]["offset"]),
-        ]
+            assert cont == stops[key][0] and miss < MAX_DOCK_MISS, f"{name} docks {miss:.1f} yd from {key}"
+            arrive = rows[row_index - 1]["offset"] if row_index > 0 else 0.0
+            placed.append((key, place, arrive, rows[row_index]["offset"]))
         triggers = []
         for index, row in enumerate(rows):
-            if row["tag"].startswith("trig"):
-                cont, bx, by = world(row)
-                cont_a, ax, ay = world(rows[index - 1])
+            if any(tag.startswith("trig") for tag in row["tags"]):
+                cont, bx, by = world(route, row)
+                cont_a, ax, ay = world(route, rows[index - 1])
                 assert cont == cont_a, f"{name}'s trigger at row {index + 1} crosses continents"
                 triggers.append((cont, ax, ay, bx, by, rows[index - 1]["offset"], row["dt"]))
-        assert len(triggers) == 2, f"{name} has {len(triggers)} triggers"
         lines.append(f'    ["{name}"] = {{ period = {route["period"]:.6f}, docks = {{')
-        for key, place, arrive, leave in docks:
+        for key, place, arrive, leave in placed:
             lines.append(f'        {{ stop = "{key}", place = "{place}", arrive = {arrive:.3f}, leave = {leave:.3f} }},')
         lines.append("    }, triggers = {")
         for cont, ax, ay, bx, by, at, span in triggers:

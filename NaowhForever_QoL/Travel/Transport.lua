@@ -116,7 +116,7 @@ local function ShowRoute(pin, name)
         end
     end
     if not timed then
-        GameTooltip:AddLine(TEXT_RIDE, HINT.r, HINT.g, HINT.b)
+        if Routes[name].triggers[1] then GameTooltip:AddLine(TEXT_RIDE, HINT.r, HINT.g, HINT.b) end
         GameTooltip:AddLine(TEXT_LEFT, HINT.r, HINT.g, HINT.b)
         GameTooltip:AddLine(TEXT_RIGHT, HINT.r, HINT.g, HINT.b)
     end
@@ -146,10 +146,10 @@ end
 local function TimeText(key, now)
     local seconds, color, kind = Timer(key, now)
     if seconds == nil then return nil end
-    local named = Times.RouteAt(key) ~= nil
-    if seconds then return Countdown(seconds, kind, named), color end
+    local name = Times.RouteAt(key)
+    if seconds then return Countdown(seconds, kind, name ~= nil), color end
     return kind == "stale" and TEXT_STALE or kind == "expired" and TEXT_EXPIRED or TEXT_UNTIMED, HINT,
-        named and TEXT_RIDE or TEXT_AT_DOCK
+        name and Routes[name].triggers[1] and TEXT_RIDE or TEXT_AT_DOCK
 end
 
 local function TimerTip(tooltip, now, ...)
