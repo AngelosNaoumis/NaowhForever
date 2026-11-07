@@ -1657,8 +1657,10 @@ NaowhForever_QoL/
   to the current profile. The map button pins the hovered zone, the displayed zone, or the player's
   zone. Current Zone Details opens our own panel when the map is closed, without opening Blizzard UI.
 - The current-zone HUD belongs to the shared HUD Editor, with position and scale in QoL settings.
-  Zone, skill and level events refresh it, not a per-frame ticker. Combat hides it when requested;
-  otherwise it keeps its last checked character information until combat ends.
+  The editor reports offsets in the HUD's own scaled units; they are saved in screen units so
+  Panel Scale and the window scale keep its spot on screen. Zone, skill and level events refresh it,
+  not a per-frame ticker. Combat hides it when requested; otherwise it keeps its last checked
+  character information until combat ends.
 - Profession skill includes GetProfessionInfo's eighth return (rankModifier). Levels, skills and
   map fields are checked before use; unavailable skills are not treated as missing or ready.
   Difficulty colors use the checked cached level and static house colors, not a helper which
