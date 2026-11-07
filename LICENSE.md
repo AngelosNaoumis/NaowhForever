@@ -597,6 +597,8 @@ DAMAGES.
 **Path**: NaowhForever_QoL/Travel/TransportRoutes.lua (the round trips, docks and trigger points, from
 NauticusClassic's data.lua, https://github.com/psynct/NauticusClassic, as forked with the Forever ships
 in NauticusClassicResurrected, https://github.com/sam-k-taylor/NauticusClassicResurrected)
+and NaowhForever_QoL/Travel/TransportPeers.lua (NautComms.lua's base-88 codec and StringHash, to read
+its users' timings)
 
 ### License
 

@@ -2,7 +2,7 @@
 local ns = _G.NaowhForever
 
 ns.TransportRoutes = {
-    ["The Thundercaller"] = { period = 356.288364, zones = { 1411, 1420, 1454, 1458 }, docks = {
+    ["The Thundercaller"] = { nauticus = 1, period = 356.288364, zones = { 1411, 1420, 1454, 1458 }, docks = {
         { stop = "1411:Zeppelin to Undercity", place = "Orgrimmar", arrive = 0.000, leave = 60.000 },
         { stop = "1420:Zeppelin to Orgrimmar", place = "Undercity", arrive = 191.139, leave = 251.139 },
     }, triggers = {
@@ -15,7 +15,7 @@ ns.TransportRoutes = {
         { continent = 0, ax = 3148.0, ay = 296.9, bx = 3190.8, by = 339.9, at = 302.562, span = 2.000 },
         { continent = 0, ax = 3190.8, ay = 339.9, bx = 3218.9, by = 373.6, at = 304.562, span = 2.000 },
     } },
-    ["The Iron Eagle"] = { period = 303.467135, zones = { 1411, 1434, 1454 }, docks = {
+    ["The Iron Eagle"] = { nauticus = 2, period = 303.467135, zones = { 1411, 1434, 1454 }, docks = {
         { stop = "1411:Zeppelin to Grom'gol", place = "Orgrimmar", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Zeppelin to Orgrimmar", place = "Grom'gol", arrive = 138.314, leave = 198.314 },
     }, triggers = {
@@ -28,7 +28,7 @@ ns.TransportRoutes = {
         { continent = 0, ax = -12640.7, ay = 820.0, bx = -12628.9, by = 880.3, at = 243.304, span = 2.000 },
         { continent = 0, ax = -12628.9, ay = 880.3, bx = -12621.8, by = 920.1, at = 245.304, span = 2.000 },
     } },
-    ["The Purple Princess"] = { period = 335.298269, zones = { 1420, 1434, 1458 }, docks = {
+    ["The Purple Princess"] = { nauticus = 3, period = 335.298269, zones = { 1420, 1434, 1458 }, docks = {
         { stop = "1420:Zeppelin to Grom'gol", place = "Undercity", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Zeppelin to Undercity", place = "Grom'gol", arrive = 155.978, leave = 215.978 },
     }, triggers = {
@@ -40,7 +40,7 @@ ns.TransportRoutes = {
         { continent = 0, ax = -11514.4, ay = -392.4, bx = -11459.9, by = -390.1, at = 271.979, span = 2.000 },
         { continent = 0, ax = -11459.9, ay = -390.1, bx = -11371.2, by = -391.1, at = 273.979, span = 2.999 },
     } },
-    ["The Maiden's Fancy"] = { period = 350.823333, zones = { 1413, 1434 }, docks = {
+    ["The Maiden's Fancy"] = { nauticus = 4, period = 350.823333, zones = { 1413, 1434 }, docks = {
         { stop = "1413:Boat to Booty Bay", place = "Ratchet", arrive = 0.000, leave = 60.000 },
         { stop = "1434:Boat to Ratchet", place = "Booty Bay", arrive = 166.808, leave = 226.808 },
     }, triggers = {
@@ -53,7 +53,7 @@ ns.TransportRoutes = {
         { continent = 0, ax = -14838.3, ay = 844.9, bx = -14889.9, by = 841.3, at = 280.347, span = 2.000 },
         { continent = 0, ax = -14889.9, ay = 841.3, bx = -14911.8, by = 839.7, at = 282.347, span = 1.000 },
     } },
-    ["The Bravery"] = { period = 486.226000, zones = { 1424, 1437, 1439 }, docks = {
+    ["The Bravery"] = { nauticus = 5, period = 486.226000, zones = { 1424, 1437, 1439 }, docks = {
         { stop = "1437:Boat to Southshore", place = "Menethil Harbor", arrive = 0.000, leave = 60.000 },
         { stop = "1424:Boat to Auberdine", place = "Southshore", arrive = 202.265, leave = 262.276 },
         { stop = "1439:Boat to Menethil Harbor", place = "Auberdine", arrive = 345.796, leave = 404.997 },
@@ -68,7 +68,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = 6396.9, ay = 995.5, bx = 6371.3, by = 1034.7, at = 423.790, span = 2.399 },
         { continent = 1, ax = 6371.3, ay = 1034.7, bx = 6333.6, by = 1074.4, at = 426.189, span = 2.401 },
     } },
-    ["The Lady Mehley"] = { period = 329.316297, zones = { 1437, 1445 }, docks = {
+    ["The Lady Mehley"] = { nauticus = 6, period = 329.316297, zones = { 1437, 1445 }, docks = {
         { stop = "1437:Boat to Theramore", place = "Menethil Harbor", arrive = 0.000, leave = 60.000 },
         { stop = "1445:Boat to Menethil Harbor", place = "Theramore", arrive = 164.003, leave = 224.003 },
     }, triggers = {
@@ -81,7 +81,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = -3314.7, ay = -5240.6, bx = -3230.6, by = -5259.5, at = 271.137, span = 2.999 },
         { continent = 1, ax = -3230.6, ay = -5259.5, bx = -3216.0, by = -5262.8, at = 274.136, span = 1.000 },
     } },
-    ["The Moonspray"] = { period = 316.254199, zones = { 1438, 1439 }, docks = {
+    ["The Moonspray"] = { nauticus = 7, period = 316.254199, zones = { 1438, 1439 }, docks = {
         { stop = "1438:Boat to Auberdine", place = "Rut'theran Village", arrive = 0.000, leave = 60.000 },
         { stop = "1439:Boat to Rut'theran Village", place = "Auberdine", arrive = 164.465, leave = 224.465 },
     }, triggers = {
@@ -94,7 +94,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = 7335.8, ay = 1246.6, bx = 7392.1, by = 1268.6, at = 269.330, span = 2.000 },
         { continent = 1, ax = 7392.1, ay = 1268.6, bx = 7446.0, by = 1288.1, at = 271.330, span = 2.000 },
     } },
-    ["Feathermoon Ferry"] = { period = 317.045200, zones = { 1444 }, docks = {
+    ["Feathermoon Ferry"] = { nauticus = 8, period = 317.045200, zones = { 1444 }, docks = {
         { stop = "1444:Boat to the Feralas coast", place = "Feathermoon Stronghold", arrive = 0.000, leave = 60.000 },
         { stop = "1444:Boat to Feathermoon Stronghold", place = "The Forgotten Coast", arrive = 119.881, leave = 179.881 },
     }, triggers = {
@@ -107,7 +107,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = -5102.9, ay = 3663.8, bx = -5087.0, by = 3718.2, at = 248.230, span = 2.000 },
         { continent = 1, ax = -5087.0, ay = 3718.2, bx = -5063.1, by = 3776.9, at = 250.230, span = 2.000 },
     } },
-    ["Stormwind Harbor - Auberdine"] = { period = 246.500000, zones = { 1439, 1453 }, docks = {
+    ["Stormwind Harbor - Auberdine"] = { nauticus = 11, period = 246.500000, zones = { 1439, 1453 }, docks = {
         { stop = "1453:Boat to Auberdine", place = "Stormwind Harbor", arrive = 17.469, leave = 77.105 },
         { stop = "1439:Boat to Stormwind Harbor", place = "Auberdine", arrive = 135.092, leave = 195.091 },
     }, triggers = {
@@ -118,7 +118,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = 6431.9, ay = 1044.8, bx = 6412.1, by = 1085.8, at = 213.193, span = 2.399 },
         { continent = 1, ax = 6412.1, ay = 1085.8, bx = 6399.9, by = 1135.2, at = 215.592, span = 2.401 },
     } },
-    ["Zephras Isle - Mulgore"] = { period = 347.000000, zones = { 1412, 2521 }, docks = {
+    ["Zephras Isle - Mulgore"] = { nauticus = 12, period = 347.000000, zones = { 1412, 2521 }, docks = {
         { stop = "2521:Zeppelin to Mulgore", place = "Windshapers Dock", arrive = 0.000, leave = 29.597 },
         { stop = "1412:Zeppelin to Zephras Isle", place = "Skywatch Plateau", arrive = 182.432, leave = 242.436 },
     }, triggers = {
@@ -129,7 +129,7 @@ ns.TransportRoutes = {
         { continent = 1, ax = -1090.4, ay = 502.8, bx = -1138.5, by = 467.2, at = 269.634, span = 2.396 },
         { continent = 1, ax = -1138.5, ay = 467.2, bx = -1192.6, by = 416.3, at = 272.030, span = 2.394 },
     } },
-    ["Zephras Isle - Dalaran"] = { period = 353.000000, zones = { 1416, 1421, 1424, 2521 }, docks = {
+    ["Zephras Isle - Dalaran"] = { nauticus = 13, period = 353.000000, zones = { 1416, 1421, 1424, 2521 }, docks = {
         { stop = "2521:Zeppelin to Dalaran", place = "High Order Dock", arrive = 0.000, leave = 59.200 },
         { stop = "1416:Zeppelin to Zephras Isle", place = "Dalaran", arrive = 183.953, leave = 243.972 },
     }, triggers = {
@@ -140,7 +140,7 @@ ns.TransportRoutes = {
         { continent = 2991, ax = 1973.9, ay = 251.2, bx = 2021.7, by = 294.3, at = 322.428, span = 2.405 },
         { continent = 2991, ax = 2021.7, ay = 294.3, bx = 2021.0, by = 344.3, at = 324.833, span = 2.400 },
     } },
-    ["Powderfuse Port - Steamwheedle Port"] = { period = 271.412500, zones = { 1446, 2548 }, docks = {
+    ["Powderfuse Port - Steamwheedle Port"] = { nauticus = 14, period = 271.412500, zones = { 1446, 2548 }, docks = {
         { stop = "2548:Boat to Steamwheedle Port", place = "Powderfuse Port", arrive = 0.000, leave = 60.000 },
         { stop = "1446:Boat to Powderfuse Port", place = "Steamwheedle Port", arrive = 133.442, leave = 193.442 },
     }, triggers = {

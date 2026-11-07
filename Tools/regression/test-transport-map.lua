@@ -363,6 +363,7 @@ Check(Read("Core/Features.lua"):find("transportTimers = false", 1, true), "Boat 
 Check(Read("NaowhForever_QoL/QoL.xml"):find('TransportRoutes.lua"/>\n    <Script file="Travel\\TransportSchedule.lua"/>\n'
     .. '    <Script file="Travel\\TransportTimes.lua"/>', 1, true), "the schedule loads before the times that read it")
 Check(Read("NaowhForever_QoL/QoL.xml"):find('TransportRide.lua"/>\n    <Script file="Travel\\TransportShare.lua"/>\n'
-    .. '    <Script file="Travel\\Transport.lua"/>', 1, true), "the sharing loads between the ride watch and the timers")
+    .. '    <Script file="Travel\\TransportPeers.lua"/>\n    <Script file="Travel\\Transport.lua"/>', 1, true),
+    "the sharing and the other addons' timings load between the ride watch and the timers")
 
 print("transport map: " .. checks .. " checks passed")

@@ -6,11 +6,12 @@ efabdb82d11c771e0acac2deb562caba9908e0e5):
 
     python Tools/build/transport_routes.py path/to/NauticusClassicResurrected/data.lua
 
-Each route keeps its measured round trip, the zones NauticusClassic watches it in, each dock's arrival
-and departure in its cycle, and trigger segments: the recorded path for WINDOW seconds either side of
-each trigger point, in CHORD second pieces. A ship with no trigger points gets one at the middle of each
-leg, on the longest stretch of it on one continent. A piece that comes within CLEARANCE yards of another
-ship's is dropped, so a ride past it cannot time the wrong ship.
+Each route keeps NauticusClassic's id for it (ForeverTransport's too), its measured round trip, the
+zones NauticusClassic watches it in, each dock's arrival and departure in its cycle, and trigger
+segments: the recorded path for WINDOW seconds either side of each trigger point, in CHORD second
+pieces. A ship with no trigger points gets one at the middle of each leg, on the longest stretch of it
+on one continent. A piece that comes within CLEARANCE yards of another ship's is dropped, so a ride past
+it cannot time the wrong ship.
 
 NauticusClassic stores places on the whole-world map; they are turned into world yards by a fit per
 continent on the docks it shares with TransportData.lua. Points tagged rawp are already world yards on
@@ -284,7 +285,8 @@ def main():
             arrive = rows[row_index - 1]["offset"] if row_index > 0 else 0.0
             placed.append((key, place, arrive, rows[row_index]["offset"]))
         zone_list = ", ".join(str(zone) for zone in sorted(zones[tid]))
-        lines.append(f'    ["{name}"] = {{ period = {route["period"]:.6f}, zones = {{ {zone_list} }}, docks = {{')
+        lines.append(f'    ["{name}"] = {{ nauticus = {tid}, period = {route["period"]:.6f}, zones = {{ {zone_list} }},'
+                     f' docks = {{')
         for key, place, arrive, leave in placed:
             lines.append(f'        {{ stop = "{key}", place = "{place}", arrive = {arrive:.3f}, leave = {leave:.3f} }},')
         lines.append("    }, triggers = {")

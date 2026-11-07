@@ -132,9 +132,11 @@ ns.Journeys, ns.JourneyNetwork = nil, nil
 
 -- The ships NauticusClassic timed: every dock is a stop above, and one ride or click times the whole ship.
 dofile("NaowhForever_QoL/Travel/TransportRoutes.lua")
-local ships = 0
+local ships, ids = 0, {}
 for name, route in pairs(ns.TransportRoutes) do
     ships = ships + 1
+    Check(route.nauticus and not ids[route.nauticus], name .. " has its own NauticusClassic id")
+    ids[route.nauticus] = true
     Check(english:find('L["' .. name .. '"]', 1, true), "ship name is in enUS: " .. name)
     Check(#route.docks >= 2, name .. " has two docks or more")
     local last = 0

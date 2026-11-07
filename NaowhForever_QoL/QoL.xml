@@ -89,6 +89,7 @@
     <Script file="Travel\TransportTimes.lua"/>
     <Script file="Travel\TransportRide.lua"/>
     <Script file="Travel\TransportShare.lua"/>
+    <Script file="Travel\TransportPeers.lua"/>
     <Script file="Travel\Transport.lua"/>
     <Script file="Interface\Waypoints.lua"/>
     <Script file="Travel\QuizData.lua"/>

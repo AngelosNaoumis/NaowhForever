@@ -138,6 +138,7 @@ NaowhForever_QoL/
     TransportTimes.lua  saved per-realm server-clock sightings and ride timings (ns.TransportTimes)
     TransportRide.lua   times a ship as the player rides along one of its trigger segments (ns.TransportRide)
     TransportShare.lua  ride timings sent to and kept from your group and guild
+    TransportPeers.lua  timings heard from ForeverTransport's and NauticusClassic's users, and asked of them
     Transport.lua       Boat and Zeppelin Timers: its minimap pins, their tooltips, the world map's dock times, the Zone Timer and Travel settings
     AimTrainer.lua      the Aim Trainer (/nfaim, ns.AimRules, ns.AimPlay, ns.AimOffer)
     AimBoard.lua        the Aim Trainer's leaderboard (ns.AimBoard)
@@ -1069,6 +1070,26 @@ NaowhForever_QoL/
   answered after a random wait of up to `ANSWER_SPREAD` (3 s), leaving out each ship someone else
   answered with as fresh a timing in the meantime, and the guild at most once every
   `GUILD_ANSWER_GAP` (30 s), so a big guild does not all answer at once.
+- With Share Timings on, `TransportPeers.lua` also keeps the timings ForeverTransport's and
+  NauticusClassic's users send, the same way as a shared one (`TransportTimes.Shared`). Both addons
+  are common on Forever and send what their users ride, so a ship is often timed before you ride it.
+  Both use NauticusClassic's ids for the ships (`nauticus` in `TransportRoutes.lua`). Nothing of ours
+  is sent to them; only the asks are.
+  - ForeverTransport (`FTrans2`): `A|ship|dock|arrival|seen|quality`, one dock's arrival on the server
+    clock. The cycle start is that arrival less the dock's `arrive`, moved to the last one before it
+    was seen, so a newer timing still counts as newer.
+  - NauticusClassic (`NauticSync`): `KWN4 4 id:since,... hash`, `since` in milliseconds from a cycle
+    start, which is ours too (both come from its paths), plus its own lag, and the receiver adds its
+    lag (`GetNetStats`), as NauticusClassic does. The hash must match (its StringHash) and each field
+    is its base-88 codec (`NautComms.lua`, MIT, psynct; the notice is in LICENSE.md). The Bravery's
+    id is not taken: the original NauticusClassic, still in use on Forever, sends its two-dock
+    classic cycle under that id.
+  - Asks: ForeverTransport's `Q|5` and NauticusClassic's `KWN4` list of every id but the Bravery's,
+    to the guild at login, the party or raid on joining a group, and those nearby (`YELL`) at login
+    and on entering a zone with a dock outside an instance, each channel at most once every
+    `ASK_GAP` (120 s). ForeverTransport answers with whispers, so whispers are heard too.
+  - Like theirs, these carry no proof of who sent them, so a player could send a wrong one; your own
+    next ride corrects it.
 - The Zone Timer (`transportZone`) lists every stop of your side in the zone you are in, each with
   the same countdown and colors as the world map's tooltip. It is off by default: an always-shown
   timer window was replaced by the minimap pins, so the list on screen is for players who want it.
