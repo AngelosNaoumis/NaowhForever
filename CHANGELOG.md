@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.2.15
+
+### Fixed
+- Flight Point Reminder: no longer asks you to learn flight points no one can learn, like the
+  druids' Nighthaven flight in Moonglade, Alterac Valley's or the Eastern Plaguelands towers'.
+- Flight Point Reminder: on Zephras Isle and in Alterac Valley it no longer names flight points from
+  another part of the world.
+- Scout: holding the details key with the tooltip low on the screen (the game's default spot) opens
+  the ability details above it, instead of piling them over the tooltip and each other.
 
 ## 1.2.14
 
