@@ -1654,7 +1654,7 @@ do
     end
     check("the Bosses title has Map", mapTitle ~= nil)
     -- A dungeon with no map yet: Map, muted, saying so on hover; a click does nothing.
-    ns.OpenJournalWindow(J.Get("DrownedCity"))
+    ns.OpenJournalWindow(J.Get("AlcazPrison"))
     local soon
     for _, made in ipairs(state.made) do
         local titleLink = rawget(made, "link")
@@ -2361,6 +2361,19 @@ do
         check("until the placings are cleared", PinFor("Atrexis the Grave Knight") ~= nil)
         J.OpenDungeonMap(dalaran)
 
+        local drowned = J.Get("DrownedCity")
+        J.OpenDungeonMap(drowned)
+        local drownedView = J.DungeonMap.windowView
+        check("The Drowned City: no pins yet, so both its pictures are offered", drownedView.dungeon == drowned
+            and FloorsOf(drownedView) == "1,2"
+            and drownedView.picture.texture == "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\DrownedCity_1"
+            and rawget(drownedView.floorName, "text") == "Main City")
+        drownedView:Step(1)
+        check("Atal'Byzal next", drownedView.picture.texture
+            == "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\DrownedCity_2"
+            and rawget(drownedView.floorName, "text") == "Atal'Byzal")
+        J.OpenDungeonMap(drowned)
+
         local function MapLink(dungeon)
             for _, made in ipairs(state.made) do
                 local titleLink = rawget(made, "link")
@@ -2383,7 +2396,7 @@ do
         check("with its first boss picked", rawget(RowFor(wailing.wings[1].bosses[1].name).fill, "shown") == true)
         ns.OpenJournalWindow(dalaran)
         check("and to City of Dalaran", PinFor("Atrexis the Grave Knight") ~= nil and #Rows() == 9)
-        ns.OpenJournalWindow(J.Get("DrownedCity"))
+        ns.OpenJournalWindow(J.Get("AlcazPrison"))
         check("a dungeon with no map closes it", rawget(mapWindow, "shown") == false)
         ns.OpenJournalWindow(wailing)
         check("closed, it stays closed", rawget(mapWindow, "shown") == false)
