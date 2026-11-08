@@ -31,6 +31,7 @@ local buttons, people = {}, {}
 
 local function Enter(button)
     button.border:SetColor(T.accent.r, T.accent.g, T.accent.b, 1)
+    if button.hover then button.hover:SetShown(button.backdrop.art:IsShown()) end
     GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
     GameTooltip:SetText(button.label:GetText(), 1, 1, 1)
     GameTooltip:AddLine(button.tip, T.muted.r, T.muted.g, T.muted.b, true)
@@ -39,12 +40,14 @@ end
 
 local function Leave(button)
     button.border:SetColor(BLACK.r, BLACK.g, BLACK.b, 1)
+    if button.hover then button.hover:Hide() end
     GameTooltip:Hide()
 end
 
 local function Style(button, text, tip)
     button.backdrop = Parts.HudBackdrop(button, { color = T.panel, alpha = FILL_ALPHA })
     button.border = button.backdrop.border
+    if button.backdrop.art then button.hover = Parts.ForeverHover(button) end
     button.label = ns.Font(button, LABEL_SIZE)
     button.label:SetPoint("CENTER")
     button.label:SetText(text)

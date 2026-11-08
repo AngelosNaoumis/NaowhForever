@@ -45,11 +45,14 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
         FontPath = function(name) return name == "" and "font" or "lsm:" .. name end },
     Shared = { Style = dofile("Tools/regression/shared_style.lua"), Parts = { Press = function(button) button.pressed = true end, HudFont = function(fs, font, size, outline)
         fs:SetFont(font == "" and "font" or "lsm:" .. font, size, outline == "NONE" and "" or outline)
-    end, HudBackdrop = function(_, opts)
-        local backdrop = { opts = opts, border = { SetColor = NOTHING } }
-        function backdrop:SetMode(mode) self.mode = mode end
+    end, HudBackdrop = function(button, opts)
+        local backdrop = { opts = opts, border = { SetColor = NOTHING }, art = Frame("Frame", button) }
+        function backdrop:SetMode(mode)
+            self.mode = mode
+            self.art:SetShown(mode == "card")
+        end
         return backdrop
-    end } },
+    end, ForeverHover = function(button) return Frame("Texture", button) end } },
     Solid = function(parent) return Frame("Texture", parent) end,
     Border = function() return { SetColor = NOTHING } end,
     Font = function(parent) return Frame("FontString", parent) end,
@@ -248,6 +251,20 @@ Case("the target Invite can go; a removed person's button hides", function()
     end
     assert(hidden == 1, "Gly's button hidden")
     assert(bar.h == 24 * 3 + 4 * 2)
+end)
+
+Case("on the Forever skin the bronze-framed buttons light up under the mouse", function()
+    Set("groupButtonsBackground", "card")
+    local disband = Bar().disband
+    assert(disband.hover and disband.hover.parent == disband, "the hover art sits on the button")
+    disband.scripts.OnEnter(disband)
+    assert(disband.hover.shown, "shown under the mouse")
+    disband.scripts.OnLeave(disband)
+    assert(not disband.hover.shown, "hidden when it leaves")
+    Set("groupButtonsBackground", "none")
+    disband.scripts.OnEnter(disband)
+    assert(not disband.hover.shown, "no hover without the frame")
+    disband.scripts.OnLeave(disband)
 end)
 
 Case("turning it off hides it", function()

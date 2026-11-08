@@ -317,6 +317,20 @@ Check(pin.card.backdrop.fill.color[4] == 0 and not pin.card.backdrop.border._fra
 S.Set("waypointCardAlpha", nil)
 driver.scripts.OnUpdate(driver, 0)
 Check(pin.card.backdrop.fill.color[4] == 0.85 and pin.card.backdrop.border._frame.shown, "by default the card keeps its backdrop")
+-- On the Forever skin the backdrop has the bronze frame art in place of the black edge.
+pin.card.backdrop.art = NewFrame("Frame", pin.card)
+S.Set("waypointCardAlpha", 0)
+driver.scripts.OnUpdate(driver, 0)
+Check(not pin.card.backdrop.art.shown and not pin.card.backdrop.border._frame.shown,
+    "on the Forever skin, 0% opacity shows no frame at all")
+S.Set("waypointCardAlpha", nil)
+driver.scripts.OnUpdate(driver, 0)
+Check(pin.card.backdrop.art.shown and not pin.card.backdrop.border._frame.shown,
+    "and by default the bronze frame, without the black edge too")
+pin.card.backdrop.art = nil
+S.Set("waypointCardAlpha", nil)
+driver.scripts.OnUpdate(driver, 0)
+Check(pin.card.backdrop.border._frame.shown, "back on the black edge without the art")
 -- Off the bottom edge, but not behind: the card goes above the pin, on screen.
 nav.x, nav.y = 960 + 1000 * math.cos(math.rad(-50)), 540 + 1000 * math.sin(math.rad(-50))
 driver.scripts.OnUpdate(driver, 0)

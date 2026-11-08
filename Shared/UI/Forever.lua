@@ -41,6 +41,7 @@ local FILL_ALPHA = 0.6
 local CHEVRON_DOWN = -math.pi / 2
 local CHEVRON_UP = math.pi / 2
 local PICK_SUBLEVEL = 1
+local HOVER_SUBLEVEL = 1
 local RAIL_SUBLEVEL = 1
 local ART_SUBLEVEL = -6
 local RING_ART_SUBLEVEL = 2
@@ -442,6 +443,15 @@ function Parts.ForeverRowPick(row)
     pick:SetAllPoints()
     pick:Hide()
     return pick
+end
+
+function Parts.ForeverHover(frame)
+    if not HasAtlases(LIST_ATLASES) then return nil end
+    local hover = frame:CreateTexture(nil, "BACKGROUND", nil, HOVER_SUBLEVEL)
+    Atlas(hover, St.FOREVER_LIST_ATLAS.hover)
+    hover:SetAllPoints()
+    hover:Hide()
+    return hover
 end
 
 function Parts.ForeverHeadLine(parent)

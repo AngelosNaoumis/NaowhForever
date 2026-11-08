@@ -216,7 +216,9 @@ function Look.PaintPin(pin, o)
     card:SetShown(o.card)
     if not o.card then return end
     card.backdrop.fill:SetColorTexture(T.bg.r, T.bg.g, T.bg.b, o.cardAlpha)
-    card.backdrop.border._frame:SetShown(o.cardAlpha > 0)
+    local framed, art = o.cardAlpha > 0, card.backdrop.art
+    card.backdrop.border._frame:SetShown(framed and not art)
+    if art then art:SetShown(framed) end
     card.icon:SetShown(o.icon ~= nil)
     if o.icon then card.icon:SetTexture(o.icon) end
     card.name:ClearAllPoints()

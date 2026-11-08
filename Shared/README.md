@@ -797,7 +797,9 @@ What a comment in the code used to say, in short. The house rules behind it are 
   bronze frame instead of the black edge (`Parts.ForeverFrameArt`, the profession window's bar
   frame, `FOREVER_HUD_FRAME`). Its atlas only stretches left and right, so it is cut into eight
   pieces with `corner` px corners, set `out` px outside the card; Soft and None backgrounds have no
-  frame.
+  frame. The waypoint card shows it only above 0% Background Opacity, as it did its edge. The frame
+  takes the place of the edge the Group Buttons coloured under the mouse, so they show
+  `Options_List_Hover` there instead (`Parts.ForeverHover`), as the game's Settings list does.
 - `Parts.ProgressLine(parent, height, framed)`: a framed line (the XP tracker's, the trainer card's)
   is the game's cast bar on Forever (`Parts.ForeverProgress`, `FOREVER_CAST_BAR`: its track, gold
   fill untinted and frame cut into ends and middle). Unframed lines in list rows stay thin and
