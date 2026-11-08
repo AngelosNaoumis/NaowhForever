@@ -263,7 +263,8 @@ NaowhForever_Combat/AuraBuffs/
   group member of that class can cast it. A class with no personal buff (paladin) still gets the
   group for the others.
 - Hunter's Mark is asked for only with a hostile elite, rare elite or boss targeted, read from the
-  target's debuffs; like every reminder it holds what it showed once combat starts.
+  target's debuffs. Unlike the others it fades when combat starts: in combat the target can change and
+  another hunter can mark it, and neither can be read, so a held icon asked for marks already up (Robin).
 - Aspect: any aspect counts, so Cheetah or Pack while travelling does not remind. Another hunter's
   Pack or Wild lands on you too, so the family is `own`: only an aura whose `sourceUnit` is the
   player counts. The IDs are every rank Forever has, from the Training data (game build

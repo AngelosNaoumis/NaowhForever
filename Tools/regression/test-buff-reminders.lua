@@ -1829,6 +1829,28 @@ do
     Check("Hunter's Mark cast in combat fades it", t.Faded(), "spell:1130")
 end
 
+-- Hunter's Mark fades when combat starts: the target can change and another hunter can mark it, unread.
+do
+    local t = Fixture({ units = { player = "HUNTER" }, known = { [1130] = true, [19506] = true }, target = "elite" })
+    t.Login()
+    Check("elite unmarked, Trueshot missing", t.Shown(), "spell:19506 spell:1130")
+    t.state.combat = true
+    t.Fire("PLAYER_REGEN_DISABLED")
+    Check("combat fades the mark, not Trueshot", t.Faded(), "spell:1130")
+    t.state.combat = false
+    t.Fire("PLAYER_REGEN_ENABLED")
+    t.Advance(0.5)
+    Check("still unmarked after combat: back", t.Shown() .. "|" .. t.Faded(), "spell:19506 spell:1130|")
+    t.state.combat = true
+    t.Fire("PLAYER_REGEN_DISABLED")
+    t.state.auras.target = { { 14325, 100, 120, "party1" } }
+    t.Fire("UNIT_AURA", "target")
+    t.state.combat = false
+    t.Fire("PLAYER_REGEN_ENABLED")
+    t.Advance(0.5)
+    Check("another hunter's mark counts after combat", t.Shown(), "spell:19506")
+end
+
 -- A weapon reminder fades in combat once every weapon it covers has its enchant.
 do
     local t = Fixture({ units = { player = "SHAMAN" }, known = { [8017] = true }, weapons = { [16] = false } })

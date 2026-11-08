@@ -135,7 +135,7 @@ end
 local function SetAction(cell, entry)
     local slot = entry.slot and S.Get("leftClickMainHand") and MAIN_HAND or entry.slot
     if entry.item and slot then ItemBar.SetWeapon(cell, entry.item, slot) else ItemBar.SetItem(cell, entry.item) end
-    cell.slot = slot
+    cell.slot, cell.unit = slot, entry.unit
     cell:SetAttribute("spell1", entry.spell)
     cell:SetAttribute("unit1", entry.unit)
     if entry.spell then cell:SetAttribute("type1", "spell") elseif not entry.item then cell:SetAttribute("type1", nil) end
@@ -247,6 +247,12 @@ local function FadeWeapons()
     end
 end
 
+local function FadeTarget()
+    for _, cell in ipairs(cells) do
+        if cell:IsShown() and cell.unit == "target" then cell:SetAlpha(0) end
+    end
+end
+
 local function Sent(target, castGUID, spellID)
     if Secret(castGUID) or Secret(spellID) then
         sentGUID = nil
@@ -269,6 +275,7 @@ local function OnEvent(_, event, unit, arg2, arg3, arg4)
     if event == "PLAYER_REGEN_DISABLED" then
         StopRange()
         Menu.Hide()
+        FadeTarget()
         return
     end
     if event == "PLAYER_REGEN_ENABLED" and held then return Apply() end
