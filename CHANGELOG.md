@@ -1,6 +1,53 @@
 # Changelog
 
-## Unreleased
+## 1.2.18
+
+### Added
+- Buffs & Consumables: Thorns Only on Tank, under Thorns in Personal Buffs to Remind, reminds you to
+  put Thorns on your group's tank, or on yourself while solo.
+- BiS List: a Leveling tab with your spec's best gear at levels 30, 40, 50 and 60 for your side.
+  Load one and it becomes your list for that spec.
+- Dungeon map: Alcaz Prison has Santiago Reyes's map. Its boss isn't placed on it yet.
+- Dungeon map: Blackmaw Hold has a map, with its areas named and the Upper, Middle and Lower Caverns
+  below it, and arrows where they connect. Open the world map inside the dungeon to see it.
+- The Market: Naowh's own auction house window, on its own module page. At an auctioneer it lists
+  your bags most valuable first, prices each item a step under the live listings, and posts it with
+  Space. S skips, Up and Down step the price, and Blizzard's window is one button away.
+- The Market: a My Auctions page with each auction's status against the live listings (lowest,
+  undercut, sold). Cancel one, or press Cancel Undercut to cancel the undercut ones one at a time.
+- The Market: a Buy page. Search by name, or pick from your Professions Shopping List, see what you
+  would buy from the live listings, and buy. Commodities take a Buy and a Confirm press, and items
+  bought come off your Shopping List.
+
+### Changed
+- Naowh Forever is about 75 MB smaller to download: the Dungeon Journal's dungeon maps are now
+  compressed.
+- Group XP: members at max level no longer get a bar, and the bars hide when everyone in the group
+  is at max level.
+
+### Fixed
+- Quest List: no ! for quests your class or race can't take, such as Call of Earth on Zephras Isle
+  for non-shamans, the rogues' dead drops and the other faction's Alterac Valley quests.
+- Quest List: quests that need a reputation, a profession rank or an earlier quest lose their !
+  until you have it, a quest you lack the reputation for shows "Needs reputation", and battleground
+  quests close once you outlevel their bracket.
+- Quest List: breadcrumbs lose their ! once you take the quest they lead to, and quests such as
+  Plainstrider Menace and Goblin Invaders no longer wait for a breadcrumb you skipped.
+- Quest List: a quest its giver hasn't offered you at two levels stays off the map until they do.
+- Quest List: A Lesson to Learn and two warlock quests are pinned at your own faction's trainer, and
+  Windshaper Skyborne druids see the aquatic form quests.
+- Badges: your character code no longer lists your beta characters when your settings were copied
+  over from the beta.
+- Dungeon Journal: 159 more quest steps have a waypoint to where they start, such as Underground Map
+  before Old Ironforge Incursion (Captain Beld in Dun Morogh drops it).
+- Dungeon Journal: each city's Runecloth hand-in shows where to farm Runecloth (Silithus, Eastern
+  and Western Plaguelands, Azshara and Burning Steppes) instead of the city's own guards.
+- Dungeon Journal: Blackmaw Hold no longer says it isn't open on Forever yet.
+- AuraBuffs: with Only If I Carry One off for Food, the food reminder uses the buff food you carry
+  again, and Plated Armorfish, Sweetpaw Jam, Filet o' Flank and Clamlette Surprise now count as buff
+  food (on the Consumable Bar's Hide After Use too).
+- PvP Auras: no more Lua error when your settings are reapplied in a battleground or at a boss pull;
+  icon changes made then show once the game lets addons read auras again.
 
 ## 1.2.17
 
