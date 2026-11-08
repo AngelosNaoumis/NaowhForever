@@ -45,7 +45,7 @@ local WEAPON_CLASS, THROWN_SUBCLASS = 2, 16
 local THROWN_CLASSES = { ROGUE = true, WARRIOR = true }
 local PLAYER_CLASS = select(2, UnitClass("player"))
 local FOOD_CLASS, FOOD_SUBCLASS, OTHER_SUBCLASS = 0, 5, 8
-local FOOD_SPELL = 433
+local FOOD_SPELL, NUTRITIOUS_DRINK = 433, 1249920
 local DRINK_ITEM = 159
 local PLAIN_BAG = ns.QoLConstants.PLAIN_BAG
 local MAX_LEVEL = 60
@@ -178,6 +178,7 @@ end
 local function ScanBags()
     local food, drink, junk, free = 0, 0, 0, 0
     local drinkSpell = C_Item.GetItemSpell(DRINK_ITEM)
+    local nutritiousDrink = C_Spell.GetSpellName(NUTRITIOUS_DRINK)
     local foodSpell = C_Spell.GetSpellName(FOOD_SPELL)
     for bag = 0, NUM_BAG_SLOTS do
         local slots, bagType = C_Container.GetContainerNumFreeSlots(bag)
@@ -192,7 +193,10 @@ local function ScanBags()
                 local level = subclass and FoodLevel(info.itemID)
                 if level and InLevelRange(level) then
                     local spell = C_Item.GetItemSpell(info.itemID)
-                    if drinkSpell and spell == drinkSpell then
+                    if ns.IsFoodAndDrink(info.itemID) then
+                        food = food + info.stackCount
+                        drink = drink + info.stackCount
+                    elseif spell and (spell == drinkSpell or spell == nutritiousDrink) then
                         drink = drink + info.stackCount
                     elseif subclass == FOOD_SUBCLASS or spell == foodSpell then
                         food = food + info.stackCount

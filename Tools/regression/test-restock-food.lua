@@ -1,6 +1,7 @@
 -- Run with Lua 5.1 from the repository root: the Restock Reminder counts food and drink filed under
 -- Consumable: Food & Drink, and Forever's own cooking filed under Consumable: Other when its spell is
--- Food or Drink. Other consumables and raw fish (Trade Goods) are not counted.
+-- Food or Drink. Other consumables and raw fish (Trade Goods) are not counted. Items that restore health and
+-- mana in one, such as the Enriched Manna Biscuit, count as food and as drink, and Forever's teas as drink.
 local f = assert(io.open(arg[1] or "NaowhForever_QoL/Loot/Restock.lua", "rb"))
 local source = f:read("*a"):gsub("\r\n", "\n"); f:close()
 local function Slice(a, b)
@@ -11,6 +12,7 @@ end
 -- Classes, subclasses, required levels and spell names from Forever's Item, ItemSparse and
 -- SpellName tables (build 1.60.1.70862). OTHER_ITEM is synthetic.
 local JERKY, PROWLER_STEAK, LEMONADE, WATER, RAW_SNAPPER, OTHER_ITEM = 117, 238637, 23161, 159, 6289, 900001
+local BISCUIT, ROYAL_TEA = 13724, 249866
 local ITEMS = {
     [JERKY] = { 0, 5, 1, "Food" },
     [PROWLER_STEAK] = { 0, 8, 55, "Food" },
@@ -18,8 +20,10 @@ local ITEMS = {
     [WATER] = { 0, 5, 1, "Drink" },
     [RAW_SNAPPER] = { 7, 8, 5, "Food" },
     [OTHER_ITEM] = { 0, 8, 1, "Something Else" },
+    [BISCUIT] = { 0, 5, 45, "Enriched Manna Biscuit" },
+    [ROYAL_TEA] = { 0, 5, 5, "Nutritious Drink" },
 }
-local SPELLS = { [433] = "Food", [430] = "Drink" }
+local SPELLS = { [433] = "Food", [430] = "Drink", [1249920] = "Nutritious Drink" }
 
 local function Scan(bag, settings, uncached)
     local requests = {}
@@ -28,6 +32,7 @@ local function Scan(bag, settings, uncached)
         Enum = { ItemQuality = { Poor = 0 } },
         S = { Get = function(key) return (settings or {})[key] end },
         RequestItem = function(id) requests[#requests + 1] = id end,
+        ns = { IsFoodAndDrink = function(id) return id == BISCUIT end },
         C_Spell = { GetSpellName = function(id) return SPELLS[id] end },
         C_Item = {
             GetItemInfoInstant = function(id)
@@ -82,5 +87,13 @@ Case("uncached Other food is requested and counted once it loads", function()
     local food, _, requests = Scan(bag, nil, { [PROWLER_STEAK] = true })
     assert(food == 0 and #requests == 1 and requests[1] == PROWLER_STEAK)
     assert(Scan(bag) == 15)
+end)
+Case("the Enriched Manna Biscuit counts as food and as drink", function()
+    local food, drink = Scan({ { BISCUIT, 20 }, { JERKY, 3 }, { WATER, 5 } })
+    assert(food == 23 and drink == 25)
+end)
+Case("Forever's teas count as drink, not food", function()
+    local food, drink = Scan({ { ROYAL_TEA, 10 }, { JERKY, 3 } })
+    assert(food == 3 and drink == 10)
 end)
 print(count .. " total restock food regressions passed")
