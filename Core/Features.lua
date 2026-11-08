@@ -17,6 +17,7 @@ ns.FEATURES = {
         coTank = true,
         deleteConfirm = false,
         lootConfirm = false,
+        lockboxSkill = false,
         questAccept = true,
         questTurnIn = true,
         questGossip = true,

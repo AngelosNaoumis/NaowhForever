@@ -111,6 +111,8 @@ NaowhForever_QoL/
   Loot/
     LootCard.lua        the one card on Loot & Items that Looting, Vendors, Auction Prices and Mail & Alts join
     DeleteConfirm.lua   Type DELETE For You, and the Looting card
+    LockboxData.lua     the Lockpicking skill each lockbox needs (ns.LockboxSkills), generated
+    Lockboxes.lua       Lockpicking Skill on lockbox tooltips
     Durability.lua      the low durability warning
     LootConfirm.lua     the retired loot confirmation skip, inert
     AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionAge, ns.AuctionScanSummary)
@@ -1214,6 +1216,26 @@ NaowhForever_QoL/
 - It shows on reaching a rested area, and again `SETTLE_DELAY` after a vendor closes if anything is still short: bags settle a moment after the last purchase or sale. Restocked from the bank, mail or a trade, the list follows while it is up.
 - A purchase returns what it spent because GetMoney() does not drop until the server answers. A vendor that sells in bundles (arrows by 200) only takes whole bundles, so the amount rounds up to one.
 - Auto Repair and Auto Sell Junk work at the vendor whether or not the reminder is on. Reagents are cached at switch-on so the reminder can name ones the client has not seen this session.
+
+### Lockpicking Skill
+- `LockboxData.lua` comes from Forever's own tables (`Tools/build/lockboxes.py`, wago.tools): an item's ItemSparse
+  `LockID` names its Lock, and the Lock's Pick Lock entry (a skill entry, type 2, on lock type 1) the Lockpicking
+  it needs. Items the game flags as deprecated (ItemSparse `Flags_0` bit 0x10) and locks above 300, more than a
+  level 60 rogue has, are left out: those are test items (Deprecated Test Strongbox, [DNT] Super Strong Lockbox,
+  Rogue's Diary at 5000). Change the builder and run it, never the file.
+- Your Lockpicking is skill line 633's rank plus its modifier (`C_SkillInfo.GetSkillLineInfoByID`), read when the
+  switch goes on and on `SKILL_LINES_CHANGED` while it is on. It returns nothing for a skill the character lacks
+  (the game's own callers check for that), so that line is yellow; red is below the lock's skill, green at or
+  above it, the colours Zone Info gives Fishing.
+- The line is the game's own `ITEM_MIN_SKILL` ("Requires %s (%d)"). The skill's name is the one your own skill
+  line gives, else `C_TradeSkillUI.GetTradeSkillDisplayName`'s, else the catalog's "Lockpicking": Lockpicking is
+  a class skill line, not a profession, and that call may give it an empty name. It is read with the skill,
+  never per tooltip.
+- The tooltip post-call is added the first time the switch is on and returns at once while it is off: a post-call
+  cannot be taken back.
+- A lockbox already picked keeps its item ID, so it still shows the line.
+- Not yet checked in the client: that Forever still ranks Lockpicking as a skill rogues raise by picking locks,
+  not by level.
 
 ### Gear Reminders
 - Worn Gear Reminder and Fishing Pole Reminder were part of AuraBuffs' Buffs & Consumables row until they

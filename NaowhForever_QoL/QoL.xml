@@ -7,6 +7,8 @@
     <Script file="Combat\HealerMana.lua"/>
     <Script file="Loot\LootCard.lua"/>
     <Script file="Loot\DeleteConfirm.lua"/>
+    <Script file="Loot\LockboxData.lua"/>
+    <Script file="Loot\Lockboxes.lua"/>
     <Script file="Loot\Durability.lua"/>
     <Script file="Questing\TalentPoints.lua"/>
     <Script file="Questing\BuffThanks.lua"/>

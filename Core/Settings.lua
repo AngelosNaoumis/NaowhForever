@@ -25,6 +25,7 @@ local S = UI.ModuleSettings("qol", {
     coTankDebuffStacks = true, coTankDebuffStackSize = 10, coTankDebuffTooltips = false,
 
     deleteConfirm = F.deleteConfirm, lootConfirm = F.lootConfirm,
+    lockboxSkill = F.lockboxSkill,
     questAccept = F.questAccept, questTurnIn = F.questTurnIn, questGossip = F.questGossip, questRewardPicks = F.questRewardPicks,
     questSkipGrey = F.questSkipGrey, questSkipModifier = "ALT", questModifierMode = "SKIP",
     gossipAuto = F.gossipAuto, gossipModifier = "ALT", gossipModifierMode = "SKIP",
