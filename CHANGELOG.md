@@ -1,6 +1,109 @@
 # Changelog
 
-## Unreleased
+## 1.2.16
+
+### Added
+- Dungeon Journal: The Drowned City lists The Only Good Brinescale..., Ancient Gurubashi Idol,
+  Locating the Lost City and Take Two With Water.
+- One-Key Fishing (off by default): one key casts Fishing, and the same key reels in your catch when
+  the bobber splashes. It can put on your best lure and your fishing gear first, cast on a double
+  right-click, and combat puts your weapons back. Turn it on in QoL > Loot & Items.
+- Louder Splash (off by default): while your line is out, sound effects go up and music and ambience
+  go quiet, so you can hear the splash. Turn it on in QoL > Loot & Items.
+- Dungeon Journal: The Drowned City, Krol'dok Stronghold, Alcaz Prison and Blackmaw Hold list ten
+  more quests.
+- Dungeon Journal: quests the Journal never listed, such as Dire Maul's class books, the Valthalak
+  amulet pieces and The Challenge, and the missing steps of quest chains like Jail Break! and
+  Operation: Death to Angerforge.
+- Dungeon map: The Drowned City (its main city and Atal'Byzal), Krol'dok Stronghold and Shaper's
+  Terrace have Santiago Reyes's maps. Their bosses aren't placed on them yet.
+- Boat and Zeppelin Timers: with Share Timings on, the ships timed by nearby, group and guild
+  players using ForeverTransport or NauticusClassic count down for you too.
+- Boat and Zeppelin Timers: the Dalaran skycutter is timed when its dockmaster on Zephras Isle or at
+  Dalaran announces its arrival.
+- Skip Grey Quests in QoL > Questing & Group > Quests: Accept Quests and Pick Quests From NPCs leave
+  grey quests for you to take by hand.
+- Buffs & Consumables: Left-Click Main Hand (AuraBuffs settings, off by default) makes a left-click
+  put a poison, sharpening stone, weightstone or oil on your main hand and a right-click on your off
+  hand, from the reminder and its hover menu.
+- Professions: Learned Recipe Vendors (Professions settings, Recipe Window, with Unlearned Recipes
+  on) shows where your learned recipes are sold, nearest vendors first; click one to set a waypoint.
+- Training Planner: Demon Books, for warlocks (Training Planner settings, off by default): your
+  demons' books on the Spells tab with their level, price and whether your demon knows them.
+- Demon Books: at the demon trainer each book is marked learned, ready to learn or not your level
+  yet, and its tooltip says which.
+- Lockpicking Skill: lockbox tooltips show the Lockpicking needed to open them, green when yours is
+  enough, red when it is not, yellow without Lockpicking. Turn it on in Quality of Life > Loot &
+  Items, under Lockboxes.
+- Nearby Enemies (off by default): a small list of the enemy players seen around you in the open
+  world, with their level, guild and how long ago you saw them, and a Kill on Sight list with a
+  louder alert. It sees players by their nameplates, so turn enemy nameplates on. Turn it on in PvP
+  > Nearby Enemies, and move it in the HUD Editor.
+- Auction Prices: Waylaid Crate Prices (off by default, QoL > Loot & Items) shows what each Waylaid
+  Crate filling costs at your last auction house scan, with the cheapest marked.
+- Professions: Trade Enchants (Professions settings) lists your enchants for the item in the trade
+  window's Will not be traded slot, beside the trade window, each cast on it in one click, with any
+  the other player asked you for in chat first.
+- Quality of Life > Interface: Console Variables (off by default) opens a window of every console
+  variable with its value and default, to search, change or reset one, and to export or import a set
+  of them as a string.
+
+### Changed
+- Dungeon map: City of Dalaran has Santiago Reyes's latest map, with the Atrium of Fortune, Magus
+  Commerce Exchange and Presage Plaza named.
+- Professions: Minimap Node Icons is now Minimap Node Tooltips. A Forever update stopped addons
+  reading the minimap's herb and vein dots, so their pictures and Icon Size are gone; hovering a dot
+  still shows the skill it needs.
+
+### Fixed
+- Dungeon Journal: The Drowned City no longer says it is not open on Forever yet.
+- Badges: in the guild member list, a badge no longer covers a leader's or officer's rank icon.
+- Quest List: map pins no longer mark holiday and world event quests (Winter Veil, the Lunar
+  Festival, the Ahn'Qiraj War Effort, the Scourge Invasion, the Fishing Extravaganza and others) all
+  year round.
+- Food & Drink Bar, Consumable Bar and NF Food / NF Drink: the Enriched Manna Biscuit and other food
+  that restores mana too is now both your food and your drink.
+- Dungeon Journal: quest levels, sharing, factions and quest givers match the game, so Ruins of
+  Lordaeron's quests show from level 15, and Necklace Recovery points to Dran Droffers in Orgrimmar.
+- Boat and Zeppelin Timers: the Bravery, the Stormwind Harbor and Riverglades boats and both Zephras
+  Isle skycutters keep time now, instead of drifting up to two minutes each trip.
+- Boat and Zeppelin Timers: riding the Bravery, the Stormwind Harbor boat or the Riverglades boat
+  times it, like the other boats.
+- Buff Reminders: clicking a self-buff reminder casts it on you, not on whoever you have targeted.
+- Zone Info: dragging it in the HUD Editor no longer errors, and it stays where you drop it.
+- Boat and Zeppelin Timers: riding a boat or zeppelin times it far more reliably, wherever you stand
+  on deck.
+- Boat and Zeppelin Timers: riding either Zephras Isle skycutter times it, like the other ships.
+- Restock Reminder: no longer says Food 0 left and Drink 0 left in every inn and city after
+  installing Naowh's profile. Its Food Maximum Required Level goes back to 60.
+- Zone Info: changing its Panel Scale or the window scale no longer moves the panel away from where
+  you put it.
+- Restock Reminder: Forever's own cooking, like Prowler Steak and Sunrise Omelette, now counts as
+  food, so it no longer says you are out while you carry it.
+- Library Books: Archmage Theocritus' Research Journal, Rumi of Gnomeregan: The Collected Works and
+  The Apothecary's Metaphysical Primer show for both factions, since both librarians take them.
+- Library Books: Ataeric: On Arcane Curiosities shows its spot at The Sepulcher in Silverpine Forest
+  instead of "not found yet".
+- Library Books: the waypoints to the Stormwind librarian and mage trainer lead to where they stand
+  on Forever's Stormwind.
+- Library Books: the 25-book reward waits for level 35, and the 20-book reward for level 20, before
+  it says it is ready.
+- Library Books: Magma or Lava? points to its own spot in Blackrock Mountain.
+- Racial and Class Tracking: clicking an icon turns the tracking on once, instead of trying to cast
+  it a second time.
+- Professions: the gathering Tracking reminder updates as soon as you learn a tracking spell.
+- Buff Reminders: in combat, Thorns, a raid buff and Hunter's Mark fade once you cast them, when the
+  cast is known to be on you or from the reminder itself.
+- Buff Reminders: in combat, a weapon imbue, poison, stone or oil reminder fades once your weapons
+  have it.
+- The options window's sidebar no longer leaves out its first module (Quality of Life) until you
+  search.
+- Pages no longer show up empty or in pieces after searching, or after choosing a search result for
+  a module that is turned off.
+- Food & Drink Bar, NF Food and NF Drink: cooked food (fish included) and Forever's teas and
+  smoothies are no longer skipped.
+- The options window's sidebar no longer leaves out Quality of Life (or another module) until you
+  search.
 
 ## 1.2.15
 
