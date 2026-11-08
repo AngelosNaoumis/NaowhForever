@@ -24,8 +24,9 @@ end)()
 for _, file in ipairs(MACRO_FILES) do sources[#sources + 1] = Read("NaowhForever_Utilities/Macros/" .. file) end
 
 local FOOD, DRINK = "Food", "Drink"
--- itemID -> { spell, required level }
+-- itemID -> { spell, required level, equippable }
 local ITEMS = {
+    [4696] = { DRINK, 54, true }, -- Lapidis Tankard of Tidesippe, an off-hand
     [8079] = { DRINK, 45 },   -- Conjured Crystal Water
     [8766] = { DRINK, 45 },   -- Morning Glory Dew
     [1179] = { DRINK, 5 },    -- Ice Cold Milk
@@ -172,6 +173,7 @@ local function Fixture(opts)
             GetItemCount = Count,
             GetItemIconByID = function(id) return "icon" .. id end,
             GetItemSpell = function(id) return ITEMS[id] and ITEMS[id][1] end,
+            IsEquippableItem = function(id) return ITEMS[id] ~= nil and ITEMS[id][3] == true end,
             GetItemInfo = function(id)
                 if missing[id] then return end
                 return "item", nil, nil, nil, levels[id] or (ITEMS[id] and ITEMS[id][2]) or 0
@@ -453,6 +455,19 @@ do
     t = Fixture({ class = "ROGUE", qol = { foodBar = true }, level = 11, bags = { 4592 } })
     t.Fire("PLAYER_ENTERING_WORLD")
     Check("rogue's bar shows the cooked fish", t.FoodBar().buttons[1].attrs.item1, "item:4592")
+end
+
+-- An off-hand whose use spell is a Drink is never the drink: using it from the bags would equip it.
+do
+    local t = Fixture({ settings = { food = true, drink = true }, qol = { foodBar = true }, level = 60,
+        bags = { 4696, 8766, 8932 } })
+    t.Fire("PLAYER_ENTERING_WORLD")
+    Check("bar's drink skips the tankard", t.FoodBar().buttons[2].attrs.item1, "item:8766")
+    Check("NF Drink skips the tankard", t.Body("NF Drink"), "#showtooltip\n/use item:8766")
+    Check("NF Food skips the tankard", t.Body("NF Food"), "#showtooltip\n/use item:8932\n/use item:8766")
+    t.Bags({ 4696, 8932 })
+    t.Fire("BAG_UPDATE_DELAYED")
+    Check("no other drink: none", t.FoodBar().buttons[2].attrs.item1, nil)
 end
 
 -- Nothing carried: a bare #showtooltip macro is made to place on a bar, and an existing one is left as it was.

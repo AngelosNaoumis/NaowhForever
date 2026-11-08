@@ -85,7 +85,7 @@ local function BestFoodAndDrink()
             local isFood = both or (spell and (spell == foodName or spell == nutritiousFood))
             local isDrink = both or (spell and (spell == drinkName or spell == nutritiousDrink))
             local bonus = (both and bothBonus or 0) - (nutritious and NUTRITIOUS_PENALTY or 0)
-            local s = (isFood or isDrink) and Score(id, bonus)
+            local s = (isFood or isDrink) and not C_Item.IsEquippableItem(id) and Score(id, bonus)
             if s and isFood and (not foodScore or s > foodScore) then food, foodScore = id, s end
             if s and isDrink and (not drinkScore or s > drinkScore) then drink, drinkScore = id, s end
         end

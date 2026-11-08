@@ -366,6 +366,7 @@ local function fixture(settings, noMacros, class)
                 local k = KNOWN[id]
                 if k and k[3] then return SPELL_NAMES[id] or 'Spell', k[3] end
             end,
+            IsEquippableItem = function() return false end,
             GetItemInfo = function(id)
                 if s.missing[id] then return end
                 return 'Item', nil, nil, nil, s.levels[id] or 0
