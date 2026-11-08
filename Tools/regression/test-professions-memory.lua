@@ -833,6 +833,59 @@ check("off, the plan's button hides", not planButton:IsShown())
 state.selectedID, state.selectedUnlearned = savedID, savedUnlearned
 Redraw()
 
+-- Learned Recipe Vendors: a learned recipe a vendor sells shows who sells it under its description,
+-- and a click on a seller sets a waypoint there.
+local function SoldToAlliance(r)
+    for _, npc in ipairs(r.vendors or EMPTY) do
+        if npc[3] ~= "H" then return true end
+    end
+    return false
+end
+local vendorRecipe, otherRecipe
+for i = 1, LEARNED_N do
+    local r = recipes[i]
+    if not vendorRecipe and r.source == "vendor" and SoldToAlliance(r) then vendorRecipe = r end
+    if not otherRecipe and r.source ~= "vendor" then otherRecipe = r end
+end
+assert(vendorRecipe and otherRecipe, "the learned recipes include one a vendor sells and one no vendor sells")
+local detail = win.detail
+state.selectedID, state.selectedUnlearned = vendorRecipe.spell, nil
+Redraw()
+check("off, a learned recipe's pane makes no seller lines", detail:IsShown() and detail.sold == nil)
+settings.learnedRecipeVendors = true
+Redraw()
+local soldBy = detail.sold
+local soldHead = ns.Professions.Text.Hex(ns.THEME.accent) .. ItemNameOf(vendorRecipe.recipe) .. "|r\nSold"
+check("on, a learned recipe a vendor sells shows who sells it", soldBy and soldBy:IsShown()
+    and soldBy.paras[1].text:sub(1, #soldHead) == soldHead)
+local seller = soldBy.lines[1]
+check("its nearest seller is a line", seller:IsShown() and seller.npc ~= nil)
+local placed
+ns.PlaceWaypoint = function(name, map, x, y) placed = { name, map, x, y } end
+seller.scripts.OnClick(seller)
+check("a click on the seller sets a waypoint there", placed and placed[1] == seller.npc[2]
+    and placed[2] == seller.npc[4] and placed[3] == seller.npc[5] and placed[4] == seller.npc[6])
+ns.PlaceWaypoint = nil
+Report("full redraw with learned recipe vendors", Redraw, 4, 0.05)
+account.profRecipeCosts[vendorRecipe.recipe] = { price = 1234 }
+Redraw()
+check("a price seen at a merchant shows on the next draw",
+    soldBy.paras[1].text:find("\nSold for 1234c", 1, true) ~= nil)
+account.profRecipeCosts[vendorRecipe.recipe] = nil
+state.selectedID = otherRecipe.spell
+Redraw()
+check("a learned recipe no vendor sells shows no sellers", detail:IsShown() and not soldBy:IsShown())
+state.selectedID = vendorRecipe.spell
+settings.recipeFinder = false
+Redraw()
+check("without Unlearned Recipes it shows no sellers", not soldBy:IsShown())
+settings.recipeFinder = true
+settings.learnedRecipeVendors = nil
+Redraw()
+check("off again, the sellers hide", not soldBy:IsShown())
+state.selectedID, state.selectedUnlearned = savedID, savedUnlearned
+Redraw()
+
 -------------------------------------------------------------------------------
 --  3b. Each trigger reads only what it can have changed. In game every recipe info, schematic
 --  and container slot read is a new table: the client's share of the garbage.

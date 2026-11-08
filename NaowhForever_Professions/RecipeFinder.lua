@@ -7,6 +7,7 @@ local P = ns.Professions
 local S = P.Settings
 local C = P.C
 local V = P.Vendors
+local SkillUps = P.SkillUps
 local Hex = P.Text.Hex
 
 local NEAREST = 3
@@ -62,6 +63,7 @@ local TEXT_REQUIREMENT = ns.L("%sRequires %s %d|r   %s(you: %d/%d)|r")
 
 local list, state = {}, nil
 local current, EMPTY, skillOf = {}, {}, {}
+local sold, soldSpell, soldSeen, soldNamed, soldMap
 local learnedNow
 local trainerQueued = false
 local events = CreateFrame("Frame")
@@ -380,6 +382,20 @@ local function Describe(r)
     return out
 end
 
+local function SoldBy(spell)
+    if not (S.Get("learnedRecipeVendors") and On()) then return EMPTY end
+    local r = SkillUps.Entry(spell)
+    if not (r and r.source == "vendor") then return EMPTY end
+    local seen, named = SeenCosts()[r.recipe], C_Item.GetItemNameByID(r.recipe) ~= nil
+    local map = C_Map.GetBestMapForUnit("player")
+    if spell ~= soldSpell or seen ~= soldSeen or named ~= soldNamed or map ~= soldMap then
+        soldSpell, soldSeen, soldNamed, soldMap = spell, seen, named, map
+        sold = {}
+        DescribeVendor(r, sold)
+    end
+    return sold
+end
+
 local function RowColor(r)
     local st = Status(r)
     if st == "ready" then return P.Style.READY_RGB end
@@ -535,6 +551,7 @@ ns.RecipeFinder = {
     Status = Status,
     Requirement = Requirement,
     Describe = Describe,
+    SoldBy = SoldBy,
     Tag = Tag,
     Skill = Skill,
     Cost = Cost,

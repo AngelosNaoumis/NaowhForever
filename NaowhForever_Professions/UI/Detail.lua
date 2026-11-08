@@ -26,6 +26,7 @@ local DESC_GAP = 12
 local RIGHT_EDGE = 12
 local DESC_SPACING = 2
 local REAGENTS_GAP = 14
+local SOLD_GAP = 8
 local TRACK_TEXT_GAP = 6
 local PROFIT_BOTTOM = 44
 local EDGE = Style.PANEL_EDGE
@@ -176,6 +177,25 @@ local function FillTrack(info)
     d.track:SetChecked(okTrack and tracked == true)
 end
 
+local function FillSold(info)
+    local d = win.detail
+    local sold = W.linked and EMPTY or ns.RecipeFinder.SoldBy(info.recipeID)
+    if #sold == 0 then
+        if d.sold then d.sold:Hide() end
+        return 0
+    end
+    if not d.sold then
+        d.sold = CreateFrame("Frame", nil, d)
+        d.sold:SetPoint("TOPLEFT", d.desc, "BOTTOMLEFT", -Style.PANE_EDGE, 0)
+        d.sold:SetWidth(Style.MID_W)
+        P.Learn.BuildLines(d.sold)
+    end
+    local height = -P.Learn.ShowLines(d.sold, sold, -SOLD_GAP)
+    d.sold:SetHeight(height)
+    d.sold:Show()
+    return height
+end
+
 local function ShowLearn()
     win.detail:Hide()
     win.empty:Hide()
@@ -199,7 +219,7 @@ function Detail.Render()
     ShowCraftOrOrder(info, output, made)
     local unmet = Describe(info, output, made)
     d.reagentsLabel:ClearAllPoints()
-    d.reagentsLabel:SetPoint("TOPLEFT", d.desc, "BOTTOMLEFT", 0, -REAGENTS_GAP)
+    d.reagentsLabel:SetPoint("TOPLEFT", d.desc, "BOTTOMLEFT", 0, -REAGENTS_GAP - FillSold(info))
     if W.linked then return P.OrderPanel.RenderDetail(info) end
     local last = FillReagents(info)
     P.BuyRow.Render(info, last)

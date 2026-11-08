@@ -68,7 +68,7 @@ NaowhForever_Professions/
     OrderPanel.lua     the order controls and the order column (P.OrderPanel)
     CancelForm.lua     a druid's Create, Create All and Start leave the form first (P.CancelForm)
     Detail.lua         the middle column for one of your recipes (P.Detail)
-    Learn.lua          the middle column for an unlearned recipe (P.Learn)
+    Learn.lua          the middle column for an unlearned recipe, and the where-lines Detail also uses (P.Learn)
     Book.lua           the overview's profession cards (P.Book)
     Window.lua         the window: frame, title, skill bar, rank banner, search, Filter, drawing (P.Window)
     Takeover.lua       showing it over Blizzard's window, docking Blizzard's tabs and cards, dragging, events
@@ -318,6 +318,14 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   A currency is told from a token by `GetMerchantItemCostItem`'s currency name, as Blizzard's merchant
   frame does. A cost whose data has not loaded is skipped until MERCHANT_UPDATE, so a token recipe is
   never kept as a gold one, and prices seen again unchanged redraw nothing.
+- Learned Recipe Vendors is off by default and needs Unlearned Recipes, whose merchant visits keep the
+  prices it shows. One of your recipes that `RecipeData` has as vendor-sold gets the Learn pane's seller
+  text under its description (`RecipeFinder.SoldBy`), on the Learn pane's own line buttons, so a click
+  sets the same waypoint. Those lines are made the first time one shows.
+- The seller text is worked out again only when the recipe, the price seen for it, its item's name
+  loading or your map changes: worked out on every draw, it made each redraw about 1.8 KB of garbage
+  (`test-professions-memory.lua`). A currency or token count in its price ("you have 12") can lag until
+  then.
 - Forever's GetTrainerServiceInfo returns its values in another order than documented (the third is
   the icon's file ID, seen 2026-09-30), so the kind is whichever value is one of its words and the
   icon the first number over 1000. A trainer's services can arrive a moment after it opens with no
@@ -558,3 +566,5 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
 - Recipe sources from ForeverChanges: `Tools/tests/test_foreverchanges_recipes.py` (RecipeData is what
   its JSON writes) and `test-professions-memory.lua` (a seller shown by its zone).
 - Favorite trainer and merchant stars: `test-profession-favorite-marks.lua`.
+- Learned Recipe Vendors: `test-professions-memory.lua` (a learned recipe's sellers, their waypoint, a
+  new price, and no garbage per redraw).

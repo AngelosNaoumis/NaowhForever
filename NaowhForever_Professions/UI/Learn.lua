@@ -139,11 +139,11 @@ local function TextTop(l, r)
     return TEXT_TOP - Style.SKILL_BAR_GAP - range:GetHeight()
 end
 
-local function Describe(l, r, top)
+function Learn.ShowLines(l, entries, top)
     for _, fs in ipairs(l.paras) do fs:Hide() end
     for _, line in ipairs(l.lines) do line:Hide() end
     local y, nPara, nLine = top, 0, 0
-    for _, entry in ipairs(ns.RecipeFinder.Describe(r)) do
+    for _, entry in ipairs(entries) do
         local nextY
         if entry.para then
             nPara = nPara + 1
@@ -183,7 +183,7 @@ function Learn.Render(r)
     P.Lines.RenderProfit(l.profit, r.spell, output, made)
     Widgets.ShowSearch(l.searchRecipe, R.ItemName(r.recipe))
     PlaceSearches(l)
-    FillReagents(l, r, Describe(l, r, TextTop(l, r)))
+    FillReagents(l, r, Learn.ShowLines(l, ns.RecipeFinder.Describe(r), TextTop(l, r)))
 end
 
 local function BuildIcon(l)
@@ -222,7 +222,7 @@ local function BuildText(l)
     l.searchRecipe:Hide()
 end
 
-local function BuildLines(l)
+function Learn.BuildLines(l)
     l.paras = {}
     for i = 1, MAX_PARAS do
         local fs = ns.Font(l, Style.FONT, nil)
@@ -256,7 +256,7 @@ function Learn.Build(frame, mid)
     win.learn = l
     BuildIcon(l)
     BuildText(l)
-    BuildLines(l)
+    Learn.BuildLines(l)
     l.reagentsLabel, l.reagents = P.Reagents.Build(l)
     local hint = ns.Font(l, Style.FONT_SMALL, nil, T.muted)
     hint:SetPoint("BOTTOMLEFT", Style.PANE_EDGE, HINT_BOTTOM)

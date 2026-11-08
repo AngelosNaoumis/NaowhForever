@@ -7,7 +7,7 @@ local Settings = ns.Shared.Settings
 local Group = Settings.Group
 
 local RECIPE_KEYS = { "recipeFinder", "rankAlert", "bagReagents", "bankReagents", "trainFavorites", "skillThresholds",
-    "skillUpChances", "skillUpPlan" }
+    "skillUpChances", "skillUpPlan", "learnedRecipeVendors" }
 local GATHER_LIFT = 8
 local GATHER_STAGE_H = 130
 local CRAFT_STAGE_H = 100
@@ -50,6 +50,10 @@ end
 
 local function PadWhy()
     return ns.GamepadWhy() or TEXT_OFF
+end
+
+local function FinderOn()
+    return On() and S.Get("recipeFinder") == true
 end
 
 local function ProfitOn()
@@ -168,6 +172,9 @@ page:Card({
           help = "Lists the recipes you have not learned yet below your own. Click one to see the skill it "
               .. "needs, what it costs and where it comes from: the nearest trainers, the vendor selling its "
               .. "manual, or the mobs that drop it. Click a trainer or vendor to set a waypoint." },
+        { key = "learnedRecipeVendors", label = "Learned Recipe Vendors", toggle = true, needs = FinderOn,
+          why = "Needs Unlearned Recipes",
+          help = "Also shows where your learned recipes are sold; click a vendor to set a waypoint." },
         { key = "rankAlert", label = "Next Rank Alert", toggle = true, needs = On, why = TEXT_OFF,
           help = "When a profession's skill is high enough for its next rank (Journeyman, Expert, Artisan), a "
               .. "banner under the skill bar and on its card in the overview says what it takes and who "
