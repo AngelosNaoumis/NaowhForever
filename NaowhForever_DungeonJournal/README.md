@@ -101,7 +101,7 @@ NaowhForever_DungeonJournal/
     MapOverlay.lua     the dungeon's map over the world map's picture, inside the dungeon
     MapTools.lua       /nf mappins (place the pins, Copy for Data/Maps.lua) and /nf mapcheck
     SettingsPage.lua   its settings pages (Journal, Quest Tracker, Map), declared as cards
-  Media/Maps/          local dungeon pictures, including 34 imported, 22 assembled and 6 of Santiago Reyes's downloads; selected by Data/Maps.lua
+  Media/Maps/          local dungeon pictures as BLP, including 34 imported, 22 assembled and 6 of Santiago Reyes's downloads; selected by Data/Maps.lua
   README.md            this file
 ```
 
@@ -124,7 +124,7 @@ calls are on `ns`.
 | A boss's NPC ID the build cannot find | `"npcs": { "Name": ID }` on the dungeon in `Tools/data/journal_bosses.json` |
 | Whether a dungeon is open, where the game's tables say otherwise | `"open": true` or `false` on the dungeon in `Tools/data/journal_bosses.json` |
 | Where a boss stands on its dungeon's map | `/nf mappins` in game, drag the pins (one on another floor waits along the top, a right-click takes one off its floor), Copy, and paste the line into `Data/Maps.lua`. `/nf mapcheck` says which map art and floors the client has |
-| A dungeon's map | `Data/Maps.lua`: its art folder (`Interface\WorldMap\<art>`) and floor count, as `/nf mapcheck` finds them, the order you walk its floors in, and the addon's own picture of a floor the art lacks (`Media/Maps`); with none, Map says "Coming soon" |
+| A dungeon's map | `Data/Maps.lua`: its art folder (`Interface\WorldMap\<art>`) and floor count, as `/nf mapcheck` finds them, the order you walk its floors in, and the addon's own picture of a floor the art lacks (`Media/Maps`, a TGA or PNG turned into BLP by `Tools/media/compress_maps.py`); with none, Map says "Coming soon" |
 | A key binding | `Bindings.xml` and its `BINDING_NAME_...` line (Open Dungeon Journal is in `UI/Window.lua`, Boss Loot at Cursor in `UI/Popup.lua`) |
 | An icon's drawing | its function in `Tools/media/make_media.py`, then run it (writes `Core/Media/*.tga`) |
 | What counts as usable, BiS, an upgrade, a new look | `Loot.lua` |
@@ -369,7 +369,12 @@ the game's own tables, and what they can't settle is listed in the pull request 
 
 ## Why
 
-- `ForeverInstanceMaps` pictures are copied unchanged and require no other addon at runtime.
+- `Media/Maps` pictures are 1024 by 1024 DXT1 BLP files with mipmaps, about 700 KB each. As TGA
+  they were 2 to 3 MB each and most of the addon's download.
+- The map frame stretches its picture to the frame, so a 1000 by 667 or 1200 by 800 picture is
+  stored at 1024 by 1024 and still drawn at its own shape, whole, with its credits.
+- `ForeverInstanceMaps` pictures keep their art unchanged, only stored as BLP, and require no
+  other addon at runtime.
 - `Media/Maps` includes 34 pictures imported through the local
   ForeverInstanceMaps addon backup. No public repository URL for that addon is recorded.
 - The Hall of Thanes, Ruins of Lordaeron, Excavation Site, City of Dalaran, The Drowned City,

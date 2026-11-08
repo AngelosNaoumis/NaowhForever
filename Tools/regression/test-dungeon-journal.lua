@@ -2166,7 +2166,7 @@ do
         end
         check("its entrance on a floor its switch offers: " .. key, map.entrance == nil or Offered(map.entrance[1]))
         local function Shipped(path)
-            local file = io.open(path:gsub("^Interface\\AddOns\\", ""):gsub("^NaowhForever\\", ""):gsub("\\", "/") .. ".tga", "rb")
+            local file = io.open(path:gsub("^Interface\\AddOns\\", ""):gsub("^NaowhForever\\", ""):gsub("\\", "/") .. ".blp", "rb")
             if file then file:close() end
             return file ~= nil
         end
