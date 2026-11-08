@@ -7,11 +7,13 @@ local F = ns.FEATURES.groupFinder
 
 local S = ns.UI.ModuleSettings("groupFinder", {
     enabled = F.enabled,
+    gameKey = F.gameKey,
     shareScore = true,
     shareKills = true,
     shareQuests = true,
     shareBis = true,
     sort = "newest",
+    leaderZone = false,
 })
 ns.GroupFinderSettings = S
 

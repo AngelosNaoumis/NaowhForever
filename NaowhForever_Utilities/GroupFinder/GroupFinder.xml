@@ -8,6 +8,7 @@
     <Script file="Group.lua"/>
     <Script file="Browse.lua"/>
     <Script file="Probe.lua"/>
+    <Script file="Key.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Row.lua"/>
     <Script file="View\Applicant.lua"/>

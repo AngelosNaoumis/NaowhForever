@@ -130,6 +130,8 @@ local function Fill(entry, id)
             end
             member.name, member.level, member.class = player.name, player.level, player.classFilename
             member.roles, member.leader = Card.Roles(roles.tank, roles.healer, roles.dps), player.isLeader == true
+            local zone = player.areaName
+            member.zone = not Secret(zone) and zone ~= "" and zone or nil
         end
     end
     entry.nMembers = n

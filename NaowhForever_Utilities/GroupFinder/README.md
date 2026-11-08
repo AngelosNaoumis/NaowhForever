@@ -8,8 +8,9 @@ in the options window), needing `NaowhForever_BiS` for the Naowh Score and the B
 Journal is optional and read for kills, quests and dungeon keys when it is loaded.
 
 Off by default (`groupFinder.enabled`; its switch under Settings > Modules). Its window (`/nflfg`, its
-Top Bar launcher, or Open Group Finder on its settings page) has three tabs: Browse, Your Group and
-Create. Opening it turns the module on.
+Top Bar launcher, its key binding, or Open Group Finder on its settings page) has three tabs: Browse,
+Your Group and Create. Opening it turns the module on. With Open With the Group Finder Key on (Settings >
+Key Binding, off to start), the game's Group Finder key, I to start, opens it instead of the game's.
 
 ## Browse
 
@@ -18,22 +19,21 @@ Create. Opening it turns the module on.
 | [logo] Looking For Group                     [Search]          [x] |
 |        4 groups                                                    |
 |--------------------------------------------------------------------|
-| [For your level] [All] [RFC 13-18] [WC 17-24] [DM 17-26]           |  a chip is a search; dungeons
-| [SFK 22-30] [BFD 24-32] [Stocks 24-32] ...                         |  outside your level muted
-| [Filter by dungeon, leader or note        ]         Sort: Newest v |
-|--------------------------------------------------------------------|
-| Shadowfang Keep 22-30                                  12.0+  23.9 |  their minimum, the leader's
-| [class] Korvath 25                                         [Apply] |  Naowh Score in its grade's color
-| [T][D][D][ ][ ]   3 boss kills   2 quests                   10m ago |
-|--------------------------------------------------------------------|
-| The Deadmines 17-26                                            ... |  waiting for their card
-| [class] Nessa 19                                                   |
-| [H][D]                                                   just now |  a solo player's roles
+| Dungeon: For your level >  [Filter...             ] Sort: Newest > |  the dungeon menu: each pick is
+|--------------------------------------------------------------------|  a search
+| [c] Korvath 25 Westfall        [T][D][D][ ][ ] 12.0+ 23.9  [Apply] |  the zone with Leader's Zone on;
+|     Shadowfang Keep 22-30   3 boss kills   2 quests        10m ago |  their minimum, the leader's Naowh
+|--------------------------------------------------------------------|  Score in its grade's color
+| [c] Nessa 19                   [H][D]                 ...          |  waiting for their card; a solo
+|     The Deadmines 17-26                                   just now |  player's roles
 +--------------------------------------------------------------------+
 ```
 
-- The chips pick what is searched: the dungeons for your level (to start), every dungeon, or one. A
-  chip clicked while a search runs does nothing; Search searches the picked chip again.
+- The Dungeon menu picks what is searched: the dungeons for your level (to start), every dungeon, or one,
+  listed by level with those outside your level greyed. Picking while a search runs does nothing; Search
+  searches the picked one again.
+- A row is the leader first (class, name, level, zone, the group's spots, their minimum and score, Apply),
+  then the dungeon, the leader's kills and quests there, and how long ago it was listed.
 - The filter box keeps the listings whose dungeon, leader or note has what you type; the count says
   how many of them show.
 - Your own listing first, then by the sort: newest first (to start), the leader's Naowh Score best first,
@@ -43,6 +43,8 @@ Create. Opening it turns the module on.
   player shows the roles they signed up as; a raid shows its count.
 - The kills and quests are the leader's for that dungeon: their boss kills there, or First time, and
   the dungeon's quests in their log.
+- With Leader's Zone on (Settings > Browse, off to start), the leader's zone follows their level. The
+  game sends no zone for the other members.
 - A note says when nothing has been searched yet, while searching, when a search failed, when there is
   nothing to search at your level, and during an encounter.
 - A leader who listed through Create shows their minimum score, and their note and the roles they need
@@ -94,6 +96,7 @@ NaowhForever_Utilities/GroupFinder/
   Browse.lua           each listing's leader asked once for their card, applying to them, and the
                        filter and sorts (GF.Browse)
   Probe.lua            /nf groupfinder probe and /nf groupfinder ping <name>
+  Key.lua              the game's Group Finder key opening this one, while its setting is on
   View/
     Style.lua          its look, its window's sizes and shared words and parts (GF.UI, GF.UI.Style)
     Row.lua            a listing's row on the shared row engine (GF.UI.Kinds)
@@ -101,9 +104,10 @@ NaowhForever_Utilities/GroupFinder/
   UI/
     YourGroup.lua      the Your Group page (GF.UI.YourGroup)
     Create.lua         the Create page (GF.UI.Create)
-    BrowseBar.lua      Browse's chips, filter box and sort (GF.UI.BrowseBar)
+    BrowseBar.lua      Browse's dungeon menu, filter box and sort (GF.UI.BrowseBar)
     Window.lua         the window, its tabs and the Browse list (ns.OpenGroupFinder, ns.ToggleGroupFinder)
-    SettingsPage.lua   its settings page (Group Finder/Settings): Open Group Finder, what your card shares
+    SettingsPage.lua   its settings page (Group Finder/Settings): Open Group Finder, what your card shares,
+                       what Browse shows
   README.md            this file
 ```
 
@@ -146,7 +150,7 @@ kills.
 
 - **A listing** (`GF.Listings.entries[1..n]`, after `GF.Listings.Read()`): `id`, `leader` (nil until
   the game names them), `activity`, `dungeon` (Journal key), `numMembers`, `members[1..nMembers]`
-  (`name`, `level`, `class`, `roles` as card role bits, `leader`, up to 5), `tanks`, `healers`,
+  (`name`, `level`, `class`, `roles` as card role bits, `leader`, `zone` or nil, up to 5), `tanks`, `healers`,
   `damage`, `age` in seconds, `delisted`, `mine` (your own), `party` (its party GUID).
   `GF.Listings.state` is `ready`, `locked`, `failed` or `none`. An activity
   (`GF.Listings.Activity(id)`, read once): `name`, `short`, `min` and `max` levels, `size`.
@@ -206,14 +210,17 @@ kills.
   the client's language, so outside English only the map match works for now.
 - Every table that grows with other players is bounded: the queue, pings, applications, applicants,
   kept cards, senders, askers, names whispered and leaders asked.
-- A search runs only from a click, the Search button's or a chip's, as the game's own finder runs it, so
+- A search runs only from a click, the Search button's or the Dungeon menu's, as the game's own finder runs it, so
   there is no timed refresh. It takes the first category with an activity that suits your level and
   searches those activities, plus your own listing's, the way the game's finder filters by suggested
-  levels (`Blizzard_LFGVanilla_ParentFrame.lua`); All searches every activity in it, and a dungeon's
-  chip that one alone. A search that gets no answer in `SEARCH_WAIT` seconds has failed: not every
+  levels (`Blizzard_LFGVanilla_ParentFrame.lua`); All searches every activity in it, and a dungeon
+  that one alone. A search that gets no answer in `SEARCH_WAIT` seconds has failed: not every
   failure sends an event.
-- The chips are searches rather than a filter on the last results, so a dungeon outside your level is
-  found too, and the list always matches the chip picked. The filter box only narrows what is shown.
+- The Dungeon menu's picks are searches rather than a filter on the last results, so a dungeon outside your
+  level is found too, and the list always matches the pick. The filter box only narrows what is shown.
+- The Dungeon menu scrolls past `MENU_H` (400): Forever lists over thirty dungeons, more than a screen holds.
+- The group's spots start at `SLOTS_X` (300) on every row so they line up down the list; the leader's
+  zone is cut short before them.
 - `C_LFGList.GetAvailableCategories`, `GetAvailableActivities` and `GetSearchResultMemberCounts` are not
   in the generated API docs, but the game's own Forever finder calls them
   (`Blizzard_LFGVanilla_Browse.lua`, `Blizzard_LFGVanilla_ParentFrame.lua`), and Group Finder Roles reads
@@ -225,6 +232,12 @@ kills.
   one who does not run Naowh Forever is not waited on again.
 - The kills on a row are the leader's own boss kills in that dungeon, not how far the group has got:
   a card carries no run progress yet.
+- The game's Group Finder key is borrowed with override bindings on our own frame, never `SetBinding`, so
+  the player's saved keys never change and turning it off hands the key straight back. `GetBindingKey`
+  without its second argument reads the player's own keys, not overrides, and an override fires
+  `UPDATE_BINDINGS` itself, so the overrides are only redone when those keys change. Bindings cannot
+  change in combat, so a change waits for `PLAYER_REGEN_ENABLED`. Under the Gamepad interface style the
+  key stays the game's: that action can sit on a pad button, and this window has no pad navigation.
 - `C_LFGList.CreateListing`, `UpdateListing` and `RemoveListing` need a hardware event, so List Group,
   Update Group and Delist run only from their clicks. They list as the game's own Listing tab does
   (`Blizzard_LFGVanilla_Listing.lua`): the activity and a playstyle, which Forever requires and shows
@@ -279,7 +292,7 @@ kills.
   making garbage.
 - `lua Tools/regression/test-group-finder-ui.lua`: the window, its tabs and its pages on the real shared
   parts, against stubbed rules: nothing built until opened; Browse's notes, order, rows, a leader's group
-  and Apply; the chips, the filter box and the sort; Create's tiles, roles, slider, styles, note, List Group and Reset, and why it cannot list;
+  and Apply; the Dungeon menu, the filter box and the sort; Create's tiles, roles, slider, styles, note, List Group and Reset, and why it cannot list;
   Your Group's header, party, applicants best first, Invite, Decline and Delist; and turning it off.
 - In game: `/nf groupfinder probe`, and `/nf groupfinder ping <name>` between two players with the
   Group Finder on; the one pinged needs a listing up in the game's Group Finder.

@@ -8,7 +8,7 @@ local COMMAND_PREFIX = "/nf"
 local SLASH_KEY = "NAOWHFOREVER"
 local MODULE_ARGS = { bars = "ActionBarsCommand" }
 local MODULE_KEYS = { instance = true, discovery = true, gear = true, bless = true, macros = true, bars = true,
-    buffs = true, threat = true, pvp = true, market = true }
+    buffs = true, threat = true, pvp = true, market = true, lfg = true }
 local NAMED_KEYS = { Journeys = "JOURNEYS", Professions = "PROFESSIONS", ["Consumable Bar"] = "CONSUMABLEBAR",
     ["Swing Timer"] = "SWINGTIMER" }
 local WINDOW_KEYS = { scrap = { "ToggleScrapList", "Junk List", "Quality of Life" },

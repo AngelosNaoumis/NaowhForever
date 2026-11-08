@@ -1,4 +1,4 @@
--- SettingsPage.lua: the Group Finder's settings page (Group Finder/Settings): what your card shares.
+-- SettingsPage.lua: the Group Finder's settings page (Group Finder/Settings): what your card shares, what Browse shows and its key.
 local ns = _G.NaowhForever
 
 local GF = ns.GroupFinder
@@ -13,6 +13,15 @@ local SHARED = { "shareScore", "shareKills", "shareQuests", "shareBis" }
 
 local function On()
     return GF.On()
+end
+
+local function KeyFree()
+    return On() and ns.GamepadFree()
+end
+
+local function KeyWhy()
+    if not On() then return OFF end
+    return ns.GamepadWhy()
 end
 
 local function Summary(store)
@@ -46,5 +55,23 @@ page:Card({
           help = "Shows the dungeon's quests you have or still need." },
         { key = "shareBis", label = "BiS Progress", toggle = true, needs = On, why = OFF,
           help = "Shows how many of your BiS items you already have." },
+    },
+})
+
+page:Card({
+    id = "browse", name = "Browse", order = 20,
+    help = "What each group in Browse shows.",
+    rows = {
+        { key = "leaderZone", label = "Leader's Zone", toggle = true, needs = On, why = OFF,
+          help = "Shows the zone each group's leader is in, after their level." },
+    },
+})
+
+page:Card({
+    id = "key", name = "Key Binding", order = 30,
+    help = "Which key opens the Group Finder.",
+    rows = {
+        { key = "gameKey", label = "Open With the Group Finder Key", toggle = true, needs = KeyFree, why = KeyWhy,
+          help = "The key that opens the game's Group Finder opens this one instead." },
     },
 })

@@ -285,6 +285,7 @@ ns.FEATURES = {
     },
     groupFinder = {
         enabled = false,
+        gameKey = false,
     },
     account = {
         gameMenuButton = true,

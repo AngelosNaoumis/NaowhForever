@@ -34,7 +34,7 @@ check("the Recommended setup leaves it off", Read("Core/Profiles/Presets.lua"):f
     and Read("Tools/build/presets.lua"):find('"NaowhForever_GroupFinder" } }', 1, true) ~= nil)
 
 local files = TocFiles("^NaowhForever_Utilities/GroupFinder/.*%.lua$")
-check("the module loads its files through its XML", #files == 16 and files[1]:find("GroupFinder.lua$") ~= nil)
+check("the module loads its files through its XML", #files == 17 and files[1]:find("GroupFinder.lua$") ~= nil)
 local rules = {}
 for _, path in ipairs(files) do
     if not (path:find("/View/") or path:find("/UI/") and not path:find("/UI/SettingsPage%.lua$")) then
@@ -104,7 +104,7 @@ for id = 1, 50 do
     PLAYERS[id] = {}
     for m = 1, 5 do
         PLAYERS[id][m] = { name = "Member" .. id .. "-" .. m, level = 20 + m, classFilename = "WARRIOR",
-            assignedRole = m == 1 and "TANK" or "DAMAGER", isLeader = m == 1,
+            assignedRole = m == 1 and "TANK" or "DAMAGER", isLeader = m == 1, areaName = m == 1 and "Zone" .. id or nil,
             lfgRoles = { tank = m == 1, healer = false, dps = m ~= 1 } }
     end
 end
@@ -116,6 +116,7 @@ local function Fixture(values)
         onQuest = {}, complete = {}, done = {}, minLevel = {}, level = 20, score = 18.9, scoreComplete = true,
         kills = { [2741] = { n = 3 }, [2742] = { n = 2 }, [2743] = { n = 0 }, [2746] = { n = 120 }, [2747] = { n = 1 } },
         bis = true, roles = { tank = true, healer = false, dps = true },
+        keys = { "I" }, overrides = {}, overrideSets = 0, combat = false, gamepad = false,
     }
     local settings = {}
     for k, v in pairs(values or {}) do settings[k] = v end
@@ -182,6 +183,7 @@ local function Fixture(values)
     local ns = {
         Apply = NOTHING,
         L = Locale.L,
+        GamepadStandDown = function() return state.gamepad end,
         Journal = Journal,
         Print = function(text) state.printed[#state.printed + 1] = text end,
         UI = { ModuleSettings = ModuleSettings, RefreshPage = NOTHING },
@@ -278,6 +280,13 @@ local function Fixture(values)
         UnitLevel = function() return state.level end,
         GetUnitName = function() return "Die Man" end,
         GetClassInfo = function(id) return id == 1 and "Warrior" or "Class" .. id end,
+        GetBindingKey = function(action) if action == "TOGGLEGROUPFINDER" then return unpack(state.keys) end end,
+        SetOverrideBinding = function(_, _, key, action)
+            state.overrides[key] = action
+            state.overrideSets = state.overrideSets + 1
+        end,
+        ClearOverrideBindings = function() for key in pairs(state.overrides) do state.overrides[key] = nil end end,
+        InCombatLockdown = function() return state.combat end,
     }, { __index = _G })
     env._G = env
     state.env = env
@@ -343,14 +352,19 @@ do
     state.ns.Apply()
     check("a profile reload keeps one registration each", state.events.CHAT_MSG_ADDON == 1)
 
-    check("the settings page declares one card", #state.cards == 1 and state.pages["Group Finder/Settings"] ~= nil)
-    local card = state.cards[1]
-    check("the card has four switches", #card.rows == 4)
-    for _, row in ipairs(card.rows) do
-        check(row.label .. "'s help is one short sentence", #row.help < 100 and select(2, row.help:gsub("%.", "")) == 1)
-        check(row.label .. " waits for the module", row.needs ~= nil)
+    check("the settings page declares Your Card, Browse and Key Binding", #state.cards == 3
+        and state.pages["Group Finder/Settings"] ~= nil and state.cards[1].id == "card" and state.cards[2].id == "browse"
+        and state.cards[3].id == "key")
+    check("Your Card has four switches, Browse and Key Binding one each", #state.cards[1].rows == 4
+        and #state.cards[2].rows == 1 and #state.cards[3].rows == 1)
+    for _, card in ipairs(state.cards) do
+        for _, row in ipairs(card.rows) do
+            check(row.label .. "'s help is one short sentence",
+                #row.help < 100 and select(2, row.help:gsub("%.", "")) == 1)
+            check(row.label .. " waits for the module", row.needs ~= nil)
+        end
+        check(card.name .. "'s help is one short sentence", #card.help < 100 and select(2, card.help:gsub("%.", "")) == 1)
     end
-    check("the card's help is one short sentence", #card.help < 100 and select(2, card.help:gsub("%.", "")) == 1)
 end
 
 do
@@ -743,6 +757,8 @@ do
         and entry.members[1].roles == Card.TANK and entry.members[2].roles == Card.DAMAGE
         and entry.members[1].leader and entry.members[2].level == 22 and entry.members[1].class == "WARRIOR")
     check("its role counts", entry.tanks == 1 and entry.healers == 0 and entry.damage == 4)
+    check("the leader's zone, and none for a member the game sent none for",
+        entry.members[1].zone == "Zone4" and entry.members[2].zone == nil)
     check("your own listing is marked", Listings.entries[7].mine == true and entry.mine == false)
     local activity = Listings.Activity(1)
     check("an activity's name, short name, levels and size", activity.name == "The Deadmines" and activity.short == "DM"
@@ -754,6 +770,13 @@ do
     Listings.Read(true)
     check("secret role counts count nothing", entry.tanks == 0 and entry.damage == 0)
     COUNTS[4].TANK = 1
+    PLAYERS[4][1].areaName = SECRET
+    Listings.Read(true)
+    check("a secret zone is left out, the member kept", entry.members[1].zone == nil and entry.nMembers == 5)
+    PLAYERS[4][1].areaName = ""
+    Listings.Read(true)
+    check("so is an empty one", entry.members[1].zone == nil)
+    PLAYERS[4][1].areaName = "Zone4"
     local calls = state.infoCalls
     check("a second read without a new search reads nothing", Listings.Read() == 50 and state.infoCalls == calls)
 
@@ -1199,6 +1222,44 @@ do
         and #Comms.applicants == 0)
     state.Advance(Comms.BURST / Comms.RATE)
     check("and whispers D", state.sent[#state.sent].text == "1 D 61" and state.sent[#state.sent].target == "Erin")
+end
+
+do
+    local state = Fixture({ enabled = true })
+    check("the game's Group Finder key is left alone to start", state.defaults.gameKey == false
+        and state.env.NaowhForever.FEATURES.groupFinder.gameKey == false and next(state.overrides) == nil
+        and state.events.UPDATE_BINDINGS == nil)
+    local made = state.frames
+    state.S.Set("gameKey", true)
+    local owner = state.frameList[#state.frameList]
+    check("on: the game's Group Finder key opens ours", state.frames == made + 1
+        and state.overrides.I == "NAOWHFOREVER_LFG" and state.events.UPDATE_BINDINGS == 1)
+    state.keys = { "I", "SHIFT-I" }
+    owner.onEvent(owner, "UPDATE_BINDINGS")
+    check("a key the player adds to it follows", state.overrides.I == "NAOWHFOREVER_LFG"
+        and state.overrides["SHIFT-I"] == "NAOWHFOREVER_LFG")
+    local sets = state.overrideSets
+    owner.onEvent(owner, "UPDATE_BINDINGS")
+    check("the same keys again change nothing, so its own overrides cannot loop", state.overrideSets == sets)
+    state.combat = true
+    state.S.Set("gameKey", false)
+    check("turned off in combat: the key waits for combat to end", state.overrides.I == "NAOWHFOREVER_LFG"
+        and state.events.PLAYER_REGEN_ENABLED == 1)
+    state.combat = false
+    owner.onEvent(owner, "PLAYER_REGEN_ENABLED")
+    check("then goes back to the game's and nothing is listened to", next(state.overrides) == nil
+        and state.events.PLAYER_REGEN_ENABLED == nil and state.events.UPDATE_BINDINGS == nil)
+    state.S.Set("gameKey", true)
+    state.S.Set("enabled", false)
+    check("turning the Group Finder off gives the key back", next(state.overrides) == nil and next(state.events) == nil)
+end
+
+do
+    local state = Fixture({ enabled = true, gameKey = true })
+    check("on at login: the key is taken", state.overrides.I == "NAOWHFOREVER_LFG")
+    state.gamepad = true
+    state.ns.Apply()
+    check("under the Gamepad interface style the key stays the game's", next(state.overrides) == nil)
 end
 
 print(("Listed answer: %d bytes."):format(SIZES.listed))

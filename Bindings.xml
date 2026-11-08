@@ -23,6 +23,7 @@
     <Binding name="NAOWHFOREVER_THREAT" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("threat")</Binding>
     <Binding name="NAOWHFOREVER_PVP" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("pvp")</Binding>
     <Binding name="NAOWHFOREVER_MARKET" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("market")</Binding>
+    <Binding name="NAOWHFOREVER_LFG" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("lfg")</Binding>
     <Binding name="NAOWHFOREVER_TRAINING" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleTraining()</Binding>
     <Binding name="NAOWHFOREVER_JOURNEYS" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("Journeys")</Binding>
     <Binding name="NAOWHFOREVER_PROFESSIONS" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("Professions")</Binding>

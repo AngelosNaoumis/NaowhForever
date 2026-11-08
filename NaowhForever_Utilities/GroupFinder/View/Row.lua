@@ -5,15 +5,19 @@ local T = ns.THEME
 local GF = ns.GroupFinder
 if not GF then return end
 local UI = GF.UI
+local S = GF.Settings
 local Parts, View = ns.Shared.Parts, ns.Shared.View
 local Card, Comms, Listings, Browse = GF.Card, GF.Comms, GF.Listings, GF.Browse
 
 local St = UI.Style
 local ROW_H, PAD, BAND_W = St.ROW_H, St.ROW_PAD, St.BAND_W
-local LINE_1, LINE_2, LINE_3 = St.LINE_1, St.LINE_2, St.LINE_3
-local ROLE_ICON, ROLE_GAP, SLOTS_SHOWN = St.ROLE_ICON, St.ROLE_GAP, St.SLOTS_SHOWN
+local LINE_1, LINE_2 = St.LINE_1, St.LINE_2
+local ROLE_ICON, ROLE_GAP, SLOTS_SHOWN, SLOTS_X = St.ROLE_ICON, St.ROLE_GAP, St.SLOTS_SHOWN, St.SLOTS_X
 local TEXT_GAP, DETAIL_GAP = St.TEXT_GAP, St.DETAIL_GAP
-local DETAIL_X = PAD + SLOTS_SHOWN * (ROLE_ICON + ROLE_GAP) + DETAIL_GAP
+local TEXT_X = PAD + St.CLASS_ICON + TEXT_GAP
+local LINE_1_MID = LINE_1 + St.CLASS_ICON / 2
+local SCORE_RIGHT = PAD + St.APPLY_W + DETAIL_GAP
+local ZONE_ROOM = SLOTS_X - TEXT_X - 3 * TEXT_GAP
 local SCORE_TENTHS = 10
 local SECONDS_PER_MINUTE, SECONDS_PER_HOUR = 60, 3600
 local ROLE_ORDER = { "TANK", "HEALER", "DAMAGER" }
@@ -60,40 +64,44 @@ local function NewRow(view)
     row.band:SetPoint("TOPLEFT")
     row.band:SetPoint("BOTTOMLEFT")
     row.band:SetWidth(BAND_W)
-    row.title = ns.Font(row, St.TITLE_SIZE, nil, T.fg)
-    row.title:SetPoint("TOPLEFT", PAD, -LINE_1)
-    row.range = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.range:SetPoint("LEFT", row.title, "RIGHT", TEXT_GAP, 0)
     row.class = Parts.ItemIcon(row, St.CLASS_ICON)
     row.class.texture:SetTexture(St.CLASS_ICONS)
-    row.class:SetPoint("TOPLEFT", PAD, -LINE_2)
+    row.class:SetPoint("TOPLEFT", PAD, -LINE_1)
     row.leader = ns.Font(row, St.LINE_SIZE, nil, T.fg)
     row.leader:SetPoint("LEFT", row.class, "RIGHT", TEXT_GAP, 0)
     row.level = ns.Font(row, St.SUB_SIZE, nil, T.muted)
     row.level:SetPoint("LEFT", row.leader, "RIGHT", TEXT_GAP, 0)
+    row.zone = ns.Font(row, St.SUB_SIZE, nil, T.muted)
+    row.zone:SetPoint("LEFT", row.level, "RIGHT", TEXT_GAP, 0)
+    row.zone:SetJustifyH("LEFT")
+    row.zone:SetWordWrap(false)
     row.slots = {}
     for i = 1, SLOTS_SHOWN do
         local slot = row:CreateTexture(nil, "ARTWORK")
         slot:SetSize(ROLE_ICON, ROLE_ICON)
-        slot:SetPoint("TOPLEFT", PAD + (i - 1) * (ROLE_ICON + ROLE_GAP), -LINE_3)
+        slot:SetPoint("TOPLEFT", SLOTS_X + (i - 1) * (ROLE_ICON + ROLE_GAP), -LINE_1)
         row.slots[i] = slot
     end
     row.size = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.size:SetPoint("TOPLEFT", PAD, -LINE_3)
-    row.kills = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.kills:SetPoint("TOPLEFT", DETAIL_X, -LINE_3)
-    row.quests = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.quests:SetPoint("LEFT", row.kills, "RIGHT", DETAIL_GAP, 0)
+    row.size:SetPoint("LEFT", row, "TOPLEFT", SLOTS_X, -LINE_1_MID)
     row.score = ns.Font(row, St.SCORE_SIZE, nil, T.fg)
-    row.score:SetPoint("TOPRIGHT", -PAD, -LINE_1)
+    row.score:SetPoint("RIGHT", row, "TOPRIGHT", -SCORE_RIGHT, -LINE_1_MID)
     row.min = ns.Font(row, St.SUB_SIZE, nil, T.muted)
     row.min:SetPoint("RIGHT", row.score, "LEFT", -TEXT_GAP, 0)
-    row.age = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.age:SetPoint("TOPRIGHT", -PAD, -LINE_3)
     row.apply = ns.Button(row, TEXT_APPLY, St.APPLY_W, St.BUTTON_H, function() Apply(row) end)
-    row.apply:SetPoint("RIGHT", row, "TOPRIGHT", -PAD, -(LINE_2 + St.CLASS_ICON / 2))
+    row.apply:SetPoint("RIGHT", row, "TOPRIGHT", -PAD, -LINE_1_MID)
     row.status = ns.Font(row, St.SUB_SIZE, nil, T.muted)
-    row.status:SetPoint("RIGHT", row, "TOPRIGHT", -PAD, -(LINE_2 + St.CLASS_ICON / 2))
+    row.status:SetPoint("RIGHT", row, "TOPRIGHT", -PAD, -LINE_1_MID)
+    row.title = ns.Font(row, St.SUB_SIZE, nil, T.fg)
+    row.title:SetPoint("TOPLEFT", TEXT_X, -LINE_2)
+    row.range = ns.Font(row, St.SUB_SIZE, nil, T.muted)
+    row.range:SetPoint("LEFT", row.title, "RIGHT", TEXT_GAP, 0)
+    row.kills = ns.Font(row, St.SUB_SIZE, nil, T.muted)
+    row.kills:SetPoint("LEFT", row.range, "RIGHT", DETAIL_GAP, 0)
+    row.quests = ns.Font(row, St.SUB_SIZE, nil, T.muted)
+    row.quests:SetPoint("LEFT", row.kills, "RIGHT", DETAIL_GAP, 0)
+    row.age = ns.Font(row, St.SUB_SIZE, nil, T.muted)
+    row.age:SetPoint("TOPRIGHT", -PAD, -LINE_2)
     return row
 end
 
@@ -216,6 +224,8 @@ local function SetRow(row, entry, index)
     row.leader:SetText(entry.leader or WAITING)
     row.leader:SetTextColor(color.r, color.g, color.b)
     row.level:SetText(leader and leader.level and tostring(leader.level) or "")
+    row.zone:SetText(S.Get("leaderZone") and leader and leader.zone or "")
+    row.zone:SetWidth(math.max(1, ZONE_ROOM - row.leader:GetStringWidth() - row.level:GetStringWidth()))
     PaintSlots(row, entry, activity, leader)
     PaintCard(row, entry)
     row.age:SetText(Age(entry.age))

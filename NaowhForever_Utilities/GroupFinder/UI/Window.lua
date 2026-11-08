@@ -20,7 +20,7 @@ local REDRAWN_BY = { "listings", "listing", "search", "card", "noreply", "offlin
 local TEXT_TITLE = ns.L("Looking For Group")
 local TEXT_GROUPS = ns.L("%d groups")
 local TEXT_SEARCH = ns.L("Search")
-local TEXT_SEARCH_TIP = ns.L("Search Forever's group finder again for the chip picked below.")
+local TEXT_SEARCH_TIP = ns.L("Search Forever's group finder again for the dungeon picked below.")
 local TEXT_BROWSE, TEXT_CREATE = "Browse", "Create"
 local TEXT_YOUR_GROUP = ns.L("Your Group")
 local TEXT_YOUR_GROUP_COUNT = ns.L("Your Group (%d)")
@@ -177,6 +177,7 @@ end
 
 S.OnChange(function(key)
     if key == "enabled" and window and not GF.On() then window:Hide() end
+    if key == "leaderZone" then Refresh() end
 end)
 hooksecurefunc(ns, "Apply", function()
     if window and window:IsShown() then

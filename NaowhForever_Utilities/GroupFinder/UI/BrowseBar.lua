@@ -1,6 +1,5 @@
--- BrowseBar.lua: the Browse screen's bar: a chip for your level, every dungeon and each one, each a search, then a text filter and the sort (ns.GroupFinder.UI.BrowseBar).
+-- BrowseBar.lua: the Browse screen's bar: the dungeon menu (your level, every dungeon or one, each a search), then a text filter and the sort (ns.GroupFinder.UI.BrowseBar).
 local ns = _G.NaowhForever
-local T = ns.THEME
 
 local GF = ns.GroupFinder
 if not GF then return end
@@ -10,11 +9,12 @@ local Listings, Search = GF.Listings, GF.Search
 local Parts = ns.Shared.Parts
 
 local St = UI.Style
-local CHIP_H, CHIP_GAP, CHIP_PAD, FILTER_GAP = St.CHIP_H, St.CHIP_GAP, St.CHIP_PAD, St.FILTER_GAP
-local SEARCH_H = St.SEARCH_H
+local FILTER_GAP, SEARCH_H = St.FILTER_GAP, St.SEARCH_H
+local MENU_H = 400
 
-local TEXT_LEVEL, TEXT_ALL = "For your level", "All"
-local TEXT_CHIP = "%s %d-%d"
+local TEXT_LEVEL, TEXT_ALL = ns.L("For your level"), ns.L("All")
+local TEXT_DUNGEON = "%s %d-%d"
+local TEXT_PICK = ns.L("Dungeon: %s")
 local TEXT_FILTER = "Filter by dungeon, leader or note"
 local SORTS = { { "newest", "Newest" }, { "score", "Naowh Score" }, { "level", "Level" } }
 local TEXT_SORT = ns.L("Sort: %s")
@@ -23,48 +23,46 @@ for _, sort in ipairs(SORTS) do SORT_LABELS[sort[1]] = TEXT_SORT:format(ns.L(sor
 
 local activities = {}
 local bar
-local x, y = 0, 0
 
-local Paint
-
-local function NewChip(i)
-    local chip = ns.Button(bar, "", 2 * CHIP_PAD, CHIP_H)
-    chip.idle = chip._rest
-    chip._onClick = function()
-        if Search.Run(chip.pick) then Paint() end
-    end
-    bar.chips[i] = chip
-    return chip
+local function DungeonText(id)
+    local activity = Listings.Activity(id)
+    return activity.max > 0 and TEXT_DUNGEON:format(activity.short, activity.min, activity.max) or activity.short
 end
 
-local function Place(i, pick, text, suits)
-    local chip = bar.chips[i] or NewChip(i)
-    chip.pick = pick
-    ns.SetButtonText(chip, text)
-    local w = math.ceil(chip.label:GetStringWidth()) + 2 * CHIP_PAD
-    chip:SetWidth(w)
-    UI.Pick(chip, Search.pick == pick, not suits and T.muted or nil)
-    if x > 0 and x + w > UI.CONTENT_W then x, y = 0, y + CHIP_H + CHIP_GAP end
-    chip:ClearAllPoints()
-    chip:SetPoint("TOPLEFT", x, -y)
-    chip:Show()
-    x = x + w + CHIP_GAP
+local function PickText(pick)
+    if pick == Search.LEVEL then return TEXT_LEVEL end
+    if pick == Search.ALL then return TEXT_ALL end
+    return DungeonText(pick)
 end
 
-function Paint()
-    local n = Search.Activities(activities)
-    x, y = 0, 0
-    Place(1, Search.LEVEL, TEXT_LEVEL, true)
-    Place(2, Search.ALL, TEXT_ALL, true)
-    for i = 1, n do
-        local id = activities[i]
-        local activity = Listings.Activity(id)
-        local text = activity.max > 0 and TEXT_CHIP:format(activity.short, activity.min, activity.max) or activity.short
-        Place(i + 2, id, text, Search.Suits(id))
-    end
-    for i = n + 3, #bar.chips do bar.chips[i]:Hide() end
-    bar:SetHeight(y + CHIP_H + FILTER_GAP + SEARCH_H)
+local function Paint()
+    Parts.SetLink(bar.dungeon, TEXT_PICK:format(PickText(Search.pick)))
     Parts.SetLink(bar.sort, SORT_LABELS[S.Get("sort")] or SORT_LABELS.newest)
+end
+
+local function IsPick(pick)
+    return Search.pick == pick
+end
+
+local function SetPick(pick)
+    if Search.Run(pick) then Paint() end
+end
+
+local function DungeonMenu(_, root)
+    root:SetScrollMode(MENU_H)
+    root:CreateTitle(ns.L("Dungeon"))
+    root:CreateRadio(TEXT_LEVEL, IsPick, SetPick, Search.LEVEL)
+    root:CreateRadio(TEXT_ALL, IsPick, SetPick, Search.ALL)
+    root:CreateDivider()
+    for i = 1, Search.Activities(activities) do
+        local id = activities[i]
+        local text = DungeonText(id)
+        root:CreateRadio(Search.Suits(id) and text or ns.Color("muted", text), IsPick, SetPick, id)
+    end
+end
+
+local function DungeonClicked(link)
+    MenuUtil.CreateContextMenu(link, DungeonMenu)
 end
 
 local function Filtered(text)
@@ -91,13 +89,15 @@ end
 
 function UI.BrowseBar(parent, onChange)
     bar = CreateFrame("Frame", nil, parent)
-    bar:SetWidth(UI.CONTENT_W)
-    bar.chips, bar.needle, bar.onChange = {}, "", onChange
+    bar:SetSize(UI.CONTENT_W, SEARCH_H)
+    bar.needle, bar.onChange = "", onChange
+    bar.dungeon = Parts.Link(bar, DungeonClicked, true)
+    bar.dungeon:SetPoint("LEFT")
     bar.sort = Parts.Link(bar, SortClicked, true)
-    bar.sort:SetPoint("RIGHT", bar, "BOTTOMRIGHT", 0, SEARCH_H / 2)
+    bar.sort:SetPoint("RIGHT")
     bar.search = Parts.SearchBox(bar, TEXT_FILTER, Filtered)
     bar.search:SetHeight(SEARCH_H)
-    bar.search:SetPoint("BOTTOMLEFT")
+    bar.search:SetPoint("LEFT", bar.dungeon, "RIGHT", FILTER_GAP, 0)
     bar.search:SetPoint("RIGHT", bar.sort, "LEFT", -FILTER_GAP, 0)
     bar.Paint = Paint
     return bar

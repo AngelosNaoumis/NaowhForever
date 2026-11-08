@@ -3,9 +3,10 @@
 -- search are shaped as the module's contract says. Checks that it builds and listens to nothing until opened;
 -- opening turns it on; the note before a search, while searching, after a failure and in chat lockdown; the
 -- rows, your own listing first then newest first, with the dungeon, its levels, the leader in their class color,
--- the role slots of a group, a solo player's roles and a raid's count; the leader's card (score, kills, quests)
+-- the role slots of a group, a solo player's roles and a raid's count; the leader's zone once Leader's Zone is on;
+-- the leader's card (score, kills, quests)
 -- and the wait for it; a delisted listing faded; a card's arrival redrawing on pooled rows; Search; the bar's
--- dungeon chips, text filter and sort; turning it off closing the window; and the settings page's window card.
+-- dungeon menu, text filter and sort; turning it off closing the window; and the settings page's window card.
 local Load = dofile("Tools/regression/load_files.lua")
 local TocFiles = dofile("Tools/regression/toc_files.lua")
 
@@ -106,13 +107,13 @@ local ACTIVITY = {
     [2] = { name = "Shadowfang Keep", short = "SFK", min = 22, max = 30, size = 5 },
     [3] = { name = "Molten Core", short = "MC", min = 0, max = 0, size = 40 },
 }
-local function Member(name, class, level, roles, leader)
-    return { name = name, class = class, level = level, roles = roles, leader = leader }
+local function Member(name, class, level, roles, leader, zone)
+    return { name = name, class = class, level = level, roles = roles, leader = leader, zone = zone }
 end
 local ENTRIES = {
     { id = 11, leader = "Korvath", activity = 2, dungeon = "ShadowfangKeep", numMembers = 3, age = 600, delisted = false,
         mine = false, tanks = 1, healers = 0, damage = 2, nMembers = 3,
-        members = { Member("Korvath", "WARRIOR", 25, TANK, true), Member("Magi", "MAGE", 24, DAMAGE),
+        members = { Member("Korvath", "WARRIOR", 25, TANK, true, "Silverpine Forest"), Member("Magi", "MAGE", 24, DAMAGE),
             Member("Kilt", "MAGE", 24, DAMAGE) } },
     { id = 12, leader = "Nessa", activity = 1, dungeon = "Deadmines", numMembers = 1, age = 30, delisted = false,
         mine = false, tanks = 0, healers = 0, damage = 0, nMembers = 1,
@@ -226,7 +227,7 @@ ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, L
         Kills = { Counted = function(boss) return boss.encounters ~= nil end },
     },
     GroupFinder = GF,
-    Color = function(_, text) return tostring(text) end,
+    Color = function(token, text) return token == "muted" and "(grey)" .. tostring(text) or tostring(text) end,
     Font = function(parent) return Frame(parent) end,
     Solid = function(parent) return Frame(parent) end,
     Hairline = function(region) return region end,
@@ -359,6 +360,8 @@ local page = ns.Shared.Settings.pages["Group Finder/Settings"]
 local banner = page and page.items[1]
 check("its settings page opens with Open Group Finder, then Your Card", banner and banner.window
     and banner.text == "Open Group Finder" and page.items[2] == page.cards.card)
+check("then Browse, with Leader's Zone", page.items[3] == page.cards.browse
+    and page.cards.browse.rows[1].key == "leaderZone")
 
 -------------------------------------------------------------------------------
 --  Opening: turns it on, then the note before a search
@@ -421,24 +424,42 @@ check("no card and none coming: nothing", raid.score.text == "")
 check("your own card on your own listing", mage.score.text == "score 18.9 at 20" and mage.kills.text == "First time"
     and mage.quests.text == "")
 check("how long ago each was listed", solo.age.text == "just now" and group.age.text == "10m ago")
+check("no zone while Leader's Zone is off", group.zone.text == "")
+S.Set("leaderZone", true)
+Flush()
+check("turning it on redraws the rows with the leader's zone, none when the game sent none",
+    Listing(11).zone.text == "Silverpine Forest" and Listing(12).zone.text == "")
 
 -------------------------------------------------------------------------------
---  The bar: dungeon chips, the text filter and the sort
+--  The bar: the dungeon menu, the text filter and the sort
 -------------------------------------------------------------------------------
 local bar = window.bar
-local chips = bar.chips
-check("chips for your level, all, then each dungeon by level", bar:IsShown() and chips[1].label.text == "For your level"
-    and chips[2].label.text == "All" and chips[3].label.text == "MC" and chips[4].label.text == "DM 17-26"
-    and chips[5].label.text == "SFK 22-30")
-check("your level picked to start, in the accent", chips[1]._rest == ACCENT and chips[4]._rest == WHITE)
-check("a dungeon outside your level is muted", chips[5].label.r == MUTED.r and chips[4].label.r == WHITE.r)
+check("one row: the dungeon menu, your level to start", bar:IsShown() and bar.h == UI.Style.SEARCH_H
+    and bar.dungeon.text.text == "Dungeon: For your level")
+local function DungeonMenu()
+    bar.dungeon.scripts.OnClick(bar.dungeon)
+    local picks, scroll = {}, nil
+    menus[#menus].fill(nil, { CreateTitle = NOTHING, CreateDivider = NOTHING,
+        SetScrollMode = function(_, height) scroll = height end,
+        CreateRadio = function(_, label, isPicked, set, pick)
+            picks[#picks + 1] = { label = label, picked = isPicked(pick), set = set, pick = pick }
+        end })
+    return picks, scroll
+end
+local picks, scroll = DungeonMenu()
+check("its menu: your level, all, then each dungeon by level", menus[#menus].owner == bar.dungeon and #picks == 5
+    and picks[1].label == "For your level" and picks[2].label == "All" and picks[3].label == "MC"
+    and picks[4].label == "DM 17-26")
+check("a dungeon outside your level is greyed", picks[5].label == "(grey)SFK 22-30")
+check("it scrolls when long", type(scroll) == "number" and scroll > 0)
+check("your level picked to start", picks[1].picked and not picks[4].picked)
 local runs = GF.runs
-chips[4]:Click()
-check("a chip searches for its dungeon and is picked", GF.runs == runs + 1 and GF.Search.pick == 1
-    and chips[4]._rest == ACCENT and chips[1]._rest == WHITE)
-chips[2]:Click()
-check("All searches every dungeon", GF.Search.pick == "all" and chips[2]._rest == ACCENT and chips[4]._rest == WHITE)
-chips[1]:Click()
+picks[4].set(picks[4].pick)
+check("a dungeon searches for it and the menu says so", GF.runs == runs + 1 and GF.Search.pick == 1
+    and bar.dungeon.text.text == "Dungeon: DM 17-26" and DungeonMenu()[4].picked)
+picks[2].set(picks[2].pick)
+check("All searches every dungeon", GF.Search.pick == "all" and bar.dungeon.text.text == "Dungeon: All")
+picks[1].set(picks[1].pick)
 GF.Search.state = "done"
 view:Redraw()
 check("the filter box says what it finds", bar.search.hint.text == "Filter by dungeon, leader or note")
