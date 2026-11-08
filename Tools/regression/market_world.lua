@@ -9,7 +9,8 @@ local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
 local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
     "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua", "NaowhForever_Market/History.lua",
-    "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua" }
+    "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua",
+    "NaowhForever_Market/Farm.lua" }
 
 local function Noop() end
 
@@ -66,6 +67,8 @@ local function Setup(opts)
         AuctionPrice = function(itemID) return t.scan[itemID], 0 end,
         AuctionPriceList = function() if t.scanAt then return t.scan, t.scanAt end end,
         AccountSettings = function() return t.account end,
+        L = function(text) return text end,
+        Shared = { Places = { SameMap = function(map) return t.sameMap and t.sameMap[map] or map end } },
     }
     t.ns = ns
     local results = { commodity = {}, item = {} }
@@ -150,6 +153,13 @@ local function Setup(opts)
         GetRealmName = function() return "Realm" end,
         UnitFactionGroup = function() return "Horde" end,
         UnitGUID = function() return "Player-1" end,
+        time = function() return t.now or 0 end,
+        C_Map = {
+            GetMapWorldSize = function() return 1000, 1000 end,
+            GetMapInfo = function(map) return { name = "Map " .. map } end,
+            GetBestMapForUnit = function() return t.playerMap end,
+            GetPlayerMapPosition = function() return t.playerAt end,
+        },
         UnitName = function() return "Me" end,
         UnitClass = function() return "Mage", "MAGE" end,
         CreateFrame = function() return setmetatable({}, { __index = frameMethods }) end,

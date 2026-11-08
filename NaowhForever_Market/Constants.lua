@@ -13,4 +13,10 @@ ns.Market.C = {
     HISTORY_DAYS = 14,
     CHANGE_DAYS = 7,
     WORTH_TOP = 5,
+    YIELD = { herb = 2, ore = 1.5 },
+    OCCUPANCY = 1 / 3,
+    TRAVEL_SPEED = 10,
+    GATHER_SECONDS = 4,
+    TOUR_FACTOR = 0.92,
+    PICKED_FADE = 600,
 }

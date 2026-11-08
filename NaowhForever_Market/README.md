@@ -4,8 +4,10 @@ Naowh's own auction house window. At an auctioneer it opens over Blizzard's: you
 valuable first, the item in front of you with the auction house's live listings, a price one step
 under the cheapest of someone else's, and a post line you work through with Space (post), S (skip)
 and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
-auctioneer. Away from it, `/market` or its key binding opens the same window on Crafts: what your
-characters' known recipes make from your bags, priced from your last scan. Bag Worth puts what your
+auctioneer. Away from it, `/market` or its key binding opens the same window on Farm: the zones
+where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
+loop through it you can follow by waypoint. Crafts shows what your characters' known recipes make
+from your bags, priced from your last scan. Bag Worth puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it and what it crafts into.
 Built on [`Shared/`](../Shared/README.md).
@@ -27,11 +29,13 @@ NaowhForever_Market/
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
   Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
+  Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
+    Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
     Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
     Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
@@ -56,7 +60,7 @@ NaowhForever_Market/
   drags. A scan finishing redraws the page shown, but never a Sell, Buy or My Auctions tab away from the
   auctioneer, and Bag Worth's rows pick an item on Sell only at the auctioneer.
 - Sell, Buy and My Auctions need the auction house, so away from it their tabs show a short "At an
-  auctioneer" note instead; `/market` opens on Crafts. Opening it while Blizzard's window is showing
+  auctioneer" note instead; `/market` opens on Farm. Opening it while Blizzard's window is showing
   at an auctioneer steps back into ours instead.
 - Closing ours (its X or Escape) closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so
   the visit ends as Blizzard's own close does.
@@ -152,6 +156,27 @@ NaowhForever_Market/
 - Add to Queue goes to Professions' Craft Queue with `CraftQueue.AddWithShopping`, as its own Add does,
   only for your own recipes and while its Craft Queue is on. At an auctioneer, Buy opens the Buy page on
   the first material you are short of.
+- Farm reads where herbs and veins grow from Glimmer's map (`ns.GlimmerSpots`, unpacked by
+  `Glimmer.Spots.Load`, which waits out combat), its nodes (`Glimmer.NODES`) and the ones you gathered
+  (`Glimmer.Spots.Gathered`); a node's item is Professions' (`GatherNodes`, by the node's English name,
+  as Glimmer's names are). Both are read only when loaded: QoL's files load with Glimmer switched off,
+  so Farm works without Glimmer's own pins.
+- A node is priced at its item's scan price after the cut, times `YIELD` (2 for a herb, 1.5 for a vein).
+  Your skill is Glimmer's (`Target.Skill`): a node you cannot gather yet is drawn faded behind a filter
+  and left off the loop.
+- The loop is a nearest-neighbour tour of the zone's spots you can gather, starting at the one nearest
+  you when you are in the zone, on its own map ID or one `Shared.Places.SameMap` reads as it. Its time is its length at `TRAVEL_SPEED` (10 yards a second, riding)
+  plus `GATHER_SECONDS` a node, and its worth assumes `OCCUPANCY` (a third) of spots hold a node at a
+  time, so the hourly figure is an estimate and says so.
+- Ranking every zone with a full tour would stall a frame, so the zone list estimates each tour's
+  length as `TOUR_FACTOR` (0.92) times the square root of its spots times its area, the
+  nearest-neighbour length for scattered points; the zone you pick gets its real tour.
+- Start Loop hands the loop to the shared waypoint route (`ns.PlaceWaypointRoute`), which places the
+  next stop as you reach each, so the loop is followed by the game's own waypoint arrow. Open Map opens
+  the world map on the zone (`Shared.Places.ShowMap`).
+- The zone map is drawn from the map's own art (`C_Map.GetMapArtLayers` and
+  `GetMapArtLayerTextures`, laid out in tiles as Blizzard's map canvas does), scaled to fit and
+  clipped. A spot gathered in the last `PICKED_FADE` (10) minutes is faded, its node likely gone.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -161,7 +186,8 @@ NaowhForever_Market/
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
 `test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
-history and Bag Worth, `test-market-crafts.lua` Crafts; all load the rules through
+history and Bag Worth, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm; all load the
+rules through
 `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
@@ -187,10 +213,17 @@ Away from the auction house:
 15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
 16. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
 17. A green or blue weapon or armour shows a Disenchant line with Professions loaded.
-18. `/market` opens The Market on Crafts; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
+18. `/market` opens The Market on Farm; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
     and opens where you left it.
 19. After opening a profession, Crafts lists its recipes with prices; From My Bags shows what your bags
     make and the total it adds; All Recipes shows every priced one, by profit.
 20. Add to Queue puts the crafts in Professions' Craft Queue.
 21. Log in on an alt with The Market on and open its profession: its recipes show under its name.
 22. A crafted item's tooltip shows Made by and its materials' cost; a material's shows Crafts into.
+23. Farm lists the zones for your Herbalism and Mining, richest first, each with its best items.
+24. Picking a zone draws its map with every herb and vein: bigger pins for more gold, a gold line for
+    the loop, faded pins for nodes you gathered in the last ten minutes.
+25. Herbs, Veins and Nodes I Can't Gather Yet change the map, the loop and the list.
+26. Start Loop places a waypoint at the nearest stop and the next as you reach each.
+27. Clicking a pin shows its item in the strip: price, the last 14 days, what you hold. At an
+    auctioneer, Sell picks it on the Sell page.

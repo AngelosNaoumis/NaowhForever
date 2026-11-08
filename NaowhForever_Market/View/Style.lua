@@ -14,4 +14,6 @@ ns.Market.Style = setmetatable({
     BUTTON_H = 28,
     GOLD_RGB = { r = 1, g = 0.82, b = 0 },
     BADGE_TEXT_RGB = { r = 0.1, g = 0.075, b = 0 },
+    HERB_RGB = { r = 0.36, g = 0.78, b = 0.36 },
+    ORE_RGB = { r = 0.87, g = 0.6, b = 0.34 },
 }, { __index = ns.Shared.Style })

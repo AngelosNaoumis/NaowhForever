@@ -11,7 +11,7 @@ local SCAN_TICK = 60
 local BLIZZARD_TABS = 40
 local NEXT_FRAME = 0
 local AWAY_STRATA = "HIGH"
-local AWAY_PAGE = "crafts"
+local AWAY_PAGE = "farm"
 local AWAY_W, AWAY_ICON, AWAY_GAP = 420, 40, 10
 local POSITION = "marketWindow"
 local PAGE = "The Market"
@@ -25,6 +25,7 @@ local TEXT_AWAY = ns.L("At an auctioneer")
 local TEXT_AWAY_BODY = ns.L("Sell, Buy and My Auctions open over the auction house. Talk to an auctioneer to use them.")
 local TEXT_OFF = ns.L("Turn on The Market in its settings to open it.")
 local PAGES = {
+    { key = "farm", label = "Farm", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
     { key = "sell", label = "Sell", tip = "Your bags, most valuable first, posted one key press at a time.",
       auction = true },
     { key = "crafts", label = "Crafts", tip = "What your characters' recipes make from your bags, priced from your last scan." },
@@ -208,6 +209,7 @@ function ns.MarketRefresh()
         Market.History.Record()
         Market.BagWorth.Changed()
         Market.Crafts.Changed()
+        Market.Farm.Changed()
     end
     Window.Refresh()
 end

@@ -5,7 +5,7 @@ local F = ns.FEATURES.market
 local REALM_JOIN = "-"
 
 local S = ns.UI.ModuleSettings("market", { enabled = F.enabled, duration = 1, postKeys = true, bagWorth = true,
-    tooltip = true })
+    tooltip = true, farmHerbs = true, farmVeins = true, farmLocked = false })
 ns.MarketSettings = S
 
 local Market = { Settings = S }
