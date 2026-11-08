@@ -1656,15 +1656,20 @@ do
     end
     check("the Bosses title has Map", mapTitle ~= nil)
     -- A dungeon with no map yet: Map, muted, saying so on hover; a click does nothing.
-    ns.OpenJournalWindow(J.Get("AlcazPrison"))
-    local soon
-    for _, made in ipairs(state.made) do
-        local titleLink = rawget(made, "link")
-        if titleLink and rawget(titleLink, "tip") == "Coming soon" and rawget(titleLink, "shown") ~= false then soon = titleLink end
+    do
+        local alcazMap = J.Maps.AlcazPrison
+        J.Maps.AlcazPrison = nil
+        ns.OpenJournalWindow(J.Get("AlcazPrison"))
+        local soon
+        for _, made in ipairs(state.made) do
+            local titleLink = rawget(made, "link")
+            if titleLink and rawget(titleLink, "tip") == "Coming soon" and rawget(titleLink, "shown") ~= false then soon = titleLink end
+        end
+        check("a dungeon with no map has Map, coming soon", soon ~= nil and soon.disabled == true)
+        soon.scripts.OnClick(soon)
+        check("which does nothing", true)
+        J.Maps.AlcazPrison = alcazMap
     end
-    check("a dungeon with no map has Map, coming soon", soon ~= nil and soon.disabled == true)
-    soon.scripts.OnClick(soon)
-    check("which does nothing", true)
     ns.OpenJournalWindow(ragefire)
     -- Placed on this account over the data: Oggleflint moved, Bazzalan taken off the data.
     local bazzalan = J.Maps.RagefireChasm.pins[11519]
@@ -2398,8 +2403,13 @@ do
         check("with its first boss picked", rawget(RowFor(wailing.wings[1].bosses[1].name).fill, "shown") == true)
         ns.OpenJournalWindow(dalaran)
         check("and to City of Dalaran", PinFor("Atrexis the Grave Knight") ~= nil and #Rows() == 9)
-        ns.OpenJournalWindow(J.Get("AlcazPrison"))
-        check("a dungeon with no map closes it", rawget(mapWindow, "shown") == false)
+        do
+            local alcazMap = J.Maps.AlcazPrison
+            J.Maps.AlcazPrison = nil
+            ns.OpenJournalWindow(J.Get("AlcazPrison"))
+            check("a dungeon with no map closes it", rawget(mapWindow, "shown") == false)
+            J.Maps.AlcazPrison = alcazMap
+        end
         ns.OpenJournalWindow(wailing)
         check("closed, it stays closed", rawget(mapWindow, "shown") == false)
         J.OpenDungeonMap(J.Get("Stockade"))
