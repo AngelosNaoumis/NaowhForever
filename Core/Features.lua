@@ -49,6 +49,7 @@ ns.FEATURES = {
         ahPrices = true,
         ahCapture = false,
         ahTooltip = true,
+        ahCrates = false,
         altCounts = false,
         mailAlts = false,
         mailQuickAttach = false,

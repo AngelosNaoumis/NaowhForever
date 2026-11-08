@@ -7674,3 +7674,6 @@ L["Imp"] = true
 L["Voidwalker"] = true
 L["Succubus or Incubus"] = true
 L["Felhunter"] = true
+L["Waylaid Crate Prices"] = true
+L["Waylaid Crate tooltips show what each filling costs at your last auction house scan."] = true
+L["cheapest"] = true

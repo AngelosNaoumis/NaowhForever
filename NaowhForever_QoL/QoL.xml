@@ -48,6 +48,7 @@
     <Script file="Interface\Scout.lua"/>
     <Script file="Combat\SpellQueue.lua"/>
     <Script file="Loot\LootFeed.lua"/>
+    <Script file="Loot\WaylaidCratesData.lua"/>
     <Script file="Loot\AuctionPrices.lua"/>
     <Script file="XP\XPTicker.lua"/>
     <Script file="XP\XPBarFX.lua"/>

@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local S = ns.QoLSettings
+local Items = ns.Shared.Items
 
 local SCAN_COOLDOWN = 900
 local CHUNK = 1000
@@ -33,10 +34,13 @@ local TEXT_TIP = ns.L("Reads every listing on the auction house and keeps the lo
     .. "each item, shown on item tooltips. Blizzard allows one full scan every 15 "
     .. "minutes.\n\n")
 local TEXT_EACH = ns.L(" |cff808080each, %s ago|r")
+local TEXT_FILLING = "%d %s"
+local TEXT_CHEAPEST = ns.L("cheapest")
 local MINUTES, HOURS, DAYS = "m", "h", "d"
 
 local button, scanning, scanGen = nil, nil, 0
 local ownScan, houseOpen, hooked
+local tooltipHooked
 local houseKey
 local priced, pricedAt
 local ageTicker
@@ -258,27 +262,68 @@ local function OnEvent(_, event)
     end
 end
 
-local function OnSettingChanged(key)
-    if key == "ahPrices" and button then button:SetShown(S.Get("ahPrices")) end
-    if key == "ahCapture" then HookReplicate() end
+local function Cheapest(prices, bundles)
+    local cheapest
+    for i = 1, #bundles do
+        local price = prices[bundles[i][1]]
+        local total = price and price * bundles[i][2]
+        if total and (not cheapest or total < cheapest) then cheapest = total end
+    end
+    return cheapest
+end
+
+local function AddBundles(tooltip, prices, bundles, cheapest)
+    for i = 1, #bundles do
+        local item, count = bundles[i][1], bundles[i][2]
+        local total = prices[item] and prices[item] * count
+        if total then
+            local coins, color = C_CurrencyInfo.GetCoinTextureString(total, COIN_SIZE), WHITE
+            if total == cheapest then
+                coins, color = coins .. " " .. ns.Color("muted", TEXT_CHEAPEST), ns.THEME.accent
+            end
+            tooltip:AddDoubleLine(TEXT_FILLING:format(count, Items.Name(item)), coins,
+                color.r, color.g, color.b, WHITE.r, WHITE.g, WHITE.b)
+        end
+    end
 end
 
 local function OnItemTooltip(tooltip, data)
-    if not S.Get("ahTooltip") then return end
+    local own, crates = S.Get("ahTooltip"), S.Get("ahCrates")
+    if not (own or crates) then return end
     local id = data and data.id
     if not id or (issecretvalue and issecretvalue(id)) then return end
-    local price, when = ns.AuctionPrice(id)
-    if not price then return end
-    tooltip:AddDoubleLine(Tag(), C_CurrencyInfo.GetCoinTextureString(price, COIN_SIZE)
-        .. TEXT_EACH:format(Age(time() - when)), WHITE.r, WHITE.g, WHITE.b, WHITE.r, WHITE.g, WHITE.b)
+    local house = House()
+    if not (house and house.time) then return end
+    local price = own and house.prices[id]
+    local bundles = crates and ns.WaylaidCrates[id]
+    local cheapest = bundles and Cheapest(house.prices, bundles)
+    if not (price or cheapest) then return end
+    local age = Age(time() - house.time)
+    local right = price and C_CurrencyInfo.GetCoinTextureString(price, COIN_SIZE) .. TEXT_EACH:format(age)
+        or TEXT_AGE:format(age, "")
+    tooltip:AddDoubleLine(Tag(), right, WHITE.r, WHITE.g, WHITE.b, WHITE.r, WHITE.g, WHITE.b)
+    if cheapest then AddBundles(tooltip, house.prices, bundles, cheapest) end
+end
+
+local function HookTooltip()
+    if tooltipHooked or not (S.Get("ahTooltip") or S.Get("ahCrates")) then return end
+    tooltipHooked = true
+    TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, OnItemTooltip)
+end
+
+local function OnSettingChanged(key)
+    if key == "ahPrices" and button then button:SetShown(S.Get("ahPrices")) end
+    if key == "ahCapture" then HookReplicate() end
+    if key == "ahTooltip" or key == "ahCrates" then HookTooltip() end
 end
 
 events:SetScript("OnEvent", OnEvent)
 events:RegisterEvent("AUCTION_HOUSE_SHOW")
 events:RegisterEvent("AUCTION_HOUSE_CLOSED")
 hooksecurefunc(S, "Set", OnSettingChanged)
+hooksecurefunc(ns, "Apply", HookTooltip)
 HookReplicate()
-TooltipDataProcessor.AddTooltipPostCall(Enum.TooltipDataType.Item, OnItemTooltip)
+HookTooltip()
 
 ns.Shared.Settings.Page("QoL/Loot & Items", S):Card({
     id = "auctionPrices", name = "Auction Prices", order = 30, into = "lootTrade",
@@ -291,6 +336,8 @@ ns.Shared.Settings.Page("QoL/Loot & Items", S):Card({
         { key = "ahTooltip", label = "Auction House Price", toggle = true,
           help = "Item tooltips show the item's price at your last auction house scan, for one of it, "
               .. "and how long ago that was. Scan with the Scan Prices button on the auction house." },
+        { key = "ahCrates", label = "Waylaid Crate Prices", toggle = true,
+          help = "Waylaid Crate tooltips show what each filling costs at your last auction house scan." },
         { key = "ahCapture", label = "Capture Other Addons' Scans", toggle = true,
           help = "Also keeps the prices from full auction house scans that other addons start, "
               .. "such as Auctionator or TSM." },
