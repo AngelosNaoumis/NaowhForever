@@ -24,7 +24,7 @@ local SETTINGS = Read("Shared/Settings/Settings.lua")
 
 -- itemID -> use spell, for the food scan.
 local ITEM_SPELLS = { [13931] = 1249513, [2679] = 433, [21023] = 25660 }
-local SPELL_NAMES = { [1248406] = "Well Fed", [1249520] = "Well Fed", [1243969] = "Well Fed XP Boost" }
+local SPELL_NAMES = { [1248406] = "Well Fed", [1249520] = "Well Fed", [1319310] = "Well Fed", [1243969] = "Well Fed XP Boost" }
 
 -- Methods (capitalised) are no-ops; an unset field reads nil, as on a real frame.
 local function Recorder(props)
@@ -1536,7 +1536,7 @@ end
 
 -- Only If I Carry One off: food shows with none carried, with the Well Fed icon until a food is eaten.
 do
-    local t = Fixture({ instance = "raid", bags = { 13931 }, settings = { onlyIfCarried = false } })
+    local t = Fixture({ instance = "raid", settings = { onlyIfCarried = false } })
     t.Login()
     Check("none carried", t.Shown(), "spell:1248406 item:13510 item:13452")
     t.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "cast1", 5)
@@ -1725,6 +1725,23 @@ local function CellOf(t, texture)
             return f
         end
     end
+end
+
+-- Only If I Carry One off for food: a carried buff food is offered and eaten, as with it on.
+do
+    local t = Fixture({ instance = "raid", bags = { 2679, 13931, 286152 },
+        itemSpells = { [286152] = 1319311 }, levels = { [13931] = 25, [286152] = 35 },
+        settings = { carriedPicks = { food = false }, personalBuffs = false } })
+    t.Login()
+    Check("the best buff food carried, plain food skipped", t.Shown(), "item:286152")
+    local cell = CellOf(t, "item:286152")
+    Check("a click eats it", cell.attributes.item1, "item:286152")
+    t.state.bags = { 2679 }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("none left, still not Well Fed", t.Shown(), "spell:1248406")
+    t.state.auras.player = { { 1319310, 1800, 3600 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("Plated Armorfish's Well Fed counts", t.Shown(), "")
 end
 
 do

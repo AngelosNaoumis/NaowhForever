@@ -49,6 +49,7 @@ KNOWN[8766] = { 132794, 0, 1135, 5 }   -- Morning Glory Dew
 KNOWN[13724] = { 133989, 0, 1226814, 5 } -- Enriched Manna Biscuit, food and drink in one
 KNOWN[1179] = { 132794, 0, 430, 5 }    -- Ice Cold Milk
 KNOWN[249866] = { 132794, 0, 1249920, 5 } -- Royal Tea, a Drink and Well Fed
+KNOWN[286152] = { 133890, 0, 1319311, 5 } -- Plated Armorfish: Nutritious Food, then its own Well Fed
 KNOWN[13444] = { 134854, 0, 17531, 1 } -- Major Mana Potion
 
 local function fixture(settings, noMacros, class)
@@ -702,6 +703,18 @@ do
     s.set('consumableBarItemFlags', { [20007] = { used = true } })
     s.set('consumableBarItems', { 20007 })
     check('Well Fed does not hide an item that is not food', s.buttons()[1].shown)
+end
+
+-- A newer Forever food with a Well Fed of its own
+do
+    local s = fixture({ consumableBar = true, consumableBarItems = { 286152 },
+        consumableBarItemFlags = { [286152] = { used = true } } })
+    s.counts[286152] = 3
+    local fish = s.buttons()[1]
+    check('Plated Armorfish shown while not Well Fed', fish.shown)
+    s.auras[1319310] = { expirationTime = s.now + 900 }
+    s.fire('UNIT_AURA', 'player')
+    check('Plated Armorfish hidden while its Well Fed is up', not fish.shown)
 end
 
 -- Hide When Out leaves no button to catch clicks

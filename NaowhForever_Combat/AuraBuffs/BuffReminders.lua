@@ -252,6 +252,9 @@ local function Consumables(list, buffs)
         if onlyCarried or builtIn.carried then
             group, item = CarriedBuiltIn(category, builtIn)
             if item and category == "scroll" then group, item = ScrollGroup(group.items, buffs) end
+        elseif category == "food" then
+            group, item = CarriedBuiltIn(category, builtIn)
+            group = group or builtIn
         else
             group, item = builtIn, FirstCarried(builtIn.items)
         end

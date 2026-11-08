@@ -202,7 +202,9 @@ NaowhForever_Combat/AuraBuffs/
   width changed.
 - With Only If I Carry One off, food, flasks and elixirs still get a reminder: any Well Fed, flask or elixir of the
   classic lists in `D.DEFAULT_GROUPS` (no battle/guardian split on Forever, so one elixir reminder, Battle
-  Elixir). Food's icon is the carried item's, else the last buff
+  Elixir). Food has no item list, so the bags are read for it as with the pick on (`D.FOOD_SPELLS`) and the best
+  buff food carried is offered: once the hand-made list was gone, Drjay's food reminder showed while he carried
+  food, but a click ate nothing. Food's icon is the carried item's, else the last buff
   food eaten (`lastFoodIcon` in the account settings, taken on `UNIT_SPELLCAST_SUCCEEDED` from the bag item
   with that use spell, else the spell's own texture), else Well Fed's. Weapon Enhancement Reminder (off by default) asks for a stone or
   oil (`D.WEAPON_ITEMS`) on each equipped weapon, an off hand only when it is a weapon, and defers to a class's
