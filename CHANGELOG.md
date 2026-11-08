@@ -1,6 +1,20 @@
 # Changelog
 
-## Unreleased
+## 1.2.17
+
+### Changed
+- Forever skin: tabs, dropdowns, sliders and scroll bars use the game's own Settings art.
+- Forever skin: the options window wears Forever's art, with its own background and header art, the
+  minimap ring round the logo, the game's category headers and selection, and the boss dragon above
+  Settings.
+- Forever skin: on-screen cards (XP tracker, Journey card, trainer card, Town Pins) get a thin
+  bronze frame, and their bars become the game's cast bar.
+- Forever skin: a picked button, such as the Training Planner's class, shows pressed in and lit
+  instead of a gold outline.
+
+### Fixed
+- Restock Reminder: Enriched Manna Biscuits count as food and drink, and Forever's teas and
+  smoothies count as drink.
 
 ## 1.2.16
 
