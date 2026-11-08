@@ -182,9 +182,21 @@ do -- display: yourself, a member with the addon, a member without it
     s.msg("2 Player-2-03 21 1 2", "Mage Frostwhisper", "WHISPER")
     check("rows read from the messages",
         s.rows() == "You: Lv 20  50.0% | Tank: Lv 21  25.0% | Mage: Lv 19  " .. NO_ADDON)
+    s.msg("2 Player-2-03 22 100 1000", "Mage Frostwhisper")
+    check("matched by GUID whatever the sender name",
+        s.rows() == "You: Lv 20  50.0% | Tank: Lv 21  25.0% | Mage: Lv 22  10.0%")
+end
+
+do -- max level: no bar for a member at max, from their numbers or their level, and none at all when all are
+    local s = boot()
     s.msg("2 Player-2-03 60 0 0", "Mage Frostwhisper")
-    check("matched by GUID whatever the sender name, max level shown",
-        s.rows() == "You: Lv 20  50.0% | Tank: Lv 21  25.0% | Mage: Lv 60  Max")
+    check("a member at max level has no bar", s.rows() == "You: Lv 20  50.0% | Tank: Lv 21  " .. NO_ADDON)
+    s.units.party1.level = 60
+    s.fire("UNIT_LEVEL", "party1")
+    check("nor one without the addon", s.rows() == "You: Lv 20  50.0%")
+    s.units.player.level = 60
+    s.fire("PLAYER_LEVEL_UP")
+    check("hidden when the whole group is at max level", not s.display.shown)
 end
 
 do -- ignored: a secret message (a string op on it would error), and our own echo

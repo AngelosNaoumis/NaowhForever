@@ -211,11 +211,13 @@ end
 local function AddEntry(list, m)
     local level = UnitLevel(m.unit)
     if Secret(level) then level = nil end
+    local data = m.unit == "player" and Own() or others[m.guid]
+    local current = data and data.level or level
+    if current and current >= GetMaxLevelForPlayerExpansion() then return end
     local n = #list + 1
     local e = entries[n] or {}
     entries[n] = e
-    e.name, e.class, e.level = m.name, m.class, level
-    e.data = m.unit == "player" and Own() or others[m.guid]
+    e.name, e.class, e.level, e.data = m.name, m.class, level, data
     list[n] = e
 end
 
