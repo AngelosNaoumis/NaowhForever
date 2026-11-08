@@ -60,6 +60,10 @@ Each crowd control ability and each debuff in the spell data has its own switch:
   the container again; its version tells each panel it has a new one.
 - Nothing is shown, hidden or resized in combat: settings changed then wait for
   `PLAYER_REGEN_ENABLED`.
+- An aura button shuts addon code out while auras are secret, which they can be out of combat
+  too (a battleground, a boss pull), so restyling the buttons (size, time left, stacks) then
+  waits for `ADDON_RESTRICTION_STATE_CHANGED`, which only retries the restyle. A new button is
+  styled as it is made: the game hands it to `InitButton` before shutting it.
 - While your focus is also your target the focus panel fades out by alpha (safe in combat), the
   target panel already showing it all. Where the game will not say whether the two are one (a
   secret value), it stays.

@@ -131,6 +131,8 @@ local function Fixture(qol, pvp)
     env.Hooked = function(name) return hooks[name] ~= nil end
     env.combat = false
     env.InCombatLockdown = function() return env.combat end
+    env.secretAuras = false
+    env.C_Secrets = { ShouldAurasBeSecret = function() return env.secretAuras end }
     env.C_AddOns = { DoesAddOnExist = function() return false end, GetAddOnEnableState = function() return 0 end }
     local now = 100
     env.GetTime = function() return now end
@@ -415,6 +417,31 @@ do
     Check(fc.enabled == false and not focusHolder.shown and not env.Listening("PLAYER_FOCUS_CHANGED") and c.enabled,
         "Focus Panel off: the focus's hidden and not followed, the target's stays")
     S.Set("focus", true)
+
+    -- Auras secret out of combat (a battleground, a boss pull): the buttons are shut to addons.
+    local size = button.w
+    env.secretAuras = true
+    S.Set("size", size + 4)
+    Check(button.w == size and holder.shown and c.enabled and env.Listening("ADDON_RESTRICTION_STATE_CHANGED"),
+        "auras secret out of combat: the panel stays, its buttons wait to be resized")
+    local buffSets = c.groups.buffs.sets
+    env.Fire("ADDON_RESTRICTION_STATE_CHANGED")
+    Check(button.w == size and env.Listening("ADDON_RESTRICTION_STATE_CHANGED") and c.groups.buffs.sets == buffSets,
+        "another restriction changing: still waiting, and the panels are not set up again")
+    env.secretAuras = false
+    env.Fire("ADDON_RESTRICTION_STATE_CHANGED")
+    Check(button.w == size + 4 and not env.Listening("ADDON_RESTRICTION_STATE_CHANGED") and c.groups.buffs.sets == buffSets,
+        "auras readable again: resized, and no longer waiting")
+    env.combat = true
+    S.Set("size", size)
+    env.secretAuras = true
+    env.combat = false
+    env.Fire("PLAYER_REGEN_ENABLED")
+    Check(button.w == size + 4 and env.Listening("ADDON_RESTRICTION_STATE_CHANGED"),
+        "a fight ends with auras still secret: the resize waits on")
+    env.secretAuras = false
+    env.Fire("ADDON_RESTRICTION_STATE_CHANGED")
+    Check(button.w == size and not env.Listening("ADDON_RESTRICTION_STATE_CHANGED"), "and happens once they are readable")
 
     -- How to set a focus: NF Focus, on Macros' Smart Macros tab.
     local forge

@@ -162,7 +162,7 @@ function Panel.Rows(d)
 end
 
 function Panel.ResizeButtons()
-    if InCombatLockdown() then
+    if InCombatLockdown() or C_Secrets.ShouldAurasBeSecret() then
         pendingResize = true
         return
     end

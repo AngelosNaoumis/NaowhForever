@@ -44,6 +44,15 @@ local function ShowDisplay(d)
     d.holder.mover:SetShown(unlocked == true)
 end
 
+local function Resize()
+    Panel.ResizeButtons()
+    if Panel.ResizePending() then
+        events:RegisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
+    else
+        events:UnregisterEvent("ADDON_RESTRICTION_STATE_CHANGED")
+    end
+end
+
 local function Apply()
     if not On() and not Panel.Built() then
         events:UnregisterAllEvents()
@@ -65,7 +74,7 @@ local function Apply()
     end
     UpdateFocusFade()
     if absorbUnits[1] then events:RegisterUnitEvent("UNIT_ABSORB_AMOUNT_CHANGED", absorbUnits[1], absorbUnits[2]) end
-    Panel.ResizeButtons()
+    Resize()
 end
 
 local function OnAbsorbChanged(unit)
@@ -88,6 +97,7 @@ end
 
 local function OnEvent(self, event, unit)
     if event == "UNIT_ABSORB_AMOUNT_CHANGED" then return OnAbsorbChanged(unit) end
+    if event == "ADDON_RESTRICTION_STATE_CHANGED" then return Resize() end
     if OnUnitChanged(event) then return end
     self:UnregisterEvent("PLAYER_REGEN_ENABLED")
     if Panel.ResizePending() then Panel.ResizeButtons() end
