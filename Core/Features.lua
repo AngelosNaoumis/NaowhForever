@@ -221,6 +221,7 @@ ns.FEATURES = {
         raidBuffRangeHide = false,
         personalBuffs = true,
         weaponEnhancements = false,
+        leftClickMainHand = false,
         sleepingBag = false,
         campfire = true,
         campNearbyAlert = true,

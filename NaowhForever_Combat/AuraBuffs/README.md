@@ -81,6 +81,10 @@ NaowhForever_Combat/AuraBuffs/
   target, and a raid buff you know is
   cast on the first group member missing it, read when the row last refreshed, out of combat. A raid
   buff only another class can cast does nothing.
+- Left-Click Main Hand (`leftClickMainHand`, off by default) is Volo's: a left-click always goes on the
+  main hand and a right-click on the off hand, on the row and in its menu. Without it the clicks follow
+  the hand that lacks one, so once the main hand was done the right-click moved onto it and replaced its
+  poison. While it is on, the menu's items say which click is which.
 - In combat the client refuses addons the player's auras outright (`GetAuraDataByIndex` errors,
   `GetPlayerAuraBySpellID` returns nil with the buff up), and it withdraws them at boss pulls
   before `InCombatLockdown()` turns true. Every read is gated on

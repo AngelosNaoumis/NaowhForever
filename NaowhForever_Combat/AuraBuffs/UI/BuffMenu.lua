@@ -2,6 +2,8 @@
 local ns = _G.NaowhForever
 
 local A = ns.AuraBuffs
+local S = A.Settings
+local T = ns.THEME
 local Parts = ns.Shared.Parts
 local St = A.Style
 local R, Cell = A.Buffs, A.BuffCell
@@ -10,6 +12,7 @@ local ItemBar = ns.Shared.ItemBar
 local COLS, SIZE, PAD, GAP = St.MENU_COLS, St.MENU_CELL, St.MENU_PAD, St.MENU_GAP
 local ICON_GAP, CROP = St.BUFF_GAP, St.BUFF_CROP
 local LEAVE_DELAY = 0.15
+local TEXT_HANDS = ns.L("Left-click: main hand. Right-click: off hand.")
 
 local popup
 local seen = {}
@@ -36,6 +39,7 @@ end
 local function OnItemEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
     GameTooltip:SetItemByID(self.itemID)
+    if self.weaponSlot and S.Get("leftClickMainHand") then GameTooltip:AddLine(TEXT_HANDS, T.fg.r, T.fg.g, T.fg.b) end
     GameTooltip:Show()
 end
 

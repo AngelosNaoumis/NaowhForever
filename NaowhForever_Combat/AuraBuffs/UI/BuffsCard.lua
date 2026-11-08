@@ -192,6 +192,8 @@ local rows = {
       help = "A consumable or personal buff with less time than this left counts as missing." },
     { key = "weaponEnhancements", label = "Weapon Enhancement Reminder", toggle = true, needs = Enabled, why = OFF,
       help = "A reminder when a weapon has no sharpening stone, weightstone or oil on it." },
+    { key = "leftClickMainHand", label = "Left-Click Main Hand", toggle = true, needs = Enabled, why = OFF,
+      help = "Left-click puts a poison, stone or oil on your main hand, right-click on your off hand." },
     { key = "sleepingBag", label = "Sleeping Bag Reminder", toggle = true, needs = Enabled, why = OFF,
       help = "Your Cozy Sleeping Bag out in the world, when it is ready and Well-Rested is missing." },
     { key = "hideResting", label = "Hide While Resting", toggle = true, needs = Enabled, why = OFF,

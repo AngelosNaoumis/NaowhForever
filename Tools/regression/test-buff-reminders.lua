@@ -113,6 +113,7 @@ local function Fixture(opts)
         buffsFont = "", buffsFontSize = 14, buffsOutline = "OUTLINE",
         raidBuffPicks = { intellect = true, stamina = true, spirit = true, wild = true, blessing = false },
         personalBuffs = true, personalBuffPicks = {}, weaponEnhancements = false, sleepingBag = false,
+        leftClickMainHand = false,
         buffGlow = false, buffGlowType = "standard", buffGlowColor = { r = 1, g = 0.82, b = 0.2 },
         buffGlowLines = 8, buffGlowThickness = 2, buffGlowSpeed = 5,
     }
@@ -136,7 +137,7 @@ local function Fixture(opts)
         Border = function(frame, color)
             rawset(frame, "edge", color)
             return { SetColor = function(_, r, g, b) rawset(frame, "edge", { r = r, g = g, b = b }) end }
-        end, THEME = { bg = {} },
+        end, THEME = { bg = {}, fg = {} },
         ThemeTint = function(key, literal) return key == "line" and opts.themeLine or literal end,
         Solid = function() return Recorder() end,
         Font = function()
@@ -1276,6 +1277,57 @@ do
         auras = { player = { { 10157, 3000, 3600 } } } })
     t.Login()
     Check("a raid buff is cast on the first one missing it", Clicks(t), "spell 10157 party1")
+end
+
+-- Left-Click Main Hand: a poison, stone or oil's left click goes on the main hand whichever hand lacks one,
+-- on the row and in its menu (SetWeapon puts the right click on the other hand), and the menu says so.
+do
+    local function Menu(t, cell)
+        cell.scripts.OnEnter(cell)
+        for _, f in ipairs(t.frames) do if rawget(f, "owner") == cell then return f end end
+    end
+    local function Tip(t, button)
+        local lines = {}
+        t.env.GameTooltip = { SetOwner = function() end, SetItemByID = function() end, Show = function() end,
+            AddLine = function(_, text) lines[#lines + 1] = text end }
+        button.scripts.OnEnter(button)
+        return table.concat(lines, " ")
+    end
+    local HANDS = "Left-click: main hand. Right-click: off hand."
+    local t = Fixture({ units = { player = "ROGUE" }, known = { [2842] = true }, bags = { 6947, 8928 },
+        weapons = { [16] = 600, [17] = false } })
+    t.Login()
+    local cell
+    for _, f in ipairs(t.frames) do if rawget(f, "items") and f.shown then cell = f end end
+    local popup = Menu(t, cell)
+    Check("off: the left click goes on the hand that lacks one", popup.buttons[2].attributes.macrotext1,
+        "/use item:6947\n/use 17")
+    Check("off: the menu's poisons say nothing of hands", Tip(t, popup.buttons[1]), "")
+    t.Set("leftClickMainHand", true)
+    Check("on: the row's poison goes on the main hand", cell.attributes.macrotext1, "/use item:8928\n/use 16")
+    popup = Menu(t, cell)
+    Check("and every poison in its menu", popup.buttons[1].weaponSlot .. " " .. popup.buttons[2].weaponSlot, "16 16")
+    Check("whose tooltips say which click is which", Tip(t, popup.buttons[2]), HANDS)
+    t.state.combat = true
+    t.Set("leftClickMainHand", false)
+    Check("turned off in combat: the row holds", cell.attributes.macrotext1, "/use item:8928\n/use 16")
+    t.state.combat = false
+    t.Fire("PLAYER_REGEN_ENABLED")
+    Check("and follows the bare hand once combat ends", cell.attributes.macrotext1, "/use item:8928\n/use 17")
+
+    t = Fixture({ instance = "raid", units = { player = "MAGE" }, bags = { 20750, 13510 },
+        weapons = { [16] = 1800, [17] = false }, settings = { weaponEnhancements = true, leftClickMainHand = true } })
+    t.Login()
+    local oil, flask
+    for _, f in ipairs(t.frames) do
+        if rawget(f, "items") and f.shown then
+            if f.weaponSlot then oil = f else flask = f end
+        end
+    end
+    Check("a stone or oil goes on the main hand too", oil.attributes.macrotext1, "/use item:20750\n/use 16")
+    Check("its menu says which click is which", Tip(t, Menu(t, oil).buttons[1]), HANDS)
+    Check("a flask is used as before", flask.attributes.type1 .. " " .. flask.attributes.item1, "item item:13510")
+    Check("and its menu says nothing of hands", Tip(t, Menu(t, flask).buttons[1]), "")
 end
 
 -- An enchant the game reports with no time left counts as up and arms no wake timer.

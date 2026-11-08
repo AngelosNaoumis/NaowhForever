@@ -14,6 +14,7 @@ local WAKE_PAD = 0.1
 local WAKE_SAME = 0.01
 local RANGE_INTERVAL = 0.5
 local HOME_Y = 220
+local MAIN_HAND = 16
 local CARD = A.PAGE .. ":buffs"
 local TEXT_MOVER = "Buff Reminders"
 local KEYS = {
@@ -24,7 +25,7 @@ local KEYS = {
     consumablesMaxHide = true, raidBuffsMaxHide = true, personalBuffsMaxHide = true,
     onlyIfCarried = true, carriedPicks = true, hideResting = true, raidBuffs = true, raidBuffsOwn = true, raidBuffPicks = true, iconSize = true,
     buffIconMode = true, raidBuffRange = true, raidBuffRangeHide = true, hideBlessingsOnPaladin = true,
-    personalBuffs = true, personalBuffPicks = true, weaponEnhancements = true, sleepingBag = true,
+    personalBuffs = true, personalBuffPicks = true, weaponEnhancements = true, leftClickMainHand = true, sleepingBag = true,
     buffsFont = true, buffsFontSize = true, buffsOutline = true, buffsBorderColor = true,
     buffGlow = true, buffGlowType = true, buffGlowColor = true, buffGlowLines = true, buffGlowThickness = true,
     buffGlowSpeed = true,
@@ -132,8 +133,9 @@ local function RangeMoves(entry)
 end
 
 local function SetAction(cell, entry)
-    if entry.item and entry.slot then ItemBar.SetWeapon(cell, entry.item, entry.slot) else ItemBar.SetItem(cell, entry.item) end
-    cell.slot = entry.slot
+    local slot = entry.slot and S.Get("leftClickMainHand") and MAIN_HAND or entry.slot
+    if entry.item and slot then ItemBar.SetWeapon(cell, entry.item, slot) else ItemBar.SetItem(cell, entry.item) end
+    cell.slot = slot
     cell:SetAttribute("spell1", entry.spell)
     cell:SetAttribute("unit1", entry.unit)
     if entry.spell then cell:SetAttribute("type1", "spell") elseif not entry.item then cell:SetAttribute("type1", nil) end
