@@ -202,6 +202,9 @@ ns.FEATURES = {
         disenchantDeals = false,
         tradeEnchants = false,
     },
+    market = {
+        enabled = false,
+    },
     macros = {
         enabled = true,
         health = true,

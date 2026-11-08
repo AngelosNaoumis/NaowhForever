@@ -40,6 +40,8 @@ Setup.ITEMS = {
         blurb = ns.L("Paladin blessings shared with your group.") },
     professions = { addon = "NaowhForever_Professions", db = "professions", key = "enabled",
         blurb = ns.L("Recipes, reagents and crafting in one window.") },
+    market = { addon = "NaowhForever_Market", db = "market", key = "enabled",
+        blurb = ns.L("Your bags priced and posted at the auction house.") },
     macros = { addon = "NaowhForever_Macros", db = "macros", key = "enabled",
         blurb = ns.L("Your macros, checked and kept current.") },
     consumableBar = { addon = "NaowhForever_ConsumableBar", db = "qol", key = "consumableBar",

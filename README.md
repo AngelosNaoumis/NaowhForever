@@ -30,6 +30,7 @@ and a lot of quality of life, all in one window.
 | **Discovery** | Library books to find around Azeroth and who to hand them to, and the Cozy Sleeping Bag's chain step by step. Its Quest List tab has every quest of every zone for your character, your progress per zone, and every quest chain with the step you are on; its Rares tab every rare of every zone on the map, with an alert when you see one. Open the Quest List with `/nfquests`. |
 | **Training Planner** | What you can train now, what each level brings and what it costs, with the way to your nearest trainer. |
 | **Professions** | Recipes, reagents and crafting in one window, including the recipes you have not learned yet. |
+| **The Market** | Naowh's own auction house window: your bags most valuable first, each priced a step under the live listings, posted with a key press each. |
 | **Gear & Trinkets** | Swap equipment sets from a bar, or automatically while you ride or rest. |
 | **Blessings** | Paladin blessings by class and player, shared with your group's paladins. |
 | **Macros** | Class, consumable and focus macros, written and kept up to date for you. |

@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: |cff0091edNaowh|r Forever: The Market
+## Notes: Naowh's own auction house window: your bags posted in a few key presses, priced from live listings.
+## Author: Naowh
+## Version: 1.2.17
+## Dependencies: NaowhForever
+## Group: NaowhForever
+## IconTexture: Interface\AddOns\NaowhForever\Core\Media\LogoAddon.tga
+
+Market.xml

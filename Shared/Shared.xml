@@ -21,6 +21,7 @@
     <Script file="UI\Parts.lua"/>
     <Script file="UI\Marks.lua"/>
     <Script file="UI\Text.lua"/>
+    <Script file="UI\Money.lua"/>
     <Script file="UI\Hud.lua"/>
     <Script file="UI\Thresholds.lua"/>
     <Script file="UI\Timer.lua"/>

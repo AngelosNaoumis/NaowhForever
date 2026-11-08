@@ -5,6 +5,7 @@ package-as: NaowhForever
 move-folders:
   NaowhForever/NaowhForever_Locales: NaowhForever_Locales
   NaowhForever/NaowhForever_Professions: NaowhForever_Professions
+  NaowhForever/NaowhForever_Market: NaowhForever_Market
   NaowhForever/NaowhForever_Training: NaowhForever_Training
   NaowhForever/NaowhForever_BiS: NaowhForever_BiS
   NaowhForever/NaowhForever_DungeonJournal: NaowhForever_DungeonJournal

@@ -139,6 +139,7 @@ local function Finish(prices)
     ShowAge()
     ns.Print(Tag() .. ": " .. ns.AuctionScanSummary())
     if ns.ProfWindowRefresh then ns.ProfWindowRefresh() end
+    if ns.MarketRefresh then ns.MarketRefresh() end
 end
 
 local function Read()
@@ -184,6 +185,8 @@ local function Scan()
     C_AuctionHouse.ReplicateItems()
     C_Timer.After(TIMEOUT, function() OnTimeout(gen) end)
 end
+
+ns.AuctionScan = Scan
 
 local function OnReplicate()
     if scanning or not (houseOpen and S.Get("ahCapture")) then return end

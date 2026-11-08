@@ -61,6 +61,8 @@ Shared/
   UI/Text.lua      text made once and kept: counts ("3/10"), money with its coins (Parts.Coins; compact,
                    its largest coin only), plain where-lines, numbers lined up to the pixel (Parts.Cells),
                    and a row of labels packed or spread evenly (Parts.LabelRow)
+  UI/Money.lua     a price typed in gold, silver and copper, each box beside its coin (Parts.MoneyBox):
+                   The Market's post line
   UI/Hud.lua       the HUD look: a HUD line's shadow, font, size and outline (Parts.HudText, Parts.HudFont, Parts.HudFlags),
                    a HUD card's background: the card, a soft fade or none (Parts.HudBackdrop), a window's
                    soft drop shadow (Parts.Shadow), and a progress line that holds still (Parts.ProgressLine)
@@ -233,6 +235,12 @@ Each file uses only the ones above it in `Shared.xml`. Every part sits on `ns.Sh
   can be any list, flat or not. `layer:Set(mapID, spots, count)` shows a map's spots (nil to clear),
   `layer:Repaint()` paints every pin again. It moves the pins only while you move or the minimap turns,
   and looks only at the spots within twice the minimap's view, gathered again every `REFRESH_YARDS`.
+- **A price to type:** `Parts.MoneyBox(parent, onChange)` makes three number boxes, gold, silver and
+  copper, each with its coin; Tab and Shift-Tab move between them. `money:SetAmount(copper)` fills them,
+  `money:GetAmount()` reads them back in copper (silver and copper over 99 count as 99),
+  `money:ShowCopper(shown)` hides the copper box where the auction house takes silver only, and
+  `money:HasFocus()` says whether one is being typed in, so a redraw leaves it alone.
+  `onChange(money, copper)` runs only for what the player types.
 - **Copying:** `Parts.CopyWowhead(kind, id, name)` opens the copy card on an item, quest or
   NPC's Wowhead link; a menu's Copy uses `ns.ShowCopyLine(title, text, icon)` (`CopyCard.lua`)
   for any line. `ns.ShowCopyCard(kind, label, id, title, mode, onClose)` opens the ID card itself.

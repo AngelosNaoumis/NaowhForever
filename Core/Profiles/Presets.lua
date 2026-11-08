@@ -8,7 +8,7 @@ ns.PRESETS = {
         name = "Recommended",
         about = "A streamlined setup with the essentials enabled and nothing that spoils the game. You can add more modules whenever you like. Perfect if you're a Classic player and don't want to use a lot of addons.",
         source = "Minimalist by Naowh, 2026-10-10",
-        modulesOff = { "NaowhForever_InstanceTracker", "NaowhForever_Training", "NaowhForever_Journeys", "NaowhForever_Discovery", "NaowhForever_GearSets", "NaowhForever_Blessings", "NaowhForever_Professions", "NaowhForever_Macros", "NaowhForever_ConsumableBar", "NaowhForever_ActionBars", "NaowhForever_AuraBuffs", "NaowhForever_ThreatMeter", "NaowhForever_GroupInspect", "NaowhForever_PvP", "NaowhForever_SwingTimer", "NaowhForever_TrackingReminder", "NaowhForever_RaidDebuffs", "NaowhForever_DruidMana", "NaowhForever_GroupFinder" },
+        modulesOff = { "NaowhForever_InstanceTracker", "NaowhForever_Training", "NaowhForever_Journeys", "NaowhForever_Discovery", "NaowhForever_GearSets", "NaowhForever_Blessings", "NaowhForever_Professions", "NaowhForever_Market", "NaowhForever_Macros", "NaowhForever_ConsumableBar", "NaowhForever_ActionBars", "NaowhForever_AuraBuffs", "NaowhForever_ThreatMeter", "NaowhForever_GroupInspect", "NaowhForever_PvP", "NaowhForever_SwingTimer", "NaowhForever_TrackingReminder", "NaowhForever_RaidDebuffs", "NaowhForever_DruidMana", "NaowhForever_GroupFinder" },
         profile = {
             actionBars = {
                 enabled = false,
@@ -82,6 +82,9 @@ ns.PRESETS = {
                 mana = false,
                 trinket1 = false,
                 trinket2 = false,
+            },
+            market = {
+                enabled = false,
             },
             professions = {
                 ahSearch = true,
@@ -385,6 +388,9 @@ ns.PRESETS = {
                 mana = true,
                 trinket1 = true,
                 trinket2 = true,
+            },
+            market = {
+                enabled = true,
             },
             professions = {
                 ahSearch = true,

@@ -121,6 +121,12 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
+    { name = "The Market", group = "ADVENTURE", navIcon = "coins", settings = "MarketSettings",
+      addon = "NaowhForever_Market",
+      subtitle = "Naowh's own auction house window: your bags priced from live listings, posted a key press at a time.",
+      tabs = {
+          { name = "Settings", reuse = true },
+      } },
     { name = "Macros", group = "UTILITIES", navIcon = "pen", settings = "MacroSettings",
       addon = "NaowhForever_Macros", host = "NaowhForever_Utilities",
       open = "OpenMacroWindow",

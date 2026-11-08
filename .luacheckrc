@@ -109,7 +109,7 @@ read_globals = {
     "InCinematic", "InCombatLockdown", "INSTANCE_RESET_FAILED", "INSTANCE_RESET_FAILED_OFFLINE",
     "INSTANCE_RESET_FAILED_ZONING", "INSTANCE_RESET_SUCCESS", "InviteUnit", "INVSLOT_FIRST_EQUIPPED", "INVSLOT_LAST_EQUIPPED",
     "INVSLOT_TRINKET1", "INVSLOT_TRINKET2", "IsAltKeyDown", "IsControlKeyDown", "IsInGroup",
-    "IsInGuild", "IsInInstance", "IsInRaid", "IsModifiedClick", "IsMounted",
+    "IsInGuild", "IsInInstance", "IsInRaid", "IsModifiedClick", "IsModifierKeyDown", "IsMounted",
     "IsLoggedIn", "IsMouseButtonDown", "IsPlayerMoving", "IsPlayerSpell", "IsQuestCompletable", "IsResting",
     "issecrettable", "issecretvalue", "issecurevariable", "IsShiftKeyDown", "ItemLocation", "IsStealthed", "IsTradeskillTrainer",
     "IsXPUserDisabled", "Item", "ItemEventListener", "ItemRefTooltip",
