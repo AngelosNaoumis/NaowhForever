@@ -243,6 +243,7 @@ ns.FEATURES = {
         debuffs = false,
         focus = true,
         flagButton = false,
+        nearbyEnemies = false,
     },
     instanceTracker = {
         enabled = false,

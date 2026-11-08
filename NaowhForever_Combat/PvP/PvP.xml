@@ -9,9 +9,12 @@
     <Script file="Auras.lua"/>
     <Script file="Displays.lua"/>
     <Script file="FlagButton.lua"/>
+    <Script file="Enemies.lua"/>
     <Script file="UI\AurasPreview.lua"/>
     <Script file="UI\SpellGrid.lua"/>
+    <Script file="UI\EnemyList.lua"/>
     <Script file="UI\AurasPage.lua"/>
     <Script file="UI\BattlegroundsPage.lua"/>
     <Script file="UI\FlagPage.lua"/>
+    <Script file="UI\EnemiesPage.lua"/>
 </Ui>

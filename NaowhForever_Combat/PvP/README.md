@@ -5,8 +5,10 @@ Shield, Evasion, Ice Block, Blessing of Protection, Sprint), the crowd control o
 debuffs you pick, as rows of large icons; a second panel does the same for your focus, with
 their name and class above it, so a Sap or Polymorph on one enemy keeps counting down while you
 fight another. **Battleground Displays** puts the game's battleground scores and start
-countdown in the HUD Editor. Off by default (`enabled` in the `pvp` store, from
-`ns.FEATURES.pvp`).
+countdown in the HUD Editor. **Nearby Enemies** is a small list of the enemy players seen around
+you in the open world: name in class colour, level, guild and how long ago, with a Kill on Sight
+list and its stronger alert (`nearbyEnemies`, off). Off by default (`enabled` in the `pvp` store,
+from `ns.FEATURES.pvp`).
 
 ## Layout
 
@@ -27,12 +29,17 @@ NaowhForever_Combat/PvP/
   Auras.lua                  PvP Auras shown, hidden and kept up to date: events, combat, Unlock Mode
   Displays.lua               the battleground scores and countdown, movable in the HUD Editor
   FlagButton.lua             PvP Flag, a button that flags or unflags you, movable in the HUD Editor
+  Enemies.lua                Nearby Enemies' list: who is seen, from which events, kept how long, and
+                             the Kill on Sight list (P.Enemies)
   UI/
     AurasPreview.lua         the PvP Auras card's preview with sample auras (P.AurasPreview)
     SpellGrid.lua            the crowd control and debuff grids, one icon per spell (P.SpellGrid)
+    EnemyList.lua            Nearby Enemies on screen: the list, its alerts and Kill on Sight menu,
+                             movable in the HUD Editor
     AurasPage.lua            the PvP/Auras settings page, declared as cards
     BattlegroundsPage.lua    the PvP/Battlegrounds settings page
     FlagPage.lua             the PvP/Flag settings page
+    EnemiesPage.lua          the PvP/Nearby Enemies settings page
   README.md                  this file
 ```
 
@@ -77,9 +84,52 @@ Each crowd control ability and each debuff in the spell data has its own switch:
   the faction crest. Forever has no API that says a realm is on the PvP ruleset, so the button is
   a switch the player turns on.
 
+- Nearby Enemies cannot read the combat log, which is closed to addons on Forever. It sees an
+  enemy when their nameplate appears (`NAME_PLATE_UNIT_ADDED`), when you target them and when you
+  mouse over them, so it reaches only as far as the game draws nameplates, and only with enemy
+  nameplates turned on; without them it lists only who you target or mouse over.
+- An enemy is a player (`UnitIsPlayer`) of the other faction (`UnitFactionGroup`), so a duel
+  partner or someone of your own faction in a free-for-all zone is not listed.
+- It is for world PvP, so it runs in the open world only: in an instance, battleground or arena
+  (`IsInInstance`) its events are dropped and the list emptied, which also keeps it clear of the
+  game's PvP match restrictions on addons. Every loading screen empties it, since whoever was near
+  is not any more.
+- Forever makes `UnitGUID`, `UnitClass` and `UnitName` secret for a unit that is not
+  player-controlled or in your group (`SecretWhenUnitIdentityRestricted`), and its API docs do not
+  list `GetGuildInfo` at all. An enemy player should never be secret, but the nameplate's unit
+  token, the player check, faction, GUID, name, level, class and guild are each checked with
+  `P.Readable` before they are compared, joined or used as a key, and a secret one is left out.
+- An enemy is kept by GUID alone, in the list, the alerts and Kill on Sight, and a sighting whose
+  GUID is secret is passed over. Forever's first names are not unique and `UnitName` gives only the
+  first name, so name and realm would make two players one; a second key for when the GUID is secret
+  would never match the first, and Kill on Sight would miss them.
+- While their nameplate is up an enemy reads "in range"; when it goes (`NAME_PLATE_UNIT_REMOVED`)
+  the time since they were seen starts, and after `FORGET_AFTER` (five minutes) unseen they drop
+  off. Each listed nameplate's token is kept as it appears, so a nameplate going reads nothing from
+  the game, and one never listed is passed over at once.
+- The time is `Shared.Ago`'s, by the minute, so the list is drawn again every `REFRESH` (ten
+  seconds), and only while it shows names.
+- The list keeps `MAX_ENEMIES` (eight) so it stays short; past that the one seen longest ago goes.
+  It is ordered Kill on Sight first, then those in range, then the most recently seen, so Kill on
+  Sight is the last to go.
+- Kill on Sight is saved account-wide (`pvpKillOnSight` in the account settings, GUID to name),
+  outside every profile, so a profile switch or a shared profile never carries it. It is set from
+  the list's own menu, not the game's unit menus.
+- An enemy alerts once, then again only after `FORGET_AFTER` unseen (`lastSeen`, kept apart from
+  the list): one dropped past `MAX_ENEMIES`, or emptied out by a loading screen, comes back quietly,
+  so a crowd never replays the alerts. Their nameplate being up counts as seen. `lastSeen` is pruned
+  on the same expiry, and emptied when the feature is switched off.
+- Alert on New Enemies (off) plays the map ping and flashes the game's icon in the taskbar; a Kill
+  on Sight enemy gets the raid warning, the flash and a line in chat (Kill on Sight Alert, on: the
+  list starts empty, so it is quiet until you add someone).
+- Closing the list hides it until a new enemy, or one unseen for `FORGET_AFTER`, shows up.
+
 ## Checking
 
 - `lua Tools/regression/test-pvp-auras.lua`: the spell lists, nothing made or listened to while
   off, the rows and filters, the focus panel, the absorb, the preview and the spell grids.
 - `lua Tools/regression/test-pvp-displays.lua`: the battleground displays, off and on, dragged
   and reset.
+- `lua Tools/regression/test-pvp-enemies.lua`: Nearby Enemies off and on, who is listed and how
+  they are keyed, secret values left out, in range and seen ago, expiry, the cap, Kill on Sight
+  and its alerts, instances, the HUD Editor and the ticker.

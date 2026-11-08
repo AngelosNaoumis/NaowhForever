@@ -181,6 +181,7 @@ local MODULES = {
           { name = "Auras", reuse = true },
           { name = "Battlegrounds", reuse = true },
           { name = "Flag", reuse = true },
+          { name = "Nearby Enemies", reuse = true },
       } },
     { name = "Swing Timer", group = "COMBAT", navIcon = "infinity", settings = "SwingTimerSettings",
       addon = "NaowhForever_SwingTimer", host = "NaowhForever_Combat",
