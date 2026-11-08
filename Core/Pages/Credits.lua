@@ -40,20 +40,23 @@ local STAFF = { "Alloy", "Grim", "Ns", "Tiif", "Zyan", "Snoozer", "WeepDang", "S
 
 local MODULES = {
     { icon = "hammer", name = "Professions", people = { "filipescp96", "Grim", "Korallis", "Hikayuki", "Joshua Helmle", "Angelos" } },
-    { icon = "map", name = "Dungeon Journal", people = { "Grim", "Borderline", "Daniil" } },
+    { icon = "map", name = "Dungeon Journal", people = { "Dieman", "Grim", "Borderline", "Daniil" } },
+    { icon = "trophy", name = "BiS List", people = { "Dieman", "Zyan" } },
     { icon = "compass", name = "Discovery", people = { "Grim" } },
-    { icon = "checklist", name = "QoL", people = { "Korallis", "Lyssa", "Jacob Biehler", "Borderline" } },
+    { icon = "checklist", name = "QoL", people = { "Dieman", "Korallis", "Lyssa", "Jacob Biehler", "Borderline" } },
     { icon = "heart", name = "Consumable Bar", people = { "Zyan", "Korallis" } },
     { icon = "aura", name = "AuraBuffs", people = { "Korallis" } },
     { icon = "spark", name = "Blessings", people = { "Borderline", "Kristjan Ingi" } },
     { icon = "bars", name = "Threat Meter", people = { "Lyssa", "Borderline" } },
-    { icon = "settings", name = "Settings", people = { "Zyan", "Lyssa", "Kristjan Ingi" } },
+    { icon = "swords", name = "PvP", people = { "Dieman" } },
+    { icon = "settings", name = "Settings", people = { "Zyan", "Lyssa", "Dieman", "Kristjan Ingi" } },
     { icon = "search", name = "Racial and Class Tracking", people = { "Jacob Biehler" } },
     { icon = "pen", name = "Macros", people = { "Kristjan Ingi" } },
+    { icon = "grid", name = "Action Bars", people = { "Dieman" } },
     { icon = "notes", name = "Translations", people = { Translator("Checkov23", "German"), Translator("chenjonathanzhang-max", "Chinese") } },
 }
 
-local ALSO = { "Jok3r", "Cullen Buchanan" }
+local ALSO = { "Jok3r" }
 
 local ELLESMERE = { tier = "ellesmere", name = "Ellesmere", line = ns.L("Creator of EllesmereUI, for allowing us to add some of EUI's styling and functionality.") }
 
