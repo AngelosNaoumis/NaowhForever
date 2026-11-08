@@ -4,6 +4,7 @@ local ns = _G.NaowhForever
 local Market = ns.Market
 local C = Market.C
 local S = Market.Settings
+local Runs = Market.Runs
 
 local KIND, NEED, NAME = 1, 2, 3
 local GATHER_ITEM = 3
@@ -45,6 +46,10 @@ local function Net(item)
     return scan and Market.AfterCut(scan) or 0
 end
 
+local function Value(objectID, kind, item)
+    return Runs.NodeValue(objectID) or Net(item) * (C.YIELD[kind] or 1)
+end
+
 local function Wanted(kind)
     if kind == "herb" then return S.Get("farmHerbs") end
     if kind == "ore" then return S.Get("farmVeins") end
@@ -60,7 +65,7 @@ function Farm.NodeValue(objectID)
     local G = ns.Glimmer
     local node = G and G.NODES[objectID]
     if not node then return 0 end
-    return Net(Item(objectID, node)) * (C.YIELD[node[KIND]] or 1)
+    return Value(objectID, node[KIND], Item(objectID, node))
 end
 
 local function Hours(yards, stops)
@@ -97,7 +102,7 @@ local function ReadZone(G, mapID, all, skill)
         local kind = node and node[KIND]
         if kind and Wanted(kind) and skill[kind] >= node[NEED] then
             local item = Item(all[i], node)
-            local value = Net(item) * (C.YIELD[kind] or 1)
+            local value = Value(all[i], kind, item)
             zone.stops, zone.value = zone.stops + 1, zone.value + value
             if item and value > 0 then Tally(zone, item, value) end
         end
@@ -110,6 +115,8 @@ local function ReadZone(G, mapID, all, skill)
     local yards = C.TOUR_FACTOR * math.sqrt(zone.stops * width * height)
     zone.minutes = Hours(yards, zone.stops) * MINUTES_PER_HOUR
     zone.perHour = PerHour(zone.value, yards, zone.stops)
+    zone.measured = Runs.PerHour(mapID)
+    zone.rank = zone.measured or zone.perHour
     table.sort(zone.items, ByValue)
     local info = C_Map.GetMapInfo(mapID)
     zone.name = info and info.name or ""
@@ -117,7 +124,7 @@ local function ReadZone(G, mapID, all, skill)
 end
 
 local function Richer(a, b)
-    if a.perHour ~= b.perHour then return a.perHour > b.perHour end
+    if a.rank ~= b.rank then return a.rank > b.rank end
     return a.map < b.map
 end
 
@@ -215,7 +222,7 @@ function Farm.Zone(mapID)
             spot.id, spot.kind, spot.need = id, kind, node[NEED]
             spot.x, spot.y = all[i + 1] / scale, all[i + 2] / scale
             spot.item = Item(id, node)
-            spot.value = Net(spot.item) * (C.YIELD[kind] or 1)
+            spot.value = Value(id, kind, spot.item)
             spot.can, spot.wanted = skill[kind] >= node[NEED], Wanted(kind)
             local last = picked[id .. ":" .. all[i + 1] .. ":" .. all[i + 2]]
             spot.picked = last and now - last < C.PICKED_FADE and last or nil

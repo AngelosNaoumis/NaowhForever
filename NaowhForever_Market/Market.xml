@@ -11,11 +11,13 @@
     <Script file="History.lua"/>
     <Script file="Worth.lua"/>
     <Script file="Crafts.lua"/>
+    <Script file="Runs.lua"/>
     <Script file="Farm.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Ladder.lua"/>
     <Script file="UI\Window.lua"/>
     <Script file="UI\Farm.lua"/>
+    <Script file="UI\Runs.lua"/>
     <Script file="UI\Sell.lua"/>
     <Script file="UI\Crafts.lua"/>
     <Script file="UI\Buy.lua"/>

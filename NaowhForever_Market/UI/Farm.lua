@@ -23,6 +23,7 @@ local KV_W = 150
 local TEXT_BEST = ns.L("Best for You")
 local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d")
 local TEXT_HOUR = ns.L("about %s an hour")
+local TEXT_MADE = ns.L("you made %s an hour")
 local TEXT_SUB = ns.L("Loop of %d stops, about %d minutes, about %s an hour, estimated")
 local TEXT_NO_LOOP = ns.L("Nothing here you can gather yet.")
 local TEXT_OPEN = ns.L("Open Map")
@@ -101,7 +102,7 @@ end
 
 local function DrawZones()
     local zones = Farm.Zones()
-    local best = zones[1] and zones[1].perHour or 0
+    local best = zones[1] and zones[1].rank or 0
     local room = zoneList:GetWidth() - ROW_IN * 2
     local y = 0
     for i, zone in ipairs(zones) do
@@ -116,8 +117,8 @@ local function DrawZones()
             if top then icon.texture:SetTexture(C_Item.GetItemIconByID(top.item)) end
             icon:SetShown(top ~= nil)
         end
-        row.hour:SetText(TEXT_HOUR:format(Parts.Coins(zone.perHour, true)))
-        row.bar:SetWidth(math.max(1, room * (best > 0 and zone.perHour / best or 0)))
+        row.hour:SetText((zone.measured and TEXT_MADE or TEXT_HOUR):format(Parts.Coins(zone.rank, true)))
+        row.bar:SetWidth(math.max(1, room * (best > 0 and zone.rank / best or 0)))
         row:ClearAllPoints()
         row:SetPoint("TOPLEFT", 0, -y)
         row:SetPoint("RIGHT", zoneList, "RIGHT")

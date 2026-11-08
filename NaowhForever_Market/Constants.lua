@@ -19,4 +19,9 @@ ns.Market.C = {
     GATHER_SECONDS = 4,
     TOUR_FACTOR = 0.92,
     PICKED_FADE = 600,
+    RUN_IDLE = 600,
+    RUN_MIN = 300,
+    RUN_KEEP = 10,
+    RUN_EVENTS = 400,
+    YIELD_MIN = 3,
 }

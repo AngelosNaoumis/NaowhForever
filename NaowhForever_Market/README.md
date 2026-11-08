@@ -6,7 +6,8 @@ under the cheapest of someone else's, and a post line you work through with Spac
 and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
 auctioneer. Away from it, `/market` or its key binding opens the same window on Farm: the zones
 where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
-loop through it you can follow by waypoint. Crafts shows what your characters' known recipes make
+loop through it you can follow by waypoint. Last Run records each herb and vein you gather and draws
+the run's gold over time with its haul; what you really gather prices Farm's nodes. Crafts shows what your characters' known recipes make
 from your bags, priced from your last scan. Bag Worth puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it and what it crafts into.
@@ -29,6 +30,7 @@ NaowhForever_Market/
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
   Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
+  Runs.lua           your gathering runs, and what each node yields on average (Market.Runs)
   Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
@@ -36,6 +38,7 @@ NaowhForever_Market/
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
     Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
+    Runs.lua         the Last Run page: the run's gold over time, its haul, earlier runs
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
     Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
     Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
@@ -177,6 +180,22 @@ NaowhForever_Market/
 - The zone map is drawn from the map's own art (`C_Map.GetMapArtLayers` and
   `GetMapArtLayerTextures`, laid out in tiles as Blizzard's map canvas does), scaled to fit and
   clipped. A spot gathered in the last `PICKED_FADE` (10) minutes is faded, its node likely gone.
+- A gather is a loot window whose items come from a herb or vein: `GetLootSourceInfo` gives each
+  slot's source GUID, and Glimmer's `GUID_OBJECT` pattern its object ID, looked up in `Glimmer.NODES`.
+  An item counts when its slot is taken (`LOOT_SLOT_CLEARED`), and the window's haul is recorded when
+  it closes, so items left behind with full bags count once, when you come back for them.
+  Nothing is read from the soft target or tooltips, so it works on every client language. A vein
+  mined again keeps its GUID, so its loot adds to the same node; a secret GUID is skipped.
+- A run starts with your first gather and ends after `RUN_IDLE` (10) minutes without one. Each
+  character keeps its last `RUN_KEEP` (10) runs (`marketRuns`), each up to `RUN_EVENTS` (400) events
+  with where they were. Values are worked out from your current scan, not frozen at the time, so the
+  chart, the haul and the total agree.
+- What every node gives is kept account-wide (`marketYields`): after `YIELD_MIN` (3) nodes of a kind,
+  Farm prices that node from its average loot, stones and gems included, instead of `YIELD`. A zone
+  with a run of at least `RUN_MIN` (5) minutes is ranked by what you made an hour there, and says so.
+  Each gather tells Farm to rank again (`Farm.Changed`), and a run is kept under the zone's own map ID
+  (`Shared.Places.SameMap`), so it counts for the zone Farm lists.
+- The chart's hover runs an OnUpdate only while the mouse is over it.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -186,8 +205,8 @@ NaowhForever_Market/
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
 `test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
-history and Bag Worth, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm; all load the
-rules through
+history and Bag Worth, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
+`test-market-runs.lua` Last Run; all load the rules through
 `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
@@ -227,3 +246,9 @@ Away from the auction house:
 26. Start Loop places a waypoint at the nearest stop and the next as you reach each.
 27. Clicking a pin shows its item in the strip: price, the last 14 days, what you hold. At an
     auctioneer, Sell picks it on the Sell page.
+28. Gather a few herbs or veins: Last Run shows the zone, the minutes, the nodes and skill-ups, a gold
+    line stepping up at each gather, and the haul.
+29. Hovering the chart names the node, what it gave and the run so far.
+30. Ten minutes without gathering, then another gather, starts a new run; < and > step between runs.
+31. After three of a node, its pins on Farm are priced from what you gathered; after a five-minute run
+    the zone reads "you made ... an hour".

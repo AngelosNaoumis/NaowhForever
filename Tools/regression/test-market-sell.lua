@@ -129,7 +129,7 @@ Check("Next skips what a vendor should have", M.Sell.Focus().key == 5555)
 
 t.needsConfirm = true
 Check("a post the game wants confirmed waits", M.Post.Send(M.Sell.Focus(), 2, 9, 1) and #done == 1
-    and t.hooks[1] == "OnAccept")
+    and t.hooks[#t.hooks - 1] == "OnAccept")
 t.Fire("AUCTION_HOUSE_AUCTION_CREATED", 78)
 Check("nothing counts before it is confirmed", #done == 1)
 t.dialog.OnAccept(t.dialog, nil)

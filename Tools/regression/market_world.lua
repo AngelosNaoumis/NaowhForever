@@ -10,7 +10,7 @@ local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
     "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua", "NaowhForever_Market/History.lua",
     "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua",
-    "NaowhForever_Market/Farm.lua" }
+    "NaowhForever_Market/Runs.lua", "NaowhForever_Market/Farm.lua" }
 
 local function Noop() end
 
@@ -20,7 +20,7 @@ local function Setup(opts)
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
         owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
         browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000,
-        account = {}, scanAt = opts.scanAt, counts = opts.counts or {} }
+        account = {}, char = {}, scanAt = opts.scanAt, counts = opts.counts or {} }
     local registry = {}
     local copper = opts.copper ~= false
     t.ready = true
@@ -68,7 +68,14 @@ local function Setup(opts)
         AuctionPriceList = function() if t.scanAt then return t.scan, t.scanAt end end,
         AccountSettings = function() return t.account end,
         L = function(text) return text end,
-        Shared = { Places = { SameMap = function(map) return t.sameMap and t.sameMap[map] or map end } },
+        Apply = Noop,
+        Shared = {
+            CharacterData = function(key, create)
+                if create and not t.char[key] then t.char[key] = {} end
+                return t.char[key]
+            end,
+            Places = { SameMap = function(map) return t.sameMap and t.sameMap[map] or map end },
+        },
     }
     t.ns = ns
     local results = { commodity = {}, item = {} }
@@ -96,6 +103,7 @@ local function Setup(opts)
             IsEquippableItem = function(id) return opts.equippable and opts.equippable[id] or false end,
             RequestLoadItemData = function() t.loads = t.loads + 1 end,
             GetItemCount = function(id) return t.counts[id] or 0 end,
+            GetItemInfoInstant = function(link) return tonumber(tostring(link):match("(%d+)")) end,
             GetItemNameByID = function(id) return "Item " .. id end,
             GetItemIconByID = function(id) return id end,
         },
@@ -150,6 +158,10 @@ local function Setup(opts)
         },
         C_Timer = { After = function(_, fn) t.timers[#t.timers + 1] = fn end },
         GetMoney = function() return t.money end,
+        GetNumLootItems = function() return #(t.loot or {}) end,
+        GetLootSourceInfo = function(slot) return t.loot[slot].source end,
+        GetLootSlotLink = function(slot) return "item:" .. t.loot[slot].item end,
+        GetLootSlotInfo = function(slot) return nil, nil, t.loot[slot].qty end,
         GetRealmName = function() return "Realm" end,
         UnitFactionGroup = function() return "Horde" end,
         UnitGUID = function() return "Player-1" end,

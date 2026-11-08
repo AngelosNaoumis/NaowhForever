@@ -26,6 +26,7 @@ local TEXT_AWAY_BODY = ns.L("Sell, Buy and My Auctions open over the auction hou
 local TEXT_OFF = ns.L("Turn on The Market in its settings to open it.")
 local PAGES = {
     { key = "farm", label = "Farm", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
+    { key = "run", label = "Last Run", tip = "Your last gathering run: its gold over time and its haul." },
     { key = "sell", label = "Sell", tip = "Your bags, most valuable first, posted one key press at a time.",
       auction = true },
     { key = "crafts", label = "Crafts", tip = "What your characters' recipes make from your bags, priced from your last scan." },
