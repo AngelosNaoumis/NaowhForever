@@ -26,7 +26,7 @@ local S = UI.ModuleSettings("qol", {
 
     deleteConfirm = F.deleteConfirm, lootConfirm = F.lootConfirm,
     questAccept = F.questAccept, questTurnIn = F.questTurnIn, questGossip = F.questGossip, questRewardPicks = F.questRewardPicks,
-    questSkipModifier = "ALT", questModifierMode = "SKIP",
+    questSkipGrey = F.questSkipGrey, questSkipModifier = "ALT", questModifierMode = "SKIP",
     gossipAuto = F.gossipAuto, gossipModifier = "ALT", gossipModifierMode = "SKIP",
     groupButtons = F.groupButtons, groupButtonsLayout = "stacked", groupButtonsWidth = 90, groupButtonsHeight = 24,
     groupButtonsFont = "", groupButtonsFontSize = 12, groupButtonsOutline = "NONE", groupButtonsBackground = "card",

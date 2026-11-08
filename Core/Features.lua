@@ -20,6 +20,7 @@ ns.FEATURES = {
         questAccept = true,
         questTurnIn = true,
         questGossip = true,
+        questSkipGrey = false,
         questRewardPicks = true,
         questShare = true,
         gossipAuto = false,

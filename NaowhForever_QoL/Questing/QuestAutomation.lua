@@ -164,8 +164,11 @@ local function PickFromGreeting()
             if isComplete then return SelectActiveQuest(i) end
         end
     end
-    if On("questAccept") and GetNumAvailableQuests() > 0 then
-        SelectAvailableQuest(1)
+    if On("questAccept") then
+        local skipGrey = S.Get("questSkipGrey")
+        for i = 1, GetNumAvailableQuests() do
+            if not (skipGrey and GetAvailableQuestInfo(i)) then return SelectAvailableQuest(i) end
+        end
     end
 end
 
@@ -178,8 +181,12 @@ local function PickFromGossip()
         end
     end
     if On("questAccept") then
-        local quest = C_GossipInfo.GetAvailableQuests()[1]
-        if quest and quest.questID then C_GossipInfo.SelectAvailableQuest(quest.questID) end
+        local skipGrey = S.Get("questSkipGrey")
+        for _, quest in ipairs(C_GossipInfo.GetAvailableQuests()) do
+            if quest.questID and not (skipGrey and quest.isTrivial) then
+                return C_GossipInfo.SelectAvailableQuest(quest.questID)
+            end
+        end
     end
 end
 
@@ -233,7 +240,7 @@ function HANDLERS.QUEST_ACCEPTED(questID)
 end
 
 function HANDLERS.QUEST_DETAIL()
-    if not On("questAccept") then return end
+    if not On("questAccept") or (S.Get("questSkipGrey") and C_QuestLog.IsQuestTrivial(GetQuestID())) then return end
     if QuestGetAutoAccept() then CloseQuest() else AcceptQuest() end
 end
 
@@ -322,6 +329,8 @@ page:Card({
         { key = "questGossip", label = "Pick Quests From NPCs", toggle = true,
           help = "When an NPC offers several things, goes straight to a finished quest to hand in, "
               .. "or the first quest on offer. Works with the two options above." },
+        { key = "questSkipGrey", label = "Skip Grey Quests", toggle = true, needs = "questAccept",
+          help = "Accept Quests and Pick Quests From NPCs leave grey quests for you to take by hand." },
         { key = "questRewardPicks", label = "Saved Quest Rewards", toggle = true,
           needs = ns.GamepadFree, why = ns.GamepadWhy,
           help = "Alt-click a reward you can choose, in the quest log or at the quest giver, to save "
