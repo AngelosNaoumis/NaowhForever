@@ -371,8 +371,10 @@ do
     s.S.Set("xpTickerOutline", "")
     check("Shadow brings the shadow back", All(t, Plain))
 
+    t.headLine = { SetShown = function(self, v) self.shown = v end, ClearAllPoints = NOTHING, SetPoint = NOTHING }
     s.S.Set("xpTickerBackground", "soft")
     local soft = t.backdrop.soft
+    check("Soft: the Forever header divider goes with the card", t.headLine.shown == false)
     check("Soft: no card and no border", CardHidden(t))
     check("Soft: nine pieces of the round shade", soft and #soft == 9 and SoftShown(t, true))
     local corners, spans, flat = 0, 0, 0
@@ -399,12 +401,15 @@ do
     check("None: no fade", SoftShown(t, false) and t.backdrop.soft == soft)
     check("None: no outline, the strongest shadow", All(t, BareShadow))
     check("None: the line's fill without its track", t.line.track.shown == false and t.line.fill)
+    check("None: no header divider", t.headLine.shown == false)
     s.S.Set("xpTickerOutline", "OUTLINE")
     check("None: Outline on request", All(t, Outlined))
     s.S.Set("xpTickerOutline", "")
 
     s.S.Set("xpTickerBackground", "card")
     check("Card: the card is back", CardShown(t) and SoftShown(t, false) and All(t, Plain) and Shown(t.line.track))
+    check("Card: the header divider back with it", t.headLine.shown == true)
+    t.headLine = nil
     s.S.Set("xpTickerBackground", "fancy")
     check("an unknown value is the card", t.backdrop.mode == "card" and CardShown(t))
     s.S.Set("xpTickerBackground", "card")

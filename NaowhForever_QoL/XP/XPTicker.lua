@@ -268,9 +268,20 @@ function Look.New(f)
     f.controls:SetSize(f.toggle:GetWidth() + CONTROL_GAP + f.reset:GetWidth(), f.toggle:GetHeight())
     f.controls:Hide()
     f.inner = ns.PixelInset(CreateFrame("Frame", nil, f), 1)
-    f.line = Parts.ProgressLine(f.inner, LINE_H)
-    f.line:SetPoint("BOTTOMLEFT")
-    f.line:SetPoint("BOTTOMRIGHT")
+    f.line = Parts.ProgressLine(f.inner, LINE_H, true)
+    f.lineRoom = 0
+    if f.line.foreverArt then
+        local bar = St.FOREVER_CAST_BAR.h
+        f.line:SetParent(f)
+        f.line:SetHeight(bar)
+        f.line:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", PAD, PAD)
+        f.line:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -PAD, PAD)
+        f.lineRoom = bar + PAD
+        f.headLine = Parts.ForeverHeadLine(f)
+    else
+        f.line:SetPoint("BOTTOMLEFT")
+        f.line:SetPoint("BOTTOMRIGHT")
+    end
     f.line:Paint(T.accent, T.accentSoft)
     f:EnableMouse(true)
     f:SetScript("OnEnter", CardEnter)
@@ -315,6 +326,8 @@ function Look.Fonts(f)
     local shadow = outline == "" and mode
     for i = 1, #f.texts do Parts.HudText(f.texts[i], shadow) end
     f.line.track:SetShown(mode == "card")
+    if f.line.castFrame then f.line.castFrame:SetShown(mode == "card") end
+    if f.headLine then f.headLine:SetShown(mode == "card") end
     f.controls:ClearAllPoints()
     f.controls:SetPoint("RIGHT", f, "TOPRIGHT", -CONTROLS_INSET, -(PAD + size / 2))
     f.minW = size * WIDTH_PER_SIZE
@@ -362,6 +375,11 @@ local function Arrange(f, showDing, showTime, showCurrent, count, showPlayed)
     local rateH = f.rate:GetStringHeight()
     local y = math.ceil(PAD + math.max(rateH, (rateH + f.controls:GetHeight()) / 2))
     local gap = SECTION_GAP
+    if f.headLine then
+        f.headLine:ClearAllPoints()
+        f.headLine:SetPoint("TOPLEFT", f, "TOPLEFT", PAD, -(y + gap / 2))
+        f.headLine:SetPoint("TOPRIGHT", f, "TOPRIGHT", -PAD, -(y + gap / 2))
+    end
     ShowRow(f.played, showPlayed)
     if showPlayed then y, gap = PlaceRow(f, f.played, y + gap), ROW_GAP end
     ShowRow(f.current, showCurrent)
@@ -374,7 +392,7 @@ local function Arrange(f, showDing, showTime, showCurrent, count, showPlayed)
         end
     end
     y = PlaceFooter(f, showDing, showTime, y + SECTION_GAP)
-    f.height = math.ceil(y) + PAD
+    f.height = math.ceil(y) + PAD + f.lineRoom
     return true
 end
 

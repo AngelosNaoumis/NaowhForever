@@ -26,7 +26,7 @@ function Parts.SettingsCardFrame(parent)
     local card = CreateFrame("Frame", nil, parent)
     card:SetHeight(CARD_H)
     ns.Solid(card, "BACKGROUND", T.fg, St.WINDOW_CARD_FILL):SetAllPoints()
-    ns.Border(card, BORDER_RGB)
+    card.edge = ns.Border(card, BORDER_RGB)
     card.icon = card:CreateTexture(nil, "ARTWORK")
     card.icon:SetSize(CARD_ICON, CARD_ICON)
     card.icon:SetPoint("LEFT", CARD_PAD, 0)
@@ -34,7 +34,10 @@ function Parts.SettingsCardFrame(parent)
     card.open = OpenButton(card)
     card.open:SetPoint("RIGHT", -CARD_PAD, 0)
     card.headline = Line(card, HEADLINE_SIZE, ns.foreverSkin and T.accent or T.fg, true)
-    if ns.foreverSkin then Parts.ForeverBox(card) end
+    if ns.foreverSkin then
+        card.art = Parts.ForeverFrameArt(card)
+        if card.art then card.edge._frame:Hide() else Parts.ForeverBox(card) end
+    end
     card.detail = Line(card, DETAIL_SIZE, T.muted)
     return card
 end

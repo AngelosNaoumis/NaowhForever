@@ -17,8 +17,10 @@ local MODE_ICON = { walk = "walk", fly = "fly", ship = "ship", tram = "tram", po
     teleport = "teleport", lift = "lift" }
 local CARD_W, PAD, HEADER_H, STRIP_H = 280, 12, 34, 2
 local SEG_H, SEG_GAP, SEG_BELOW = 3, 3, 6
+local CAST_GAP = 10
 local ROW_H, ROW_ICON, ROW_GAP, EDGE_W = 30, 16, 9, 2
 local FOOT = 4
+local HEAD_LINE_LIFT = 2
 local TITLE_SIZE, TOTAL_SIZE, ROW_SIZE, TIME_SIZE, WAIT_SIZE = 15, 16, 13, 12, 11
 local BUTTON_GAP = 6
 local CURRENT_SEG = 0.5
@@ -32,6 +34,7 @@ local TEXT_NAME = "Journey Card"
 
 local card
 local rows, segs = {}, {}
+local segH = SEG_H
 
 local function On()
     return Jy.On() and S.Get("card")
@@ -78,6 +81,14 @@ local function Header()
     strip:SetPoint("TOPLEFT")
     strip:SetPoint("TOPRIGHT")
     strip:SetHeight(STRIP_H)
+    if card.backdrop.art then strip:Hide() end
+    if card.backdrop.art and segH == SEG_H then
+        card.headLine = Parts.ForeverHeadLine(card)
+        if card.headLine then
+            card.headLine:SetPoint("TOPLEFT", PAD, -HEADER_H + HEAD_LINE_LIFT)
+            card.headLine:SetPoint("TOPRIGHT", -PAD, -HEADER_H + HEAD_LINE_LIFT)
+        end
+    end
     card.close = Parts.IconButton(card, ns.ClearWaypoint, CROSS, 0, TEXT_CLOSE)
     card.close:SetPoint("TOPRIGHT", -PAD / 2, -(HEADER_H - St.ACTION) / 2)
     card.cog = Parts.IconButton(card, OpenSettings, COG, 0, TEXT_COG)
@@ -92,6 +103,19 @@ local function Header()
     card.title:SetWordWrap(false)
 end
 
+local function CastSegment()
+    local line = Parts.ProgressLine(card, St.FOREVER_CAST_BAR.h, true)
+    if line.foreverArt then return { line = line } end
+    line:Hide()
+end
+
+local function CastSteps()
+    local first = CastSegment()
+    if not first then return end
+    segs[1] = first
+    segH = St.FOREVER_CAST_BAR.h
+end
+
 local function Build()
     card = CreateFrame("Frame", nil, UIParent)
     card:SetSize(CARD_W, HEADER_H)
@@ -104,6 +128,7 @@ local function Build()
     card:SetScript("OnDragStart", card.StartMoving)
     card:SetScript("OnDragStop", DragStop)
     card.backdrop = Parts.HudBackdrop(card)
+    if ns.foreverSkin then CastSteps() end
     Header()
     card.mover = ns.UI.AttachMover(card, TEXT_NAME, function(pos)
         SavePosition(pos.point, pos.relPoint, pos.x, pos.y)
@@ -117,29 +142,47 @@ end
 local function Segment(i)
     local seg = segs[i]
     if seg then return seg end
-    seg = { track = ns.Solid(card, "ARTWORK", T.line, 1), fill = ns.Solid(card, "OVERLAY", T.accent, 1) }
+    seg = segH ~= SEG_H and CastSegment()
+        or { track = ns.Solid(card, "ARTWORK", T.line, 1), fill = ns.Solid(card, "OVERLAY", T.accent, 1) }
     segs[i] = seg
     return seg
 end
 
+local function PlaceCast(seg, i, width, lit)
+    local line = seg.line
+    line:ClearAllPoints()
+    line:SetPoint("TOPLEFT", card, "TOPLEFT", PAD + (i - 1) * (width + CAST_GAP), -HEADER_H)
+    line:SetSize(width, segH)
+    line:SetProgress(lit)
+    line:Show()
+end
+
+local function PlaceFlat(seg, i, width, lit)
+    seg.track:ClearAllPoints()
+    seg.track:SetPoint("TOPLEFT", card, "TOPLEFT", PAD + (i - 1) * (width + SEG_GAP), -HEADER_H)
+    seg.track:SetSize(width, SEG_H)
+    seg.track:Show()
+    seg.fill:ClearAllPoints()
+    seg.fill:SetPoint("TOPLEFT", seg.track, "TOPLEFT")
+    seg.fill:SetSize(math.max(width * lit, 0.001), SEG_H)
+    seg.fill:SetShown(lit > 0)
+end
+
+local function HideSegment(seg)
+    if seg.line then return seg.line:Hide() end
+    seg.track:Hide()
+    seg.fill:Hide()
+end
+
 local function Segments(done, total)
-    local width = (CARD_W - PAD * 2 - SEG_GAP * (total - 1)) / total
+    local gap = segH == SEG_H and SEG_GAP or CAST_GAP
+    local width = (CARD_W - PAD * 2 - gap * (total - 1)) / total
     for i = 1, total do
         local seg = Segment(i)
-        seg.track:ClearAllPoints()
-        seg.track:SetPoint("TOPLEFT", card, "TOPLEFT", PAD + (i - 1) * (width + SEG_GAP), -HEADER_H)
-        seg.track:SetSize(width, SEG_H)
-        seg.track:Show()
         local lit = i <= done and 1 or i == done + 1 and CURRENT_SEG or 0
-        seg.fill:ClearAllPoints()
-        seg.fill:SetPoint("TOPLEFT", seg.track, "TOPLEFT")
-        seg.fill:SetSize(math.max(width * lit, 0.001), SEG_H)
-        seg.fill:SetShown(lit > 0)
+        if seg.line then PlaceCast(seg, i, width, lit) else PlaceFlat(seg, i, width, lit) end
     end
-    for i = total + 1, #segs do
-        segs[i].track:Hide()
-        segs[i].fill:Hide()
-    end
+    for i = total + 1, #segs do HideSegment(segs[i]) end
 end
 
 local function Row(i)
@@ -153,6 +196,7 @@ local function Row(i)
     row.edge:SetPoint("TOPLEFT")
     row.edge:SetPoint("BOTTOMLEFT")
     row.edge:SetWidth(EDGE_W)
+    if ns.foreverSkin then row.pick = Parts.ForeverRowPick(row) end
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(ROW_ICON, ROW_ICON)
     row.icon:SetPoint("LEFT", PAD, 0)
@@ -176,12 +220,13 @@ end
 local function Fill(i, leg, current)
     local row = Row(i)
     local text = current and T.fg or T.muted
-    local top = -(HEADER_H + SEG_H + SEG_BELOW + (i - 1) * ROW_H)
+    local top = -(HEADER_H + segH + SEG_BELOW + (i - 1) * ROW_H)
     row:ClearAllPoints()
     row:SetPoint("TOPLEFT", card, "TOPLEFT", 0, top)
     row:SetPoint("TOPRIGHT", card, "TOPRIGHT", 0, top)
-    row.hi:SetShown(current)
-    row.edge:SetShown(current)
+    row.hi:SetShown(current and not row.pick)
+    row.edge:SetShown(current and not row.pick)
+    if row.pick then row.pick:SetShown(current) end
     local tint = current and T.accent or T.muted
     row.icon:SetTexture(MEDIA .. IconFor(leg))
     row.icon:SetVertexColor(tint.r, tint.g, tint.b)
@@ -212,7 +257,7 @@ local function Render(journey)
     Segments(journey.done, math.max(total, 1))
     for i, leg in ipairs(legs) do Fill(i, leg, i == 1) end
     for i = #legs + 1, #rows do rows[i]:Hide() end
-    card:SetHeight(HEADER_H + SEG_H + SEG_BELOW + #legs * ROW_H + FOOT)
+    card:SetHeight(HEADER_H + segH + SEG_BELOW + #legs * ROW_H + FOOT)
 end
 
 local function Refresh()

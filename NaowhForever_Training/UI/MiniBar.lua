@@ -19,6 +19,8 @@ local OPEN_W, OPEN_GAP = 56, 4
 local COST_DROP = 8
 local GOLD_DROP = 9
 local BAR_H = 4
+local HEAD_LINE_Y = MINI_PAD + MINI_LOGO + COST_DROP / 2
+local WHITE = { r = 1, g = 1, b = 1 }
 local FONT_LABEL, FONT_GOLD, FONT_COST = 11, 13, 15
 local TEXT_VISIT_AT, TEXT_TRAIN_NOW, TEXT_VISIT = ns.L("NEXT VISIT, LEVEL "), ns.L("TRAIN NOW"), ns.L("NEXT VISIT")
 local TEXT_ONE_SPELL, TEXT_SPELLS = ns.L(" spell"), ns.L(" spells")
@@ -32,6 +34,12 @@ local function PaintGold()
     local cost, gold = miniCost, GetMoney()
     mini.gold:SetText(Training.Coins(gold))
     local fill = cost > 0 and math.min(1, gold / cost) or 0
+    if mini.line then
+        mini.line:SetProgress(fill)
+        local c = gold >= cost and WHITE or Style.WARN_RGB
+        mini.line.fill:GetStatusBarTexture():SetVertexColor(c.r, c.g, c.b, 1)
+        return
+    end
     mini.fill:SetShown(fill > 0)
     mini.fill:SetWidth(math.max(1, (MINI_W - 2 * MINI_PAD) * fill))
     local c = gold >= cost and T.accent or Style.WARN_RGB
@@ -47,7 +55,7 @@ local function Render()
     mini.label:SetText(atLevel and (TEXT_VISIT_AT .. atLevel) or (#list > 0 and TEXT_TRAIN_NOW or TEXT_VISIT))
     mini.cost:SetText(#list > 0 and (Training.Coins(cost) .. "  "
         .. ns.Color("muted", #list .. (#list == 1 and TEXT_ONE_SPELL or TEXT_SPELLS))) or TEXT_NOTHING_LEFT)
-    mini.track:SetShown(cost > 0)
+    if mini.line then mini.line:SetShown(cost > 0) else mini.track:SetShown(cost > 0) end
     PaintGold()
 end
 
@@ -82,6 +90,31 @@ local function BuildTop()
     mini.gold:SetPoint("TOPRIGHT", -MINI_PAD, -(MINI_PAD + MINI_LOGO + GOLD_DROP))
 end
 
+local function ForeverLook(edge)
+    mini.art = Parts.ForeverFrameArt(mini)
+    if mini.art then edge._frame:Hide() end
+    mini.headLine = Parts.ForeverHeadLine(mini)
+    if mini.headLine then
+        mini.headLine:SetPoint("TOPLEFT", MINI_PAD, -HEAD_LINE_Y)
+        mini.headLine:SetPoint("TOPRIGHT", -MINI_PAD, -HEAD_LINE_Y)
+    end
+    local line = Parts.ProgressLine(mini, ns.Shared.Style.FOREVER_CAST_BAR.h, true)
+    if not line.foreverArt then return line:Hide() end
+    line:SetPoint("BOTTOMLEFT", MINI_PAD, MINI_PAD)
+    line:SetPoint("BOTTOMRIGHT", -MINI_PAD, MINI_PAD)
+    mini.line = line
+end
+
+local function PlainBar()
+    mini.track = ns.Solid(mini, "ARTWORK", T.line, 1)
+    mini.track:SetPoint("BOTTOMLEFT", MINI_PAD, MINI_PAD)
+    mini.track:SetPoint("BOTTOMRIGHT", -MINI_PAD, MINI_PAD)
+    mini.track:SetHeight(BAR_H)
+    mini.fill = mini:CreateTexture(nil, "OVERLAY")
+    mini.fill:SetPoint("TOPLEFT", mini.track)
+    mini.fill:SetHeight(BAR_H)
+end
+
 local function Build()
     mini = CreateFrame("Frame", nil, UIParent)
     mini:SetSize(MINI_W, MINI_H)
@@ -95,15 +128,10 @@ local function Build()
     mini:SetScript("OnDragStop", OnDragStop)
     Place.Restore(mini, POSITION_KEY, HOME)
     Parts.Backdrop(mini):Paint(1)
-    ns.Border(mini, Style.BORDER_RGB)
+    local edge = ns.Border(mini, Style.BORDER_RGB)
     BuildTop()
-    mini.track = ns.Solid(mini, "ARTWORK", T.line, 1)
-    mini.track:SetPoint("BOTTOMLEFT", MINI_PAD, MINI_PAD)
-    mini.track:SetPoint("BOTTOMRIGHT", -MINI_PAD, MINI_PAD)
-    mini.track:SetHeight(BAR_H)
-    mini.fill = mini:CreateTexture(nil, "OVERLAY")
-    mini.fill:SetPoint("TOPLEFT", mini.track)
-    mini.fill:SetHeight(BAR_H)
+    if ns.foreverSkin then ForeverLook(edge) end
+    if not mini.line then PlainBar() end
     mini:SetScript("OnShow", OnShow)
     mini:SetScript("OnHide", OnHide)
     mini:SetScript("OnEvent", PaintGold)

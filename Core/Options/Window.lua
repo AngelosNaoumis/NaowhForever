@@ -96,7 +96,7 @@ local Off = { group = ns.L("TURNED OFF"), page = ns.L("%s is turned off. Turn it
     row = "%s / %s" }
 local Forever = { insetLeft = 3, insetRight = 4, insetBottom = 6, tabTop = 8, titleY = 8, crumbGap = 4,
     subGap = 12, headRoom = 560, edge = 16, buttonGap = 10, switchGap = 18, labelGap = 8, buttonH = 26, navText = 15,
-    itemX = 24, groupGap = 6, groupBelow = 2, railOut = 6 }
+    itemX = 24, groupGap = 6, groupBelow = 2, railOut = 6, rodRaise = 5 }
 
 function ns.VersionText()
     return TEXT_VERSION .. (ns.CODE_BUILD or C_AddOns.GetAddOnMetadata(ns.MODULE_KEY, "Version") or TEXT_UNKNOWN)
@@ -210,7 +210,7 @@ function Off.Layout()
         end
     end
     Off.label:SetShown(shown)
-    Off.nav:SetHeight(-(shown and y or Off.top))
+    Off.nav:SetHeight(-(shown and y or Off.top) + Forever.NavRoom())
 end
 
 local function PaintNavButton(btn, hover)
@@ -898,6 +898,7 @@ local function SystemNav(sidebar)
     utility:SetHeight(NAV_STEP * #SYSTEM_NAV + SIDE.utilityRoom)
     local utilityLine = ns.Solid(utility, "ARTWORK", T.line, 1)
     utilityLine:SetPoint("TOPLEFT"); utilityLine:SetPoint("TOPRIGHT"); ns.Hairline(utilityLine, "h")
+    if window.forever then Forever.Rod(utility, utilityLine) end
     for i, entry in ipairs(SYSTEM_NAV) do
         local key = entry[1]
         local btn = NavigationButton(utility, ns.L(key), -SIDE.utilityTop - (i - 1) * NAV_STEP, function() ShowPage(key) end,
@@ -922,6 +923,22 @@ local function SidebarFooter(sidebar)
         link:SetPoint("BOTTOMRIGHT", right, SIDE.linksY)
         right = right - SIDE.linkSize - SIDE.linkGap
     end
+end
+
+function Forever.NavRoom()
+    if not window.forever then return 0 end
+    local St = ns.Shared.Style
+    return St.FOREVER_DRAGON.h + St.FOREVER_RAIL / 2
+end
+
+function Forever.Rod(utility, line)
+    local rod = ns.Shared.Parts.ForeverRod(utility)
+    if not rod then return end
+    line:Hide()
+    rod:SetPoint("LEFT", utility, "TOPLEFT")
+    rod:SetPoint("RIGHT", utility, "TOPRIGHT")
+    rod:SetFrameLevel(utility:GetFrameLevel() + Forever.rodRaise)
+    Forever.rod = rod
 end
 
 function Forever.Top()

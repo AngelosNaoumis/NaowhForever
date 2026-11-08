@@ -204,7 +204,11 @@ local function BuildPanel()
     panel:EnableMouse(true)
     panel:Hide()
     ns.Solid(panel, "BACKGROUND", T.bg, St.BACKDROP_ALPHA):SetAllPoints()
-    ns.Border(panel, St.BORDER_RGB)
+    local edge = ns.Border(panel, St.BORDER_RGB)
+    if ns.foreverSkin then
+        panel.art = ns.Shared.Parts.ForeverFrameArt(panel)
+        if panel.art then edge._frame:Hide() end
+    end
     local head = Strip(panel, -1, HEAD_H, 1)
     ns.Solid(head, "BACKGROUND", T.panel, 1):SetAllPoints()
     Rule(head, 1)

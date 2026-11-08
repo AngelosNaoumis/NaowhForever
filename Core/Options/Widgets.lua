@@ -35,7 +35,6 @@ local DIM_ALPHA = 0.3
 local HIT_PAD = 4
 local RULE_ALPHA = 0.6
 local FALLBACK_ROW_W = 910
-local DIVIDER_INSET = 8
 local HEADER_TEXT_Y = 8
 local WIDE_BUTTON_W, WIDE_BUTTON_H = 200, 26
 local KEY_FIELD_W, KEY_FIELD_H, COMBAT_DIM = 150, 26, 0.4
@@ -313,7 +312,7 @@ function UI.BuildDropdownControl(parent, ddW, fLevel, values, order, get, set)
     lbl:SetJustifyH("LEFT")
     lbl:SetWordWrap(false)
     local arrow = DropdownArrow(btn)
-    if ns.foreverSkin then ns.Shared.Parts.ForeverDropdown(btn, bg, lbl, arrow) end
+    if ns.foreverSkin then ns.Shared.Parts.ForeverDropdown(btn, bg, lbl, arrow, border) end
     btn._values, btn._order, btn._get, btn._set = values, order, get, set
     btn._refreshLabel = function()
         local v = btn._get()
@@ -386,7 +385,7 @@ function UI.BuildSliderCore(parent, trackW, trackH, thumbSz, inputW, inputH, inp
     thumb:SetSize(thumbSz, thumbSz)
 
     local valBox, boxBg, boxBorder = SliderValueBox(parent, inputW, inputH, inputFontSz, inputAlpha)
-    if ns.foreverSkin then ns.Shared.Parts.ForeverSlider(track, rail, fill, thumb, valBox, thumbSz) end
+    if ns.foreverSkin then ns.Shared.Parts.ForeverSlider(track, rail, fill, thumb, valBox, thumbSz, boxBg, boxBorder) end
 
     local function Paint()
         local lo, hi = track._minV, track._maxV
@@ -865,8 +864,8 @@ local function NewRowRegions(row, parent, leftCfg, rightCfg)
     row._leftRegion = BuildRegion(row, leftCfg, 0, half)
     row._rightRegion = BuildRegion(row, rightCfg, half, half)
     local divider = ns.Solid(row, "ARTWORK", T.line, RULE_ALPHA)
-    divider:SetPoint("TOP", row, "TOP", 0, -DIVIDER_INSET)
-    divider:SetPoint("BOTTOM", row, "BOTTOM", 0, DIVIDER_INSET)
+    divider:SetPoint("TOP", row, "TOP")
+    divider:SetPoint("BOTTOM", row, "BOTTOM")
     ns.Hairline(divider, "v")
     divider:SetShown(ns.foreverSkin == true)
 end
@@ -885,12 +884,6 @@ function W:DualRow(parent, yOffset, leftCfg, rightCfg)
     local key = "row:" .. RegionKey(leftCfg) .. ":" .. (rightCfg and RegionKey(rightCfg) or "")
     local row = CachedRow(parent, key) or CreateFrame("Frame", nil, parent)
     PlaceRow(row, parent, yOffset, ROW_H)
-
-    if not row._rule then
-        row._rule = ns.Solid(row, "ARTWORK", T.line, RULE_ALPHA)
-        row._rule:SetPoint("BOTTOMLEFT"); row._rule:SetPoint("BOTTOMRIGHT"); ns.Hairline(row._rule, "h")
-    end
-    row._rule:SetShown(ns.foreverSkin == true)
     if row._leftRegion then
         row._leftRegion._refresh(leftCfg)
         if rightCfg then row._rightRegion._refresh(rightCfg) end
@@ -1278,6 +1271,7 @@ local function ScrollBar(parent, scroll, width, gap)
     bar:SetObeyStepOnDrag(false)
     local track = ns.Solid(bar, "BACKGROUND", T.line, SCROLL.trackAlpha)
     track:SetAllPoints()
+    bar.track = track
     local thumb = bar:CreateTexture(nil, "ARTWORK")
     thumb:SetColorTexture(T.muted.r, T.muted.g, T.muted.b, SCROLL.thumbAlpha)
     thumb:SetWidth(width)
@@ -1294,8 +1288,12 @@ local function ScrollGrip(bar, thumb, scroll)
     grip:SetAllPoints()
     grip:EnableMouse(true)
     local lit = ns.foreverSkin and ns.Shared.Style.FOREVER_RAIL_RGB[1] or T.accent
-    grip:SetScript("OnEnter", function() thumb:SetColorTexture(lit.r, lit.g, lit.b, 1) end)
+    grip:SetScript("OnEnter", function()
+        if bar.thumbArt then return ns.Shared.Parts.PaintForeverThumb(bar, true) end
+        thumb:SetColorTexture(lit.r, lit.g, lit.b, 1)
+    end)
     grip:SetScript("OnLeave", function()
+        if bar.thumbArt then return ns.Shared.Parts.PaintForeverThumb(bar, false) end
         thumb:SetColorTexture(T.muted.r, T.muted.g, T.muted.b, SCROLL.thumbAlpha)
     end)
     local grabY, grabValue
@@ -1328,7 +1326,7 @@ function UI.SlimScroll(parent, width, gap)
     width, gap = width or SCROLL.slimW, gap or SCROLL.slimGap
     local scroll = CreateFrame("ScrollFrame", nil, parent)
     local bar, thumb = ScrollBar(parent, scroll, width, gap)
-    if ns.foreverSkin then ns.Shared.Parts.ForeverScrollArrows(bar, scroll, gap) end
+    if ns.foreverSkin then ns.Shared.Parts.ForeverScrollArrows(bar, scroll, gap, thumb) end
     local grip = ScrollGrip(bar, thumb, scroll)
     local function Sync(self, _, range)
         range = range or self:GetVerticalScrollRange()

@@ -14,7 +14,6 @@ local MARK_ROOM = St.TAB_MARK_SIZE + St.TAB_MARK_GAP
 local SEARCH_ICON_SIZE, SEARCH_ICON_LEFT, SEARCH_ICON_GAP = 13, 7, 6
 local SEARCH_TEXT_LEFT = SEARCH_ICON_LEFT + SEARCH_ICON_SIZE + SEARCH_ICON_GAP
 local SEARCH_TEXT_RIGHT = 22
-local FOREVER_OVERHANG = math.max(St.FOREVER_TAB_RIGHT_X, St.FOREVER_ACTIVE_RIGHT_X)
 
 local fitOrder = {}
 
@@ -157,7 +156,7 @@ local function FitSegments(bar, count, width)
 end
 
 local function FitForeverTabs(bar, count, width)
-    local room = width - St.FOREVER_TAB_GAP * (count - 1) - FOREVER_OVERHANG
+    local room = width - St.FOREVER_TAB_GAP * (count - 1)
     local total = 0
     for i = 1, count do
         local button = bar.buttons[i]

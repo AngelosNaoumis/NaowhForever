@@ -194,7 +194,12 @@ ns.Shared.MapPins = { questSection }
 ns.Shared.Settings = { Style = { DIM_ALPHA = 0.35 } }
 ns.Shared.Style = { BACKDROP_ALPHA = 0.97, BORDER_RGB = {}, LOGO_SMALL = "LogoSmall" }
 ns.TownPinTexts = pinTexts
-ns.Border = function() return { SetColor = function() end } end
+local edges = {}
+ns.Border = function()
+    local edge = { SetColor = function() end, _frame = { Hide = function(self) self.hidden = true end } }
+    edges[#edges + 1] = edge
+    return edge
+end
 ns.Tooltip = function() end
 local function Text() return { SetPoint = function() end, SetText = function() end, SetJustifyH = function() end,
     SetWordWrap = function() end, SetAlpha = function(self, a) self.alpha = a end } end
@@ -259,10 +264,17 @@ Check(button.point[1] == "TOPRIGHT" and button.point[3] == "TOPLEFT" and button.
 S.Set("townFlight", true)
 Check(made == 1, "and is made once")
 
--- The drawer beside the map window.
+-- The drawer beside the map window, built on the Forever skin.
 local map = env.WorldMapFrame
+local bronze = {}
+ns.foreverSkin = true
+ns.Shared.Parts = ns.Shared.Parts or {}
+ns.Shared.Parts.ForeverFrameArt = function(frame) bronze.frame = frame return bronze end
+local edgesBefore = #edges
 button.scripts.OnClick()
 Check(panel and panel.shown, "the button opens the drawer")
+Check(panel.art == bronze and bronze.frame == panel and edges[edgesBefore + 1]._frame.hidden,
+    "on Forever the drawer wears the HUD cards' bronze frame, not the black edge")
 local towns = 0
 for _, row in ipairs(pinRows) do if row.key and not row.class then towns = towns + 1 end end
 Check(#toggles == 1 + towns, "a Town Pins switch and every town row, nothing from other modules; a mage has no Stable Masters")

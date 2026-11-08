@@ -253,8 +253,8 @@ local function AllAtlases(St)
         St.FOREVER_SEARCH_ATLAS }) do
         for _, name in pairs(group) do Add(name) end
     end
-    for _, name in ipairs({ St.FOREVER_BAR_ATLAS, St.FOREVER_PLUS_ATLAS, St.FOREVER_MINUS_ATLAS,
-        St.FOREVER_DROPDOWN_ATLAS }) do Add(name) end
+    for _, name in ipairs({ St.FOREVER_BAR_ATLAS, St.FOREVER_PLUS_ATLAS, St.FOREVER_MINUS_ATLAS }) do Add(name) end
+    for _, name in pairs(St.FOREVER_DROPDOWN_ATLAS) do Add(name) end
     local red = St.FOREVER_RED_BUTTON_ATLAS
     for _, suffix in ipairs(St.FOREVER_RED_BUTTON_STATES) do
         Add(red.left .. suffix); Add(red.center .. suffix); Add(red.right .. suffix)
@@ -345,7 +345,7 @@ do
         and tick.w == St.FOREVER_CHECK_SIZE)
     local picker = bar._layout
     check("Layouts is a dropdown with the game's arrow, showing Layouts", Holds(picker, function(x)
-        return x.atlas == St.FOREVER_DROPDOWN_ATLAS end) and picker.label.text == "Layouts")
+        return x.atlas == St.FOREVER_DROPDOWN_ATLAS.arrow end) and picker.label.text == "Layouts")
     local function Menu()
         picker._menu = nil
         Fire(picker, "OnMouseDown")
@@ -466,7 +466,7 @@ do
     check(name .. ": Undo faded when there is nothing to take back", bar._undo.alpha == 0.4 and bar._undo.mouse == false
         and not bar._undo._forever)
     check(name .. ": Layouts a button", bar._layout.arrowPlate == nil and not Holds(bar._layout, function(x)
-        return x.atlas == St.FOREVER_DROPDOWN_ATLAS end))
+        return x.atlas == St.FOREVER_DROPDOWN_ATLAS.arrow end))
     check(name .. ": the mover keeps its plate", mover.editGlow == nil and mover._fill.shown and mover._strip.shown)
     check(name .. ": group titles, not bars", panel.titles[1] and panel.titles[1].kind == "FontString")
     check(name .. ": no atlas asked for", #atlasCalls == 0 and #layouts == 0 and #applied == 0)
