@@ -271,7 +271,7 @@
                    "Gyth", "Warchief Rend Blackhand", "The Beast", "General Drakkisath"],
         "rare": ["Jed Runewatcher"],
         "optional": ["Lord Valthalak"] } ] },
-    { "key": "BlackmawHold", "name": "Blackmaw Hold", "new": true,
+    { "key": "BlackmawHold", "name": "Blackmaw Hold", "new": true, "open": true,
       "entranceZone": 16,
       "wings": [] },
     { "key": "ShapersTerrace", "name": "Shaper's Terrace", "new": true,

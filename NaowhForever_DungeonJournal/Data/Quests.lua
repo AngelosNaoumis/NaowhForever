@@ -353,7 +353,7 @@ J.QuestData = {
         { 5127, "The Demon Forge", 55, "B", "pre", "Blacksmiths only - Winterspring, Southeast - Lorax Complete Lorax's Tale from same NPC. Rewards Plans: Demon Forged Breastplate (63.8, 73.8)", 1452, 63.8, 73.8 },
         { 8995, "Mea Culpa, Lord Valthalak", 58, "B", "pre", "Blackrock Mountain - Bodley Complete Final Preparations first (32.3, 25.8)", 1428, 32.3, 25.8 },
     } },
-    { name = "Blackmaw Hold", map = nil, levels = { 55, 60 }, quests = {
+    { name = "Blackmaw Hold", map = 2974, levels = { 55, 60 }, quests = {
         { 97173, "Blackmaw Magic", 52, "A", true, "TBD" },
     } },
     { name = "Shaper's Terrace", map = 3001, levels = { 58, 60 }, quests = {} },

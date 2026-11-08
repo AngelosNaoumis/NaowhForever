@@ -101,7 +101,7 @@ NaowhForever_DungeonJournal/
     MapOverlay.lua     the dungeon's map over the world map's picture, inside the dungeon
     MapTools.lua       /nf mappins (place the pins, Copy for Data/Maps.lua) and /nf mapcheck
     SettingsPage.lua   its settings pages (Journal, Quest Tracker, Map), declared as cards
-  Media/Maps/          local dungeon pictures as BLP, including 34 imported, 22 assembled and 7 of Santiago Reyes's downloads; selected by Data/Maps.lua
+  Media/Maps/          local dungeon pictures as BLP, including 34 imported, 22 assembled, 7 of Santiago Reyes's downloads and 4 drawn from the game's files; selected by Data/Maps.lua
   README.md            this file
 ```
 
@@ -274,9 +274,9 @@ the game's own tables, and what they can't settle is listed in the pull request 
 
 - `Data/Quests.lua`, one entry per dungeon, matched to its Journal dungeon by name:
   `{ name, map, levels = { min, max }, quests = { ... } }`. `map` is the instance ID from the
-  game's Map table (build 1.60.1.69913); it is nil where the client's Map table does not have the
-  instance yet (still encrypted in 1.60.1), and those are found by the instance name
-  `GetInstanceInfo` reports, so the name must be the client's own.
+  game's Map table (build 1.60.1.69913, Blackmaw Hold's 1.60.1.70862); it is nil where the
+  client's Map table does not have the instance yet (still encrypted in 1.60.1), and those are
+  found by the instance name `GetInstanceInfo` reports, so the name must be the client's own.
 - Each quest record is `{ questID, name, level, side ("A", "H" or "B"), shareable (true, false,
   or "pre" for a prerequisite chain), where it starts, uiMapID, x, y }` (`J.C.QUEST` names the
   fields), the last three only when its quest giver stands outside the dungeon, and `class` for
@@ -394,6 +394,15 @@ the game's own tables, and what they can't settle is listed in the pull request 
 - The Drowned City, Krol'dok Stronghold, Shaper's Terrace and Alcaz Prison have no pins yet:
   his maps mark no bosses and no source says where they stand. With no pins, every floor is
   offered.
+- Blackmaw Hold's four pictures are drawn from the Forever client's own files (build
+  1.60.1.70862), as no map of it has been published. The first is the game's minimap pictures
+  of its 25 terrain tiles, stitched, with its five subzones named where the terrain's area IDs
+  put them. Upper, Middle and Lower Caverns are the floors of its cave building (WMO 7212893)
+  seen from above in its own textures, split by height. The game names no part of the cave, so
+  those three names are ours. The arrows mark where floors meet and the two ways in from the
+  hold: the overlook, and the passages under the plank funnel.
+- Blackmaw Hold has no pins: the Journal lists no bosses for it yet, so its map shows only
+  beside the world map, inside the dungeon.
 - The same folder contains 22 pictures assembled from map tiles in
   [keyboardturner/WoWMapUprez_Dungeons](https://github.com/keyboardturner/WoWMapUprez_Dungeons),
   commit `c8325d4583c9cdce52658e1a245963e623501dfa`. The project upscales Blizzard's
