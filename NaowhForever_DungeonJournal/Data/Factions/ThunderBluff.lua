@@ -12,6 +12,13 @@ ns.Journal.AddFaction("ThunderBluff", {
             quests = {
                 { 7825, "H", "Thunder Bluff - Rumstag Proudstrider (43.2, 42.8)", 1456, 43.2, 42.8 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
         { name = "Morrowgrain to Thunder Bluff", rep = 50, level = 55, takes = { 11040, 10 },
             quests = {

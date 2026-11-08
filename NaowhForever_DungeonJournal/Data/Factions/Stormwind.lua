@@ -13,7 +13,11 @@ ns.Journal.AddFaction("Stormwind", {
                 { 7796, "A", "Stormwind City - Clavicus Knavingham (44.2, 73.6)", 1453, 44.2, 73.6 },
             },
             from = {
-                { "Stormwind City", 1, "Stormwind Royal Guard" },
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
             },
         },
     },

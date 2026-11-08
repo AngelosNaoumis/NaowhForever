@@ -12,6 +12,13 @@ ns.Journal.AddFaction("Orgrimmar", {
             quests = {
                 { 7832, "H", "Orgrimmar - Rashona Straglash (63.4, 51)", 1454, 63.4, 51 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
         { name = "Chen's Empty Keg", rep = 50, level = 24, takes = { 4898, 5, 4897, 5, 4896, 1 },
             quests = {

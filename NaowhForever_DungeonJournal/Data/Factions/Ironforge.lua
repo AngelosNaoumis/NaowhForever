@@ -12,6 +12,13 @@ ns.Journal.AddFaction("Ironforge", {
             quests = {
                 { 7806, "A", "Ironforge - Mistina Steelshield (43.2, 32)", 1455, 43.2, 32 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
     },
     tiers = {

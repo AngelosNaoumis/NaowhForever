@@ -12,6 +12,13 @@ ns.Journal.AddFaction("Undercity", {
             quests = {
                 { 7819, "H", "Undercity - Ralston Farnsley (71.6, 28.8)", 1458, 71.6, 28.8 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
     },
     tiers = {

@@ -75,39 +75,39 @@
     {"key": "TheWatchers", "id": 2819, "tab": "reputation", "new": true},
     {"key": "Stormwind", "id": 72, "tab": "reputation", "group": "Cities", "side": "Alliance", "zone": "Stormwind City",
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7796], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7796": ["A", "Clavicus Knavingham", "Stormwind City", 44.2, 73.6]}, "from": [["Stormwind City", 1, ["Stormwind Royal Guard"]]]}
+     {"name": "Additional Runecloth", "quests": [7796], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7796": ["A", "Clavicus Knavingham", "Stormwind City", 44.2, 73.6]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]}
      ]},
     {"key": "Ironforge", "id": 47, "tab": "reputation", "group": "Cities", "side": "Alliance", "zone": "Ironforge",
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7806], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7806": ["A", "Mistina Steelshield", "Ironforge", 43.2, 32]}, "from": []}
+     {"name": "Additional Runecloth", "quests": [7806], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7806": ["A", "Mistina Steelshield", "Ironforge", 43.2, 32]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]}
      ]},
     {"key": "GnomereganExiles", "id": 54, "tab": "reputation", "group": "Cities", "side": "Alliance", "zone": "Ironforge",
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7812], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7812": ["A", "Bubulo Acerbus", "Ironforge", 73.8, 47.8]}, "from": []}
+     {"name": "Additional Runecloth", "quests": [7812], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7812": ["A", "Bubulo Acerbus", "Ironforge", 73.8, 47.8]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]}
      ]},
     {"key": "Darnassus", "id": 69, "tab": "reputation", "group": "Cities", "side": "Alliance", "zone": "Darnassus", "alsoIn": ["Teldrassil"],
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7801], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7801": ["A", "Raedon Duskstriker", "Darnassus", 63.8, 22.8]}, "from": []},
+     {"name": "Additional Runecloth", "quests": [7801], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7801": ["A", "Raedon Duskstriker", "Darnassus", 63.8, 22.8]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]},
      {"name": "Morrowgrain to Darnassus", "quests": [3803], "rep": 50, "takes": [[11040, 10]], "level": 55, "at": {"3803": ["A", "Mathrengyl Bearwalker", "Darnassus", 35.2, 8]}, "from": []},
      {"name": "Morrowgrain to Feathermoon Stronghold", "quests": [3792], "rep": 25, "takes": [[11040, 5]], "level": 55, "at": {"3792": ["A", "Quintis Jonespyre", "Feralas", 32.4, 43.8]}, "from": []}
      ]},
     {"key": "Orgrimmar", "id": 76, "tab": "reputation", "group": "Cities", "side": "Horde", "zone": "Orgrimmar",
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7832], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7832": ["H", "Rashona Straglash", "Orgrimmar", 63.4, 51]}, "from": []},
+     {"name": "Additional Runecloth", "quests": [7832], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7832": ["H", "Rashona Straglash", "Orgrimmar", 63.4, 51]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]},
      {"name": "Chen's Empty Keg", "quests": [822], "rep": 50, "takes": [[4898, 5], [4897, 5], [4896, 1]], "level": 24, "at": {"822": ["H", "Brewmaster Drohn", "The Barrens", 62.2, 38.4]}, "from": [["The Barrens", 8, ["Barrens Kodo", "Brontus", "Greater Barrens Kodo", "Greater Thunderhawk", "Lakota'mani", "Lost Barrens Kodo"]]]}
      ]},
     {"key": "ThunderBluff", "id": 81, "tab": "reputation", "group": "Cities", "side": "Horde", "zone": "Thunder Bluff", "alsoIn": ["Mulgore"],
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7825], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7825": ["H", "Rumstag Proudstrider", "Thunder Bluff", 43.2, 42.8]}, "from": []},
+     {"name": "Additional Runecloth", "quests": [7825], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7825": ["H", "Rumstag Proudstrider", "Thunder Bluff", 43.2, 42.8]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]},
      {"name": "Morrowgrain to Thunder Bluff", "quests": [3804], "rep": 50, "takes": [[11040, 10]], "level": 55, "at": {"3804": ["H", "Bashana Runetotem", "Thunder Bluff", 70.8, 33.8]}, "from": []}
      ]},
     {"key": "Undercity", "id": 68, "tab": "reputation", "group": "Cities", "side": "Horde", "zone": "Undercity",
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7819], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7819": ["H", "Ralston Farnsley", "Undercity", 71.6, 28.8]}, "from": []}
+     {"name": "Additional Runecloth", "quests": [7819], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7819": ["H", "Ralston Farnsley", "Undercity", 71.6, 28.8]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]}
      ]},
     {"key": "DarkspearTrolls", "id": 530, "tab": "reputation", "group": "Cities", "side": "Horde", "zone": "Orgrimmar", "alsoIn": ["Durotar"],
      "turnins": [
-     {"name": "Additional Runecloth", "quests": [7837], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7837": ["H", "Vehena", "Orgrimmar", 37.8, 87.6]}, "from": []}
+     {"name": "Additional Runecloth", "quests": [7837], "rep": 50, "takes": [[14047, 20]], "level": 60, "at": {"7837": ["H", "Vehena", "Orgrimmar", 37.8, 87.6]}, "from": [["Silithus", 9, ["Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller"]], ["Eastern Plaguelands", 33, ["Death Singer", "Dread Weaver", "Scarlet Warder"]], ["Azshara", 6, ["Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr"]], ["Western Plaguelands", 27, ["Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger"]], ["Burning Steppes", 14, ["Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer"]]]}
      ]},
     {"key": "AzerothCommerceAuthority", "id": 2586, "tab": "reputation", "zone": "Redridge Mountains", "new": true, "quartermaster": {"name": "Tamelyn Aldridge", "map": 1433, "x": 10.4, "y": 71.4}},
     {"key": "DurotarSupplyAndLogistics", "id": 2587, "tab": "reputation", "zone": "The Barrens", "new": true, "quartermaster": {"name": "Gishah", "map": 1413, "x": 49.4, "y": 29.4}},

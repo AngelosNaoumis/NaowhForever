@@ -12,6 +12,13 @@ ns.Journal.AddFaction("GnomereganExiles", {
             quests = {
                 { 7812, "A", "Ironforge - Bubulo Acerbus (73.8, 47.8)", 1455, 73.8, 47.8 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
     },
     tiers = {

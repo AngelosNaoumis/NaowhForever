@@ -1141,6 +1141,8 @@ do
     check("your side's cities are listed", Rep.Shown(cities.Stormwind))
     check("the other side's are not", not Rep.Shown(cities.Orgrimmar))
     check("a city's hand-ins: Additional Runecloth", cities.Stormwind.turnins[1].name == "Additional Runecloth")
+    check("its Runecloth farmed first in Silithus, not in the city",
+        cities.Stormwind.turnins[1].from[1][1] == "Silithus" and cities.Orgrimmar.turnins[1].from[1][1] == "Silithus")
     state.instance = { id = 529, name = "Arathi Basin", kind = "pvp" }
     check("in Arathi Basin: the League of Arathor", Keys() == "LeagueOfArathor")
     state.instance = { id = 36, name = "The Deadmines" }

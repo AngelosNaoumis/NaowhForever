@@ -12,6 +12,13 @@ ns.Journal.AddFaction("Darnassus", {
             quests = {
                 { 7801, "A", "Darnassus - Raedon Duskstriker (63.8, 22.8)", 1457, 63.8, 22.8 },
             },
+            from = {
+                { "Silithus", 9, "Twilight Avenger", "Twilight Geolord", "Twilight Stonecaller" },
+                { "Eastern Plaguelands", 33, "Death Singer", "Dread Weaver", "Scarlet Warder" },
+                { "Azshara", 6, "Legashi Rogue", "Legashi Hellcaller", "Legashi Satyr" },
+                { "Western Plaguelands", 27, "Scarlet Spellbinder", "Scarlet Worker", "Scarlet Avenger" },
+                { "Burning Steppes", 14, "Firegut Brute", "Firegut Ogre Mage", "Blackrock Slayer" },
+            },
         },
         { name = "Morrowgrain to Darnassus", rep = 50, level = 55, takes = { 11040, 10 },
             quests = {
