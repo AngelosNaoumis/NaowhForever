@@ -38,6 +38,12 @@ local function Return()
     Activate()
 end
 
+local function ReturnHere()
+    if not (ah and ah:IsShown()) then return false end
+    Return()
+    return true
+end
+
 local function StepAside()
     stepped = true
     Deactivate()
@@ -105,6 +111,7 @@ local function OnSetting(key)
 end
 
 Window.StepAside = StepAside
+Window.Return = ReturnHere
 Window.onHide = WindowHidden
 
 S.OnChange(OnSetting)

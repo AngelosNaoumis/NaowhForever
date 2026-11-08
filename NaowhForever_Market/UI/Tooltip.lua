@@ -16,6 +16,14 @@ local TEXT_DAY = ns.L("Since yesterday")
 local TEXT_CHANGE = "%+.0f%%"
 local TEXT_DISENCHANT = ns.L("Disenchant")
 local TEXT_ABOUT = ns.L("about %s")
+local TEXT_MADE_BY = ns.L("Made by")
+local TEXT_YOU = ns.L("You")
+local TEXT_WHO = "%s, %s"
+local TEXT_MATS = ns.L("Materials %s")
+local TEXT_PROFIT = ns.L("profit %s")
+local TEXT_LOSS = ns.L("loss %s")
+local TEXT_INTO = ns.L("Crafts into")
+local TEXT_OVER = ns.L("+%s a craft over selling it")
 
 local hooked
 local lines = {}
@@ -57,6 +65,33 @@ local function Disenchant(link, itemID)
     return gross and values.AfterCut(gross)
 end
 
+local function ProfessionName(id)
+    local info = id and C_TradeSkillUI.GetProfessionInfoBySkillLineID(id)
+    return info and info.professionName or ""
+end
+
+local function Who(row)
+    return TEXT_WHO:format(row.who or TEXT_YOU, ProfessionName(row.prof))
+end
+
+local function CraftLines(itemID)
+    local Crafts = Market.Crafts
+    local made = Crafts.Made(itemID)
+    if made then
+        Add(TEXT_MADE_BY, Who(made))
+        if made.profit then
+            local up = made.profit >= 0
+            Add(TEXT_MATS:format(Coins(made.cost)), (up and TEXT_PROFIT or TEXT_LOSS):format(Coins(math.abs(made.profit))),
+                up and St.HAVE_RGB or St.RED_RGB)
+        end
+    end
+    local into = Crafts.Into(itemID)
+    if into and into ~= made then
+        Add(TEXT_INTO, C_Item.GetItemNameByID(into.output) or "")
+        Add(Who(into), TEXT_OVER:format(Coins(into.gain)), St.HAVE_RGB)
+    end
+end
+
 local function Collect(tooltip, itemID, link)
     count = 0
     local each = ns.AuctionPrice and ns.AuctionPrice(itemID)
@@ -69,6 +104,7 @@ local function Collect(tooltip, itemID, link)
     end
     local disenchant = Disenchant(link, itemID)
     if disenchant then Add(TEXT_DISENCHANT, TEXT_ABOUT:format(Coins(disenchant))) end
+    CraftLines(itemID)
 end
 
 local function OnItem(tooltip, data)

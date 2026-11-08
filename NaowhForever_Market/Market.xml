@@ -10,10 +10,12 @@
     <Script file="Buy.lua"/>
     <Script file="History.lua"/>
     <Script file="Worth.lua"/>
+    <Script file="Crafts.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Ladder.lua"/>
     <Script file="UI\Window.lua"/>
     <Script file="UI\Sell.lua"/>
+    <Script file="UI\Crafts.lua"/>
     <Script file="UI\Buy.lua"/>
     <Script file="UI\Auctions.lua"/>
     <Script file="UI\Takeover.lua"/>

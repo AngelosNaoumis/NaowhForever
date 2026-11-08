@@ -54,6 +54,11 @@ local function Makes()
     return Mine("profMakes")
 end
 
+local function MakesOf(guid)
+    local all = ns.AccountSettings().profMakes
+    return type(all) == "table" and type(all[guid]) == "table" and all[guid] or nil
+end
+
 local function Manual()
     return Mine("profShopItems")
 end
@@ -463,6 +468,7 @@ Shopping.ItemName = ItemName
 Shopping.List = List
 Shopping.Have = Have
 Shopping.Makes = Makes
+Shopping.MakesOf = MakesOf
 Shopping.Keep = Keep
 Shopping.Manual = Manual
 Shopping.AddItem = AddItem

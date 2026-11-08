@@ -52,7 +52,7 @@ local function RowEnter(row)
     row.hover:Show()
     GameTooltip:SetOwner(row, "ANCHOR_LEFT")
     GameTooltip:SetBagItem(row.entry.bag, row.entry.slot)
-    if Market.Window.Shown() then
+    if Market.Window.AtAuction() then
         local c = T.accentSoft
         GameTooltip:AddLine(TEXT_SELL, c.r, c.g, c.b)
     end
@@ -65,7 +65,7 @@ local function RowLeave(row)
 end
 
 local function RowClick(row)
-    if not Market.Window.Shown() then return end
+    if not Market.Window.AtAuction() then return end
     Market.Window.ShowPage("sell")
     Market.Pages.sell.PickLocation(ItemLocation:CreateFromBagAndSlot(row.entry.bag, row.entry.slot))
 end

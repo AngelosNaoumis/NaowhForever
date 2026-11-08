@@ -4,8 +4,10 @@ Naowh's own auction house window. At an auctioneer it opens over Blizzard's: you
 valuable first, the item in front of you with the auction house's live listings, a price one step
 under the cheapest of someone else's, and a post line you work through with Space (post), S (skip)
 and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
-auctioneer. Away from it, Bag Worth puts what your bags would fetch on your bags, and item tooltips
-gain The Market's lines: your stack's worth, the price over the past week, and disenchanting.
+auctioneer. Away from it, `/market` or its key binding opens the same window on Crafts: what your
+characters' known recipes make from your bags, priced from your last scan. Bag Worth puts what your
+bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
+price over the past week, disenchanting, who makes it and what it crafts into.
 Built on [`Shared/`](../Shared/README.md).
 
 ## Layout
@@ -24,12 +26,14 @@ NaowhForever_Market/
   Buy.lua            the name search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
+  Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
+    Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
     Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Takeover.lua     covering Blizzard's auction house, and the way back to it
@@ -46,8 +50,14 @@ NaowhForever_Market/
   size, anchored to its top left, so nothing of Blizzard's can be clicked through ours. Blizzard's tabs,
   and QoL's Scan Prices button beside them, hang under its bottom edge, so ours reaches
   `BLIZZARD_TABS` further down to cover them too.
-- Ours does not move: Blizzard's window is placed by the panel manager and cannot be dragged either,
-  and moving it from addon code would fight that placing.
+- At an auctioneer ours does not move: Blizzard's window is placed by the panel manager and cannot be
+  dragged either, and moving it from addon code would fight that placing. Away from one it opens where
+  you last dragged it (`marketWindow`, placed by the shared `Parts.Place`), one strata up (`HIGH`), and
+  drags. A scan finishing redraws the page shown, but never a Sell, Buy or My Auctions tab away from the
+  auctioneer, and Bag Worth's rows pick an item on Sell only at the auctioneer.
+- Sell, Buy and My Auctions need the auction house, so away from it their tabs show a short "At an
+  auctioneer" note instead; `/market` opens on Crafts. Opening it while Blizzard's window is showing
+  at an auctioneer steps back into ours instead.
 - Closing ours (its X or Escape) closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so
   the visit ends as Blizzard's own close does.
 - A right-click on a bag item at the auction house goes to Blizzard's `SetPostItem`. The Market hooks
@@ -124,6 +134,24 @@ NaowhForever_Market/
 - The numbers go on the first slot holding each of the `WORTH_TOP` (5) most valuable items, through
   `Shared/Game/Bags.lua` as Scrap Marker's marks do: after the game's `UpdateItems`, and EllesmereUI's
   overlay icons.
+- Crafts reads the recipes Professions saves for each character (`profMakes`, through
+  `Shopping.Makes` and `Shopping.MakesOf`) when its window opens, so a profession shows once it has been
+  opened on that character. Alts come from The Market's own list (`marketCharacters`), noted at login
+  with The Market on, and only those on this realm and faction, who could be mailed the materials.
+  A recipe two characters know is listed once, as yours.
+- A craft sells for its output's scan price after the cut, times what it makes. Its gain is that less
+  what its materials would fetch sold as they are (their auction price after the cut or their vendor
+  price, whichever is more); its profit is that less what they cost to buy (`Shopping.BuyPrice`).
+  Materials a vendor sells (`Shopping.VendorPrice`) count at their price and never limit how many your
+  bags make. Outputs with no scan price are left out.
+- Each row's From Bags is what that recipe alone could make. The total on top shares your bags out:
+  recipes are taken best gain a craft first, each using up the materials it makes from, so two
+  recipes that need the same cloth never count it twice.
+- Crafts reads its recipes when the page shows after a scan or a bag change (`Crafts.Changed`), not on
+  every draw.
+- Add to Queue goes to Professions' Craft Queue with `CraftQueue.AddWithShopping`, as its own Add does,
+  only for your own recipes and while its Craft Queue is on. At an auctioneer, Buy opens the Buy page on
+  the first material you are short of.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -133,7 +161,7 @@ NaowhForever_Market/
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
 `test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
-history and Bag Worth; all load the rules through
+history and Bag Worth, `test-market-crafts.lua` Crafts; all load the rules through
 `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
@@ -159,3 +187,10 @@ Away from the auction house:
 15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
 16. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
 17. A green or blue weapon or armour shows a Disenchant line with Professions loaded.
+18. `/market` opens The Market on Crafts; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
+    and opens where you left it.
+19. After opening a profession, Crafts lists its recipes with prices; From My Bags shows what your bags
+    make and the total it adds; All Recipes shows every priced one, by profit.
+20. Add to Queue puts the crafts in Professions' Craft Queue.
+21. Log in on an alt with The Market on and open its profession: its recipes show under its name.
+22. A crafted item's tooltip shows Made by and its materials' cost; a material's shows Crafts into.

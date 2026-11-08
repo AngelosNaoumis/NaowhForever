@@ -9,7 +9,7 @@ local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
 local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
     "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua", "NaowhForever_Market/History.lua",
-    "NaowhForever_Market/Worth.lua" }
+    "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua" }
 
 local function Noop() end
 
@@ -19,7 +19,7 @@ local function Setup(opts)
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
         owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
         browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000,
-        account = {}, scanAt = opts.scanAt }
+        account = {}, scanAt = opts.scanAt, counts = opts.counts or {} }
     local registry = {}
     local copper = opts.copper ~= false
     t.ready = true
@@ -92,6 +92,9 @@ local function Setup(opts)
             GetItemLink = function(loc) local s = Slot(loc) return s and s.hyperlink end,
             IsEquippableItem = function(id) return opts.equippable and opts.equippable[id] or false end,
             RequestLoadItemData = function() t.loads = t.loads + 1 end,
+            GetItemCount = function(id) return t.counts[id] or 0 end,
+            GetItemNameByID = function(id) return "Item " .. id end,
+            GetItemIconByID = function(id) return id end,
         },
         C_AuctionHouse = {
             IsSellItemValid = function(loc) local s = Slot(loc) return s ~= nil and not s.invalid end,
@@ -146,6 +149,9 @@ local function Setup(opts)
         GetMoney = function() return t.money end,
         GetRealmName = function() return "Realm" end,
         UnitFactionGroup = function() return "Horde" end,
+        UnitGUID = function() return "Player-1" end,
+        UnitName = function() return "Me" end,
+        UnitClass = function() return "Mage", "MAGE" end,
         CreateFrame = function() return setmetatable({}, { __index = frameMethods }) end,
         StaticPopupDialogs = { AUCTION_HOUSE_POST_WARNING = dialog },
         hooksecurefunc = function(target, name, fn)

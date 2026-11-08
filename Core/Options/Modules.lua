@@ -123,6 +123,8 @@ local MODULES = {
       } },
     { name = "The Market", group = "ADVENTURE", navIcon = "coins", settings = "MarketSettings",
       addon = "NaowhForever_Market",
+      open = "ToggleMarketWindow",
+      command = "market", short = "Market", icon = "Interface\\Icons\\INV_Misc_Coin_02",
       subtitle = "Naowh's own auction house window: your bags priced from live listings, posted a key press at a time.",
       tabs = {
           { name = "Settings", reuse = true },

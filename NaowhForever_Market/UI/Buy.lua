@@ -118,9 +118,7 @@ local function NewListRow(parent, icon, onClick)
 end
 
 local function ShopClicked(row)
-    Buy.PickItem(row.item, row.qty)
-    quantity:SetText(row.qty)
-    Page.Draw()
+    Page.PickItem(row.item, row.qty)
 end
 
 local function NewShopRow()
@@ -388,6 +386,12 @@ function Page.Build(parent)
     search:HookScript("OnEnterPressed", SearchEntered)
     BuildDetail()
     BuildResults()
+end
+
+function Page.PickItem(itemID, qty)
+    Buy.PickItem(itemID, qty)
+    quantity:SetText(qty)
+    Page.Draw()
 end
 
 function Page.Show()

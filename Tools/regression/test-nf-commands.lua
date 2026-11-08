@@ -140,7 +140,8 @@ end
 check("no key binding for the Damage Meter, which is not shipped", not bindings:find("DAMAGEMETER", 1, true))
 
 local KEYED = { instance = "Instance Tracker", discovery = "Discovery", gear = "Gear & Trinkets", bless = "Blessings",
-    macros = "Macros", bars = "Action Bars", buffs = "AuraBuffs", threat = "Threat Meter", pvp = "PvP" }
+    macros = "Macros", bars = "Action Bars", buffs = "AuraBuffs", threat = "Threat Meter", pvp = "PvP",
+    market = "The Market" }
 for command, name in pairs(KEYED) do
     local key = "NAOWHFOREVER_" .. command:upper()
     check("a key binding for " .. name, bindings:find('<Binding name="' .. key
