@@ -626,6 +626,14 @@ do  -- regions, staff over patrons, the badge code and who may preview
     check("one code for every character, this one first, by region, with names", code
         == "3:Player-1-ALT1=Me_Myself,Player-1-ALT2=Me_Myself,Player-1-OLD,Player-1-SELF=Me_Myself;1:Player-7-US=Me_Myself"
         and count == 5)
+    s.ns.AccountSettings().badgeCharacters[110] = { ["Player-4618-BETA"] = "Me_Beta" }
+    code, count = s.api.BadgeCode()
+    check("a WTF copied from the beta keeps its characters out of a live code",
+        not code:find("Player-4618-BETA", 1, true) and count == 5)
+    s.region = 110
+    check("the beta's own code still lists them", s.api.BadgeCode():find("Player-4618-BETA=Me_Beta", 1, true))
+    s.region = 3
+    s.ns.AccountSettings().badgeCharacters[110] = nil
     s.ns.AccountSettings().badgeCharacters[3]["Player-1-OLD"] = nil
     code = s.api.BadgeCode()
     s.ns.BadgesCommand("id")

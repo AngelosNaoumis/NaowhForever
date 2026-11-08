@@ -72,8 +72,8 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 
 - Characters are keyed by GUID because Forever names (first name and surname) are not unique, and
   by region because regions have their own characters: another region's list is never read, so a
-  GUID that exists in two regions cannot borrow a badge. Forever reports its own region numbers,
-  not retail's 1 to 5.
+  GUID that exists in two regions cannot borrow a badge. Live reports 1 for the US and 3 for
+  Europe; the beta reported 90, then 110 (`BETA_REGIONS`).
 - While `ns.FEATURE_BADGES` is 0 only the team's badges show, on the settings' defaults whatever a
   profile saved: no patron tier or list, no settings card, no words about support.
 - Badges, card and tooltip start on so everyone sees them; the banner starts off (Naowh's call).
@@ -101,7 +101,9 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
   joined mid-fight.
 - Previews and test banners are staff only, so nobody can screenshot a badge they do not have.
 - Every character you log into is remembered by region, one write per login, so `/nf badges id`
-  gives one code for your main and your alts.
+  gives one code for your main and your alts. A WTF folder copied from the beta to live brings the
+  beta's characters along, and their GUIDs never wear a badge on live, so a live code leaves the
+  beta's regions out.
 - naowh.gg cannot tell whose character a badge code is: anyone could add someone else's. So each
   character a patron adds gets a random claim (`K7P2-9XQM`) that reaches only the patron: the
   Naowh Forever app writes it into its own `NaowhForever_Claims` addon (`ns.BADGE_CLAIMS`), or

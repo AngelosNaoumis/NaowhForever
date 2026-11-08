@@ -5,6 +5,7 @@ local S = ns.QoLSettings
 local Confirm = ns.BadgeConfirm
 local PATRONS = ns.FEATURE_BADGES == ns.BADGES_LIVE
 local RENUMBERED = { [110] = 90 }
+local BETA_REGIONS = { [90] = true, [110] = true }
 
 local MEDIA = "Interface\\AddOns\\NaowhForever\\Core\\Badges\\Media\\"
 local CACHE_SIZE = 200
@@ -832,7 +833,9 @@ local function BadgeCode()
     local current = GetCurrentRegion and GetCurrentRegion()
     local me = UnitGUID("player")
     local regions, count = {}, 0
-    for region in pairs(characters) do regions[#regions + 1] = region end
+    for region in pairs(characters) do
+        if not BETA_REGIONS[region] or BETA_REGIONS[current] then regions[#regions + 1] = region end
+    end
     currentRegion = current
     table.sort(regions, CurrentFirst)
     local groups = {}
