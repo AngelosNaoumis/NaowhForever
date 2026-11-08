@@ -562,6 +562,8 @@ Case("the generated quest and chain data is well formed and free of loops", func
     local bandanas = J.QuestPrereqs[214]
     assert(bandanas and bandanas[1] == 65 and #bandanas == 6, "Red Silk Bandanas starts with 65, 6 steps")
     assert(J.QuestMinLevel[214] == 14)
+    -- Old Ironforge Incursion needs Underground Map, which an item Captain Beld drops begins.
+    assert(J.QuestChainStarts[96391], "Underground Map has no start")
     assert(lists > 50, "only " .. lists .. " lists")
 end)
 

@@ -333,7 +333,10 @@ the game's own tables, and what they can't settle is listed in the pull request 
 - `Data/QuestChains.lua`: `QuestChains` (questID -> every step of its chain in order),
   `QuestPrereqs` (the steps before it can be picked up), `QuestMinLevel`, `QuestWhere` (the
   where text without the guide's prerequisite note), `QuestChainNames` and `QuestChainStarts`
-  (`{ uiMapID, x, y, quest giver }`) for the steps not in `Data/Quests.lua`.
+  (`{ uiMapID, x, y, quest giver }`) for the steps not in `Data/Quests.lua`. A step with no
+  usable start on its quest page takes the Quest List's spot (`D.Quests`), which is converted on
+  the redrawn maps and, for a quest an item begins, is where the mob that drops it spawns
+  (Underground Map: Captain Beld). Build the Quest List first.
 - `Data/Maps.lua`: `[dungeon key] = { art, floors, names, order, image, images, imageBottom, floor, entrance,
   pins }`. `art` is the folder of `Interface\WorldMap\<art>\<art><floor>_<tile>`: twelve 256px
   tiles four across, of which the map shows the top left 1002 by 668. `order` lists the art's
