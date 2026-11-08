@@ -8,7 +8,8 @@ local Load = dofile("Tools/regression/load_files.lua")
 local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
 local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
-    "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua" }
+    "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua", "NaowhForever_Market/History.lua",
+    "NaowhForever_Market/Worth.lua" }
 
 local function Noop() end
 
@@ -17,7 +18,8 @@ local function Setup(opts)
     local t = { bags = opts.bags or {}, status = opts.status or {}, scan = opts.scan or {}, vendor = opts.vendor or {},
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
         owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
-        browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000 }
+        browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000,
+        account = {}, scanAt = opts.scanAt }
     local registry = {}
     local copper = opts.copper ~= false
     t.ready = true
@@ -62,6 +64,8 @@ local function Setup(opts)
         end },
         GamepadStandDown = function() return false end,
         AuctionPrice = function(itemID) return t.scan[itemID], 0 end,
+        AuctionPriceList = function() if t.scanAt then return t.scan, t.scanAt end end,
+        AccountSettings = function() return t.account end,
     }
     t.ns = ns
     local results = { commodity = {}, item = {} }
@@ -140,6 +144,8 @@ local function Setup(opts)
         },
         C_Timer = { After = function(_, fn) t.timers[#t.timers + 1] = fn end },
         GetMoney = function() return t.money end,
+        GetRealmName = function() return "Realm" end,
+        UnitFactionGroup = function() return "Horde" end,
         CreateFrame = function() return setmetatable({}, { __index = frameMethods }) end,
         StaticPopupDialogs = { AUCTION_HOUSE_POST_WARNING = dialog },
         hooksecurefunc = function(target, name, fn)

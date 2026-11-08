@@ -11,4 +11,5 @@ ns.Market.Style = setmetatable({
     DISABLED_ALPHA = 0.45,
     BUTTON_H = 28,
     GOLD_RGB = { r = 1, g = 0.82, b = 0 },
+    BADGE_TEXT_RGB = { r = 0.1, g = 0.075, b = 0 },
 }, { __index = ns.Shared.Style })

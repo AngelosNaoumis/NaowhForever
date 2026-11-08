@@ -4,7 +4,9 @@ Naowh's own auction house window. At an auctioneer it opens over Blizzard's: you
 valuable first, the item in front of you with the auction house's live listings, a price one step
 under the cheapest of someone else's, and a post line you work through with Space (post), S (skip)
 and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
-auctioneer. Built on [`Shared/`](../Shared/README.md).
+auctioneer. Away from it, Bag Worth puts what your bags would fetch on your bags, and item tooltips
+gain The Market's lines: your stack's worth, the price over the past week, and disenchanting.
+Built on [`Shared/`](../Shared/README.md).
 
 ## Layout
 
@@ -20,6 +22,8 @@ NaowhForever_Market/
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
   Buy.lua            the name search, the cost of a quantity, and buying (Market.Buy)
+  History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
+  Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
@@ -29,6 +33,8 @@ NaowhForever_Market/
     Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Takeover.lua     covering Blizzard's auction house, and the way back to it
+    BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
+    Tooltip.lua      The Market's lines on item tooltips
     SettingsPage.lua the settings page, declared as cards
 ```
 
@@ -103,11 +109,31 @@ NaowhForever_Market/
   A commodity bought here is taken off it with its own `Shopping.Bought`, as its Buy button does.
 - An owned auction's item key info (`GetItemKeyInfo`) can be missing until
   `ITEM_KEY_ITEM_INFO_RECEIVED`; until then it shows as Checking and is checked when it arrives.
+- Price history keeps each item's lowest price per day from QoL's scans (`ns.AuctionPriceList`), for
+  `HISTORY_DAYS` (14) days per realm and faction, in the account's `marketHistory`. It is written when a
+  scan finishes (`ns.MarketRefresh`) and at login, so a scan taken while The Market was off is kept the
+  next time it is on. A day is a UTC day. Today is a table, since each scan lowers its prices; a past
+  day is packed into one string (",id:price,id:price,"), read with one `match` per lookup, which
+  roughly halves what thousands of items take in saved data and loads far faster than a table.
+- A price change compares today's lowest with the oldest day within `CHANGE_DAYS` (7) that has one, and
+  says how many days back that is: with a scan only yesterday it reads "Since yesterday", never "7 days".
+- Bag Worth counts an item at what it makes on the auction house after the cut when that beats its
+  vendor price, and at the vendor price otherwise; bound items count at the vendor price. Its card sits
+  above the combined bags or EllesmereUI's bags, and left of the backpack when bags open one by one,
+  so it never covers a bag. It is parented to the bag it sits on, so it shows and hides with it.
+- The numbers go on the first slot holding each of the `WORTH_TOP` (5) most valuable items, through
+  `Shared/Game/Bags.lua` as Scrap Marker's marks do: after the game's `UpdateItems`, and EllesmereUI's
+  overlay icons.
+- The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
+  A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
+  is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
+  is loaded.
 
 ## Checking
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
-`test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy; all load the rules through
+`test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
+history and Bag Worth; all load the rules through
 `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
@@ -124,3 +150,12 @@ In game, at an auctioneer, with The Market on:
 10. Buy: a name and Enter lists results; picking one shows its listings and what you would take.
 11. A commodity: Buy gets the price, Confirm buys it, and the Shopping List counts it.
 12. Gear: Buy buys the cheapest auction that is not yours.
+
+Away from the auction house:
+
+13. Opening your bags shows Bag Worth above them: the total, and the five most valuable items; the
+    same five are numbered on their slots, in Blizzard's bags and in EllesmereUI's.
+14. Selling or looting changes the card and the numbers.
+15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
+16. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
+17. A green or blue weapon or armour shows a Disenchant line with Professions loaded.

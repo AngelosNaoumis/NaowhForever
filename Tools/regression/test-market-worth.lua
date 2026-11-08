@@ -1,0 +1,73 @@
+-- Run with Lua 5.1 from the repository root: The Market's price history and what your bags are worth.
+local World = dofile("Tools/regression/market_world.lua")
+
+local checks = 0
+local function Check(label, value) assert(value, label); checks = checks + 1 end
+
+local DAY = 86400
+local START = 20000 * DAY + 3600
+
+local t = World.Setup({ vendor = { [2589] = 3, [4306] = 50, [6948] = 0 } })
+local H = t.M.History
+
+Check("no scan, nothing recorded", not H.Record())
+
+t.scan, t.scanAt = { [2770] = 100, [2589] = 20 }, START
+Check("a scan is recorded", H.Record())
+Check("and only once", not H.Record())
+t.scan, t.scanAt = { [2770] = 90 }, START + 600
+H.Record()
+t.scan, t.scanAt = { [2770] = 120 }, START + 1200
+H.Record()
+local house = t.account.marketHistory["Realm-Horde"]
+Check("each day keeps its lowest price", house.days[20000][2770] == 90 and house.days[20000][2589] == 20)
+Check("no change from one day alone", H.Change(2770, 7) == nil)
+
+t.scan, t.scanAt = { [2770] = 99 }, START + DAY
+H.Record()
+local change, days = H.Change(2770, 7)
+Check("a day later it is the change since yesterday", days == 1 and math.abs(change - 10) < 0.001)
+Check("a past day is packed into one string", type(house.days[20000]) == "string"
+    and type(house.days[20001]) == "table")
+
+t.scan, t.scanAt = { [2770] = 45 }, START + 7 * DAY
+H.Record()
+change, days = H.Change(2770, 7)
+Check("a week later it is the change over the week", days == 7 and math.abs(change + 50) < 0.001)
+Check("an item missing today has no change", H.Change(2589, 7) == nil)
+
+local series, found = H.Series(2770, {})
+Check("the series is two weeks, oldest first, with gaps", #series == 14 and found == 3 and series[14] == 45
+    and series[7] == 90 and series[8] == 99 and series[9] == false)
+
+t.scan, t.scanAt = { [2770] = 50 }, START + 14 * DAY
+H.Record()
+Check("days older than two weeks are dropped", house.days[20000] == nil and house.days[20001] ~= nil)
+
+local W = t.M.Worth
+t.scan = { [2770] = 100, [4306] = 400, [2589] = 2 }
+t.bags[0] = {
+    World.Stack(2770, 20),
+    World.Stack(2589, 10),
+    World.Stack(2770, 5),
+    World.Stack(4306, 2, { isBound = true }),
+    World.Stack(6948, 1),
+    World.Stack(5000, 1, { hasNoValue = true }),
+}
+local items = W.Read()
+Check("stacks of one item are counted together", items[1].itemID == 2770 and items[1].count == 25)
+Check("the auction price is taken after the cut when it beats the vendor", items[1].each == 95 and items[1].auction)
+Check("a bound item counts at its vendor price", items[2].itemID == 4306 and items[2].each == 50
+    and not items[2].auction)
+Check("the vendor wins when the auction pays less", items[3].itemID == 2589 and items[3].each == 3)
+Check("worthless items are left out", #items == 3)
+Check("the bags' total", W.total == 25 * 95 + 2 * 50 + 10 * 3 and W.auction == 25 * 95)
+Check("the most valuable is first", W.Rank(2770) == 1 and W.Rank(2589) == 3 and W.Rank(6948) == nil)
+Check("the rank is drawn on its first slot only", W.First(2770, 0, 1) and not W.First(2770, 0, 3))
+
+t.bags[0] = { World.Stack(2589, 4) }
+items = W.Read()
+Check("reading again starts over", #items == 1 and items[1].count == 4 and W.Rank(2770) == nil
+    and W.total == 12)
+
+print("market worth: " .. checks .. " checks passed")
