@@ -18,11 +18,13 @@ NaowhForever_Market/
   Listings.lua       one item's live listings, cheapest first (Market.Listings)
   Post.lua           posting from a click or key press, and the game's answer (Market.Post)
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
+  Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
+    Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Takeover.lua     covering Blizzard's auction house, and the way back to it
     SettingsPage.lua the settings page, declared as cards
 ```
@@ -69,10 +71,27 @@ NaowhForever_Market/
 - Items the client has not loaded have an unknown commodity status; they are asked for and the queue
   is read again when they arrive.
 - It steps aside when the gamepad interface style is on, like every window that covers Blizzard's.
+- My Auctions asks for your auctions (`QueryOwnedAuctions`) each time it opens and after each cancel
+  (`AUCTION_CANCELED`), then checks one item at a time through the same listings search as Sell, so the
+  throttle is never flooded. A commodity is checked once by item ID for all your auctions of it; any
+  other item by its own item key, item level and suffix included. An auction's price is
+  `buyoutAmount`, read as the price for one, as Blizzard's auctions list shows it.
+- An auction is undercut when the cheapest listing that is not yours is under its price. Under
+  `UNDERCUT_SMALL` (3%) it shows the amount in warning orange, more in red as a percent.
+- `CancelAuction` needs a hardware event: each Cancel and each Cancel Undercut press cancels one
+  auction. A row's Cancel asks first with `ns.Confirm`, whose Yes is the click that cancels. Cancel
+  Undercut does not ask: its label says what it does and it cancels one per press. An auction once
+  cancelled is not offered again until your auctions are read back, so a quick second press moves on.
+  A check's answer is kept under the item it was asked for, since the auctions are read again (and
+  their tables reused) whenever the game sends them. Cancelled items come
+  back by mail, so a cancelled auction cannot be posted again from here.
+- An owned auction's item key info (`GetItemKeyInfo`) can be missing until
+  `ITEM_KEY_ITEM_INFO_RECEIVED`; until then it shows as Checking and is checked when it arrives.
 
 ## Checking
 
-`lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline.
+`lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
+`test-market-auctions.lua` My Auctions; both load the rules through `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
 1. The Market opens over Blizzard's window with your bags in Up Next, most valuable first.
@@ -82,3 +101,6 @@ In game, at an auctioneer, with The Market on:
 5. Right-clicking a bag item picks it.
 6. The eye button shows Blizzard's window; The Market button under it comes back.
 7. Escape or the X closes the auction house.
+8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
+   auction's price is the price for one (check against Blizzard's Auctions tab).
+9. Cancel asks first and cancels; Cancel Undercut cancels one per press; the list reads again.

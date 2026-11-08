@@ -54,17 +54,6 @@ local function Default(entry)
     return math.max(C.SILVER, math.ceil(price / C.SILVER) * C.SILVER)
 end
 
-local function Cheapest()
-    local other, own
-    for i = 1, Listings.count do
-        local row = Listings.rows[i]
-        if not own and row.own > 0 then own = row.price end
-        if not other and row.quantity > row.own then other = row.price end
-        if other and own then break end
-    end
-    return other, own
-end
-
 function Sell.Read()
     local entries, loading = Bags.Read()
     wipe(queue)
@@ -115,7 +104,7 @@ function Sell.Keep()
 end
 
 function Sell.Suggest(entry)
-    local other, own = Cheapest()
+    local other, own = Listings.Cheapest()
     if other and not (own and own <= other) then return Floor(other - Step()), "under", other end
     if own then return own, "yours", own end
     if entry.scan then return Floor(entry.scan), "scan", entry.scan end

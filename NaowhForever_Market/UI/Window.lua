@@ -19,6 +19,7 @@ local TEXT_BLIZZARD = ns.L("Blizzard's Auction House")
 local TEXT_BLIZZARD_TIP = ns.L("Blizzard's own window, until you leave the auctioneer.")
 local PAGES = {
     { key = "sell", label = "Sell", tip = "Your bags, most valuable first, posted one key press at a time." },
+    { key = "mine", label = "My Auctions", tip = "Your auctions, and the ones someone is selling for less." },
 }
 
 local window, tabs, body, ticker

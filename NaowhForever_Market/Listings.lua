@@ -74,6 +74,10 @@ local function TimedOut(searchGen)
 end
 
 local function SendItem()
+    if wanted.itemKey then
+        C_AuctionHouse.SendSearchQuery(wanted.itemKey, ITEM_SORTS, true)
+        return true
+    end
     local location = Market.Bags.Location(wanted)
     if not location then return false end
     local key = C_AuctionHouse.GetItemKeyFromItem(location)
@@ -123,7 +127,19 @@ function Listings.Want(entry)
     wanted.itemID = entry and entry.itemID
     if not entry then return end
     wanted.commodity, wanted.link, wanted.bag, wanted.slot = entry.commodity, entry.link, entry.bag, entry.slot
+    wanted.itemKey = entry.itemKey
     Send()
+end
+
+function Listings.Cheapest()
+    local other, own
+    for i = 1, Listings.count do
+        local row = rows[i]
+        if not own and row.own > 0 then own = row.price end
+        if not other and row.quantity > row.own then other = row.price end
+        if other and own then break end
+    end
+    return other, own
 end
 
 function Listings.Again()

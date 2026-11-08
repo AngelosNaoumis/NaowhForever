@@ -665,7 +665,6 @@ function Page.Build(parent)
     BuildForm()
     BuildPostRow()
     BuildMessage()
-    Listings.onChange = Page.Draw
     Post.onDone = Posted
     events = CreateFrame("Frame")
     events:SetScript("OnEvent", OnEvent)
@@ -677,6 +676,7 @@ function Page.Show()
     if not active then
         active, failed = true, false
         Listings.Start()
+        Listings.onChange = Page.Draw
         Post.Start()
         for _, event in ipairs(EVENTS) do events:RegisterEvent(event) end
         money:ShowCopper(C_AuctionHouse.SupportsCopperValues())
