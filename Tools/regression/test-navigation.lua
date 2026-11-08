@@ -1024,6 +1024,18 @@ Check(measured and Text("MODULES") and not ns.UI.SearchTyped(),
 input:SetText(""); Flush()
 Check(not Text("TURNED OFF") and Text("MODULES"), "cleared, the group hides and the page goes back to Settings")
 missingAddOns.NaowhForever_QoL = nil
+-- The window was built while QoL was not loaded (something opened it before QoL loaded): once QoL
+-- has loaded, opening the window again puts Quality of Life back at the top of the sidebar.
+ns.ToggleOptionsWindow()
+local reopened = #frames
+ns.OpenOptionsWindow("QoL/Interface"); Flush()
+local qolNav
+for i = reopened + 1, #frames do
+    local f = frames[i]
+    if f.text == "Quality of Life" and f.parent and f.parent.mod and f.parent.scripts.OnClick then qolNav = f.parent end
+end
+Check(qolNav and qolNav:IsShown() and qolNav.points.TOPLEFT[4] == 0 and not Text("TURNED OFF"),
+    "loaded after the window was built, Quality of Life is back at the top of the sidebar, not under Turned Off")
 
 do
     ns.BuildProfileSettings = function(parent, y)

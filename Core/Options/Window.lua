@@ -840,7 +840,15 @@ function Off.Build(nav, top)
     Off.nav, Off.top, Off.label, Off.headH, Off.mods = nav, top, label, headH, mods
 end
 
+-- Which modules were loaded when the sidebar was built: it sorts them into groups or Turned Off by it.
+function Off.LoadedNow()
+    local loaded = {}
+    for i, mod in ipairs(MODULES) do loaded[i] = Loaded(mod) and "1" or "0" end
+    return table.concat(loaded)
+end
+
 local function ModuleNav(nav)
+    Off.loaded = Off.LoadedNow()
     local groups, grouped = NavGroups()
     local ny = 0
     for _, group in ipairs(groups) do
@@ -868,6 +876,20 @@ local function ModuleNav(nav)
     end
     Off.Build(nav, ny)
     nav:SetHeight(-ny)
+end
+
+-- Built before a module loaded (or after one went), the sidebar would keep it under Turned Off,
+-- hidden until a search: build the module list again on a fresh scroll child.
+function Off.Rebuild()
+    local old = Off.nav
+    local scroll = old:GetParent()
+    old:Hide()
+    for _, mod in ipairs(MODULES) do navButtons[mod.name] = nil end
+    wipe(navBlocks)
+    local nav = CreateFrame("Frame", nil, scroll)
+    nav:SetSize(old:GetWidth(), 1)
+    scroll:SetScrollChild(nav)
+    ModuleNav(nav)
 end
 
 local function SystemNav(sidebar)
@@ -1039,6 +1061,7 @@ local function OnWindowShow(self)
         pendingRefresh = nil
         InvalidatePages(wrappers)
     end
+    if Off.loaded ~= Off.LoadedNow() then Off.Rebuild() end
     ShowPage(currentPage)
 end
 
