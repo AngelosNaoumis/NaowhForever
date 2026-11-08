@@ -108,7 +108,9 @@ local function DrawSpells(plan)
     local query = strtrim(window.search:GetText() or ""):lower()
     if query ~= "" then return Spells.DrawSearch(plan, query, 0) end
     if V.selected then return Spells.DrawLevel(plan, 0) end
-    if Nothing(plan) then return Rows.Header(0, TEXT_NOTHING_LEFT, nil, TEXT_NOTHING_NOTE) end
+    if Nothing(plan) then
+        return Spells.DrawBooks(Rows.Header(0, TEXT_NOTHING_LEFT, nil, TEXT_NOTHING_NOTE) - Style.SECTION_GAP)
+    end
     return Spells.DrawAll(plan, 0)
 end
 

@@ -120,7 +120,7 @@ read_globals = {
     "GetMinimapShape", "GetPlayerFacing", "Minimap",
     "C_MapExplorationInfo", "CreateTexturePool",
     "MAX_PARTY_MEMBERS", "MAX_RAID_MEMBERS", "Menu", "MenuUtil", "MenuVariants",
-    "MerchantFrame", "Mixin", "MovieFrame", "NumTaxiNodes",
+    "MerchantFrame", "MERCHANT_ITEMS_PER_PAGE", "Mixin", "MovieFrame", "NumTaxiNodes",
     "NUM_BAG_SLOTS", "NUM_CHAT_WINDOWS", "NUM_PET_ACTION_SLOTS",
     "NUM_TOTAL_EQUIPPED_BAG_SLOTS", "OTHER", "PetHasActionBar", "PickupAction", "PickupMacro", "PlaceAction",
     "PixelUtil", "PlaySound", "PlaySoundFile", "ProfessionsFrame", "PROFESSIONS_COOKING",

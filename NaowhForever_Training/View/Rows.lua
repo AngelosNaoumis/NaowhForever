@@ -47,6 +47,7 @@ local TEXT_SPELL = ns.L("Spell ")
 local TEXT_STOP_SKIP, TEXT_STOP_SKIP_ALL = ns.L("Stop Skipping"), ns.L("Stop Skipping All Ranks")
 local TEXT_SKIP_ALL = ns.L("Skip All Ranks")
 local TEXT_UPGRADE = "  %s+%d%%|r"
+local BOOK = { book = true, bookNow = true, bookLearned = true }
 
 local V = { tab = "spells", buildIndex = 1, paneX = 0, editing = false, editTab = "talents" }
 Training.View = V
@@ -143,7 +144,11 @@ local function SpellEnter(self)
         self.border:SetColor(T.accent.r, T.accent.g, T.accent.b, 1)
     end
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    GameTooltip:SetSpellByID(self.entry[SPELL])
+    if BOOK[self.state] then
+        GameTooltip:SetItemByID(self.entry.item)
+    else
+        GameTooltip:SetSpellByID(self.entry[SPELL])
+    end
     local up = Training.Upgrade(self.entry)
     if up then
         local before = self.entry.needs or self.entry.talent
@@ -158,8 +163,10 @@ local function SpellEnter(self)
         GameTooltip:AddLine(" ")
         GameTooltip:AddLine(reason, c.r, c.g, c.b, true)
     end
-    GameTooltip:AddLine(" ")
-    GameTooltip:AddLine(self.state == "weapon" and TEXT_HINT_WEAPON or TEXT_HINT, T.muted.r, T.muted.g, T.muted.b, true)
+    if not BOOK[self.state] then
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine(self.state == "weapon" and TEXT_HINT_WEAPON or TEXT_HINT, T.muted.r, T.muted.g, T.muted.b, true)
+    end
     GameTooltip:Show()
 end
 
@@ -189,10 +196,11 @@ end
 local function SpellClick(self, button)
     local spell = self.entry[SPELL]
     if button == "RightButton" then
-        if self.state == "weapon" or self.state == "ignored" and FromBuild(spell) then return end
+        if self.state == "weapon" or BOOK[self.state] or self.state == "ignored" and FromBuild(spell) then return end
         MenuUtil.CreateContextMenu(self, SkipMenu(spell, self.state == "ignored"))
     elseif IsModifiedClick("CHATLINK") then
-        ChatFrameUtil.InsertLink(C_Spell.GetSpellLink(spell))
+        ChatFrameUtil.InsertLink(BOOK[self.state] and select(2, C_Item.GetItemInfo(self.entry.item))
+            or C_Spell.GetSpellLink(spell))
     elseif self.state == "weapon" then
         Training.WaypointToMaster(self.entry)
     end
@@ -290,13 +298,14 @@ end
 function Rows.FillRow(r, entry, state, why)
     r.entry, r.state = entry, state
     r.icon:SetTexture(C_Spell.GetSpellTexture(entry[SPELL]))
-    r.icon:SetDesaturated(true)
+    r.icon:SetDesaturated(state ~= "bookNow")
     r.name:SetText(C_Spell.GetSpellName(entry[SPELL]) or "")
-    r.rank:SetText((C_Spell.GetSpellSubtext(entry[SPELL]) or "") .. (state == "learned" and "" or Rows.UpgradeTag(entry)))
+    local learned = state == "learned" or state == "bookLearned"
+    r.rank:SetText((C_Spell.GetSpellSubtext(entry[SPELL]) or "") .. (learned and "" or Rows.UpgradeTag(entry)))
     r.price:SetText(PriceText(entry))
     local fromBuild = state == "ignored" and FromBuild(entry[SPELL])
     r.why:SetText(fromBuild and TEXT_YOUR_BUILD or why or "")
-    Paint(r.why, (state == "rank" or state == "talent") and Style.WARN_RGB or T.muted)
+    Paint(r.why, (state == "rank" or state == "talent") and Style.WARN_RGB or state == "bookNow" and T.accent or T.muted)
     r.why:SetShown(state ~= "ignored" or fromBuild)
     r.restore:SetShown(state == "ignored" and not fromBuild)
     r.restore._onClick = function() Training.SetIgnored(entry[SPELL], false, false) end

@@ -44,6 +44,10 @@ local TEXT_TALENT, TEXT_TALENT_NOTE = ns.L("NEEDS A TALENT"), ns.L("Shows up onc
 local TEXT_WEAPONS, TEXT_WEAPONS_NOTE = ns.L("WEAPON SKILLS"), ns.L("Click one for a waypoint to where it is taught")
 local TEXT_SKIPPED, TEXT_SKIPPED_NOTE = ns.L("SKIPPED"), ns.L("Skipping these saves ")
 local TEXT_LEARNED, TEXT_LEARNED_NOTE = ns.L("LEARNED"), ns.L("About %s spent")
+local TEXT_BOOKS, TEXT_BOOKS_NOTE = ns.L("%s BOOKS"), ns.L("From your demon trainer")
+local TEXT_SUMMON_CHECK = ns.L("Summon your %s once to check")
+local TEXT_BOOK_READY, TEXT_BOOK_LEARNED = ns.L("Ready"), ns.L("Learned")
+local BOOK_STATES = { now = "bookNow", learned = "bookLearned", later = "book", unknown = "book" }
 local TEXT_NO_MATCH, TEXT_NO_MATCH_NOTE = ns.L("NO SPELLS MATCH"), ns.L("Try part of a spell's name")
 local TEXT_RESULTS, TEXT_RESULTS_NOTE = ns.L("RESULTS"), ns.L("Learned ones are dimmed")
 
@@ -259,6 +263,35 @@ local function NoWhy()
     return nil
 end
 
+local function BookWhy(state, book)
+    if state == "learned" then return TEXT_BOOK_LEARNED end
+    if state == "later" then return TEXT_LEVEL .. book[LEVEL] end
+    if state == "now" then return TEXT_BOOK_READY end
+end
+
+function Spells.DrawBooks(y)
+    local G = Training.Grimoires
+    if not G.On() then return y end
+    local level, showLearned = UnitLevel("player"), Training.Settings.Get("showLearned")
+    for _, demon in ipairs(G.Demons()) do
+        local left = 0
+        for _, book in ipairs(demon.books) do
+            if G.State(book, level) ~= "learned" then left = left + 1 end
+        end
+        if left > 0 or showLearned then
+            local name = G.Name(demon)
+            y = Header(y, TEXT_BOOKS:format(ns.Upper(name)), left,
+                G.Seen(demon) and TEXT_BOOKS_NOTE or TEXT_SUMMON_CHECK:format(name))
+            for _, book in ipairs(demon.books) do
+                local state = G.State(book, level)
+                if state ~= "learned" or showLearned then y = Row(book, BOOK_STATES[state], y, BookWhy(state, book)) end
+            end
+            y = y - Style.SECTION_GAP
+        end
+    end
+    return y
+end
+
 function Spells.DrawAll(plan, y)
     if #plan.now > 0 then
         y = Header(y, TEXT_AVAILABLE, #plan.now, TEXT_AVAILABLE_NOTE)
@@ -287,6 +320,7 @@ function Spells.DrawAll(plan, y)
         y = Header(y, TEXT_SKIPPED, #plan.ignored, TEXT_SKIPPED_NOTE .. Training.Coins(Training.Total(plan.ignored)))
         y = DrawRows(plan, "ignored", y, NoWhy) - Style.SECTION_GAP
     end
+    y = Spells.DrawBooks(y)
     if Training.Settings.Get("showLearned") and #plan.learned > 0 then
         y = Header(y, TEXT_LEARNED, #plan.learned, TEXT_LEARNED_NOTE:format(Training.Coins(Training.Total(plan.learned))))
         y = DrawRows(plan, "learned", y, LevelWhy)

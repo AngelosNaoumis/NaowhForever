@@ -29,6 +29,10 @@ local function PadWhy()
     return ns.GamepadWhy() or TEXT_OFF
 end
 
+local function NotWarlock()
+    return not Training.Grimoires.Warlock()
+end
+
 local function Headline(plan)
     if #plan.now > 0 then
         return TEXT_TRAIN_NOW:format(#plan.now, #plan.now == 1 and TEXT_SPELL or TEXT_SPELLS,
@@ -117,6 +121,10 @@ page:Card({
           help = "Beside your class trainer, the spells you can learn now, ticked, with their total and Learn "
               .. "Selected. Untick one to leave it.",
           search = "put the new ranks on my bars swap ranks /nf ranks nf ranks" },
+        { key = "demonBooks", label = "Demon Books", toggle = true, needs = Training.On, why = TEXT_OFF,
+          hidden = NotWarlock,
+          help = "Your demons' books in the planner, and marks at the demon trainer for the ones they know.",
+          search = "warlock grimoire grimoires pet imp voidwalker succubus incubus felhunter demon trainer" },
     },
 })
 

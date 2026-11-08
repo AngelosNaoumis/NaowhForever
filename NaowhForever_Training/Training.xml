@@ -5,12 +5,14 @@
     <Script file="Data\TrainingData.lua"/>
     <Script file="Data\TrainingBuilds.lua"/>
     <Script file="Data\TrainingWeapons.lua"/>
+    <Script file="Data\TrainingGrimoires.lua"/>
     <Script file="Plan.lua"/>
     <Script file="Upgrades.lua"/>
     <Script file="Coins.lua"/>
     <Script file="Route.lua"/>
     <Script file="Builds.lua"/>
     <Script file="Trainer.lua"/>
+    <Script file="Grimoires.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Rows.lua"/>
     <Script file="View\Spells.lua"/>
@@ -20,6 +22,7 @@
     <Script file="UI\MiniBar.lua"/>
     <Script file="UI\Toast.lua"/>
     <Script file="UI\TrainerPanel.lua"/>
+    <Script file="UI\DemonTrainer.lua"/>
     <Script file="UI\Spellbook.lua"/>
     <Script file="UI\SettingsPage.lua"/>
 </Ui>

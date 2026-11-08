@@ -430,4 +430,62 @@ check("and All Levels stays its own button", window.back ~= window.backLink)
 window:Hide()
 check("closing it goes back to /nf, once", backed == 1 and not window.backLink:IsShown())
 
+-- Demon Books: a warlock's own row on the settings page, and a section per demon under the spell lists.
+local booksRow = declared.cards.onTheWay.rows[3]
+check("the Demon Books row is the warlock's only", booksRow.key == "demonBooks" and booksRow.hidden())
+env.UnitClass = function() return "Warlock", "WARLOCK", 9 end
+env.UnitCreatureFamily = NOTHING
+env.TooltipDataProcessor = { AddTooltipPostCall = NOTHING }
+env.Enum = { TooltipDataType = { Item = 0 } }
+env.MerchantFrame = { IsShown = function() return false end }
+ns.GamepadStandDown = function() return false end
+check("and shows for a warlock", not booksRow.hidden())
+local function Visible(f)
+    while f do
+        if rawget(f, "shown") == false then return false end
+        f = rawget(f, "parent")
+    end
+    return true
+end
+local function Texts()
+    local out = {}
+    for _, f in ipairs(frames) do
+        if rawget(f, "text") and Visible(f) then out[f.text] = f end
+    end
+    return out
+end
+local function BookRows()
+    local out = {}
+    for _, f in ipairs(frames) do
+        if rawget(f, "entry") and f.entry.item and Visible(f) then out[#out + 1] = f end
+    end
+    return out
+end
+ns.OpenTrainingWindow()
+check("off by default, the planner lists no demon books", #BookRows() == 0)
+settings.demonBooks = true
+for _, fn in ipairs(listeners) do fn("demonBooks") end
+local shown = Texts()
+check("on, each demon has its section, asking to be summoned once", shown["Summon your Imp once to check"]
+    and shown["Summon your Felhunter once to check"])
+local rowsShown, later, unknown = BookRows(), nil, nil
+for _, r in ipairs(rowsShown) do
+    if r.entry[1] == 58 then later = later or r end
+    if r.entry[1] == 8 then unknown = unknown or r end
+end
+check("every book is listed while none is known", #rowsShown == 59)
+check("one above your level shows its level", later and later.why:GetText() == "Level 58")
+check("one for a demon never summoned shows nothing more", unknown and unknown.why:GetText() == "")
+local hovered, menus = nil, 0
+env.GameTooltip.SetItemByID = function(_, item) hovered = item end
+env.MenuUtil.CreateContextMenu = function() menus = menus + 1 end
+later.scripts.OnEnter(later)
+check("a book's row shows the book itself on hover", hovered == later.entry.item)
+Click(later, "RightButton")
+check("and has no skip menu", menus == 0)
+settings.demonBooks = false
+for _, fn in ipairs(listeners) do fn("demonBooks") end
+check("off again, the sections go", #BookRows() == 0)
+window:Hide()
+
 print(("test-training-window: %d checks passed"):format(checks))

@@ -145,6 +145,7 @@ ns.FEATURES = {
         levelUpToast = true,
         trainerPanel = true,
         spellbook = false,
+        demonBooks = false,
     },
     discovery = {
         enabled = false,
