@@ -14,7 +14,7 @@ local CRAFT_STAGE_H = 100
 local TIP_RANGE, ICON_RANGE, TEXT_RANGE = { 0, 50, 1 }, { 24, 80, 1 }, ns.Shared.Style.HUD_TEXT_RANGE
 local ROI_RANGE = { 0, 100, 1 }
 local ORDER_RECIPES, ORDER_ORDERS, ORDER_CRAFT_TIMER, ORDER_BUYING, ORDER_GATHER = 10, 20, 30, 40, 50
-local ORDER_DISENCHANT, ORDER_DISENCHANT_DEALS = 60, 70
+local ORDER_DISENCHANT, ORDER_TRADE_ENCHANTS, ORDER_DISENCHANT_DEALS = 60, 65, 70
 local ORDER_NODE_ICONS, ORDER_NODE_TOAST = 55, 56
 local SAMPLE_ICON = "Interface\\Icons\\INV_Ingot_02"
 local SAMPLE_NAME, SAMPLE_DONE, SAMPLE_COUNT = ns.L("Smelt Copper"), 4, 10
@@ -361,6 +361,13 @@ page:Card({
           help = "Disenchants the next item in the Disenchant window while it is open, one item per press, like a "
               .. "click on Disenchant All." },
     },
+})
+
+page:Card({
+    id = "tradeEnchants", name = "Trade Enchants", order = ORDER_TRADE_ENCHANTS, switch = "tradeEnchants",
+    switchWhy = ns.GamepadWhy,
+    help = "Beside the trade window, lists your enchants for their item to cast on it in one click.",
+    search = "enchanting enchant trade window will not be traded work order request whisper",
 })
 
 page:Card({

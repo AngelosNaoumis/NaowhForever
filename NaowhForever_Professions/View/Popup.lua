@@ -61,7 +61,7 @@ function Popup.New(title)
     return p
 end
 
-function Popup.Row(p, i, label, onClick, top)
+function Popup.Row(p, i, label, onClick, top, template)
     local row = p.rows[i]
     if row then return row end
     row = CreateFrame("Frame", nil, p)
@@ -71,7 +71,7 @@ function Popup.Row(p, i, label, onClick, top)
     row.icon = Widgets.Crop(row:CreateTexture(nil, "ARTWORK"))
     row.icon:SetSize(ROW_H - ICON_SHRINK, ROW_H - ICON_SHRINK)
     row.icon:SetPoint("LEFT")
-    row.button = ns.Button(row, label, BUTTON_W, BUTTON_H, function() onClick(row) end)
+    row.button = ns.Button(row, label, BUTTON_W, BUTTON_H, function() onClick(row) end, template)
     row.button:SetPoint("RIGHT")
     row.note = ns.Font(row, Style.FONT, nil, T.muted)
     row.note:SetPoint("RIGHT", row.button, "LEFT", -NOTE_GAP, 0)

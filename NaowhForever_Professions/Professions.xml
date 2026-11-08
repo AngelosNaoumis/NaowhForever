@@ -9,6 +9,7 @@
     <Script file="Data\CooldownRecipes.lua"/>
     <Script file="Data\ConsumableItems.lua"/>
     <Script file="Data\DisenchantValues.lua"/>
+    <Script file="Data\EnchantSlots.lua"/>
     <Script file="Data\GatherNodes.lua"/>
     <Script file="Text.lua"/>
     <Script file="LinkView.lua"/>
@@ -32,6 +33,7 @@
     <Script file="Patterns.lua"/>
     <Script file="Disenchant.lua"/>
     <Script file="DisenchantDeals.lua"/>
+    <Script file="TradeEnchants.lua"/>
     <Script file="NodeScan.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Widgets.lua"/>
@@ -66,5 +68,6 @@
     <Script file="UI\NodeToast.lua"/>
     <Script file="UI\Disenchant.lua"/>
     <Script file="UI\DisenchantDeals.lua"/>
+    <Script file="UI\TradeEnchants.lua"/>
     <Script file="UI\SettingsPage.lua"/>
 </Ui>

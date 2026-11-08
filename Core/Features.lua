@@ -199,6 +199,7 @@ ns.FEATURES = {
         buyVendor = false,
         disenchant = false,
         disenchantDeals = false,
+        tradeEnchants = false,
     },
     macros = {
         enabled = true,

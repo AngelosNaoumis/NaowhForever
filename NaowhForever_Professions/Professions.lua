@@ -28,6 +28,7 @@ local S = ns.UI.ModuleSettings("professions", {
     craftROI = F.craftROI, roiGreyBelow = 10, roiGreenFrom = 30,
     disenchant = F.disenchant, disenchantDeals = F.disenchantDeals, disenchantDealsTooltip = false,
     disenchantDealsTooltipAllCharacters = false, disenchantDealsTooltipAuctionOnly = false,
+    tradeEnchants = F.tradeEnchants,
     filterMaterials = false, filterSkillUp = false, filterProfit = false,
     filterNotSelling = false, filterBoE = false, filterBoP = false, filterFavorite = false,
     filterFromTrainer = false, filterFromVendor = false, filterFromDrop = false, filterFromQuest = false,
