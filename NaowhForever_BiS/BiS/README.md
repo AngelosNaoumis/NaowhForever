@@ -7,7 +7,9 @@ use, or from Alt+Shift-clicking any item. The list has its
 own window (`/nfbis`, a key binding, or the BiS stat in the Dungeon Journal): your paperdoll
 on the left, a card per slot with its picks on the right, where to run next (a waypoint on
 whoever has your BiS out in the world) and the best enchant for what you wear; and a Quests
-page, the quests that reward a pick you do not have yet, as the Dungeon Journal shows its own.
+page, the quests that reward a pick you do not have yet, as the Dungeon Journal shows its own;
+and a Leveling page, your spec's best gear at levels 30, 40, 50 and 60 for your side, each one
+a Load away from being your list.
 Listed items say so on their tooltip, and call out when they drop. Lists are shared by every
 character of a class, and can be shared as a string.
 
@@ -28,10 +30,11 @@ BiS/
   Constants.lua       the numbers several files share: the hand slots, a list name's length (B.C)
   Data/               generated, no logic
     BiS.lua           wowsrc.com's ranking per spec, then ForeverChanges', and item sources (Tools/build/bis_data.py)
+    Leveling.lua      each spec's gear at levels 30, 40, 50 and 60 for each side, and its sources (Tools/build/leveling_bis.py)
     Spots.lua         where the NPC with a BiS stands out in the world (Tools/build/bis_spots.py)
     Enchants.lua      every enchant, what it gives and goes on, the skill it needs (Tools/build/enchants.py)
-  Rankings.lua        rankings, dungeon drops, sources, Run Next (B.Rankings)
-  Lists.lua           your lists, their old formats, and the ns calls that change them (B.Lists)
+  Rankings.lua        rankings, a level's picks, dungeon drops, sources, Run Next (B.Rankings)
+  Lists.lua           your lists, their old formats, loading a level's, and the ns calls that change them (B.Lists)
   Gains.lua           what your BiS gets you: Naowh Score and stats over what you wear (B.Gains)
   Upgrades.lua        how much stronger each BiS makes you, in percent, by your spec's weights (B.Upgrades)
   Enchants.lua        the best enchant for what you wear, for your spec and the item's level (B.Enchants)
@@ -42,7 +45,7 @@ BiS/
   Sources.lua         where a click on an item's source goes: Journal, quest, waypoint, recipe, map, Wowhead (B.Sources)
   View/
     Style.lua         what only the BiS List draws, over Shared/Style.lua (B.Style)
-    View.lua          the list page and a slot's picker, on the shared engine (B.View)
+    View.lua          the list page, the Leveling page and a slot's picker, on the shared engine (B.View)
     Cells.lua         what the rows share: the gain cell, where an item drops, the hover zones (B.View.Cells)
     Summary.lua       how many are yours, the filter, the bar of your slots, pinned over the list
     EnchantBadge.lua  the enchant dot on a slot's icon and its advice (B.View.EnchantBadge)
@@ -78,6 +81,7 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
 | A colour, a size, a font size, an icon | `View/Style.lua`, or `Shared/Style.lua` for the house look (the stars) |
 | What a class can wear or wield | `Rankings.lua` |
 | A spec's ranking | `python Tools/build/bis_data.py` (daily in CI); ForeverChanges' picks after it, `python Tools/build/foreverchanges_bis.py`, then `bis_data.py` |
+| A level's list on the Leveling page | `python Tools/build/leveling_bis.py` |
 | Where an item drops | A dungeon drop: the Dungeon Journal's data (`Tools/build/journal.py`), which the BiS List reads; anything else: `Tools/data/bis_sources.json`, then rebuild |
 | What a list keeps, or an old format | `Lists.lua` (saved lists) and `Sharing.lua` (strings) |
 | Which enchant or upgrade wins for a spec | the spec's weights in `StatWeights/Data/Defaults.lua` (players change their own in the module's page); a proc's worth in `PROCS` in `Tools/build/enchants.py` |
@@ -108,6 +112,15 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
 - Older saved lists are moved when read: a character's own list from before lists were shared joins
   its class's (named for the character unless it had a name), a flat item list is put in slots, and
   the unordered next picks of the 0.5.12 test builds go in ranked order.
+- Load on the Leveling page makes a spec-only list named for the level and spec, marked with its
+  `level` and `side`, and uses it; the player's own lists are left as they are. Loading that level
+  again puts its picks back on the same list, so loading never makes a second one.
+- A level's picks are your side's (`UnitFactionGroup`), as many are quest rewards of one side. Lists
+  are shared by every character of a class, so a level's list is one side's: an alt of the other
+  side loading it gets a list of its own. The list is a copy: changing it never changes the data.
+- An item of a level's list that neither the Journal nor wowsrc and ForeverChanges place takes the
+  leveling data's source, so its row still says where it comes from.
+- The Leveling page is drawn on the list's view, without the summary: the summary is about your list.
 - A list's name shows in chat and tooltips, so its escape codes are neutralised (`|` doubled) and it
   is cut to `NAME_MAX` letters.
 - A two-hander as the main hand's BiS leaves the off hand unused: its picks are kept, not counted,
@@ -193,10 +206,10 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
 
 ## Checking
 
-- `lua Tools/regression/test-bis-slots.lua`: lists, picks, old formats, sharing, Run Next.
+- `lua Tools/regression/test-bis-slots.lua`: lists, picks, old formats, sharing, Run Next, loading a level.
 - `lua Tools/regression/test-bis-dungeon-drops.lua`: class rules, dungeon drops, sources.
 - `lua Tools/regression/test-bis-window.lua`: the window, paperdoll and picker, a click
-  changing the list, the redraw's cost (no garbage), Drop Alert only listening while on and as
+  changing the list, the Leveling page and its Load, the redraw's cost (no garbage), Drop Alert only listening while on and as
   you set it (which picks, alert, chat, sounds, its look, and the settings page's studio and
   rows), Run Next's waypoints, and enchants by spec and item level.
 - `lua Tools/regression/test-bag-marks.lua`: Bag Marks in the game's bags, EllesmereUI's, and Baganator's.

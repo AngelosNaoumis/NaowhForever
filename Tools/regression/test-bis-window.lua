@@ -318,7 +318,7 @@ local Measure = dofile("Tools/regression/measure.lua")(check)
 -------------------------------------------------------------------------------
 local ns, state, S = Fixture()
 local B = ns.BiS
-check("BiS.xml loads its files", #TocFiles("^NaowhForever_BiS/BiS/.*%.lua$") == 37)
+check("BiS.xml loads its files", #TocFiles("^NaowhForever_BiS/BiS/.*%.lua$") == 38)
 
 ns.OpenBisWindow()
 local view = Views(state, B)[1]
@@ -901,6 +901,34 @@ view.parent = listParent
 window.pages.onPick("list")
 check("Run next asks for it for each dungeon's levels and quests", SectionIn(view, "Run next")
     and NoteIn(view, "each dungeon's levels and quests"))
+do
+    local mine, spec = B.Lists.List(), B.Lists.CurrentSpec()
+    local lowest, picked = ns.BiSLeveling.levels[1], 0
+    for _, level in ipairs(ns.BiSLeveling.levels) do
+        for _ in pairs(B.Rankings.LevelPicks(spec.key, level)) do picked = picked + 1 end
+    end
+    window.pages.onPick("levels")
+    local load = SectionIn(view, "Level " .. lowest)
+    local quiet = true
+    for i = 1, view.pools.pick.used do
+        local row = view.pools.pick[i]
+        if row.mode ~= "level" or row.canAct[row.remove] or row.canAct[row.up] then quiet = false end
+    end
+    check("the Leveling page lists each level's picks for your spec and side, without the list's summary",
+        load and not load.link.disabled and view.pools.pick.used == picked and not view.summary:IsShown())
+    check("its rows only show: no buttons to move or remove", quiet)
+    Measure("the Leveling page redrawn", 2, function() view:Redraw() end)
+    load.onLink(load.linkArg)
+    local loaded = B.Lists.List()
+    check("Load makes that level your list for the spec", loaded.level == lowest and loaded.spec == spec.key
+        and loaded.slots[1] == B.Rankings.LevelPicks(spec.key, lowest)[1] and window.list.text.text == loaded.name)
+    check("and its level then reads as the active one", view.page == "levels"
+        and SectionIn(view, "Level " .. lowest).link.disabled)
+    ns.DeleteBisList()
+    ns.SelectBisList(mine.id)
+    window.pages.onPick("list")
+    check("the list page has its summary back", view.summary:IsShown() and view.page == "list")
+end
 place = view.pools.place[1]
 place.dungeon, place.map, place.spot = nil, 1413, nil
 place.scripts.OnClick(place)

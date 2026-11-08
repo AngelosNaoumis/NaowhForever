@@ -176,6 +176,12 @@ function R.Ranking(key, slot)
     return spec and spec.slots[slot]
 end
 
+function R.LevelPicks(key, level)
+    local levels = ns.BiSLeveling.specs[key]
+    local sides = levels and levels[level]
+    return sides and sides[UnitFactionGroup("player")]
+end
+
 function R.Ranked(set, order)
     wipe(rankPos)
     order = order or EMPTY
@@ -212,7 +218,7 @@ function R.DungeonDrops(slot, ranked, near)
 end
 
 function ns.BiSSource(itemID)
-    return Drops()[itemID] or ns.BiSData.sources[itemID]
+    return Drops()[itemID] or ns.BiSData.sources[itemID] or ns.BiSLeveling.sources[itemID]
 end
 
 function R.DropDungeon(itemID)

@@ -28,6 +28,9 @@ local TEXT_NO_DROPS_NEAR = ns.L("No dungeon drops for this slot within 10 levels
 local TEXT_QUESTS = ns.L("Quests for your BiS")
 local TEXT_QUESTS_OFF = ns.L("Turn on the Dungeon Journal to see the quests that reward your picks, "
     .. "with their chains and waypoints.")
+local TEXT_LEVEL = ns.L("Level %d")
+local TEXT_LEVELS_ABOUT = ns.L("The best gear you can get by each level. Load one as your list for this spec.")
+local TEXT_LOAD, TEXT_ACTIVE = ns.L("Load"), ns.L("Active")
 local EVENTS = { "PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE_DELAYED", "PLAYER_LEVEL_UP" }
 local GROUPS = {
     { title = ns.L("Armor"), slots = { 1, 2, 3, 15, 5, 9, 10, 6, 7, 8 } },
@@ -241,6 +244,37 @@ function ViewMixin:DrawPicker(slot)
     self:Fit(EVENTS)
 end
 
+function ViewMixin:DrawLevel(spec, level, list)
+    local picks = R.LevelPicks(spec.key, level)
+    if not picks then return end
+    local active = L.IsLevelList(list, spec, level)
+    self:SectionLink(TEXT_LEVEL:format(level), active and TEXT_ACTIVE or TEXT_LOAD, not active and ns.LoadBisLevel or nil,
+        level)
+    local n = 0
+    for _, gear in ipairs(Items.GEAR_SLOTS) do
+        local itemID = picks[gear[1]]
+        if itemID then
+            n = n + 1
+            self.striped = n % 2 == 1
+            self:Add("pick", gear[1], itemID, nil, "level")
+        end
+    end
+    self.striped = false
+    self:Space(SECTION_SPACE)
+end
+
+function ViewMixin:DrawLevels()
+    self.page = "levels"
+    self:Begin()
+    self:Note(TEXT_LEVELS_ABOUT)
+    local spec, list = L.CurrentSpec(), L.List()
+    if spec then
+        for _, level in ipairs(ns.BiSLeveling.levels) do self:DrawLevel(spec, level, list) end
+    end
+    self:Fit(EVENTS)
+    if self.onDrawn then self.onDrawn() end
+end
+
 function ViewMixin:DrawQuestsOff()
     self.page = "questsOff"
     self:Begin()
@@ -254,6 +288,8 @@ function ViewMixin:Redraw()
         self:DrawPicker(self.slot)
     elseif self.page == "questsOff" then
         self:DrawQuestsOff()
+    elseif self.page == "levels" then
+        self:DrawLevels()
     else
         self:DrawList()
     end

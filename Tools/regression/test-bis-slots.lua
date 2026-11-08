@@ -23,6 +23,15 @@ local SPECS = {
     { class = "MAGE", key = "frost-mage", name = "Frost Mage", slots = { [1] = { 104, 103, 102 } } },
 }
 
+-- A level's picks for each side, as Data/Leveling.lua has them.
+local LEVELING = {
+    ["fire-mage"] = {
+        [30] = { Alliance = { [1] = 101, [11] = 201 }, Horde = { [1] = 102, [11] = 201 } },
+        [40] = { Alliance = { [1] = 104, [16] = 301 }, Horde = { [1] = 104, [16] = 301 } },
+    },
+    ["frost-mage"] = { [30] = { Alliance = { [1] = 105 }, Horde = { [1] = 105 } } },
+}
+
 -- worn: slot -> item ID you wear there; carried: item ID -> how many in your bags and bank.
 local function Fixture(saved, char, worn, carried)
     local e = { account = { bis = saved }, printed = {} }
@@ -34,6 +43,8 @@ local function Fixture(saved, char, worn, carried)
     ns.UI = { RefreshPage = function() end }
     ns.Confirm = function(_, yes) yes() end
     ns.BiSData = { specs = SPECS, sources = {} }
+    ns.BiSLeveling = { levels = { 30, 40 }, specs = LEVELING, sources = {} }
+    e.faction = "Alliance"
 
     -- A stand-in codec: what these cases care about is the payload, not how it is packed.
     local vault = {}
@@ -41,6 +52,7 @@ local function Fixture(saved, char, worn, carried)
     local env = setmetatable({ NaowhForever = ns,
         UnitName = function() return char or "Tester" end,
         UnitClass = function() return "Mage", "MAGE" end,
+        UnitFactionGroup = function() return e.faction end,
         GetRealmName = function() return "Realm" end,
         wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
         GetInventoryItemID = function(_, slot) return worn and worn[slot] end,
@@ -545,6 +557,55 @@ Case("a spec-only list keeps its picks when the tabs change, and never parks the
     e.ns.SetBisSpec("frost-mage")
     e.ns.SetBisSpec("fire-mage")
     assert(Saved(e).name == "Fire AoE" and Picks(e, 1) == "103" and Saved(e).bySpec == nil)
+end)
+
+Case("loading a level makes a spec-only list of your side's picks and uses it, beside your own", function()
+    local e = Fixture()
+    e.ns.AddBisPick(1, 103)
+    e.ns.LoadBisLevel(30)
+    local list = Saved(e)
+    assert(list.name == "Level 30 Fire" and list.specOnly == true and list.spec == "fire-mage" and list.level == 30)
+    assert(Picks(e, 1) == "101" and Picks(e, 11) == "201", "the Alliance's picks")
+    e.ns.SelectBisList(Offered(e, "My BiS"))
+    assert(Picks(e, 1) == "103", "your own list keeps its picks")
+end)
+
+Case("loading a level again puts its picks back on the same list; changing it leaves the data alone", function()
+    local e = Fixture()
+    e.ns.LoadBisLevel(40)
+    local id = Saved(e).id
+    e.ns.RemoveBisPick(1, 104)
+    e.ns.AddBisPick(1, 102)
+    assert(LEVELING["fire-mage"][40].Alliance[1] == 104, "the data is not the list")
+    e.ns.SelectBisList(Offered(e, "My BiS"))
+    e.ns.LoadBisLevel(40)
+    assert(Saved(e).id == id and Picks(e, 1) == "104" and Picks(e, 16) == "301", "the same list, its picks again")
+    assert(#e.account.bisLists.MAGE.lists == 2, "no second list")
+end)
+
+Case("each side and spec loads its own; a level with no picks changes nothing", function()
+    local e = Fixture()
+    e.faction = "Horde"
+    e.ns.LoadBisLevel(30)
+    assert(Picks(e, 1) == "102", "the Horde's picks")
+    e.ns.SetBisSpec("frost-mage")
+    e.ns.LoadBisLevel(30)
+    assert(Saved(e).name == "Level 30 Frost" and Picks(e, 1) == "105", "frost's own list")
+    local made = #e.account.bisLists.MAGE.lists
+    e.ns.LoadBisLevel(40)
+    assert(#e.account.bisLists.MAGE.lists == made and Saved(e).name == "Level 30 Frost", "frost has no level 40")
+    e.ns.SetBisSpec("fire-mage")
+    assert(Saved(e).name == "Level 30 Fire" and Picks(e, 1) == "102", "fire's list is as it was")
+end)
+
+Case("an alt of the other side loading the same level gets its own list, and leaves yours", function()
+    local e = Fixture()
+    e.ns.LoadBisLevel(30)
+    local mine = Saved(e)
+    e.faction = "Horde"
+    e.ns.LoadBisLevel(30)
+    assert(Saved(e) ~= mine and Saved(e).side == "Horde" and Picks(e, 1) == "102", "the Horde's own list")
+    assert(mine.side == "Alliance" and mine.slots[1] == 101, "the Alliance's is as it was")
 end)
 
 Case("left unticked, a new list is a class list as before", function()

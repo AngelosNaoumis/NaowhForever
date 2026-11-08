@@ -3,6 +3,7 @@
     <Script file="BiS.lua"/>
     <Script file="Constants.lua"/>
     <Script file="Data\BiS.lua"/>
+    <Script file="Data\Leveling.lua"/>
     <Script file="Data\Spots.lua"/>
     <Script file="Data\Enchants.lua"/>
     <Script file="Rankings.lua"/>

@@ -26,6 +26,7 @@ local WOWHEAD_KIND = B.C.WOWHEAD_KIND
 local HINT = { list = ns.L("Right-click: Wowhead link") .. PLACE_DOT .. ns.L("Shift-click: link"),
     own = ns.L("Right-click: Wowhead link") .. PLACE_DOT .. ns.L("Shift-click: link"),
     add = ns.L("Click: add it") .. PLACE_DOT .. ns.L("Right-click: Wowhead link") }
+HINT.level = HINT.own
 
 local orders = {}
 
@@ -148,7 +149,8 @@ local function Set(row, slot, itemID, rank, mode, count, order)
     row.slot, row.itemID, row.rank, row.mode = slot, itemID, rank, mode
     row.hover:Hide()
     row.stripe:SetShown(view.striped)
-    local right = mode == "add" and 0 or ACTIONS_W
+    local mine = mode == "own"
+    local right = mine and ACTIONS_W or 0
     row.name:SetPoint("RIGHT", right, 0)
     row.meta:SetPoint("RIGHT", right, 0)
     row.icon:SetTexture(GetItemIconByID(itemID))
@@ -162,7 +164,6 @@ local function Set(row, slot, itemID, rank, mode, count, order)
     Cells.FitTip(row)
     row.meta:SetText(Cells.Meta(itemID, view.playerLevel) .. Cells.KeptTail(not worn and Items.Kept(itemID) or ""))
     Cells.FitSource(row, itemID)
-    local mine = mode ~= "add"
     row.canAct[row.up] = mine and rank > 1
     row.canAct[row.down] = mine and rank < count
     row.canAct[row.remove] = mine

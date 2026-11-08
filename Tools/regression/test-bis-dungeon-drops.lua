@@ -56,7 +56,7 @@ end
 -- With journal false, the Journal has not loaded.
 local function Fixture(class, level, sources, journal)
     local list = Dungeons()
-    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, BiSData = { sources = sources or {}, specs = {} }, QoLSettings = {},
+    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, BiSData = { sources = sources or {}, specs = {} }, BiSLeveling = { specs = {}, sources = {} }, QoLSettings = {},
         Journal = journal ~= false and { Items = FACTS, Dungeons = function() return list end } or nil }
     Load(RULES, Env(ns, class, level))
     ns.Shared.ItemFacts = FACTS
@@ -156,6 +156,13 @@ Case("the Journal's wording wins over wowsrc's; wowsrc's for what drops nowhere"
     assert(m.ns.BiSSource(100) == nil)
 end)
 
+Case("a leveling list's item named by nothing else takes the leveling data's source", function()
+    local m = Fixture("MAGE", 20, { [99] = "Crafted" })
+    m.ns.BiSLeveling.sources = { [2] = "Elsewhere", [99] = "Elsewhere", [100] = "Quest name" .. SEP .. "Quest (Horde)" }
+    assert(m.ns.BiSSource(2) == "Boss 2" .. SEP .. "Place 2" and m.ns.BiSSource(99) == "Crafted")
+    assert(m.ns.BiSSource(100) == "Quest name" .. SEP .. "Quest (Horde)")
+end)
+
 Case("a world drop the Journal places on a boss with no chance stays a world drop, and no dungeon drop", function()
     local m = Fixture("HUNTER", 40, { [1] = "World drop", [2] = "World drop", [20] = "World drop" })
     local list = m.ns.Journal.Dungeons()
@@ -219,7 +226,8 @@ for _, id in ipairs({ 5821, 263435, 263436, 270039, 270046, 272996, 276727, 2772
 
 Case("every ranked item has a source, from the Journal's dungeons or wowsrc", function()
     local dungeons = {}
-    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = {}, Shared = {}, Journal = {
+    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = {}, Shared = {},
+        BiSLeveling = { specs = {}, sources = {} }, Journal = {
         AddDungeon = function(_, dungeon) dungeons[#dungeons + 1] = dungeon end,
         Dungeons = function() return dungeons end,
     } }

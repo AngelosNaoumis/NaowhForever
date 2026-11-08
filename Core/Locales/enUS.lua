@@ -7720,3 +7720,4 @@ L["Needs reputation"] = true
 L["Thorns Only on Tank"] = true
 L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = true
 L["Needs Thorns"] = true
+L["The best gear you can get by each level. Load one as your list for this spec."] = true

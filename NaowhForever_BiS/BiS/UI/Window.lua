@@ -17,7 +17,7 @@ local CONTENT_LEFT = SIDE_W + PAD + 14
 local CARD_IN = 6
 local CONTENT_RIGHT = 4
 local DOLL_GAP = 12
-local PAGES_W = 240
+local PAGES_W = 360
 local PAGES_TOP = 4
 local PAGES_GAP = 8
 local SCROLL_IN = 4
@@ -40,6 +40,7 @@ local TEXT_TURNED_ON = ns.L("BiS List turned on. Turn it off in its settings pag
 local PAGES = {
     { key = "list", label = "Your List", tip = "Your picks for every slot, and where to run next." },
     { key = "quests", label = "Quests", tip = "The quests that reward a pick you do not have yet." },
+    { key = "levels", label = "Leveling", tip = "The best gear you can get by each level. Load one as your list for this spec." },
 }
 
 local window, view, doll
@@ -124,8 +125,12 @@ local function PaintSide()
 end
 
 local function DrawPage()
-    if page ~= "quests" then
+    if page == "list" then
         view:DrawList()
+        return
+    end
+    if page == "levels" then
+        view:DrawLevels()
         return
     end
     PaintSide()
@@ -143,12 +148,17 @@ local function ShowPage(key)
         questsView:SetWidth(view:GetWidth())
     end
     local shown = key == "quests" and questsView or view
-    view.page = (key == "quests" and not questsView) and "questsOff" or "list"
+    if key == "quests" then
+        view.page = questsView and "list" or "questsOff"
+    else
+        view.page = key
+    end
     local hidden = shown == view and questsView or view
     if hidden then hidden:Hide() end
     shown:Show()
-    view.summary:SetShown(shown == view)
-    scroll:SetPoint("TOPLEFT", scrollLeft, -(scrollTop + (shown == view and B.View.SUMMARY_H or 0)))
+    local summary = shown == view and key ~= "levels"
+    view.summary:SetShown(summary)
+    scroll:SetPoint("TOPLEFT", scrollLeft, -(scrollTop + (summary and B.View.SUMMARY_H or 0)))
     scroll:SetScrollChild(shown)
     scroll:SetVerticalScroll(0)
     Parts.PaintTabs(window.pages, page)
@@ -239,7 +249,7 @@ local function OnSetting(key)
 end
 
 local function ListChanged()
-    if page ~= "list" and window and window:IsShown() then DrawPage() end
+    if page == "quests" and window and window:IsShown() then DrawPage() end
 end
 
 local function Reapply()
