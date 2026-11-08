@@ -2,7 +2,8 @@
 -- race or class mask) becomes yours, for good, once a quest giver offers it to you; a player
 -- sharing a quest, a giver outside the Quest List's zones, or a quest the data lacks, teaches nothing,
 -- and one giver's quests are learned in one pass. A closed quest a giver offers is open, while one opened
--- past a requirement still closes.
+-- past a requirement still closes. A quest its giver does not offer is held back until you level up, and
+-- one not offered at two levels until the giver offers it.
 local function Read(path)
     local f = assert(io.open(path, "rb"))
     local s = f:read("*a"):gsub("\r\n", "\n"); f:close()
@@ -17,7 +18,7 @@ local SHAMAN = 64
 
 local account = {}
 local offers, player, logged = {}, false, {}
-local bestMap, builds, refreshes = 1429, 0, 0
+local bestMap, builds, refreshes, level = 1429, 0, 0, 5
 local handlers = {}
 
 local function Frame()
@@ -47,11 +48,11 @@ local function Load()
         Completo = { CharKey = function() return "Me-Realm" end, Settings = settings },
         Shared = { Places = dofile("Tools/regression/shared_places.lua") },
         CompletoQuestData = {
-            Zones = { { map = 1429, name = "Elwynn Forest", quests = { 1, 2, 3, 4, 5, 6, 7, 8 } } },
+            Zones = { { map = 1429, name = "Elwynn Forest", quests = { 1, 2, 3, 4, 5, 6, 7, 8, 9 } } },
             Quests = { [1] = Quest("Delicate Instruments", 1, ALLIANCE_NO_HUMAN),
                 [2] = Quest("Call of Earth", 1, 0, SHAMAN), [3] = Quest("Kobold Camp Cleanup", 1),
                 [4] = Quest("Horde Only", 2), [5] = Quest("The Lost Ingots", 1), [6] = Quest("Held Back", 1),
-                [7] = Quest("Lead-in", 1), [8] = Quest("Another Way", 1) },
+                [7] = Quest("Lead-in", 1), [8] = Quest("Another Way", 1), [9] = Quest("Not Offered", 1) },
             Repeatable = {}, Dungeon = {}, Requires = { [6] = { 7 } }, Chains = {}, Exclusive = { { 3, 5 }, { 6, 8 } },
         },
     }
@@ -67,7 +68,7 @@ local function Load()
             return "Human", "Human", 1
         end,
         UnitClass = function() return "Warrior", "WARRIOR", 1 end,
-        UnitLevel = function() return 5 end,
+        UnitLevel = function() return level end,
         UnitExists = function() return true end,
         UnitIsPlayer = function() return player end,
         UnitGUID = function() return "Creature-0-1" end,
@@ -140,5 +141,17 @@ Q.Refresh()
 Check(Q.State(6) == "closed", "and still closes once the other of its pair is in your log")
 local opened, reopened = account.completoOpened["Me-Realm"], account.completoReopened["Me-Realm"]
 Check(reopened[5] and not opened[5] and opened[6] and not reopened[6], "each kind of offer is kept apart")
+
+offers = {}
+Fire("GOSSIP_SHOW")
+Check(Q.State(9) == "held", "a quest its giver does not offer is held back")
+level = 6
+Check(Q.State(9) == "open", "until you level up")
+Fire("GOSSIP_SHOW")
+level = 7
+Check(Q.State(9) == "held", "one not offered at two levels stays held past the next level up")
+offers = { { questID = 9 } }
+Fire("GOSSIP_SHOW")
+Check(Q.State(9) == "open" and account.completoNotOffered["Me-Realm"][9] == nil, "until its giver offers it")
 
 print(("test-completo-quest-givers: %d checks passed"):format(checks))

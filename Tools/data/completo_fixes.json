@@ -2,7 +2,8 @@
   "_about": [
     "Corrections to the Quest List's data, kept by hand; Tools/build/completo_quests.py applies them over",
     "what Wowhead's pages, ForeverChanges' list and the caches give. Every fix says why, from a source",
-    "we may use: Wowhead Forever's quest pages, ForeverChanges' quest pages, or the game's tables.",
+    "we may use: Wowhead Forever's quest pages, ForeverChanges' quest pages, the game's tables, or what",
+    "EG Link's output saw on live servers (LICENSE.md).",
     "requires: per quest, add puts quests before it that the sources leave out, drop takes out ones",
     "they put there wrongly (a Series row lists side quests and lead-ins with the quest's own step).",
     "exclusive: quests of which you take one; the camping quests of one name, and the quests of one name",
@@ -15,9 +16,16 @@
     "them out; once it lists one, the build warns, and the quest can come off.",
     "events: holiday and world event quests ForeverChanges files under a zone, or under a quest sort that",
     "also has quests given all year, so the build's EVENT_SORTS misses them. They are left out like those.",
+    "races: the side or race mask (Wowhead's bits) of quests every source gets wrong, over the sources'.",
     "A key starting with _ is a note. A fix naming a quest the data lacks is skipped, with a warning."
   ],
   "requires": {
+    "786": {"drop": [785], "why": "Thwarting Kolkar Aggression is taken on live servers without A Strategic Alliance done (EG Link's quest_prerequisites, 1.60.1.70790 and 70840)."},
+    "788": {"drop": [787], "why": "Cutting Teeth is taken on live servers with only Your Place in the World done, not The New Horde (EG Link's quest_prerequisites, 1.60.1.70790 and 70840)."},
+    "5041": {"drop": [871], "why": "Supplies for the Crossroads is taken on live servers without Disrupt the Attacks done (EG Link's quest_prerequisites, 1.60.1.70790 and 70840)."},
+    "97242": {"drop": [97246], "why": "Yelmak's Medley is taken on live servers without Meal Appeal done (EG Link's quest_prerequisites, 1.60.1.70790 and 70840)."},
+    "526": {"drop": [324], "why": "The Lost Ingots and Lightforge Ingots are one task, of which you take one (exclusive below), so neither waits for the other; the catalog has both that and The Lost Ingots before it."},
+    "5210": {"drop": [5168], "why": "Brother Carlin comes before Heroes of Darrowshire, which the catalog has needing it (and Brother Carlin after The Annals of Darrowshire); its Series row put Heroes first, so each waited for the other."},
     "19": {"drop": [98386], "why": "Tharil'zun and Blackrock Blockade are Marshal Marris's war on the Blackrock orcs; Alther's Mill is Foreman Oslow's spider job at the lumber mill (ForeverChanges' quest pages)."},
     "92422": {"add": [99156], "why": "The Wrath of Rath'mael is offered once Rear Guard Patrol (356, then 99156) is done on live servers, where Beta had no prerequisite: Wowhead's news (5 Nov 2026) and its Forever dungeon quest guide, which marks it Pre and links Rear Guard Patrol where it starts."},
     "92470": {"drop": [92469], "why": "Aetheen of the Gales (92471) ends at Aetheen, who gives Foul Matriarch; Return to Rorian ends at Rorian (ForeverChanges' givers)."},
@@ -80,5 +88,10 @@
     {"quests": [7905, 7926], "why": "The Darkmoon Faire, from the Faire's heralds in Ironforge and Orgrimmar, which ForeverChanges files under those cities, not the Darkmoon Faire: they stand there only around the Faire (CMaNGOS's game_event_creature)."},
     {"quests": [9085, 9094, 9153, 9154, 9260, 9261, 9262, 9263, 9264, 9265, 9292, 9295, 9299, 9300, 9301, 9302, 9304, 9310, 9317, 9318, 9320, 9333, 9334, 9335, 9336, 9337, 9341, 9343], "why": "The Scourge Invasion, which ForeverChanges files under Invasion (368) with Message from the Supreme Magister (98471), a Forever Skyborne quest given all year: the givers spawn only during the Invasion (CMaNGOS's game_event_creature), and the necrotic crystals and the letters from the Front have no spawn or loot outside its scripts. The Keeper's Call (9247), which comes by mail, stays."},
     {"quests": [8193, 8194, 8221, 8224, 8225, 8228, 8229], "why": "The Stranglethorn Fishing Extravaganza, which ForeverChanges files under Fishing (101) with quests given all year (Nat Pagle's): Riggle Bassbait, Jang, Fishbot 5000 and the fliers' Barrus and Grinkle stand there only around the weekly tournament (CMaNGOS's game_event_creature)."}
+  ],
+  "races": [
+    {"quests": [4736, 4968], "side": 1, "why": "In Search of Menara Voidrender and Knowledge of the Orb of Orahil from Briarthorn in Ironforge and Demisette Cloyce in Stormwind, the givers ForeverChanges and the catalog both name; Wowhead and ForeverChanges have them on the Horde's side and each Horde version on the Alliance's, which the catalog has the other way round."},
+    {"quests": [4737, 4967], "side": 2, "why": "The same two warlock quests from Zevrost in Orgrimmar (ForeverChanges' and the catalog's giver)."},
+    {"quests": [27, 28, 30, 31, 6126, 6127, 6128, 6129, 6130], "reqrace": 8589934624, "why": "A Lesson to Learn's and Lessons Anew's druid chains, which every source gives the Tauren alone: Windshaper Skyborne druids hand in each of them on live servers (EG Link's turn-ins, 1.60.1.70790)."}
   ]
 }

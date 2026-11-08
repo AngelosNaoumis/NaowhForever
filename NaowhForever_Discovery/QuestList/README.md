@@ -63,7 +63,13 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
 - `D.Quests[questID]`: name, level, required level, side (1 Alliance, 2 Horde, 3 both), race mask,
   class mask, start uiMapID, x, y (percent), quest giver, item. A quest an item begins has the mob
   that drops it as its giver, and the item. Spots on the maps Forever redrew are moved from
-  Wowhead's classic ones onto Forever's.
+  Wowhead's classic ones onto Forever's. Each source misses the class of some class quests (Call of
+  Earth on Zephras Isle, the rogues' dead drops), so the class mask is narrowed by every class named
+  for the quest: the catalog's, and the class whose quest sort ForeverChanges files it under. The race
+  mask is narrowed the same way by the catalog's (Alterac Valley's Frostwolf and Stormpike quests).
+  `completo_fixes.json`'s `races` sets the side or races every source gets wrong. ForeverChanges' giver
+  is not taken for a quest whose side Wowhead and the catalog agree on against it: its record is the
+  other side's version (A Lesson to Learn, 26 and 27).
 - Which quests there are, and where their givers stand, follow ForeverChanges' quest list and
   pages (`Tools/build/foreverchanges_quests.py`): a quest it does not list is left out, unless
   `completo_fixes.json`'s `unlisted` names it (one new in the game that the site has not listed
@@ -99,8 +105,9 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
   progress leaves them out too.
 - `D.Requires[questID]`: what must be done before it opens, every element of the list. An element is a
   quest, or a list of alternatives one of which will do: quests of one name (each class's or faction's
-  version) and the quests the zones lack, which cannot be told apart. From Forever's Series box and
-  Wowhead Classic's Requires box, so a Forever-only quest (id 10000 and up) has only its Series.
+  version) and the quests the zones lack, which cannot be told apart. From Forever's Series box,
+  Wowhead Classic's Requires box, and for a quest with no Requires box the catalog's prerequisites
+  (`quest_entity_catalog.json`'s preQuestGroup, all needed, and preQuestSingle, one of them).
   `Tools/data/completo_fixes.json` adds what those leave out (Toxic Soil, a Storyline and no Series)
   and drops what they get wrong, each fix with what shows it. A fix naming a quest the data lacks is
   skipped with a warning, so the build still runs.
@@ -114,9 +121,18 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
   area's The Great Outdoors, The Adventurer and Camping 101 for each profession; ForeverChanges files
   them under the game's Camping quest sort, 666), and the pairs in `completo_fixes.json`. A quest is in
   one group at most: the build skips, with a warning, a hand-kept group naming a quest already in one.
-- `D.Breadcrumb[questID]`: the quest a breadcrumb sends you to (it ends at that quest's giver).
+- `D.Breadcrumb[questID]`: the quest a breadcrumb sends you to (it ends at that quest's giver), from
+  `completo_fixes.json` and the catalog's breadcrumbForQuestId.
 - `D.Profession[questID]`: the skill line (SkillLine) a quest needs, and `D.Recipe[questID]` the camp
-  recipe a Camping 101 quest teaches, from `completo_fixes.json`.
+  recipe a Camping 101 quest teaches, from `completo_fixes.json`, then the catalog's requiredSkill;
+  `D.SkillRank[questID]` the rank it needs where that is more than 1.
+- `D.MinReputation[questID]` and `D.MaxReputation[questID]`: `{ factionID, standing }`, the standing a
+  quest needs at least, or is given only below (Neutral 0, Friendly 3000, as `currentStanding` counts).
+  `D.MaxLevel[questID]`: the level it is given up to (each battleground bracket's quests).
+- `D.ClosedBy[questID]`: the quests that close it once done or in your log, less any it needs: the
+  catalog's exclusiveTo, and for a breadcrumb each quest whose disabledByQuest names it (each names a
+  breadcrumb to its own giver, as Report to Sen'jin Village leads to Master Gadrin's quests).
+  `D.Until[questID]`: the quest it is given until that is done (the Saptas, until Call of Earth).
 - `D.Rares[npcID]`: name, lowest and highest level (0 when not known, -1 for a boss level, "??"),
   elite (1 for a rare elite), how it meets the Alliance and the Horde (-1 hostile, 0 neutral,
   1 friendly), uiMapID, `{ x, y, ... }` where it spawns (percent, on Forever's map), and for one
@@ -143,10 +159,12 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
   races (95 and 96) too.
 - A quest for both sides whose race mask names only the High Order Skyborne is both Skyborne's: Wowhead
   and ForeverChanges both call those both sides' (`races` in `Tools/build/completo_quests.py`). Other
-  masks stay as the sources give them, even where they look like slips: 64 Forever-new Alliance quests
-  leave Humans out (Goldshire's Delicate Instruments and Northshire's Rascally Rodents among them), and
-  some Zephras Isle quests name Tauren but not the Windshaper Skyborne. Wowhead's pages show the same,
-  so they wait for a check in game; a giver's offer makes such a quest yours meanwhile.
+  masks are only narrowed, never widened, from the sources, even where they look like slips: 64
+  Forever-new Alliance quests leave Humans out (Goldshire's Delicate Instruments and Northshire's
+  Rascally Rodents among them), and some Zephras Isle quests name Tauren but not the Windshaper Skyborne.
+  Wowhead's pages show the same, so they wait for a check in game; a giver's offer makes such a quest
+  yours meanwhile. One seen in game goes in `completo_fixes.json`'s `races`: EG Link's turn-ins show
+  Windshaper Skyborne druids doing the Tauren's A Lesson to Learn and Lessons Anew chains.
 - A quest the data says is not yours (its race or class) that a giver offers you is yours from then on
   (`completoMine`, per character), so a mask the data still has wrong corrects itself the first time
   you speak to the giver.
@@ -156,25 +174,32 @@ quest and creature pages. Do not edit them by hand: change the tool and run it a
   needing less than its own level less 10.
 - A repeatable quest is never done for good, so zone counts leave it out.
 - A quest you can no longer take is "Not offered any more": one of its exclusive group, its breadcrumb's
-  target (or one of the target's group), or a quest that needs it is done or in your log, or you know the
-  camp recipe it teaches. One needing a profession you lack is "Needs a profession"; a quest that
-  introduces a profession (The Quarry's Smith, This Is Spinal Axe, My First Alchemy Set and My First Real
-  Potion) needs none, as it is for players who lack it. Neither gets a ! or counts toward its zone unless
-  it is done or in your log, so a zone can reach all of its quests and its count matches its rows. Such
+  target (or one of the target's group), a quest that needs it or one of its `D.ClosedBy` is done or in
+  your log, its `D.Until` is done, you know the camp recipe it teaches, or you are past its level or the
+  standing it is given below. One needing a profession you lack, or more of it, is "Needs a profession";
+  a quest that introduces a profession (My First Alchemy Set and My First Real Potion) needs none, as it
+  is for players who lack it, while The Quarry's Smith and This Is Spinal Axe need Blacksmithing, as the
+  catalog has them. One needing more standing with a faction than you have is "Needs reputation". None of
+  them gets a ! or counts toward its zone unless it is done or in your log, so a zone can reach all of
+  its quests and its count matches its rows. Such
   a quest its giver does offer is open for good (`completoReopened`, per character). That is apart from
   `completoOpened`, which a quest offered past a requirement gets, so such a quest still closes once it
   can no longer be taken. A side quest the data lists as needed by a later one closes with that later one
   too, so `completo_fixes.json` drops such requirements.
-- Your professions (`GetProfessions`), the camp recipes you know (`C_SpellBook.IsSpellKnown`), the
-  quests in your log, `completoOpened` and `completoReopened` are read on each refresh with what you
-  have done, not on each check: a zone count checks every quest of every zone. The window and the map's
+- Your professions and their ranks (`GetProfessions`), the camp recipes you know
+  (`C_SpellBook.IsSpellKnown`), your standing with each faction a quest names
+  (`C_Reputation.GetFactionDataByID`; one it gives nothing for holds nothing back), the quests in your
+  log, `completoOpened` and `completoReopened` are read on each refresh with what you have done, not on
+  each check: a zone count checks every quest of every zone. The window and the map's
   quest pins also redraw on `SKILL_LINES_CHANGED` and `LEARNED_SPELL_IN_SKILL_LINE` while shown.
   Camping 101: Cooking teaches cooking, so it needs no profession and teaches no recipe.
 - A quest with an unmet requirement is "Needs an earlier quest", with no ! on the map, and its row
   says "Requires: <quest>" (up to three, all of them in its tooltip). The data cannot know every
-  prerequisite (a reputation, a skill, a Forever-only quest's quests). A quest it says you could take,
-  but whose giver does not offer it, is held back ("Not offered yet", no !) until you level up or
-  hand in a quest in its zone. It is kept per character (name-realm) in the account settings,
+  prerequisite (a Forever-only quest's quests where the catalog names none). A quest it says you could
+  take, but whose giver does not offer it, is held back ("Not offered yet", no !) until you level up or
+  hand in a quest in its zone; one its giver has not offered at two levels (`MISSES_HELD`) stays held
+  until the giver offers it, so a ! the data has wrong does not come back with each level. It is kept
+  per character (name-realm) in the account settings,
   `completoNotOffered` and `completoTurnIns`. A quest held back as "Needs an earlier quest" that its
   giver does offer is taken as open for good (`completoOpened`), so a requirement the data has wrong
   corrects itself the first time you speak to the giver.

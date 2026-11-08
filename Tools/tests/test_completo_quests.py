@@ -6,10 +6,17 @@ only the High Order Skyborne is both Skyborne's, and other masks stay as given; 
 and the catalog agree: a class, level or side both give is taken, one alone is not, nor what both
 write for a value they lack (side 3, level 0), and the build takes them for the quests ForeverChanges
 lists, in the zone it files them under, before it writes their rows, reporting the ones Quests.lua did
-not have yet; a quest ForeverChanges does not list kept when the fixes name it, warned of once it lists
-it; holiday and world event quests left out, by their quest sort or the fixes; and the gating it writes: a quest's versions the game counts as one (one name, one completion
-bit), the camping quests of one name and the hand-kept groups are exclusive, a quest in one group at most, and the breadcrumbs, professions and camp recipes come from
-the fixes, an entry naming a quest the data lacks skipped with a warning. Offline. From the repo root:
+not have yet; a class narrowed by the catalog's class or ForeverChanges' class quest sort, and races by
+the catalog's race mask, one sharing none with it passed over, and written that way; a quest
+ForeverChanges does not list kept when the fixes name it, warned of once it lists it; holiday and world
+event quests left out, by their quest sort or the fixes; the gating it writes: a quest's versions the
+game counts as one (one name, one completion bit), the camping quests of one name and the hand-kept
+groups are exclusive, a quest in one group at most, and the breadcrumbs, professions and camp recipes
+come from the fixes, an entry naming a quest the data lacks skipped with a warning; the catalog's
+prerequisites where none are known, a version joining an explicit group; the catalog's gates
+(reputation, skill rank, level, breadcrumbs, the quests that close one), a quest not waiting for its
+breadcrumb; ForeverChanges' giver left out where its record is the other side's; and the race fixes.
+Offline. From the repo root:
 
     python -m unittest discover -s Tools/tests
 """
@@ -131,9 +138,10 @@ class AgreedWritten(unittest.TestCase):
         listed = {"quests": {"98072": dict(quests[98072], side=3, category=["zone", 11]),
                              "8316": dict(quests[8316], side=2, reqclass=1, category=["zone", 40])},
                   "starts": {}}
-        catalog = {"98072": dict(quests[98072], side=3, zone=11, zone_name="Wetlands", start=None, repeatable=False),
+        catalog = {"98072": dict(quests[98072], side=3, zone=11, zone_name="Wetlands", start=None, repeatable=False,
+                                  source_fields={}),
                    "8316": dict(quests[8316], side=2, reqclass=1, zone=11, zone_name="Wetlands", start=None,
-                                repeatable=False)}
+                                repeatable=False, source_fields={})}
         with tempfile.TemporaryDirectory() as folder:
             out = Path(folder) / "Quests.lua"
             with mock.patch.object(completo_quests, "ROOT", Path(folder)), mock.patch.object(completo_quests, "OUT", out), \
@@ -157,6 +165,71 @@ class AgreedWritten(unittest.TestCase):
         report = completo_quests.taken_report(taken, before)
         self.assertIn("2 values are theirs instead of ours, 1 of them new.", report)
         self.assertIn("- Armaments of War (8316): side 3 to 2", report)
+
+
+class Narrowed(unittest.TestCase):
+    SHAMAN, DRUID, ROGUE, HUNTER = 64, 1024, 8, 4
+    ALLIANCE, HORDE = completo_quests.SIDE_RACES[1], completo_quests.SIDE_RACES[2]
+
+    def quest(self, qid, reqclass):
+        return {"id": qid, "name": "Call of Earth", "level": 4, "reqlevel": 3, "side": 2, "reqclass": reqclass}
+
+    def test_the_catalog_names_the_class_the_zone_page_lacks(self):
+        catalog = {"92466": {"reqclass": self.SHAMAN}}
+        self.assertEqual(completo_quests.narrowed(self.quest(92466, 0), {}, catalog)["reqclass"], self.SHAMAN)
+
+    def test_a_broader_class_is_cut_to_the_shared_one(self):
+        catalog = {"92468": {"reqclass": self.SHAMAN}}
+        quest = self.quest(92468, self.SHAMAN | self.DRUID)
+        self.assertEqual(completo_quests.narrowed(quest, {}, catalog)["reqclass"], self.SHAMAN)
+
+    def test_a_class_quest_sort_names_the_class(self):
+        # The Horn of Xelthos: ForeverChanges files it under the rogues' quest sort, the catalog gives no class.
+        listed = {"quests": {"78261": {"category": ["sort", 162]}}}
+        quest = self.quest(78261, 0)
+        self.assertEqual(completo_quests.narrowed(quest, listed, {"78261": {"reqclass": 0}})["reqclass"], self.ROGUE)
+
+    def test_other_sorts_and_zones_name_none(self):
+        quest = self.quest(96057, 0)
+        for category in (["sort", 666], ["zone", 1537], None):
+            listed = {"quests": {"96057": {"category": category, "reqclass": 400}}}
+            self.assertIs(completo_quests.narrowed(quest, listed, {}), quest)
+
+    def test_a_source_sharing_no_class_is_passed_over(self):
+        # A Scribbled Letter: Hunter's on Wowhead and in the catalog, Warrior's on ForeverChanges.
+        listed = {"quests": {"92479": {"category": ["sort", 81]}}}
+        quest = self.quest(92479, self.HUNTER)
+        self.assertIs(completo_quests.narrowed(quest, listed, {"92479": {"reqclass": self.HUNTER}}), quest)
+
+    def test_the_catalog_names_the_races(self):
+        # Rise and Be Recognized: both sides' on Wowhead, the Frostwolf's in the catalog.
+        quest = dict(self.quest(7163, 0), side=3, reqrace=0)
+        self.assertEqual(completo_quests.narrowed(quest, {}, {"7163": {"reqrace": self.HORDE}})["reqrace"], self.HORDE)
+        # Desperate Prayer: the Humans' and Dwarves' on Wowhead, the Dwarves' alone in the catalog.
+        quest = dict(self.quest(5634, 0), side=1, reqrace=5)
+        self.assertEqual(completo_quests.narrowed(quest, {}, {"5634": {"reqrace": 4}})["reqrace"], 4)
+
+    def test_races_the_side_gives_already_or_none_of_them_are_passed_over(self):
+        quest = dict(self.quest(92466, 0), side=2, reqrace=0)
+        self.assertIs(completo_quests.narrowed(quest, {}, {"92466": {"reqrace": self.HORDE}}), quest)
+        self.assertIs(completo_quests.narrowed(quest, {}, {"92466": {"reqrace": self.ALLIANCE}}), quest)
+
+    def test_written(self):
+        quests = {92466: self.quest(92466, 0), 78261: dict(self.quest(78261, 0), name="The Horn of Xelthos")}
+        zones = {"16593": {"name": "Zephras Isle", "quests": list(quests.values())}}
+        listed = {"quests": {"92466": dict(quests[92466], category=["zone", 16593]),
+                             "78261": dict(quests[78261], category=["sort", 162])}, "starts": {}}
+        catalog = {"92466": dict(quests[92466], reqclass=self.SHAMAN, zone=16593, zone_name="Zephras Isle",
+                                 start=None, repeatable=False, source_fields={})}
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "Quests.lua"
+            with mock.patch.object(completo_quests, "ROOT", Path(folder)), mock.patch.object(completo_quests, "OUT", out), \
+                    contextlib.redirect_stdout(io.StringIO()):
+                taken = completo_quests.write(zones, {}, {}, {}, {}, {}, catalog, listed, {})
+            rows = completo_quests.shipped(out)
+        self.assertEqual(rows[92466]["reqclass"], self.SHAMAN)
+        self.assertEqual(rows[78261]["reqclass"], self.ROGUE)
+        self.assertEqual(taken, [])
 
 
 class Unlisted(unittest.TestCase):
@@ -230,7 +303,8 @@ class Events(unittest.TestCase):
             "8677": {"name": "Darkhorn the Elder", "level": 60, "reqlevel": 1, "side": 3, "reqclass": 0,
                      "category": ["sort", 366]}},
             "starts": {"8677": [[1454, 41.1, 33.8, "Elder Darkhorn"]]}}
-        catalog = {"6961": dict(winter, side=2, zone=1637, zone_name="Orgrimmar", start=None, repeatable=False)}
+        catalog = {"6961": dict(winter, side=2, zone=1637, zone_name="Orgrimmar", start=None, repeatable=False,
+                                 source_fields={})}
         fixes = {"events": [{"quests": [172]}]}
         with tempfile.TemporaryDirectory() as folder:
             out = Path(folder) / "Quests.lua"
@@ -317,6 +391,81 @@ class Gating(unittest.TestCase):
         self.assertIn("professions 164 names quest 2, which the data does not have; skipped", err.getvalue())
 
 
+class CatalogGates(unittest.TestCase):
+    def record(self, qid, side=2, start=None, **fields):
+        return {"name": f"Quest {qid}", "level": 10, "reqlevel": 5, "side": side, "reqrace": 0, "reqclass": 0,
+                "zone": 1637, "zone_name": "Orgrimmar", "start": start, "repeatable": False, "source_fields": fields}
+
+    def test_prerequisites_where_none_are_known(self):
+        catalog = {"46": self.record(46, preQuestSingle={"1": 39}), "990": self.record(990, preQuestSingle=[994, 995]),
+                   "7795": self.record(7795, preQuestGroup={"1": 7791, "2": 7793}),
+                   "1516": self.record(1516, preQuestSingle=[1516, 1519]),
+                   "4964": self.record(4964, preQuestGroup=[4976, -4962]), "143": self.record(143, preQuestSingle=[121])}
+        requires = completo_quests.catalog_requires({"46": None, "143": {"quests": [120]}}, catalog)
+        self.assertEqual(requires["46"], {"quests": [39]})
+        self.assertEqual(requires["990"], {"quests": [994, 995], "groups": [[994, 995]]})
+        self.assertEqual(requires["7795"], {"quests": [7791, 7793]})
+        self.assertEqual(requires["143"], {"quests": [120]})
+        self.assertNotIn("1516", requires)
+        self.assertNotIn("4964", requires)
+
+    def test_another_version_joins_an_explicit_group(self):
+        # Rabine Saturna: the catalog names three of The New Frontier's versions, its Series a fourth.
+        known = {q: (17, {"name": "The New Frontier"}) for q in (1000, 1004, 1018, 6761)}
+        requires = {"1123": {"quests": [1000, 1004, 1018], "groups": [[1000, 1004, 1018]]}}
+        out = completo_quests.requirements({1123: [1000, 1004, 1018, 6761]}, known, requires)
+        self.assertEqual(out[1123], [[1000, 1004, 1018, 6761]])
+
+    def write(self, sides, catalog, listed=None, fixes=None, requires=None):
+        zones = {"1637": {"name": "Orgrimmar", "quests": [
+            {"id": q, "name": f"Quest {q}", "level": 10, "reqlevel": 5, "side": side} for q, side in sides.items()]}}
+        err = io.StringIO()
+        with tempfile.TemporaryDirectory() as folder:
+            out = Path(folder) / "Quests.lua"
+            with mock.patch.object(completo_quests, "ROOT", Path(folder)), mock.patch.object(completo_quests, "OUT", out), \
+                    contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+                completo_quests.write(zones, {}, requires or {}, {}, {}, {}, catalog, listed, fixes or {})
+            return out.read_text(), err.getvalue()
+
+    def test_written(self):
+        record = self.record
+        catalog = {"1369": record(1369, requiredMinRep={"1": 93, "2": 3000}),
+                   "1036": record(1036, requiredMaxRep={"1": 21, "2": -6000}),
+                   "8368": record(8368, requiredMaxLevel=19), "3526": record(3526, requiredSkill={"1": 202, "2": 200}),
+                   "163": record(163, breadcrumbForQuestId=5), "1462": record(1462, availableUntilCompleted=1521),
+                   "808": record(808, disabledByQuest=805),
+                   "5627": record(5627, preQuestSingle=[5628, 5629], exclusiveTo=[5628, 5629]),
+                   "860": record(860, breadcrumbForQuestId=844)}
+        ids = (1369, 1036, 8368, 3526, 163, 5, 1462, 1521, 805, 808, 5627, 5628, 5629, 860, 844)
+        text, _ = self.write({q: 2 for q in ids}, catalog, requires={"844": {"quests": [860]}})
+        self.assertIn("D.MinReputation = {\n    [1369] = { 93, 3000 },\n}", text)
+        self.assertIn("D.MaxReputation = {\n    [1036] = { 21, -6000 },\n}", text)
+        self.assertIn("D.MaxLevel = {\n    [8368] = 19,\n}", text)
+        self.assertIn("D.Profession = {\n    [3526] = 202,\n}", text)
+        self.assertIn("D.SkillRank = {\n    [3526] = 200,\n}", text)
+        self.assertIn("D.Until = {\n    [1462] = 1521,\n}", text)
+        self.assertIn("D.Breadcrumb = {\n    [163] = 5,\n    [860] = 844,\n}", text)
+        # disabledByQuest names the breadcrumb the quest closes; Stars of Elune needs what it is exclusive to.
+        self.assertIn("D.ClosedBy = {\n    [805] = { 808 },\n}", text)
+        self.assertIn("    [5627] = { { 5628, 5629 } },\n", text)
+        # Plainstrider Menace does not wait for Sergra Darkthorn, which only sends you to its giver.
+        self.assertNotIn("    [844] = { 860 },", text)
+
+    def test_a_swapped_giver_and_the_race_fixes(self):
+        # A Lesson to Learn: ForeverChanges has the Horde version's side and giver, Wowhead and the catalog
+        # the Alliance's. In Search of Menara Voidrender: every source but the catalog on the wrong side.
+        darnassus = {"coord": [35.37, 8.4], "coordinate_space": "forever", "npc": "Mathrengyl Bearwalker", "zone": 1657}
+        catalog = {"26": self.record(26, side=1, start=darnassus), "4736": self.record(4736, side=1)}
+        listed = {"quests": {"26": {"name": "Quest 26", "side": 2, "category": ["zone", 1637]},
+                             "4736": {"name": "Quest 4736", "side": 2, "category": ["zone", 1637]}},
+                  "starts": {"26": [[1456, 76.5, 27.2, "Turak Runetotem"]], "4736": [[1454, 50.0, 50.0, "Briarthorn"]]}}
+        fixes = {"races": [{"quests": [4736], "side": 1}, {"quests": [26], "side": 1}]}
+        text, err = self.write({26: 1, 4736: 2}, catalog, listed, fixes)
+        self.assertIn('    [26] = { "Quest 26", 10, 5, 1, 0, 0, 1457, 35.4, 8.4, "Mathrengyl Bearwalker" },', text)
+        self.assertIn('    [4736] = { "Quest 4736", 10, 5, 1, 0, 0, 1454, 50.0, 50.0, "Briarthorn" },', text)
+        self.assertIn("races names quest 26, which the sources give that already", err)
+
+
 class FixesFile(unittest.TestCase):
     def test_every_fix_says_why(self):
         fixes = json.loads((paths.DATA / "completo_fixes.json").read_text(encoding="utf-8"))
@@ -326,7 +475,8 @@ class FixesFile(unittest.TestCase):
             self.assertTrue(fix.get("why"), qid)
             self.assertTrue(fix.get("add") or fix.get("drop"), qid)
         breadcrumbs = [b for k, b in fixes["breadcrumbs"].items() if not k.startswith("_")]
-        for entry in fixes["exclusive"] + breadcrumbs + fixes["professions"] + fixes["unlisted"] + fixes["events"]:
+        for entry in fixes["exclusive"] + breadcrumbs + fixes["professions"] + fixes["unlisted"] + fixes["events"] \
+                + fixes["races"]:
             self.assertTrue(entry.get("why"), entry)
 
 

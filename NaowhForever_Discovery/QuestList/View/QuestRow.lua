@@ -19,7 +19,7 @@ local STATE = {
     done = { ns.L("Done"), "muted" }, log = { ns.L("In your log"), "log" }, low = { ns.L("Needs level %d"), "red" },
     later = { ns.L("Needs an earlier quest"), "muted" }, open = { ns.L("Not done"), "fg" },
     held = { ns.L("Not offered yet"), "muted" }, closed = { ns.L("Not offered any more"), "muted" },
-    skill = { ns.L("Needs a profession"), "muted" },
+    skill = { ns.L("Needs a profession"), "muted" }, rep = { ns.L("Needs reputation"), "muted" },
 }
 local TEXT_REPEATABLE = ns.L("Repeatable")
 local TEXT_PIN_HINT = ns.L("To who gives the quest.")

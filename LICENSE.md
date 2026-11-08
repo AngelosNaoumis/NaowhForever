@@ -660,8 +660,9 @@ SOFTWARE.
 ## EG Link output: World of Warcraft: Forever
 
 **Path**: NaowhForever_DungeonJournal/Data/Quests.lua and QuestChains.lua (dungeon quests, their
-required levels, sharing and one quest giver, from https://github.com/JIVESCORP/eg-link-output-wowf,
-reduced to those facts)
+required levels, sharing and one quest giver), and NaowhForever_DiscoveryData/Quests.lua (the races
+that hand in some quests, by way of Tools/data/completo_fixes.json), from
+https://github.com/JIVESCORP/eg-link-output-wowf, reduced to those facts
 
 ### License
 

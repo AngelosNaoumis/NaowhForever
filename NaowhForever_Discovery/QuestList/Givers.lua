@@ -7,7 +7,7 @@ local Q = Completo.Quests
 
 local QUEST_ID_ANSWER = 5
 local EVENTS = { "GOSSIP_SHOW", "QUEST_GREETING", "QUEST_DETAIL", "QUEST_TURNED_IN" }
-local CLOSED = { closed = true, skill = true }
+local CLOSED = { closed = true, skill = true, rep = true }
 local NONE = {}
 
 local offered = {}

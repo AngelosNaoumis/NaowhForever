@@ -9,16 +9,18 @@ local NAME, LEVEL, REQ_LEVEL, SIDE, RACES, CLASSES, MAP, X, Y, GIVER, ITEM = 1, 
 local ALLIANCE, HORDE = 1, 2
 local RACE_BITS = { [1] = 0, [2] = 1, [3] = 2, [4] = 3, [5] = 4, [6] = 5, [7] = 6, [8] = 7, [95] = 32, [96] = 33 }
 local UNIT_ID = 3
-local SKILL_LINE = 7
+local SKILL_RANK = 3
 local MAX_UNDER = 10
 local CLASSIC_GREEN_RANGE = 8
+local MISSES_HELD = 2
 local NOT_OFFERED_STORE, TURN_INS_STORE = "completoNotOffered", "completoTurnIns"
 local OPENED_STORE, MINE_STORE, REOPENED_STORE = "completoOpened", "completoMine", "completoReopened"
 local NONE = {}
 
 local mine, zoneOf, chains, chainOf, closers, recipes, needs, teaches
+local ranks, untils, maxLevels, minReps, maxReps, factions
 local opened, reopened = {}, {}
-local done, logged, skills, known = {}, {}, {}, {}
+local done, logged, skills, known, standings = {}, {}, {}, {}, {}
 local byMap
 local zoneChains, zoneSingles, seenChain = {}, {}, {}
 local found, foundIn = {}, {}
@@ -82,8 +84,9 @@ local function AddCloser(id, other)
 end
 
 local function IndexClosers()
-    closers, recipes = {}, {}
-    needs, teaches = D.Profession or NONE, D.Recipe or NONE
+    closers, recipes, factions = {}, {}, {}
+    needs, teaches, ranks, untils = D.Profession or NONE, D.Recipe or NONE, D.SkillRank or NONE, D.Until or NONE
+    maxLevels, minReps, maxReps = D.MaxLevel or NONE, D.MinReputation or NONE, D.MaxReputation or NONE
     local groupOf = {}
     for _, group in ipairs(D.Exclusive or NONE) do
         for _, id in ipairs(group) do
@@ -108,7 +111,12 @@ local function IndexClosers()
             end
         end
     end
+    for id, others in pairs(D.ClosedBy or NONE) do
+        for _, other in ipairs(others) do AddCloser(id, other) end
+    end
     for _, spell in pairs(teaches) do recipes[spell] = true end
+    for _, rep in pairs(minReps) do factions[rep[1]] = true end
+    for _, rep in pairs(maxReps) do factions[rep[1]] = true end
 end
 
 local function Prepare()
@@ -138,8 +146,8 @@ local function AddSkills(...)
     for i = 1, select("#", ...) do
         local index = select(i, ...)
         if index then
-            local line = select(SKILL_LINE, GetProfessionInfo(index))
-            if line then skills[line] = true end
+            local rank, _, _, _, line = select(SKILL_RANK, GetProfessionInfo(index))
+            if line then skills[line] = rank end
         end
     end
 end
@@ -149,6 +157,11 @@ local function ReadKnown()
     AddSkills(GetProfessions())
     wipe(known)
     for spell in pairs(recipes) do known[spell] = C_SpellBook.IsSpellKnown(spell) end
+    wipe(standings)
+    for faction in pairs(factions) do
+        local data = C_Reputation.GetFactionDataByID(faction)
+        standings[faction] = data and data.currentStanding
+    end
     wipe(logged)
     for i = 1, C_QuestLog.GetNumQuestLogEntries() do
         local id = C_QuestLog.GetQuestIDForLogIndex(i)
@@ -156,12 +169,25 @@ local function ReadKnown()
     end
 end
 
+local function Outgrown(id)
+    local level, rep = maxLevels[id], maxReps[id]
+    if level and UnitLevel("player") > level then return true end
+    local standing = rep and standings[rep[1]]
+    return standing ~= nil and standing >= rep[2]
+end
+
+local function ShortOfReputation(id)
+    local rep = minReps[id]
+    local standing = rep and standings[rep[1]]
+    return standing ~= nil and standing < rep[2]
+end
+
 local function Closed(id)
     local state
     local skill = needs[id]
-    if skill and not skills[skill] then
+    if skill and (skills[skill] or 0) < (ranks[id] or 1) then
         state = "skill"
-    elseif known[teaches[id]] then
+    elseif known[teaches[id]] or done[untils[id]] or Outgrown(id) then
         state = "closed"
     else
         local list = closers[id] or NONE
@@ -172,6 +198,7 @@ local function Closed(id)
             end
         end
     end
+    if not state and ShortOfReputation(id) then state = "rep" end
     if state and not reopened[id] then return state end
 end
 
@@ -349,16 +376,23 @@ function Q.ChainAt(chain)
 end
 
 function Q.NotOffered(id)
-    local store = CharStore(NOT_OFFERED_STORE)
-    local entry = store[id]
+    local entry = CharStore(NOT_OFFERED_STORE)[id]
     if not entry then return false end
-    if entry[1] == UnitLevel("player") and entry[2] == ZoneTurnIns(id) then return true end
-    store[id] = nil
-    return false
+    if (entry[3] or 1) >= MISSES_HELD then return true end
+    return entry[1] == UnitLevel("player") and entry[2] == ZoneTurnIns(id)
 end
 
 function Q.SetOffered(id, offered)
-    CharStore(NOT_OFFERED_STORE)[id] = not offered and { UnitLevel("player"), ZoneTurnIns(id) } or nil
+    local store = CharStore(NOT_OFFERED_STORE)
+    local entry, level = store[id], UnitLevel("player")
+    if offered then
+        store[id] = nil
+    elseif not entry then
+        store[id] = { level, ZoneTurnIns(id), 1 }
+    else
+        if entry[1] ~= level then entry[3] = (entry[3] or 1) + 1 end
+        entry[1], entry[2] = level, ZoneTurnIns(id)
+    end
 end
 
 function Q.CountTurnIn(id)

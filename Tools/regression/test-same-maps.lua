@@ -106,6 +106,7 @@ local questEnv = setmetatable({
     UnitLevel = function() return 5 end,
     GetProfessions = function() end,
     C_SpellBook = { IsSpellKnown = function() return false end },
+    C_Reputation = { GetFactionDataByID = function() end },
     C_QuestLog = { GetAllCompletedQuestIDs = function() return completed end,
         GetLogIndexForQuestID = function() return nil end, GetNumQuestLogEntries = function() return 0 end },
     C_Map = { GetBestMapForUnit = function() return best end, GetMapInfo = function() return nil end },

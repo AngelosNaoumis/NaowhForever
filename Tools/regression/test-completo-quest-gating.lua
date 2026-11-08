@@ -1,7 +1,9 @@
 -- Run with Lua 5.1 from the repository root: a quest you can no longer take is closed, out of its zone's
 -- count and off its giver's !: one of its exclusive group or its breadcrumb's target done or in your log,
--- a quest that needs it done or in your log, a profession you lack, a camp recipe you know. A closed quest
--- its giver offers is open for good. Then the shipped data's groups, and the zone counts' cost.
+-- a quest that needs it done or in your log, a profession you lack or are short of its rank in, a camp
+-- recipe you know, a level or a reputation past what it is given to, a quest that closes it done or in
+-- your log, or the one it is given until done. One needing more reputation is "Needs reputation". A closed
+-- quest its giver offers is open for good. Then the shipped data's gates, and the zone counts' cost.
 local function Read(path)
     local f = assert(io.open(path, "rb"))
     local s = f:read("*a"):gsub("\r\n", "\n"); f:close()
@@ -12,12 +14,14 @@ local checks = 0
 local function Check(ok, label) assert(ok, label); checks = checks + 1 end
 local Measure = dofile("Tools/regression/measure.lua")(Check)
 
-local ALCHEMY, SKINNING = 171, 393
+local ALCHEMY, SKINNING, BLACKSMITHING = 171, 393, 164
 local MANA_WELL = 1230564
 local ALCHEMY_INDEX = 1
+local MAGRAM, RATCHET = 93, 470
 
-local account, completed, inLog, professions, spells = {}, {}, {}, {}, {}
+local account, completed, inLog, professions, spells, standings = {}, {}, {}, {}, {}, {}
 local logIDs = {}
+local rank = 1
 
 local function Env(ns)
     return setmetatable({
@@ -29,9 +33,10 @@ local function Env(ns)
         UnitLevel = function() return 10 end,
         GetProfessions = function() return professions[1], professions[2] end,
         GetProfessionInfo = function(index)
-            return "Profession", nil, 1, 300, 0, 0, index == ALCHEMY_INDEX and ALCHEMY or SKINNING
+            return "Profession", nil, rank, 300, 0, 0, index == ALCHEMY_INDEX and ALCHEMY or SKINNING
         end,
         C_SpellBook = { IsSpellKnown = function(spell) return spells[spell] == true end },
+        C_Reputation = { GetFactionDataByID = function(id) return standings[id] end },
         C_QuestLog = {
             GetAllCompletedQuestIDs = function()
                 local ids = {}
@@ -49,17 +54,27 @@ local function Quest(name) return { name, 6, 1, 1, 0, 0, 1429, 40.0, 50.0, "Sam"
 local ns = { AccountSettings = function() return account end, Completo = { CharKey = function() return "Me-Realm" end },
     Shared = { Places = dofile("Tools/regression/shared_places.lua") } }
 ns.CompletoQuestData = {
-    Zones = { { map = 1429, name = "Elwynn Forest", quests = { 1, 2, 3, 4, 5, 6, 7, 8, 9 } } },
+    Zones = { { map = 1429, name = "Elwynn Forest", quests = { 1, 2, 3, 4, 5, 6, 7, 8, 9 } },
+        { map = 1411, name = "Durotar", quests = { 10, 11, 12, 13, 14, 15, 16 } } },
     Quests = { [1] = Quest("The Great Outdoors"), [2] = Quest("The Great Outdoors"), [3] = Quest("The Adventurer"),
         [4] = Quest("The Great Outdoors"), [5] = Quest("Nibbled-On Book"), [6] = Quest("Book Inventory"),
-        [7] = Quest("Rough Wolf Pelts"), [8] = Quest("Camping 101: Alchemy"), [9] = Quest("Kobold Camp Cleanup") },
+        [7] = Quest("Rough Wolf Pelts"), [8] = Quest("Camping 101: Alchemy"), [9] = Quest("Kobold Camp Cleanup"),
+        [10] = Quest("Elixirs for the Bladeleafs"), [11] = Quest("Broken Tears"), [12] = Quest("Mending Old Wounds"),
+        [13] = Quest("Fight for Warsong Gulch"), [14] = Quest("Journey to the Crossroads"),
+        [15] = Quest("Plainstrider Menace"), [16] = Quest("Earth Sapta") },
     Repeatable = {}, Dungeon = {},
     Requires = { [6] = { 5 } },
     Chains = {},
     Exclusive = { { 1, 2, 4 } },
     Breadcrumb = { [3] = 4 },
-    Profession = { [7] = SKINNING, [8] = ALCHEMY },
+    Profession = { [7] = SKINNING, [8] = ALCHEMY, [10] = ALCHEMY },
     Recipe = { [8] = MANA_WELL },
+    SkillRank = { [10] = 20 },
+    MinReputation = { [11] = { MAGRAM, 3000 } },
+    MaxReputation = { [12] = { RATCHET, 0 } },
+    MaxLevel = { [13] = 9 },
+    ClosedBy = { [14] = { 15 } },
+    Until = { [16] = 15 },
 }
 local chunk = assert(loadstring(Read("NaowhForever_Discovery/QuestList/Quests.lua")))
 setfenv(chunk, Env(ns))
@@ -124,6 +139,44 @@ Check(Q.State(2) == "closed", "opening a quest past a requirement does not reope
 Q.SetReopened(2)
 Check(Q.State(2) == "open", "a closed quest its giver offered is open for good")
 
+rank = 19
+Fresh()
+Check(Q.State(10) == "skill", "a profession short of the rank its quest needs keeps it closed")
+rank = 20
+Fresh()
+Check(Q.State(10) == "open", "and it opens at that rank")
+
+local durotar = ns.CompletoQuestData.Zones[2]
+standings[MAGRAM] = { currentStanding = 2999 }
+Fresh()
+_, total = Q.ZoneProgress(durotar)
+Check(Q.State(11) == "rep" and not Pinned(11), "a reputation short of what a quest needs: Needs reputation, no !")
+Check(total == 5, "out of its zone's count, as is the one past its level")
+standings[MAGRAM].currentStanding = 3000
+Fresh()
+Check(Q.State(11) == "open" and Pinned(11), "open once the standing is reached")
+standings[MAGRAM] = nil
+Fresh()
+Check(Q.State(11) == "open", "a faction the game gives nothing for holds nothing back")
+standings[MAGRAM] = { currentStanding = 0 }
+Fresh()
+Q.SetReopened(11)
+Check(Q.State(11) == "open", "one its giver offers is open for good")
+
+standings[RATCHET] = { currentStanding = 0 }
+Fresh()
+Check(Q.State(12) == "closed", "a quest given only below a standing is closed at it")
+standings[RATCHET].currentStanding = -1
+Fresh()
+Check(Q.State(12) == "open", "and open below it")
+Check(Q.State(13) == "closed" and not Pinned(13), "a quest given up to a level is closed past it")
+
+Fresh(nil, { 15 })
+Check(Q.State(14) == "closed" and Q.State(16) == "open",
+    "a quest that closes another does so from your log; one given until another is done stays meanwhile")
+Fresh({ 15 })
+Check(Q.State(14) == "closed" and Q.State(16) == "closed", "and once it is done, both are closed")
+
 local real = setmetatable({ _G = { NaowhForever = { CompletoQuestData = {} } } }, { __index = _G })
 local data = assert(loadstring(Read("NaowhForever_DiscoveryData/Quests.lua")))
 setfenv(data, real)
@@ -145,8 +198,15 @@ Check(D.Profession[97915] == ALCHEMY and D.Recipe[97915] == MANA_WELL and D.Prof
     "Camping 101 needs its profession and closes on its recipe")
 Check(D.Recipe[97925] ~= D.Recipe[96102] and D.Profession[96626] == nil,
     "each faction's Faction Banner; Camping 101: Cooking teaches cooking, so needs none")
-Check(D.Profession[95217] == nil and D.Profession[96874] == nil and D.Profession[92109] == nil
-    and D.Profession[92110] == nil, "a quest that introduces a profession needs none")
+Check(D.Profession[92109] == nil and D.Profession[92110] == nil, "a quest that introduces a profession needs none")
+Check(D.Profession[95217] == BLACKSMITHING and D.Profession[96874] == BLACKSMITHING and D.SkillRank[3526] == 200,
+    "the catalog's skills: The Quarry's Smith needs Blacksmithing, Goblin Engineering Engineering at 200")
+Check(D.MinReputation[1369][1] == 93 and D.MinReputation[1369][2] == 3000 and D.MaxReputation[1036][2] == -6000,
+    "Broken Tears needs Friendly with the Magram; Avast Ye, Scallywag is given below Hostile with Booty Bay")
+Check(D.MaxLevel[8368] == 19 and D.Breadcrumb[163] == 5 and D.Until[1462] == 1521,
+    "Warsong Gulch's first bracket, Raven Hill to Jitters' Growling Gut, Earth Sapta until Call of Earth")
+Check(D.ClosedBy[282][1] == 287 and D.ClosedBy[805][1] == 808,
+    "Senir's Observations closes with Frostmane Hold, and the breadcrumb disabledByQuest names with its quest")
 
 ns.CompletoQuestData = D
 chunk = assert(loadstring(Read("NaowhForever_Discovery/QuestList/Quests.lua")))

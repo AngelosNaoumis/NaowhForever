@@ -7716,3 +7716,4 @@ L["Every one you can change."] = true
 L["Every console variable the game has, to change, export and import."] = true
 L["Console Variables Window"] = true
 L["Search them and see each one's value beside its default."] = true
+L["Needs reputation"] = true

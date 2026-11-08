@@ -18,7 +18,12 @@ names it, one it lists that nothing above has is added, a quest goes in the zone
 and its giver's spot comes before any other. Its class, levels and side replace a quest's where quest_entity_catalog.json has
 the same: Wowhead's zone pages give some class quests no class (Anthion's Parting Words) and old
 levels. Neither alone is taken, since each has its own slips, nor what both write for a value they
-lack (side 3, level 0, class 0): agreeing on that says nothing. --report FILE adds to FILE the values
+lack (side 3, level 0, class 0): agreeing on that says nothing. A class either names narrows the quest's
+all the same (the catalog's class, or ForeverChanges filing it under a class's quest sort), as the
+catalog's race mask narrows its races, so a pin never shows for a class or race that cannot take the
+quest. The catalog also gives the prerequisites of a quest Wowhead Classic has no Requires box for, and
+the gates written after D.Recipe: the skill rank, reputation and level a quest needs or is given up to,
+its breadcrumb's target, and the quests that close it. --report FILE adds to FILE the values
 this takes that Quests.lua did not have yet, for the daily watch (.github/workflows/daily-watch.yml).
 Holiday and world event quests come off ForeverChanges' list first, so they are left out like any quest
 it does not list: the ones it files under an event's quest sort (EVENT_SORTS), and completo_fixes.json's
@@ -222,6 +227,8 @@ def forever_spot(map_id, x, y):
 # Wowhead's race masks use the game's bits (ChrRaces' PlayableRaceBit): Human 0, Orc 1, Dwarf 2,
 # Night Elf 3, Undead 4, Tauren 5, Gnome 6, Troll 7, High Order Skyborne 32, Windshaper Skyborne 33.
 HIGH_ORDER, WINDSHAPER = 1 << 32, 1 << 33
+SIDE_RACES = {1: 77 | HIGH_ORDER, 2: 178 | WINDSHAPER}
+ALL_RACES = SIDE_RACES[1] | SIDE_RACES[2]
 
 
 def races(mask, side):
@@ -237,6 +244,35 @@ def lua_string(s):
     s = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode()
     s = s.replace("\\", "\\\\").replace('"', '\\"')
     return '"' + "".join(c if " " <= c <= "~" else f"\\{ord(c):03d}" for c in s) + '"'
+
+
+def quest_ids(value):
+    """What a catalog field names, in order: one value, a list, or a { "1": value, ... } list."""
+    if isinstance(value, int):
+        return [value]
+    if isinstance(value, list):
+        return value
+    return [value[k] for k in sorted(value or {}, key=int)]
+
+
+def catalog_requires(requires, catalog):
+    """requires with the catalog's prerequisites for each quest it has none for: Wowhead Classic's
+    Requires box misses some (Bounty on Murlocs after Deliver Thomas' Report), as Forever's own
+    quests have no box (completo_requires.json keeps the catalog's for those already). preQuestGroup
+    are all needed, preQuestSingle one of them; a quest named alone joins those before it like a Requires
+    box's, so its other versions there stay alternatives to it. One naming itself, or a quest by a negative
+    ID (one in your log rather than done), is left out."""
+    requires = dict(requires)
+    for key, quest in catalog.items():
+        if (requires.get(key) or {}).get("quests"):
+            continue
+        fields = quest["source_fields"]
+        group, single = quest_ids(fields.get("preQuestGroup")), quest_ids(fields.get("preQuestSingle"))
+        if group + single and all(0 < i != int(key) for i in group + single):
+            requires[key] = {"quests": sorted(set(group + single))}
+            if len(single) > 1:
+                requires[key]["groups"] = [sorted(single)]
+    return requires
 
 
 def prerequisites(quests, requires, known):
@@ -375,18 +411,23 @@ def requirements(before, known, requires=None):
     """questID -> what must be done before it: each element a quest, or a list of alternatives,
     one of which will do. Quests of one name are alternatives (a Requires box lists each class's
     version of a quest), as are the ones the zones lack, which cannot be told apart. The
-    versions that are not the player's own are left out by the addon."""
+    versions that are not the player's own are left out by the addon, and another version of one of
+    an explicit group's alternatives (a Series step's) is one more of them."""
     out = {}
     for qid, prev in before.items():
-        explicit = ((requires or {}).get(str(qid)) or {}).get("groups")
-        if explicit is not None:
-            covered = {i for g in explicit for i in (g if isinstance(g, list) else [g])}
-            prev = set(prev) - covered
+        explicit = [list(g) if isinstance(g, list) else g
+                    for g in ((requires or {}).get(str(qid)) or {}).get("groups") or []]
+        covered = {i for g in explicit for i in (g if isinstance(g, list) else [g])}
+        alternatives = {known[i][1]["name"]: g for g in explicit if isinstance(g, list) for i in g if i in known}
         groups = {}
-        for p in prev:
-            groups.setdefault(known[p][1]["name"] if p in known else None, []).append(p)
-        out[qid] = list(explicit or []) + sorted((g if len(g) > 1 else g[0] for g in groups.values()),
-                                                key=lambda e: e[0] if isinstance(e, list) else e)
+        for p in (p for p in prev if p not in covered):
+            name = known[p][1]["name"] if p in known else None
+            if name in alternatives:
+                alternatives[name].append(p)
+            else:
+                groups.setdefault(name, []).append(p)
+        out[qid] = explicit + sorted((g if len(g) > 1 else g[0] for g in groups.values()),
+                                     key=lambda e: e[0] if isinstance(e, list) else e)
     return out
 
 
@@ -599,6 +640,32 @@ def agreed(q, listed, catalog):
     return dict(q, **changed) if changed else q
 
 
+# The game's quest sorts for each class's quests (QuestSort), and the class bit of each.
+CLASS_SORTS = {81: 1, 141: 2, 261: 4, 162: 8, 262: 16, 82: 64, 161: 128, 61: 256, 263: 1024}
+
+
+def narrowed(q, listed, catalog):
+    """The quest with its class narrowed to what the catalog's class and ForeverChanges' class quest
+    sort leave of it, and its races to what the catalog's race mask leaves of those its side allows.
+    Each source misses the class of some class quests (Call of Earth on Zephras Isle, the rogues' dead
+    drops) and the races of some (Alterac Valley's Frostwolf and Stormpike quests), and one let through
+    has a pin at a giver who offers it nothing, while one left out corrects itself once the giver offers
+    it. A source sharing no class or race with it is passed over."""
+    key = str(q["id"])
+    category = ((listed.get("quests") or {}).get(key) or {}).get("category") or []
+    sort = CLASS_SORTS.get(category[1], 0) if category[:1] == ["sort"] else 0
+    mask = q.get("reqclass") or 0
+    for named in ((catalog.get(key) or {}).get("reqclass") or 0, sort):
+        if named and (not mask or mask & named):
+            mask = mask & named if mask else named
+    changed = {"reqclass": mask} if mask != (q.get("reqclass") or 0) else {}
+    allowed = (q.get("reqrace") or ALL_RACES) & SIDE_RACES.get(q.get("side"), ALL_RACES)
+    theirs = (catalog.get(key) or {}).get("reqrace") or 0
+    if allowed & theirs and allowed & theirs != allowed:
+        changed["reqrace"] = allowed & theirs
+    return dict(q, **changed) if changed else q
+
+
 def shipped(path):
     """{ questID: { level, reqlevel, side, reqclass } } as Quests.lua at path has them."""
     row = re.compile(r'^    \[(\d+)\] = \{ "(?:[^"\\]|\\.)*", (\d+), (\d+), (\d+), \d+, (\d+),', re.M)
@@ -685,10 +752,34 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
             taken += [(q["id"], q["name"], k, q.get(k), t[k]) for q, t in zip(z["quests"], theirs)
                       for k in AGREED if t.get(k) != q.get(k)]
             z["quests"] = theirs
-    rows = {q["id"]: (int(area), q) for area, z in zones.items() for q in z["quests"]}
+    rows = {q["id"]: (int(area), narrowed(q, listed, catalog)) for area, z in zones.items() for q in z["quests"]}
+    # ForeverChanges' record of a quest whose side Wowhead and the catalog agree on against it is the
+    # other side's version (A Lesson to Learn, 26 and 27), so its giver is not this quest's.
+    swapped = set()
+    for qid, (_, q) in rows.items():
+        theirs = ((listed.get("quests") or {}).get(str(qid)) or {}).get("side")
+        catalog_side = (catalog.get(str(qid)) or {}).get("side")
+        if theirs in (1, 2) and q.get("side") in (1, 2) and theirs != q["side"] == catalog_side:
+            swapped.add(qid)
+    for entry in fixes.get("races", []):
+        if not known_quests(entry["quests"], rows, f"races {entry['quests']}"):
+            continue
+        fixed = {k: entry[k] for k in ("side", "reqrace") if k in entry}
+        for qid in entry["quests"]:
+            area, q = rows[qid]
+            if all(q.get(k) == v for k, v in fixed.items()):
+                warn(f"races names quest {qid}, which the sources give that already")
+            rows[qid] = (area, dict(q, **fixed))
+    requires = catalog_requires(requires, catalog)
     before = prerequisites(quests, requires, rows)
     before, requires = corrected(before, requires, fixes.get("requires", {}), rows)
     chains = chains_of(quests, before, rows)
+    breadcrumbs = {int(k): b["to"] for k, b in fixes.get("breadcrumbs", {}).items()
+                   if not k.startswith("_") and known_quests([int(k), b["to"]], rows, f"breadcrumbs {k}")}
+    for key, quest in catalog.items():
+        target = quest["source_fields"].get("breadcrumbForQuestId")
+        if int(key) in rows and target in rows and target != int(key):
+            breadcrumbs.setdefault(int(key), target)
     lines = [
         "-- Quests.lua: every quest of every zone and its chain, generated by Tools/build/completo_quests.py.",
         "local D = _G.NaowhForever.CompletoQuestData",
@@ -715,7 +806,7 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
         if not (start and start.get("coord") and start.get("zone") in ZONE_MAP):
             start = (catalog.get(str(qid)) or {}).get("start")
         spot = "nil, nil, nil, nil"
-        given = listed_spot(listed.get("starts", {}).get(str(qid)), ZONE_MAP.get(area))
+        given = None if qid in swapped else listed_spot(listed.get("starts", {}).get(str(qid)), ZONE_MAP.get(area))
         if given:
             m, x, y, giver = given
             spot = f"{m}, {x:.1f}, {y:.1f}, {lua_string(giver)}"
@@ -773,7 +864,16 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
         "",
         "D.Requires = {",
     ]
-    required = requirements(before, rows, requires)
+    # A breadcrumb only sends you to its quest's giver, so the quest does not wait for it: on live servers
+    # Plainstrider Menace is taken without Sergra Darkthorn done (EG Link's quest_prerequisites).
+    leads = {}
+    for crumb, target in breadcrumbs.items():
+        leads.setdefault(target, set()).add(crumb)
+    required = {}
+    for qid, elements in requirements(before, rows, requires).items():
+        kept = [e for e in elements if not set(e if isinstance(e, list) else [e]) <= leads.get(qid, set())]
+        if kept:
+            required[qid] = kept
     for qid in sorted(required):
         parts = ["{ " + ", ".join(map(str, e)) + " }" if isinstance(e, list) else str(e) for e in required[qid]]
         lines.append(f"    [{qid}] = {{ {', '.join(parts)} }},")
@@ -799,11 +899,9 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
         "",
         "D.Breadcrumb = {",
     ]
-    breadcrumbs = {int(k): b["to"] for k, b in fixes.get("breadcrumbs", {}).items()
-                   if not k.startswith("_") and known_quests([int(k), b["to"]], rows, f"breadcrumbs {k}")}
     for qid in sorted(breadcrumbs):
         lines.append(f"    [{qid}] = {breadcrumbs[qid]},")
-    skills, recipes = {}, {}
+    skills, recipes, ranks = {}, {}, {}
     for entry in fixes.get("professions", []):
         if not known_quests(entry["quests"], rows, f"professions {entry['skill']}"):
             continue
@@ -811,6 +909,34 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
             skills[qid] = entry["skill"]
             if entry.get("recipe"):
                 recipes[qid] = entry["recipe"]
+    # Standings are { faction, standing }, Neutral 0 and Friendly 3000 as the game counts them.
+    # availableUntilCompleted closes a quest once done, not while in your log (the Saptas during Call of
+    # Earth). disabledByQuest names the breadcrumb a quest closes, not the other way round: each names one
+    # leading to the quest's own giver (Report to Sen'jin Village), and Frostmane Hold needs the one it names.
+    min_rep, max_rep, max_level, closed_by, until = {}, {}, {}, {}, {}
+    for key, quest in catalog.items():
+        qid, fields = int(key), quest["source_fields"]
+        if qid not in rows:
+            continue
+        skill = quest_ids(fields.get("requiredSkill"))
+        if skill and skills.setdefault(qid, skill[0]) == skill[0] and skill[1] > 1:
+            ranks[qid] = skill[1]
+        if fields.get("requiredMinRep"):
+            min_rep[qid] = quest_ids(fields["requiredMinRep"])
+        if fields.get("requiredMaxRep"):
+            max_rep[qid] = quest_ids(fields["requiredMaxRep"])
+        if fields.get("requiredMaxLevel"):
+            max_level[qid] = fields["requiredMaxLevel"]
+        closed_by.setdefault(qid, set()).update(quest_ids(fields.get("exclusiveTo")))
+        if fields.get("disabledByQuest"):
+            closed_by.setdefault(fields["disabledByQuest"], set()).add(qid)
+        if fields.get("availableUntilCompleted") in rows:
+            until[qid] = fields["availableUntilCompleted"]
+    # A quest the catalog has closing one that needs it is left out of its closers: the catalog has both
+    # for a few (Stars of Elune and its lead-ins).
+    closed_by = {q: sorted(c for c in cs if c in rows and c != q and c not in before.get(q, ()))
+                 for q, cs in closed_by.items() if q in rows}
+    closed_by = {q: cs for q, cs in closed_by.items() if cs}
     lines += [
         "}",
         "",
@@ -825,6 +951,17 @@ def write(zones, quests, requires, items, dungeon, elsewhere, catalog=None, list
     ]
     for qid in sorted(recipes):
         lines.append(f"    [{qid}] = {recipes[qid]},")
+    for name, table in (("SkillRank", ranks), ("MinReputation", min_rep), ("MaxReputation", max_rep),
+                        ("MaxLevel", max_level), ("ClosedBy", closed_by), ("Until", until)):
+        lines += [
+            "}",
+            "",
+            f"D.{name} = {{",
+        ]
+        for qid in sorted(table):
+            value = table[qid]
+            value = "{ " + ", ".join(map(str, value)) + " }" if isinstance(value, list) else value
+            lines.append(f"    [{qid}] = {value},")
     lines.append("}")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_bytes(("\r\n".join(lines) + "\r\n").encode("ascii", "replace"))

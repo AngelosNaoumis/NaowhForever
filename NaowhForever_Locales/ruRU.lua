@@ -7696,3 +7696,4 @@ L["Every one you can change."] = "Все, которые можно измени
 L["Every console variable the game has, to change, export and import."] = "Все консольные переменные игры: изменение, экспорт и импорт."
 L["Console Variables Window"] = "Окно консольных переменных"
 L["Search them and see each one's value beside its default."] = "Ищите их и смотрите значение каждой рядом со значением по умолчанию."
+L["Needs reputation"] = "Нужна репутация"
