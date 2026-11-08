@@ -42,6 +42,8 @@ NaowhForever_QoL/
     HideClutter.lua     UI Clutter
     UnitNames.lua       Names Over Heads: guild names, guild titles and player titles with player names
     HDR.lua             HDR: the game's HDR and Peak Brightness
+    ConsoleVariables.lua  Console Variables: every console variable with its value and default in a window
+                        (ns.OpenConsoleVariables), to change, export and import (ns.ImportConsoleVariables)
     ChatZones.lua       Chat Zones
     ScoutData.lua       Scout's creature abilities and tameable beasts (packed) and armor by level, generated
     Scout.lua           Scout: abilities, armor and pet family on a creature's tooltip
@@ -914,6 +916,17 @@ NaowhForever_QoL/
 
 ### HDR
 - HDR and Peak Brightness set the game's own `HDRFactor` and `HDRPeakBrightness`, which have no place in the game's options. Peak Brightness also turns on `useHDRPeakBrightness`, without which the game ignores it. The card shows only where the client has `HDRFactor`. HDR Settings (`hdr`, off by default) is the opt-in: until it is on, the card leaves both alone.
+
+### Console Variables
+- Its switch (`consoleVariables`, off by default) only lets the card's Open button work: the window is built on its first open, and nothing is listened to before then or while it is closed. Turning the switch off closes it.
+- The list is the game's own: the entries of `ConsoleGetAllCommands` that are console variables (`Enum.ConsoleCommandType.Cvar`; its commands, macros and scripts are left out), read once, the first time they are needed. Each one's value and default are read with `C_CVar.GetCVarInfo` once as the window opens and kept: `CVAR_UPDATE` names the one that changed (its first payload), so only that one is read again, and the search and the tabs filter what is kept. Another addon setting console variables as combat starts and ends would otherwise cost a read of every one per change while the window is open. One that is secure, read-only or locked from the player is left out: `C_CVar.SetCVar` refuses it.
+- At most `SHOWN_MAX` (150) rows are drawn: the row engine makes a frame for each row and there are thousands of console variables, so the footer says how many matched and the search narrows them.
+- A value counts as its default when both read as the same number: the game writes defaults like `0.080000`.
+- Nothing is changed in combat, as with HDR: the game protects some console variables then, so an edit, a reset or an import says to try again after the fight. A value the game does not take (`C_CVar.SetCVar` answers false) is named in chat. The window listens to `CVAR_UPDATE` only while it is shown, and reads every one again on its next open.
+- A string is `!NFCV1!` and `{ v = 1, cvars = { [name] = value } }`, written by `Shared.Encode` and read by `Shared.Decode.String` with its size and bomb caps, one level deep and at most `MAX_CVARS` (1000) of them. A name that is not one word of at most 64 letters, a value that is not a string of at most 255, or a control character or `|` in either refuses the whole string. A name that is not a console variable this client lets you change is left out and counted in the confirmation. Nothing in a string is run: its names and values only ever reach `C_CVar.SetCVar`.
+- The console variables that name this account, client or computer (`NOT_SHARED`) are never exported or imported, and an import counts them as left out; the window still lists them to change by hand. They are the character picked at login (`lastCharacterIndex`), the realm and Battle.net portal (`plunderstormRealm`, `portal`), the client's languages (`locale`, `textLocale`, `audioLocale`), and this computer's devices: the monitor, graphics card and API and resolutions (`GxMonitor`, `GxAdapter`, `GxApi`, `GxWindowedResolution`, `GxFullscreenResolution`, `GxNewResolution`) and the sound and voice chat devices (`Sound_OutputDriverName`, `Sound_OutputDriverIndex` and their `Sound_VoiceChat` output and input pairs). A shared string is for settings; these would point another player's client at a realm, language or device of the sharer's. Matched in any case, as the game names console variables. Forever has no `accountName`, `accountList`, `realmName` or `realmList`, and a name the client does not list is left out anyway. Graphics quality and camera settings are shared as before.
+- Export writes what the list holds, its tab and search included, leaving out a value a string could not carry; past 1000 it asks for a search first. The import's confirmation lists the first `LISTED_MAX` (8) changes, from what to what, and counts the rest and what is left out.
+- Console variables stay out of profile strings: the game saves them itself, per install, account or character, not per profile, so a profile switch or import would change graphics, sound and camera settings with no list of what changes.
 
 ### Stealth Reminder
 - The form IDs are `GetShapeshiftFormID` values, the same ones the Threat Meter reads.

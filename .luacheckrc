@@ -43,7 +43,7 @@ read_globals = {
     "AnchorUtil", "AuraContainerSortMethod", "AuraUtil", "BACKPACK_CONTAINER",
     "bit", "BNET_CLIENT_WOW", "BNGetInfo", "BNGetNumFriends", "BreakUpLargeNumbers", "BuyMerchantItem", "BuyTrainerService",
     "canaccessallvalues", "canaccessvalue", "CanInspect", "CanLootUnit", "CanMerchantRepair",
-    "ContainerFrameContainer", "ContainerFrameCombinedBags",
+    "ConsoleGetAllCommands", "ContainerFrameContainer", "ContainerFrameCombinedBags",
     "GameMenuFrame", "GAMEMENU_OPTIONS", "MainMenuFrameMixin", "CanAutoSetGamePadCursorControl", "InputUtil",
     "CharacterFrame", "CharacterFrameTitleText", "CharacterLevelText", "CharacterLevelTextBackground", "PaperDollFrame", "PaperDollLevelInfo", "PaperDollSidebarTabs", "CharacterHeadSlot",
     "CharacterModelScene", "CharacterStatsPaneScrollBox", "CharacterFrameRightPaneHostStoneBg", "ScrollUtil",

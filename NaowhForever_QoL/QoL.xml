@@ -35,6 +35,7 @@
     <Script file="Interface\HideClutter.lua"/>
     <Script file="Interface\UnitNames.lua"/>
     <Script file="Interface\HDR.lua"/>
+    <Script file="Interface\ConsoleVariables.lua"/>
     <Script file="Cursor\Crosshair.lua"/>
     <Script file="Cursor\MouseRing.lua"/>
     <Script file="Combat\PetTracker.lua"/>
