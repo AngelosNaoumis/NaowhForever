@@ -37,7 +37,7 @@ local AddFilter = (ChatFrameUtil and ChatFrameUtil.AddMessageEventFilter) or Cha
 local RemoveFilter = (ChatFrameUtil and ChatFrameUtil.RemoveMessageEventFilter) or ChatFrame_RemoveMessageEventFilter
 
 local EVENTS = { "CHAT_MSG_ADDON", "GUILD_ROSTER_UPDATE", "FRIENDLIST_UPDATE", "BN_FRIEND_INFO_CHANGED",
-    "GROUP_ROSTER_UPDATE", "WHO_LIST_UPDATE", "CHAT_MSG_SYSTEM", "CHAT_MSG_GUILD", "CHAT_MSG_OFFICER" }
+    "GROUP_ROSTER_UPDATE", "WHO_LIST_UPDATE", "CHAT_MSG_SYSTEM" }
 
 local known = {}
 local asked = {}
@@ -54,6 +54,10 @@ local hooked = false
 
 local function On()
     return S.Get("enabled") and S.Get("chatZones")
+end
+
+local function ChatOn()
+    return On() and S.Get("chatZonesChat")
 end
 
 local function Secret(v)
@@ -481,15 +485,19 @@ local function Apply()
         wipe(looking)
         return
     end
-    EventRegistry:RegisterCallback("SetItemRef", OnLinkClick, events)
     C_ChatInfo.RegisterAddonMessagePrefix(PREFIX)
     for _, event in ipairs(EVENTS) do events:RegisterEvent(event) end
     if C_LFGList and C_LFGList.GetSearchResultPlayerInfo then
         events:RegisterEvent("LFG_LIST_SEARCH_RESULTS_RECEIVED")
         events:RegisterEvent("LFG_LIST_SEARCH_RESULT_UPDATED")
     end
-    for _, event in ipairs(TAGGED) do AddFilter(event, Filter) end
-    filtering = true
+    if ChatOn() then
+        EventRegistry:RegisterCallback("SetItemRef", OnLinkClick, events)
+        events:RegisterEvent("CHAT_MSG_GUILD")
+        events:RegisterEvent("CHAT_MSG_OFFICER")
+        for _, event in ipairs(TAGGED) do AddFilter(event, Filter) end
+        filtering = true
+    end
     if FinderOn() then
         HookFinder()
         if not hooked then events:RegisterEvent("ADDON_LOADED") end
@@ -500,7 +508,7 @@ local function Apply()
 end
 
 local function OnSettingChanged(key)
-    if key == "enabled" or key == "chatZones" or key == "chatZonesFinder" then Apply() end
+    if key == "enabled" or key == "chatZones" or key == "chatZonesChat" or key == "chatZonesFinder" then Apply() end
 end
 
 hooksecurefunc(S, "Set", OnSettingChanged)
@@ -514,19 +522,21 @@ local Group = ns.Shared.Settings.Group
 
 ns.Shared.Settings.Page("QoL/Interface", S):Card({
     id = "chatZones", name = "Chat Zones", order = 60, switch = "chatZones",
-    help = "The zone of whoever speaks in a chat channel, guild chat or a whisper, in front of their "
-        .. "message. The game never says where a stranger is, so a player is tagged once they are "
-        .. "in the Group Finder, your guild, your friends or your group, came up in a /who, or "
-        .. "answered from their own copy of Naowh Forever. Their first message may come through "
-        .. "untagged.",
+    help = "Other players' zones in the Group Finder, and in chat if you turn that on.",
     rows = {
         Group("Tags"),
-        { key = "chatZonesLevel", label = "Show Level", toggle = true },
-        { key = "chatZonesClassColour", label = "Class Color", toggle = true,
+        { key = "chatZonesChat", label = "Zones in Chat", toggle = true,
+          help = "The zone of whoever speaks in a chat channel, guild chat or a whisper, in front of their "
+              .. "message. The game never says where a stranger is, so a player is tagged once they are "
+              .. "in the Group Finder, your guild, your friends or your group, came up in a /who, or "
+              .. "answered from their own copy of Naowh Forever. Their first message may come through "
+              .. "untagged." },
+        { key = "chatZonesLevel", label = "Show Level", toggle = true, needs = "chatZonesChat" },
+        { key = "chatZonesClassColour", label = "Class Color", toggle = true, needs = "chatZonesChat",
           help = "The tag in the speaker's class color. Off, it is grey." },
         { key = "chatZonesMaxAge", label = "Forget After", slider = MAX_AGE_RANGE, unit = " min",
           help = "A zone older than this is no longer shown, since the player has likely moved on." },
-        { key = "chatZonesWhere", label = "Where? on Whispers", toggle = true,
+        { key = "chatZonesWhere", label = "Where? on Whispers", toggle = true, needs = "chatZonesChat",
           help = "A [Where?] link after a whisper from someone whose zone is not known. Clicking it "
               .. "runs a /who for them and prints their zone; their next messages are tagged." },
         Group("Group Finder"),
@@ -535,7 +545,7 @@ ns.Shared.Settings.Page("QoL/Interface", S):Card({
           help = "The leader's zone on each Group Finder listing, and every member's zone when you "
               .. "hover it." },
         Group("Other Players"),
-        { key = "chatZonesAsk", label = "Ask Other Players", toggle = true,
+        { key = "chatZonesAsk", label = "Ask Other Players", toggle = true, needs = "chatZonesChat",
           help = "The first time someone speaks, ask their Naowh Forever for their zone with a hidden "
               .. "addon whisper. Players without it never see the question." },
         { key = "chatZonesShare", label = "Share My Zone", toggle = true,

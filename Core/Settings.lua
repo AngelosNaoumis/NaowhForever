@@ -239,7 +239,7 @@ local S = UI.ModuleSettings("qol", {
     petColor = { r = 1, g = 0, b = 0 }, petClassColor = false, petFont = "", petFontSize = 20,
     petOutline = "OUTLINE", petBackground = "none",
     petMissingText = ns.L("Pet Missing"), petPassiveText = ns.L("Pet Passive"), petLowHealthText = ns.L("Pet Low HP"),
-    chatZones = F.chatZones, chatZonesLevel = true, chatZonesClassColour = true, chatZonesFinder = true, chatZonesWhere = true, chatZonesMaxAge = 15, chatZonesAsk = true, chatZonesShare = false,
+    chatZones = F.chatZones, chatZonesChat = F.chatZonesChat, chatZonesLevel = true, chatZonesClassColour = true, chatZonesFinder = true, chatZonesWhere = true, chatZonesMaxAge = 15, chatZonesAsk = true, chatZonesShare = false,
     finderRoles = F.finderRoles, finderRolesTank = false, finderRolesHealer = false, finderRolesDps = false,
     finderNeedTank = false, finderNeedHealer = false, finderNeedDps = false,
 
