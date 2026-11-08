@@ -3,57 +3,82 @@ local ns = _G.NaowhForever
 local T = ns.THEME
 
 local GOLD = { r = 0xe6 / 255, g = 0xcc / 255, b = 0x80 / 255 }
-local MEDIA = ns.MEDIA
-local ICONS = MEDIA .. "Navigation\\"
-local HERO_H, LOGO_SIZE, CARD_H, EMBLEM, ICON = 96, 64, 92, 52, 30
-local PAD, GLOW, GLOW_ALPHA, STRIP = 16, 1.3, 0.35, 2
-local CHIP_H, CHIP_GAP, CHIP_PAD = 24, 6, 10
-local SECTION_GAP, TITLE_GAP = 14, 8
-local HERO_TITLE_SIZE, HERO_LINE_SIZE, NAME_SIZE, ROLE_SIZE, LINE_SIZE, CHIP_TEXT_SIZE = 24, 12, 16, 10, 12, 11
-local LINE_GAP, NAME_RISE, ROLE_GAP, ROLE_DROP = 6, 2, 8, 1
-local HERO_EMBLEM, HERO_EMBLEM_STEP = 34, 40
-local TEXT_LEFT = PAD + EMBLEM + PAD - NAME_RISE
-local TEXT_NAOWH, TEXT_FOREVER = "Naowh ", "Forever"
-local TEXT_VERSION = ns.L("Version %s, made by Naowh's team and the people who play it.")
-local UNKNOWN_BUILD = "?"
+local ICONS = ns.MEDIA .. "Navigation\\"
+local PATRONS = ns.FEATURE_BADGES == ns.BADGES_LIVE
+local STAFF_TIER = "developer"
+
+local PAD, GAP, LINE_GAP, STRIP, TEXT_DROP = 14, 8, 4, 2, 1
+local GLOW, GLOW_ALPHA = 1.3, 0.35
+local SECTION_GAP, TITLE_GAP = 18, 8
+local LEAD_EMBLEM, LEAD_PAD, LEAD_NAME_SIZE, LEAD_ROLE_SIZE = 44, 20, 18, 10
+local STAFF_EMBLEM, STAFF_SIZE = 26, 12
+local CHIP_H, CHIP_GAP, CHIP_PAD, CHIP_SIZE = 20, 5, 8, 11
+local TILE_ICON, TILE_PAD, TILE_NAME_SIZE, TILE_COLUMNS = 16, 12, 13, 4
+local TIER_EMBLEM, TIER_ICON, TIER_PAD, TIER_NAME_SIZE, TIER_LINE_SIZE = 30, 22, 10, 13, 11
+local SOURCE_ICON, SOURCE_PAD, SOURCE_NAME_SIZE, SOURCE_LINE_SIZE, SOURCE_LINE_DROP = 14, 6, 12, 11, 1
+local SOURCE_COLUMNS, FULL_ROW = 2, 1
+
+local TEXT_STAFF = ns.L("Staff (team)")
+local TEXT_ALSO = ns.L("Also: %s")
+local TITLE_TEAM, TITLE_CONTRIBUTORS, TITLE_BUILT = "The Team", "Contributors", "Built With"
+local TITLE_THANKS, TITLE_SUPPORTERS = "Thank You", "Supporters"
 
 local function Tier(key)
     return ns.BADGE_TIERS and ns.BADGE_TIERS[key]
 end
 
-local TEAM = {
-    { tier = "naowh", name = "Naowh", role = "Founder", line = ns.L("The name on it, and the community it is made for.") },
-    { tier = "developer", name = "Glyalith", role = "Lead Developer", line = ns.L("Builds and ships Naowh Forever.") },
-    { tier = "developer", name = "Dieman", role = "Lead Developer", line = ns.L("Builds and ships Naowh Forever.") },
+local function Translator(name, language)
+    return name .. " " .. ns.Color("muted", ns.L(language))
+end
+
+local LEADS = {
+    { tier = "naowh", role = "Founder", name = "Naowh" },
+    { tier = "developer", role = "Lead Developer", name = "Glyalith" },
 }
+
+local STAFF = { "Alloy", "Grim", "Ns", "Tiif", "Zyan", "Snoozer", "WeepDang", "Slash", "Neil" }
+
+local MODULES = {
+    { icon = "hammer", name = "Professions", people = { "filipescp96", "Grim", "Korallis", "Hikayuki", "Joshua Helmle", "Angelos" } },
+    { icon = "map", name = "Dungeon Journal", people = { "Grim", "Borderline", "Daniil" } },
+    { icon = "compass", name = "Discovery", people = { "Grim" } },
+    { icon = "checklist", name = "QoL", people = { "Korallis", "Lyssa", "Jacob Biehler", "Borderline" } },
+    { icon = "heart", name = "Consumable Bar", people = { "Zyan", "Korallis" } },
+    { icon = "aura", name = "AuraBuffs", people = { "Korallis" } },
+    { icon = "spark", name = "Blessings", people = { "Borderline", "Kristjan Ingi" } },
+    { icon = "bars", name = "Threat Meter", people = { "Lyssa", "Borderline" } },
+    { icon = "settings", name = "Settings", people = { "Zyan", "Lyssa", "Kristjan Ingi" } },
+    { icon = "search", name = "Racial and Class Tracking", people = { "Jacob Biehler" } },
+    { icon = "pen", name = "Macros", people = { "Kristjan Ingi" } },
+    { icon = "notes", name = "Translations", people = { Translator("Checkov23", "German"), Translator("chenjonathanzhang-max", "Chinese") } },
+}
+
+local ALSO = { "Jok3r", "Cullen Buchanan" }
+
+local ELLESMERE = { tier = "ellesmere", name = "Ellesmere", line = ns.L("Creator of EllesmereUI, for allowing us to add some of EUI's styling and functionality.") }
 
 local THANKS = {
-    { tier = "ellesmere", name = "Ellesmere", role = "EllesmereUI", line = ns.L("Creator of EllesmereUI, for allowing us to add some of EUI's styling and functionality.") },
-    { tier = "moderator", name = ns.L("Moderators"), role = "Community", line = ns.L("Every moderator keeping the Naowh community running.") },
-    { tier = "legendary", badges = true, name = ns.L("Legendary Supporters"), role = "Supporters", line = ns.L("Everyone wearing the Legendary badge: you keep Naowh Forever going.") },
-    { tier = "epic", badges = true, name = ns.L("Epic Supporters"), role = "Supporters", line = ns.L("Everyone wearing the Epic badge: you keep Naowh Forever going too.") },
-    { tier = "basic", badges = true, name = ns.L("Basic Supporters"), role = "Supporters", line = ns.L("Everyone wearing the Basic badge: you keep Naowh Forever going too.") },
-    { icon = "checklist", color = T.accentSoft, name = ns.L("Beta Testers"), role = "Community", line = ns.L("Every bug report and screenshot made it better.") },
-}
-
-local DATA = {
-    { icon = "search", color = GOLD, name = "Wowhead", role = "Data", line = ns.L("WoW Forever's items, quests and NPCs, and what is new in Forever.") },
-    { icon = "trophy", color = GOLD, name = "wowsrc.com", role = "Data", line = ns.L("The BiS rankings behind the BiS List.") },
-    { icon = "bars", color = GOLD, name = "WoWSims", role = "Data", line = ns.L("The stat weights each spec starts with.") },
-    { icon = "map", color = GOLD, name = "Santiago Reyes", role = "Maps", line = ns.L("For his maps of the new Forever dungeons.") },
-    { icon = "map", color = GOLD, name = "tr0tsky", role = "Data", line = ns.L("Ley lines and Elemental Convergences behind Skyborne Spots, from the Skyborne Ley Line & Convergence Marker addon.") },
-    { icon = "search", color = GOLD, name = "CMaNGOS", role = "Data", line = ns.L("The classic creature database behind Scout's abilities, armor, immunities and tameable beasts.") },
-    { icon = "notes", color = GOLD, name = "12dicts and ENABLE", role = "Data", line = ns.L("Alan Beale's 12dicts and the ENABLE word list, the public-domain words behind the Daily Word.") },
+    { tier = "legendary", badges = true, name = ns.L("Legendary Supporters"), line = ns.L("Everyone wearing the Legendary badge: you keep Naowh Forever going.") },
+    { tier = "epic", badges = true, name = ns.L("Epic Supporters"), line = ns.L("Everyone wearing the Epic badge: you keep Naowh Forever going too.") },
+    { tier = "basic", badges = true, name = ns.L("Basic Supporters"), line = ns.L("Everyone wearing the Basic badge: you keep Naowh Forever going too.") },
+    { icon = "checklist", name = ns.L("Beta Testers"), line = ns.L("Every bug report and screenshot made it better.") },
 }
 
 local LIBRARIES = { "LibStub", "CallbackHandler-1.0", "LibDataBroker-1.1", "LibDBIcon-1.0", "LibSharedMedia-3.0",
     "LibCustomGlow-1.0", "LibDeflate", "LibSerialize" }
 
-local SECTIONS = {
-    { title = ns.L("The Team"), people = TEAM },
-    { title = ns.L("Thank You"), people = THANKS },
-    { title = ns.L("Built With"), people = DATA, chips = LIBRARIES },
+local DATA = {
+    { icon = "search", name = "Wowhead", line = ns.L("WoW Forever's items, quests and NPCs, and what is new in Forever.") },
+    { icon = "trophy", name = "wowsrc.com", line = ns.L("The BiS rankings behind the BiS List.") },
+    { icon = "bars", name = "WoWSims", line = ns.L("The stat weights each spec starts with.") },
+    { icon = "map", name = "Santiago Reyes", line = ns.L("For his maps of the new Forever dungeons.") },
+    { icon = "map", name = "tr0tsky", line = ns.L("Ley lines and Elemental Convergences behind Skyborne Spots, from the Skyborne Ley Line & Convergence Marker addon.") },
+    { icon = "search", name = "CMaNGOS", line = ns.L("The classic creature database behind Scout's abilities, armor, immunities and tameable beasts.") },
+    { icon = "notes", name = "12dicts and ENABLE", line = ns.L("Alan Beale's 12dicts and the ENABLE word list, the public-domain words behind the Daily Word.") },
+    { icon = "hammer", name = ns.L("Libraries"), line = table.concat(LIBRARIES, ", ") },
 }
+
+local TEXT_ALSO_NAMES = TEXT_ALSO:format(table.concat(ALSO, ", "))
 
 local function Smooth(texture, path)
     texture:SetTexture(path, nil, nil, "TRILINEAR")
@@ -62,139 +87,59 @@ local function Smooth(texture, path)
     return texture
 end
 
-local function NewHero(view)
-    local hero = CreateFrame("Frame", nil, view)
-    local St = ns.Shared.Style
-    ns.Solid(hero, "BACKGROUND", T.fg, St.WINDOW_CARD_FILL):SetAllPoints()
-    ns.Border(hero, St.BORDER_RGB)
-    hero.strip = ns.Solid(hero, "ARTWORK", T.accent, 1)
-    hero.strip:SetPoint("TOPLEFT")
-    hero.strip:SetPoint("TOPRIGHT")
-    hero.strip:SetHeight(STRIP)
-    hero.logo = Smooth(hero:CreateTexture(nil, "ARTWORK"), St.LOGO)
-    hero.logo:SetSize(LOGO_SIZE, LOGO_SIZE)
-    hero.logo:SetPoint("LEFT", PAD, 0)
-    hero.title = ns.Font(hero, HERO_TITLE_SIZE, nil, T.fg)
-    hero.title:SetPoint("TOPLEFT", hero.logo, "TOPRIGHT", PAD, -LINE_GAP)
-    hero.line = ns.Font(hero, HERO_LINE_SIZE, nil, T.muted)
-    hero.line:SetPoint("TOPLEFT", hero.title, "BOTTOMLEFT", 0, -LINE_GAP)
-    hero.emblems = {}
-    return hero
+local function NewEmblem(frame)
+    local glow = frame:CreateTexture(nil, "BORDER")
+    glow:SetBlendMode("ADD")
+    local art = frame:CreateTexture(nil, "ARTWORK")
+    glow:SetPoint("CENTER", art, "CENTER")
+    art.glow = glow
+    return art
 end
 
-local HERO_TIERS = { "naowh", "developer", "moderator", "epic", "legendary" }
-
-local function SetHero(hero)
-    hero.title:SetText(TEXT_NAOWH .. ns.Color("accent", TEXT_FOREVER))
-    hero.line:SetText(TEXT_VERSION:format(ns.CODE_BUILD or UNKNOWN_BUILD))
-    local x = -PAD
-    for i = #HERO_TIERS, 1, -1 do
-        local tier = Tier(HERO_TIERS[i])
-        local emblem = hero.emblems[i]
-        if not emblem then
-            emblem = hero:CreateTexture(nil, "ARTWORK")
-            emblem:SetSize(HERO_EMBLEM, HERO_EMBLEM)
-            hero.emblems[i] = emblem
-        end
-        emblem:SetShown(tier ~= nil)
-        if tier then
-            Smooth(emblem, tier.large)
-            emblem:SetPoint("RIGHT", x, 0)
-            x = x - HERO_EMBLEM_STEP
-        end
-    end
-    return HERO_H
+local function SetEmblem(art, tier, size)
+    art:SetShown(tier ~= nil)
+    art.glow:SetShown(tier ~= nil)
+    if not tier then return end
+    art:SetSize(size, size)
+    Smooth(art, tier.large)
+    art:SetVertexColor(1, 1, 1, 1)
+    art.glow:SetSize(size * GLOW, size * GLOW)
+    Smooth(art.glow, tier.large)
+    art.glow:SetVertexColor(tier.color.r, tier.color.g, tier.color.b, GLOW_ALPHA)
 end
 
-local function NewPerson(view)
+local function NewCard(view)
     local card = CreateFrame("Frame", nil, view)
     local St = ns.Shared.Style
     ns.Solid(card, "BACKGROUND", T.fg, St.WINDOW_CARD_FILL):SetAllPoints()
     ns.Border(card, St.BORDER_RGB)
-    card.strip = card:CreateTexture(nil, "ARTWORK")
-    card.strip:SetPoint("TOPLEFT")
-    card.strip:SetPoint("TOPRIGHT")
-    card.strip:SetHeight(STRIP)
-    card.glow = card:CreateTexture(nil, "BORDER")
-    card.glow:SetBlendMode("ADD")
-    card.art = card:CreateTexture(nil, "ARTWORK")
-    card.art:SetPoint("CENTER", card, "LEFT", PAD + EMBLEM / 2, 0)
-    card.glow:SetPoint("CENTER", card.art, "CENTER")
-    card.name = ns.Font(card, NAME_SIZE, nil, T.fg)
-    card.role = ns.Font(card, ROLE_SIZE, nil, T.muted)
-    card.role:SetPoint("LEFT", card.name, "RIGHT", ROLE_GAP, -ROLE_DROP)
-    card.line = ns.Font(card, LINE_SIZE, nil, T.muted)
-    card.line:SetPoint("TOPLEFT", card.name, "BOTTOMLEFT", 0, -LINE_GAP)
-    card.line:SetJustifyH("LEFT")
-    card.line:SetWordWrap(true)
     return card
 end
 
-local roleText = {}
-
-local function Upper(text)
-    local upper = roleText[text]
-    if not upper then
-        upper = text:upper()
-        roleText[text] = upper
-    end
-    return upper
+local function NewChips(parent)
+    local holder = CreateFrame("Frame", nil, parent)
+    holder.chips = {}
+    return holder
 end
 
-local function SetPerson(card, person, width)
-    local tier = person.tier and Tier(person.tier)
-    local color = tier and tier.color or person.color or T.accentSoft
-    card.strip:SetColorTexture(color.r, color.g, color.b, 1)
-    if tier then
-        card.art:SetSize(EMBLEM, EMBLEM)
-        Smooth(card.art, tier.large)
-        card.art:SetVertexColor(1, 1, 1, 1)
-        card.glow:Show()
-        card.glow:SetSize(EMBLEM * GLOW, EMBLEM * GLOW)
-        Smooth(card.glow, tier.large)
-        card.glow:SetVertexColor(color.r, color.g, color.b, GLOW_ALPHA)
-    else
-        card.art:SetSize(ICON, ICON)
-        Smooth(card.art, ICONS .. person.icon .. ".tga")
-        card.art:SetVertexColor(color.r, color.g, color.b, 1)
-        card.glow:Hide()
-    end
-    card.name:SetText(person.name)
-    card.name:SetTextColor(color.r, color.g, color.b, 1)
-    card.role:SetText(Upper(person.role))
-    card.line:SetWidth(math.max(1, width - TEXT_LEFT - PAD))
-    card.line:SetText(person.line)
-    local block = card.name:GetStringHeight() + LINE_GAP + card.line:GetStringHeight()
-    card.name:ClearAllPoints()
-    card.name:SetPoint("TOPLEFT", card, "LEFT", TEXT_LEFT, block / 2)
-    return math.max(CARD_H, block + 2 * PAD)
-end
-
-local function NewChips(view)
-    local row = CreateFrame("Frame", nil, view)
-    row.chips = {}
-    return row
-end
-
-local function Chip(row, i)
-    local chip = row.chips[i]
+local function Chip(holder, i)
+    local chip = holder.chips[i]
     if not chip then
-        chip = CreateFrame("Frame", nil, row)
+        chip = CreateFrame("Frame", nil, holder)
         chip:SetHeight(CHIP_H)
         ns.Solid(chip, "BACKGROUND", T.panel, 1):SetAllPoints()
         ns.Border(chip, ns.Shared.Style.BORDER_RGB)
-        chip.text = ns.Font(chip, CHIP_TEXT_SIZE, nil, T.fg)
-        chip.text:SetPoint("CENTER")
-        row.chips[i] = chip
+        chip.text = ns.Font(chip, CHIP_SIZE, nil, T.fg)
+        chip.text:SetPoint("CENTER", 0, -TEXT_DROP)
+        holder.chips[i] = chip
     end
     return chip
 end
 
-local function SetChips(row, names)
-    local width = row:GetWidth()
+local function SetChips(holder, names, width)
     local x, y = 0, 0
     for i, name in ipairs(names) do
-        local chip = Chip(row, i)
+        local chip = Chip(holder, i)
         chip.text:SetText(name)
         local w = math.ceil(chip.text:GetStringWidth()) + CHIP_PAD * 2
         if x > 0 and x + w > width then
@@ -206,8 +151,145 @@ local function SetChips(row, names)
         chip:Show()
         x = x + w + CHIP_GAP
     end
-    for i = #names + 1, #row.chips do row.chips[i]:Hide() end
-    return y + CHIP_H
+    for i = #names + 1, #holder.chips do holder.chips[i]:Hide() end
+    local height = y + CHIP_H
+    holder:SetSize(math.max(1, width), height)
+    return height
+end
+
+local function NewBand(view)
+    local band = NewCard(view)
+    band.leads = {}
+    for i = 1, #LEADS do
+        local cell = { art = NewEmblem(band) }
+        cell.name = ns.Font(band, LEAD_NAME_SIZE, nil, T.fg, true)
+        cell.role = ns.Font(band, LEAD_ROLE_SIZE, nil, T.fg)
+        cell.role:SetPoint("TOPLEFT", cell.name, "BOTTOMLEFT", 0, -LINE_GAP)
+        cell.divider = ns.Hairline(ns.Solid(band, "ARTWORK", T.line, 1), "v")
+        band.leads[i] = cell
+    end
+    band.staff = NewEmblem(band)
+    band.staffName = ns.Font(band, STAFF_SIZE, nil, T.fg)
+    band.staffName:SetPoint("LEFT", band.staff, "RIGHT", GAP, -TEXT_DROP)
+    band.names = NewChips(band)
+    return band
+end
+
+local function SetBand(band)
+    local x = 0
+    for i, lead in ipairs(LEADS) do
+        local cell = band.leads[i]
+        local tier = Tier(lead.tier)
+        local color = tier and tier.color or T.accentSoft
+        SetEmblem(cell.art, tier, LEAD_EMBLEM)
+        cell.art:SetPoint("CENTER", band, "LEFT", x + LEAD_PAD + LEAD_EMBLEM / 2, 0)
+        cell.name:SetText(lead.name)
+        cell.name:SetTextColor(color.r, color.g, color.b, 1)
+        cell.role:SetText(ns.Upper(ns.L(lead.role)))
+        cell.role:SetTextColor(color.r, color.g, color.b, 1)
+        local left = x + LEAD_PAD + LEAD_EMBLEM + GAP
+        local block = cell.name:GetStringHeight() + LINE_GAP + cell.role:GetStringHeight()
+        cell.name:ClearAllPoints()
+        cell.name:SetPoint("TOPLEFT", band, "LEFT", left, block / 2)
+        x = left + math.max(cell.name:GetStringWidth(), cell.role:GetStringWidth()) + LEAD_PAD
+        cell.divider:ClearAllPoints()
+        cell.divider:SetPoint("TOPLEFT", band, "TOPLEFT", x, 0)
+        cell.divider:SetPoint("BOTTOMLEFT", band, "BOTTOMLEFT", x, 0)
+    end
+    local tier = Tier(STAFF_TIER)
+    local color = tier and tier.color or T.accentSoft
+    SetEmblem(band.staff, tier, STAFF_EMBLEM)
+    band.staff:SetPoint("CENTER", band, "LEFT", x + LEAD_PAD + STAFF_EMBLEM / 2, 0)
+    band.staffName:SetText(TEXT_STAFF)
+    band.staffName:SetTextColor(color.r, color.g, color.b, 1)
+    local left = x + LEAD_PAD + STAFF_EMBLEM + GAP + band.staffName:GetStringWidth() + LEAD_PAD
+    local height = SetChips(band.names, STAFF, band:GetWidth() - left - PAD)
+    band.names:SetPoint("LEFT", band, "LEFT", left, 0)
+    return math.max(LEAD_EMBLEM, height) + 2 * PAD
+end
+
+local function NewModule(view)
+    local card = NewCard(view)
+    card.icon = card:CreateTexture(nil, "ARTWORK")
+    card.icon:SetSize(TILE_ICON, TILE_ICON)
+    card.icon:SetPoint("TOPLEFT", TILE_PAD, -TILE_PAD)
+    card.name = ns.Font(card, TILE_NAME_SIZE, nil, T.fg)
+    card.name:SetPoint("LEFT", card.icon, "RIGHT", GAP, -TEXT_DROP)
+    card.people = NewChips(card)
+    card.people:SetPoint("TOPLEFT", TILE_PAD, -(TILE_PAD + TILE_ICON + GAP))
+    return card
+end
+
+local function SetModule(card, mod, w)
+    Smooth(card.icon, ICONS .. mod.icon .. ".tga")
+    card.icon:SetVertexColor(T.accentSoft.r, T.accentSoft.g, T.accentSoft.b, 1)
+    card.name:SetText(ns.L(mod.name))
+    local height = SetChips(card.people, mod.people, w - 2 * TILE_PAD)
+    return TILE_PAD + TILE_ICON + GAP + height + TILE_PAD
+end
+
+local function NewTier(view)
+    local card = NewCard(view)
+    card.strip = card:CreateTexture(nil, "ARTWORK")
+    card.strip:SetPoint("TOPLEFT")
+    card.strip:SetPoint("BOTTOMLEFT")
+    card.strip:SetWidth(STRIP)
+    card.art = NewEmblem(card)
+    card.art:SetPoint("CENTER", card, "LEFT", TIER_PAD + TIER_EMBLEM / 2, 0)
+    card.name = ns.Font(card, TIER_NAME_SIZE, nil, T.fg)
+    card.line = ns.Font(card, TIER_LINE_SIZE, nil, T.muted)
+    card.line:SetPoint("TOPLEFT", card.name, "BOTTOMLEFT", 0, -LINE_GAP)
+    card.line:SetJustifyH("LEFT")
+    card.line:SetWordWrap(true)
+    return card
+end
+
+local function SetTier(card, entry, w)
+    local tier = entry.tier and Tier(entry.tier)
+    local color = tier and tier.color or T.accentSoft
+    card.strip:SetColorTexture(color.r, color.g, color.b, 1)
+    SetEmblem(card.art, tier, TIER_EMBLEM)
+    if not tier then
+        card.art:Show()
+        card.art:SetSize(TIER_ICON, TIER_ICON)
+        Smooth(card.art, ICONS .. entry.icon .. ".tga")
+        card.art:SetVertexColor(color.r, color.g, color.b, 1)
+    end
+    card.name:SetText(entry.name)
+    card.name:SetTextColor(color.r, color.g, color.b, 1)
+    local left = TIER_PAD + TIER_EMBLEM + TIER_PAD
+    card.line:SetWidth(math.max(1, w - left - TIER_PAD))
+    card.line:SetText(entry.line)
+    local block = card.name:GetStringHeight() + LINE_GAP + card.line:GetStringHeight()
+    card.name:ClearAllPoints()
+    card.name:SetPoint("TOPLEFT", card, "LEFT", left, block / 2)
+    return math.max(TIER_EMBLEM, block) + 2 * TIER_PAD
+end
+
+local function NewSource(view)
+    local row = CreateFrame("Frame", nil, view)
+    row.name = ns.Font(row, SOURCE_NAME_SIZE, nil, GOLD)
+    row.name:SetPoint("TOPLEFT", SOURCE_ICON + GAP, -SOURCE_PAD)
+    row.icon = row:CreateTexture(nil, "ARTWORK")
+    row.icon:SetSize(SOURCE_ICON, SOURCE_ICON)
+    row.icon:SetPoint("RIGHT", row.name, "LEFT", -GAP, -TEXT_DROP)
+    row.line = ns.Font(row, SOURCE_LINE_SIZE, nil, T.muted)
+    row.line:SetPoint("TOPLEFT", row.name, "TOPRIGHT", GAP, -SOURCE_LINE_DROP)
+    row.line:SetJustifyH("LEFT")
+    row.line:SetWordWrap(true)
+    row.rule = ns.Hairline(ns.Solid(row, "ARTWORK", T.line, 1), "h")
+    row.rule:SetPoint("BOTTOMLEFT")
+    row.rule:SetPoint("BOTTOMRIGHT")
+    return row
+end
+
+local function SetSource(row, source, w)
+    Smooth(row.icon, ICONS .. source.icon .. ".tga")
+    row.icon:SetVertexColor(GOLD.r, GOLD.g, GOLD.b, 1)
+    row.name:SetText(source.name)
+    row.line:SetWidth(math.max(1, w - SOURCE_ICON - GAP - row.name:GetStringWidth() - GAP))
+    row.line:SetText(source.line)
+    return math.max(row.name:GetStringHeight(), row.line:GetStringHeight() + SOURCE_LINE_DROP) + 2 * SOURCE_PAD
 end
 
 local kinds, view
@@ -215,37 +297,53 @@ local NO_EVENTS = {}
 
 local Draw = {}
 
-function Draw:DrawCard(person, _, _, _, x, w)
+function Draw:DrawCard(entry, kind, _, _, x, w)
     self.left, self.width = x, w
-    local card = self:Acquire("person")
-    local height = SetPerson(card, person, w)
+    local card = self:Acquire(kind)
+    local height = kinds[kind].Set(card, entry, w)
     self.left, self.width = 0, self:GetWidth()
     return card, height
 end
 
 function Draw:Redraw()
     self:Clear()
-    self:Add("hero")
+    self:Section(TITLE_TEAM)
+    self:Space(TITLE_GAP)
+    self:Add("band")
     self:Space(SECTION_GAP)
-    for _, section in ipairs(SECTIONS) do
-        self:Section(section.title)
-        self:Space(TITLE_GAP)
-        for _, person in ipairs(section.people) do
-            if ns.FEATURE_BADGES == ns.BADGES_LIVE or not person.badges then self:Gather(person) end
+    self:Section(TITLE_CONTRIBUTORS)
+    self:Space(TITLE_GAP)
+    for _, mod in ipairs(MODULES) do self:Gather(mod, "module") end
+    self:DrawGrid(nil, TILE_COLUMNS)
+    self:Note(TEXT_ALSO_NAMES)
+    self:Space(SECTION_GAP)
+    self:Section(PATRONS and TITLE_SUPPORTERS or TITLE_THANKS)
+    self:Space(TITLE_GAP)
+    self:Gather(ELLESMERE, "tier")
+    self:DrawGrid(nil, FULL_ROW)
+    local shown = 0
+    for _, entry in ipairs(THANKS) do
+        if PATRONS or not entry.badges then
+            self:Gather(entry, "tier")
+            shown = shown + 1
         end
-        self:DrawGrid()
-        if section.chips then self:Add("chips", section.chips) end
-        self:Space(SECTION_GAP)
     end
+    self:DrawGrid(nil, shown)
+    self:Space(SECTION_GAP)
+    self:Section(TITLE_BUILT)
+    self:Space(TITLE_GAP)
+    for _, source in ipairs(DATA) do self:Gather(source, "source") end
+    self:DrawGrid(SOURCE_COLUMNS)
     self:Fit(NO_EVENTS)
 end
 
 local function Kinds()
     if kinds then return kinds end
     kinds = ns.Shared.View.NewKinds()
-    kinds.hero = { New = NewHero, Set = SetHero }
-    kinds.person = { New = NewPerson }
-    kinds.chips = { New = NewChips, Set = SetChips }
+    kinds.band = { New = NewBand, Set = SetBand }
+    kinds.module = { New = NewModule, Set = SetModule }
+    kinds.tier = { New = NewTier, Set = SetTier }
+    kinds.source = { New = NewSource, Set = SetSource }
     return kinds
 end
 

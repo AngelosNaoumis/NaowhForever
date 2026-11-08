@@ -141,12 +141,12 @@ function Engine:Gather(entry, a, b, c)
     grid.entry[n], grid.a[n], grid.b[n], grid.c[n] = entry, a, b, c
 end
 
-function Engine:DrawGrid(most)
+function Engine:DrawGrid(most, exact)
     local grid = self.grid
     local width = self:GetWidth()
     local columns, w = View.Columns(width)
-    if most and columns > most then
-        columns = most
+    if exact or (most and columns > most) then
+        columns = exact or most
         w = CardWidth(width, columns)
     end
     local i = 1

@@ -569,5 +569,12 @@ Module state
   list together with the switch, so they agree with the game's AddOn list.
 
 Credits
-- Every Credits card keeps an emblem-wide slot for its art, a badge emblem or a smaller icon, so
-  names and lines start at one x (`TEXT_LEFT`) on every card.
+- Contributors are listed under the part of the addon they worked on, from their merged pull
+  requests. JsonBE is Grim, so is listed as Grim.
+- The staff group shows the Developer badge, not the Staff badge's rainbow art. What the staff
+  wear in chat is unchanged.
+- The staff group is "Staff", not "Moderators & Support": `test-support-mentions.lua` allows no
+  "support" on the page while `ns.FEATURE_BADGES` is 0.
+- Ellesmere's line is the wording he asked for (#399); keep it word for word.
+- The supporters' row has one column per tier shown (`DrawGrid`'s exact count), so it stays one
+  row when the patron tiers are hidden.

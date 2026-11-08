@@ -163,7 +163,7 @@ local function Shown(flag)
         BADGE_PATRONS = { [1] = { ["Player-1-PATRON"] = { since = "2026-03" } } },
         CharacterPanel = { EllesmereSheet = function() return false end },
         InspectPanel = { EllesmereSheet = function() return false end },
-        Solid = function() return Stub() end, Border = function() return Stub() end,
+        Solid = function() return Stub() end, Border = function() return Stub() end, Hairline = function(tex) return tex end,
         Font = function() return Stub() end, Color = function(_, text) return text end,
         FontInset = function() return 0 end,
         Print = function(text) texts[#texts + 1] = text end,
@@ -172,7 +172,7 @@ local function Shown(flag)
         UI = { CONTENT_PAD = 10, KeepFont = function() return Stub() end, Keep = function() return Stub() end,
             KeepButton = function() return Stub() end },
         Shared = {
-            Style = { WINDOW_CARD_FILL = 0.05, BORDER_RGB = COLOR, LOGO = "logo" },
+            Style = { WINDOW_CARD_FILL = 0.05, BORDER_RGB = COLOR, LOGO = "logo", CARD_GAP = 10 },
             Settings = { Page = function()
                 return {
                     Card = function(_, def) cards[#cards + 1] = def end,
@@ -186,7 +186,7 @@ local function Shown(flag)
                     for key, fn in pairs(draw) do view[key] = fn end
                     function view.Add(self, kind, data) kinds[kind].Set(kinds[kind].New(self), data) end
                     function view.Section(_, title) texts[#texts + 1] = title end
-                    function view.Gather(self, person) self:DrawCard(person, nil, nil, nil, 0, 400) end
+                    function view.Gather(self, entry, a, b, c) self:DrawCard(entry, a, b, c, 0, 400) end
                     function view.Acquire(self, kind) return kinds[kind].New(self) end
                     function view.GetWidth() return 800 end
                     function view.GetHeight() return 500 end
