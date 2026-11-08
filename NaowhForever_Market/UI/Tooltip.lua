@@ -24,6 +24,8 @@ local TEXT_PROFIT = ns.L("profit %s")
 local TEXT_LOSS = ns.L("loss %s")
 local TEXT_INTO = ns.L("Crafts into")
 local TEXT_OVER = ns.L("+%s a craft over selling it")
+local TEXT_SOLD = ns.L("You sold %d")
+local TEXT_SOLD_AT = ns.L("%s each, %s")
 
 local hooked
 local lines = {}
@@ -105,6 +107,8 @@ local function Collect(tooltip, itemID, link)
     local disenchant = Disenchant(link, itemID)
     if disenchant then Add(TEXT_DISENCHANT, TEXT_ABOUT:format(Coins(disenchant))) end
     CraftLines(itemID)
+    local sale = Market.Sales.Last(itemID)
+    if sale then Add(TEXT_SOLD:format(sale.qty), TEXT_SOLD_AT:format(Coins(sale.price), ns.Shared.Ago(sale.at))) end
 end
 
 local function OnItem(tooltip, data)

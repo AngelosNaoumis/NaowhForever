@@ -8,6 +8,7 @@ local BROWSE_SORTS = { { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSo
     { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false } }
 local NO_FILTERS = {}
 local QUOTE_SLACK = 1.05
+local FAVOURITES = "marketFavourites"
 local EVENTS = { "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", "AUCTION_HOUSE_BROWSE_FAILURE", "ITEM_KEY_ITEM_INFO_RECEIVED",
     "COMMODITY_PRICE_UPDATED", "COMMODITY_PRICE_UNAVAILABLE", "COMMODITY_PURCHASE_SUCCEEDED",
     "COMMODITY_PURCHASE_FAILED", "AUCTION_HOUSE_PURCHASE_COMPLETED", "AUCTION_HOUSE_SHOW_ERROR",
@@ -111,6 +112,46 @@ function Buy.Pick(itemKey, quantity)
     picked.itemKey, picked.itemID, picked.commodity = itemKey, itemKey.itemID, nil
     picked.quantity = quantity
     Want()
+end
+
+local function Favourites(create)
+    local account = ns.AccountSettings()
+    if create and not account[FAVOURITES] then account[FAVOURITES] = {} end
+    return account[FAVOURITES]
+end
+
+function Buy.IsFavourite(itemID)
+    local saved = Favourites()
+    return saved ~= nil and saved[itemID] ~= nil
+end
+
+function Buy.ToggleFavourite(itemKey)
+    local saved = Favourites(true)
+    if saved[itemKey.itemID] then
+        saved[itemKey.itemID] = nil
+    else
+        saved[itemKey.itemID] = { level = itemKey.itemLevel, suffix = itemKey.itemSuffix,
+            pet = itemKey.battlePetSpeciesID }
+    end
+end
+
+function Buy.FavouriteKey(itemID)
+    local key = Favourites()[itemID]
+    return { itemID = itemID, itemLevel = key.level or 0, itemSuffix = key.suffix or 0,
+        battlePetSpeciesID = key.pet or 0 }
+end
+
+local function ByName(a, b)
+    local x, y = C_Item.GetItemNameByID(a) or "", C_Item.GetItemNameByID(b) or ""
+    if x ~= y then return x < y end
+    return a < b
+end
+
+function Buy.Favourites(out)
+    wipe(out)
+    for itemID in pairs(Favourites() or {}) do out[#out + 1] = itemID end
+    table.sort(out, ByName)
+    return out
 end
 
 function Buy.PickItem(itemID, quantity)

@@ -60,7 +60,7 @@ function Sell.Read()
     for _, entry in ipairs(entries) do
         entry.scan = ScanPrice(entry.itemID)
         entry.vendor = select(VENDOR_PRICE, GetItemInfo(entry.link)) or 0
-        entry.vendorBetter = entry.scan ~= nil and entry.vendor > 0 and entry.vendor >= entry.scan * (1 - C.AH_CUT)
+        entry.vendorBetter = entry.scan ~= nil and entry.vendor > 0 and entry.vendor >= Market.AfterCut(entry.scan)
         entry.worth = entry.vendorBetter and entry.vendor * entry.count or Value(entry)
         queue[#queue + 1] = entry
     end

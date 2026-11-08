@@ -5,9 +5,8 @@ local T = ns.THEME
 local Market = ns.Market
 local S = Market.Settings
 local St = Market.Style
-local C = Market.C
 local Parts = ns.Shared.Parts
-local Farm, History = Market.Farm, Market.History
+local Farm, Spark = Market.Farm, Market.Spark
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local ZONES_W, PANE_GAP, HEAD_H, ZONE_ROW_H, ZONE_ICON, ZONE_ICONS = 250, 12, 46, 52, 16, 5
@@ -18,7 +17,6 @@ local PIN_MIN, PIN_GROW, PIN_RING = 10, 12, 2
 local LINE_THICK, LINE_ALPHA, LOCKED_ALPHA, PICKED_ALPHA = 2, 0.55, 0.35, 0.3
 local LAYER = 1
 local OPEN_W, LOOP_W = 110, 120
-local SPARK_THICK = 1.5
 local KV_W = 150
 local TEXT_BEST = ns.L("Best for You")
 local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d")
@@ -40,13 +38,12 @@ local TEXT_PICKED = ns.L("Gathered %s")
 local TEXT_SCAN_PRICE = ns.L("at your last scan")
 local TEXT_NO_PRICE = ns.L("no scan price")
 local TEXT_HAVE, TEXT_WORTH, TEXT_A_NODE = ns.L("You have"), ns.L("Worth"), ns.L("A node")
-local TEXT_DAYS = ns.L("Last 14 days")
 local TEXT_SELL = ns.L("Sell %d")
 
 local page, zonePane, zoneScroll, zoneList, zoneNote, skillsText, main, mapHead, nameText, subText
 local canvas, strip, openButton, loopButton
 local filters = {}
-local zoneRows, pins, tiles, lines, sparkLines = {}, {}, {}, {}, {}
+local zoneRows, pins, tiles, lines = {}, {}, {}, {}
 local picked = { map = nil, item = nil }
 local active = false
 
@@ -258,39 +255,6 @@ local function TopItem()
     return best and best.item
 end
 
-local function DrawSpark(item)
-    local series, found = History.Series(item, {})
-    local lo, hi
-    for _, price in ipairs(series) do
-        if price then lo, hi = math.min(lo or price, price), math.max(hi or price, price) end
-    end
-    local n, prev, prevI = 0, nil, nil
-    local span = hi and hi > lo and hi - lo or 1
-    local step = SPARK_W / (C.HISTORY_DAYS - 1)
-    for i, price in ipairs(series) do
-        if price then
-            local y = (price - (lo or price)) / span * SPARK_H
-            if prev then
-                n = n + 1
-                local line = sparkLines[n]
-                if not line then
-                    line = strip.spark:CreateLine(nil, "ARTWORK")
-                    line:SetThickness(SPARK_THICK)
-                    sparkLines[n] = line
-                end
-                local gold = St.GOLD_RGB
-                line:SetColorTexture(gold.r, gold.g, gold.b, 1)
-                line:SetStartPoint("BOTTOMLEFT", strip.spark, (prevI - 1) * step, prev)
-                line:SetEndPoint("BOTTOMLEFT", strip.spark, (i - 1) * step, y)
-                line:Show()
-            end
-            prev, prevI = y, i
-        end
-    end
-    for i = n + 1, #sparkLines do sparkLines[i]:Hide() end
-    strip.sparkLabel:SetShown(found > 1)
-end
-
 local function NodeValueOf(item)
     for _, spot in ipairs(Farm.spots) do
         if spot.item == item then return spot.value, spot end
@@ -313,7 +277,7 @@ function Page.DrawStrip()
     strip.have:SetText(have)
     strip.worth:SetText(Parts.Coins(Market.AfterCut(scan or 0) * have, true))
     strip.node:SetText(Parts.Coins(value, true))
-    DrawSpark(item)
+    strip.spark:Paint(item)
     local atAuction = Market.Window.AtAuction()
     strip.sell:SetShown(atAuction and have > 0)
     ns.SetButtonText(strip.sell, TEXT_SELL:format(have))
@@ -483,12 +447,8 @@ local function BuildStrip()
     strip.have = KV(kv, TEXT_HAVE, 1)
     strip.worth = KV(kv, TEXT_WORTH, 2)
     strip.node = KV(kv, TEXT_A_NODE, 3)
-    strip.spark = CreateFrame("Frame", nil, strip)
-    strip.spark:SetSize(SPARK_W, SPARK_H)
+    strip.spark = Spark.New(strip, SPARK_W, SPARK_H)
     strip.spark:SetPoint("RIGHT", kv, "LEFT", -PANE_GAP, -SUB_GAP)
-    strip.sparkLabel = ns.Font(strip, SMALL_SIZE, nil, T.muted)
-    strip.sparkLabel:SetPoint("BOTTOMLEFT", strip.spark, "TOPLEFT", 0, SUB_GAP)
-    strip.sparkLabel:SetText(TEXT_DAYS)
 end
 
 local function BuildMain()

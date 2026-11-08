@@ -6,7 +6,7 @@ local Market = ns.Market
 local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Buy, Listings, Ladder = Market.Buy, Market.Listings, Market.Ladder
+local Buy, Listings, Ladder, Spark = Market.Buy, Market.Listings, Market.Ladder, Market.Spark
 
 local GAP, TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local PANE_GAP, SECTION_GAP = 12, 12
@@ -16,6 +16,8 @@ local ROW_IN, ICON_GAP, TITLE_SIZE, SUB_GAP = 8, 8, 14, 4
 local SEARCH_H, NAME_SIZE, NAME_H = St.SEARCH_H, 16, 24
 local QTY_W, QTY_LETTERS, BUY_W = 70, 5, 260
 local SCROLL_IN = 4
+local FAV_HEAD_H, FAV_ROW_H, FAV_ROWS, STAR, SPARK_W = 30, 30, 5, 18, 110
+local FAV_H = FAV_HEAD_H + FAV_ROWS * FAV_ROW_H
 local DETAIL_H = NAME_H + SECTION_GAP + Ladder.HEIGHT + SECTION_GAP + BUTTON_H
 local TEXT_SHOP = ns.L("Shopping List")
 local TEXT_SHOP_SUB = ns.L("From Professions, what you still need")
@@ -44,10 +46,15 @@ local TEXT_BOUGHT = ns.L("Bought %d.")
 local TEXT_FAILED = ns.L("The purchase did not go through.")
 local TEXT_UNAVAILABLE = ns.L("Not enough is left at that price. Pick it again for new listings.")
 local TEXT_LOWEST, TEXT_LISTED_HEAD = ns.L("Lowest"), ns.L("Listed")
+local TEXT_FAVOURITES = ns.L("Favourites")
+local TEXT_FAV_EMPTY = ns.L("Star an item you buy often and it stays here.")
+local TEXT_STAR = ns.L("Favourite")
+local TEXT_STAR_TIP = ns.L("Keeps this item under Favourites, one click from its listings.")
 
 local page, shopPane, shopScroll, shopList, shopNote, main, search, resultsScroll, resultsList, resultsNote
-local detail, nameText, ladder, quantity, buyButton, statusText
-local shopRows, resultRows, rungs = {}, {}, {}
+local detail, nameText, ladder, quantity, buyButton, statusText, star, spark
+local favPane, favScroll, favList, favNote, itemEvents
+local shopRows, resultRows, rungs, favRows, favourites = {}, {}, {}, {}, {}
 local active = false
 
 local Page = {}
@@ -131,6 +138,35 @@ local function NewShopRow()
     return row
 end
 
+local function FavClicked(row)
+    Buy.Pick(Buy.FavouriteKey(row.item))
+    quantity:SetText(1)
+    Page.Draw()
+end
+
+local function NewFavRow()
+    local row = NewListRow(favList, SHOP_ICON, FavClicked)
+    row:SetHeight(FAV_ROW_H)
+    row.price = ns.Font(row, SMALL_SIZE, nil, T.muted)
+    row.price:SetPoint("RIGHT", -ROW_IN, 0)
+    row.name:SetPoint("LEFT", row.icon, "RIGHT", ICON_GAP, 0)
+    row.name:SetPoint("RIGHT", row.price, "LEFT", -ICON_GAP, 0)
+    return row
+end
+
+local function PaintFavRow(row, i)
+    local item = favourites[i]
+    row.item = item
+    row.stripe:SetShown(i % 2 == 0)
+    row.picked:SetShown(Buy.picked.itemID == item)
+    row.icon.texture:SetTexture(C_Item.GetItemIconByID(item))
+    local color = Items.QualityColor(item) or T.fg
+    row.name:SetTextColor(color.r, color.g, color.b)
+    row.name:SetText(Items.Name(item))
+    local scan = ns.AuctionPrice and ns.AuctionPrice(item)
+    row.price:SetText(scan and Parts.Coins(scan, true) or "")
+end
+
 local function ResultClicked(row)
     Buy.Pick(row.itemKey)
     quantity:SetText(1)
@@ -186,6 +222,12 @@ local function DrawShopping()
     Rows(shopList, count, shopRows, NewShopRow, PaintShopRow, SHOP_ROW_H)
     shopNote:SetShown(count == 0)
     shopNote:SetText(shopping and TEXT_SHOP_EMPTY or TEXT_SHOP_OFF)
+end
+
+local function DrawFavourites()
+    Buy.Favourites(favourites)
+    Rows(favList, #favourites, favRows, NewFavRow, PaintFavRow, FAV_ROW_H)
+    favNote:SetShown(#favourites == 0)
 end
 
 local function DrawResults()
@@ -248,6 +290,10 @@ local function DrawDetail()
     local name, color = KeyLook(picked.itemKey)
     nameText:SetTextColor(color.r, color.g, color.b)
     nameText:SetText(name)
+    local tint = Buy.IsFavourite(picked.itemID) and St.GOLD_RGB or T.muted
+    star.icon:SetVertexColor(tint.r, tint.g, tint.b)
+    local drawn = spark:Paint(picked.itemID) > 1
+    nameText:SetPoint("RIGHT", drawn and spark.label or star, "LEFT", -PANE_GAP, 0)
     local total = 0
     for i = 1, Listings.count do total = total + Listings.rows[i].quantity end
     if Listings.state == "listed" then
@@ -258,9 +304,9 @@ local function DrawDetail()
     local count = picked.commodity and Quantity() or 1
     ladder:Paint(rungs, LadderRungs(count))
     quantity:SetShown(picked.commodity == true)
-    local text, tint = Status(picked, purchase, count)
-    tint = tint or T.muted
-    statusText:SetTextColor(tint.r, tint.g, tint.b)
+    local text, shade = Status(picked, purchase, count)
+    shade = shade or T.muted
+    statusText:SetTextColor(shade.r, shade.g, shade.b)
     statusText:SetText(text)
     local label, on = BuyLabel(picked, purchase, count)
     ns.SetButtonText(buyButton, label)
@@ -270,8 +316,21 @@ end
 function Page.Draw()
     if not active then return end
     DrawShopping()
+    for _, row in ipairs(favRows) do
+        if row:IsShown() then row.picked:SetShown(Buy.picked.itemID == row.item) end
+    end
     DrawResults()
     DrawDetail()
+end
+
+local function StarClicked()
+    Buy.ToggleFavourite(Buy.picked.itemKey)
+    DrawFavourites()
+    Page.Draw()
+end
+
+local function ItemLoaded(_, _, itemID)
+    if Buy.IsFavourite(itemID) then DrawFavourites() end
 end
 
 local function BuyClicked()
@@ -301,9 +360,32 @@ local function BuildShopping()
     local sub = ns.Font(shopPane, SMALL_SIZE, nil, T.muted)
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -SUB_GAP)
     sub:SetText(TEXT_SHOP_SUB)
+    favPane = CreateFrame("Frame", nil, shopPane)
+    favPane:SetPoint("BOTTOMLEFT")
+    favPane:SetPoint("BOTTOMRIGHT")
+    favPane:SetHeight(FAV_H)
+    local rule = ns.Solid(favPane, "ARTWORK", St.BORDER_RGB, 1)
+    rule:SetPoint("TOPLEFT")
+    rule:SetPoint("TOPRIGHT")
+    rule:SetHeight(1)
+    local favTitle = ns.Font(favPane, TITLE_SIZE, nil, T.fg, true)
+    favTitle:SetPoint("TOPLEFT", ROW_IN, -ROW_IN)
+    favTitle:SetText(TEXT_FAVOURITES)
+    favScroll = ns.UI.SlimScroll(favPane)
+    favScroll:SetPoint("TOPLEFT", 0, -FAV_HEAD_H)
+    favScroll:SetPoint("BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
+    favList = CreateFrame("Frame", nil, favScroll)
+    favList:SetWidth(SHOP_W - St.SCROLLBAR - SCROLL_IN)
+    favList:SetHeight(1)
+    favScroll:SetScrollChild(favList)
+    favNote = ns.Font(favPane, SMALL_SIZE, nil, T.muted)
+    favNote:SetPoint("TOPLEFT", ROW_IN, -FAV_HEAD_H)
+    favNote:SetPoint("RIGHT", -ROW_IN, 0)
+    favNote:SetJustifyH("LEFT")
+    favNote:SetText(TEXT_FAV_EMPTY)
     shopScroll = ns.UI.SlimScroll(shopPane)
     shopScroll:SetPoint("TOPLEFT", 0, -SHOP_HEAD_H)
-    shopScroll:SetPoint("BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
+    shopScroll:SetPoint("BOTTOMRIGHT", favPane, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
     shopList = CreateFrame("Frame", nil, shopScroll)
     shopList:SetWidth(SHOP_W - St.SCROLLBAR - SCROLL_IN)
     shopList:SetHeight(1)
@@ -319,9 +401,18 @@ local function BuildDetail()
     detail:SetPoint("BOTTOMLEFT")
     detail:SetPoint("BOTTOMRIGHT")
     detail:SetHeight(DETAIL_H)
+    star = CreateFrame("Button", nil, detail)
+    star:SetSize(STAR, STAR)
+    star:SetPoint("TOPRIGHT")
+    star.icon = star:CreateTexture(nil, "ARTWORK")
+    star.icon:SetAllPoints()
+    star.icon:SetTexture(St.STAR)
+    star:SetScript("OnClick", StarClicked)
+    ns.Tooltip(star, TEXT_STAR, TEXT_STAR_TIP)
+    spark = Spark.New(detail, SPARK_W, STAR, true)
+    spark:SetPoint("RIGHT", star, "LEFT", -PANE_GAP, 0)
     nameText = ns.Font(detail, NAME_SIZE, nil, T.fg, true)
     nameText:SetPoint("TOPLEFT")
-    nameText:SetPoint("RIGHT")
     nameText:SetJustifyH("LEFT")
     nameText:SetWordWrap(false)
     ladder = Ladder.New(detail, TEXT_LADDER)
@@ -403,6 +494,12 @@ function Page.Show()
         Buy.Open()
         Listings.Start()
         Listings.onChange = Page.Draw
+        if not itemEvents then
+            itemEvents = CreateFrame("Frame")
+            itemEvents:SetScript("OnEvent", ItemLoaded)
+        end
+        itemEvents:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+        DrawFavourites()
     end
     Page.Draw()
 end
@@ -411,6 +508,7 @@ function Page.Hide()
     page:Hide()
     if not active then return end
     active = false
+    itemEvents:UnregisterAllEvents()
     Buy.Close()
     Listings.Stop()
 end

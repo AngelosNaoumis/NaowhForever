@@ -190,7 +190,7 @@ local function DrawPost(entry, price)
     else
         depositText:SetText(deposit and TEXT_DEPOSIT:format(Coins(deposit)) or "")
     end
-    netText:SetText(TEXT_NET:format(Coins(math.floor(price * count * (1 - C.AH_CUT)))))
+    netText:SetText(TEXT_NET:format(Coins(Market.AfterCut(price * count))))
     ns.SetButtonText(post, Post.Waiting() and TEXT_POSTING or TEXT_POST:format(count, Coins(price * count)))
     Enable(post, CanPost(entry))
 end

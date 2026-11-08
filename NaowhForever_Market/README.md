@@ -25,6 +25,7 @@ NaowhForever_Market/
   Listings.lua       one item's live listings, cheapest first (Market.Listings)
   Post.lua           posting from a click or key press, and the game's answer (Market.Post)
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
+  Sales.lua          what you sold, from your sold auctions, per realm and faction (Market.Sales)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
   Buy.lua            the name search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
@@ -35,6 +36,7 @@ NaowhForever_Market/
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
+    Spark.lua        an item's last two weeks of prices as a small line, for Farm and Buy (Market.Spark)
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
     Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
@@ -196,6 +198,24 @@ NaowhForever_Market/
   Each gather tells Farm to rank again (`Farm.Changed`), and a run is kept under the zone's own map ID
   (`Shared.Places.SameMap`), so it counts for the zone Farm lists.
 - The chart's hover runs an OnUpdate only while the mouse is over it.
+- Sales are noted from your own sold auctions (`Enum.AuctionStatus.Sold` in `GetOwnedAuctionInfo`):
+  The Market asks for your auctions each time the auction house opens and reads every
+  `OWNED_AUCTIONS_UPDATED` while it is open, whoever asked, so a sale is caught without opening My
+  Auctions. Mail is never read: a sold auction carries its own ID, a mail does not, so nothing is
+  counted twice. A sold row stays only until its gold is mailed, about an hour (`SALE_DELIVERY`), so a
+  sale whose gold arrived while you were away from the auction house is not seen.
+- A sale is kept once per auction ID and quantity (`seen`), so part of a commodity auction selling
+  later is its own sale; seen keys are forgotten after `SALE_SEEN_SECONDS` (2 days), long after a sold
+  row is gone. Sales are kept for `SALES_DAYS` (30) days, at most `SALES_KEEP` (2000) per realm and
+  faction (`marketSales`), with each item's last sale kept on its own for tooltips (`latest`).
+- A sale is worth its buyout, or its bid when it has no buyout, times its quantity, after the cut:
+  Blizzard's own auctions list shows a sold row at its buyout. It is dated by the time its gold still
+  has to arrive (`timeLeftSeconds` within `SALE_DELIVERY`), else when it was read. My Auctions sums the
+  last `SALES_WINDOW_DAYS` (7); tooltips show your last sale of the item.
+- Favourites are account-wide (`marketFavourites`), starred from Buy's detail with the item key's item
+  level and suffix, so a piece of gear is searched as the one you starred. They are listed by name and
+  drawn when Buy opens, when one is starred, and when a favourite's item data arrives
+  (`GET_ITEM_INFO_RECEIVED`). The detail's name runs to the star when there is no price line to draw.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -206,7 +226,8 @@ NaowhForever_Market/
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
 `test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
 history and Bag Worth, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
-`test-market-runs.lua` Last Run; all load the rules through
+`test-market-runs.lua` Last Run, `test-market-extras.lua` sales and favourites; all load the rules
+through
 `Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
@@ -252,3 +273,7 @@ Away from the auction house:
 30. Ten minutes without gathering, then another gather, starts a new run; < and > step between runs.
 31. After three of a node, its pins on Farm are priced from what you gathered; after a five-minute run
     the zone reads "you made ... an hour".
+32. After an auction sells, My Auctions' line adds what you sold in the last 7 days, and the item's
+    tooltip shows "You sold N" with the price and when.
+33. On Buy, the star beside a picked item keeps it under Favourites; clicking a favourite picks it.
+34. Buy's detail and Farm's strip draw the item's last 14 days once two days have scans.

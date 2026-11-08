@@ -6,6 +6,7 @@ local GetItemInfo = C_Item.GetItemInfo
 local T = ns.THEME
 local Market = ns.Market
 local St = Market.Style
+local C = Market.C
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
 local Auctions = Market.Auctions
@@ -28,6 +29,7 @@ local NAME_RIGHT = QTY_RIGHT + QTY_W + COLUMN_GAP
 local NAME_LEFT = ROW_IN + ROW_ICON + ICON_GAP
 local TEXT_TITLE = ns.L("My Auctions")
 local TEXT_SUB = ns.L("%d auctions, %d undercut, %s listed")
+local TEXT_SOLD = ns.L(", %s sold in the last %d days")
 local TEXT_NONE = ns.L("You have no auctions up.")
 local TEXT_NEXT = ns.L("Cancel Undercut (%d)")
 local TEXT_CANCEL = ns.L("Cancel")
@@ -180,7 +182,9 @@ end
 function Page.Draw()
     if not active then return end
     local undercut, listed = Auctions.Counts()
-    header.sub:SetText(TEXT_SUB:format(#Auctions.list, undercut, Parts.Coins(listed, true)))
+    local sold = Market.Sales.Since(C.SALES_WINDOW_DAYS * C.SECONDS_PER_DAY)
+    header.sub:SetText(TEXT_SUB:format(#Auctions.list, undercut, Parts.Coins(listed, true))
+        .. (sold > 0 and TEXT_SOLD:format(Parts.Coins(sold, true), C.SALES_WINDOW_DAYS) or ""))
     ns.SetButtonText(nextButton, TEXT_NEXT:format(undercut))
     nextButton:SetEnabled(undercut > 0)
     nextButton:SetAlpha(undercut > 0 and 1 or St.DISABLED_ALPHA)

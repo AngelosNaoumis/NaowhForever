@@ -6,6 +6,7 @@
     <Script file="Listings.lua"/>
     <Script file="Post.lua"/>
     <Script file="Sell.lua"/>
+    <Script file="Sales.lua"/>
     <Script file="Auctions.lua"/>
     <Script file="Buy.lua"/>
     <Script file="History.lua"/>
@@ -15,6 +16,7 @@
     <Script file="Farm.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Ladder.lua"/>
+    <Script file="View\Spark.lua"/>
     <Script file="UI\Window.lua"/>
     <Script file="UI\Farm.lua"/>
     <Script file="UI\Runs.lua"/>
