@@ -10,15 +10,14 @@ local C = Market.C
 local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Sell, Listings, Post = Market.Sell, Market.Listings, Market.Post
+local Sell, Listings, Post, Ladder = Market.Sell, Market.Listings, Market.Post, Market.Ladder
 
 local GAP, TEXT_SIZE, SMALL_SIZE = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE
 local BORDER_RGB, QUEUE_W, BUTTON_H = St.BORDER_RGB, St.QUEUE_W, St.BUTTON_H
 local PANE_GAP = 12
 local HEAD_ICON, NAME_SIZE, HEAD_H, NAME_GAP, SUB_GAP = 40, 18, 44, 10, 4
 local SECTION_GAP = 12
-local LADDER_ROWS, LADDER_HEAD_H, LADDER_ROW_H = 6, 24, 22
-local LADDER_IN, PRICE_W, QTY_W, BAR_IN, BAR_THICK = 10, 150, 60, 12, 8
+local LADDER_ROWS = Ladder.ROWS
 local REASON_H, INFO_SIZE, INFO_GAP = 20, 14, 6
 local FIELD_LABEL_H, FIELD_GAP, FORM_H = 16, 28, 42
 local QTY_BOX_W, QTY_LETTERS, OF_GAP = 60, 5, 6
@@ -80,7 +79,7 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_MONEY" }
 
 local page, pane, content, message, queuePane, scroll, list, bar
 local head, ladder, reason, money, quantity, quantityOf, durations, depositText, netText, skip, post
-local ladderRows, queueRows, lines, display = {}, {}, {}, {}
+local queueRows, lines, display = {}, {}, {}
 local events
 local active, loading, failed, reread = false, false, false, false
 
@@ -139,12 +138,9 @@ local function Reason(entry, price, why, ref)
 end
 
 local function Fill(n, price, count, own, mine)
-    local row = display[n]
-    if not row then
-        row = {}
-        display[n] = row
-    end
-    row.price, row.count, row.own, row.mine = price, count, own, mine
+    local rung = Ladder.Rung(display, n)
+    rung.price, rung.count, rung.lit = price, count, mine
+    rung.label = mine and TEXT_YOUR_POST or (own > 0 and TEXT_YOURS or nil)
 end
 
 local function LadderRows(price, count)
@@ -167,35 +163,16 @@ local function LadderRows(price, count)
     return n
 end
 
-local function PaintLadderRow(row, data, most)
-    local color = data.mine and T.accent or T.fg
-    row.price:SetTextColor(color.r, color.g, color.b)
-    local suffix = data.mine and TEXT_YOUR_POST or (data.own > 0 and TEXT_YOURS or "")
-    row.price:SetText(Coins(data.price) .. suffix)
-    row.count:SetText(data.count)
-    row.fill:SetShown(data.mine)
-    local room = row:GetWidth() - PRICE_W - QTY_W - BAR_IN * 2
-    row.bar:SetWidth(math.max(1, room * data.count / most))
-    local tint = data.mine and T.accent or T.muted
-    row.bar:SetColorTexture(tint.r, tint.g, tint.b, 1)
-    row:Show()
-end
-
 local function DrawLadder(entry, price, count)
     local state = Listings.state
     local total = 0
     for i = 1, Listings.count do total = total + Listings.rows[i].quantity end
     if state == "listed" then
-        ladder.status:SetText(total > 0 and TEXT_LISTED:format(BreakUpLargeNumbers(total)) or TEXT_NONE)
+        ladder:SetStatus(total > 0 and TEXT_LISTED:format(BreakUpLargeNumbers(total)) or TEXT_NONE)
     else
-        ladder.status:SetText(state == "noanswer" and "" or TEXT_SEARCHING)
+        ladder:SetStatus(state == "noanswer" and "" or TEXT_SEARCHING)
     end
-    local n = entry.vendorBetter and 0 or LadderRows(price, count)
-    local most = 1
-    for i = 1, n do most = math.max(most, display[i].count) end
-    for i = 1, LADDER_ROWS do
-        if i <= n then PaintLadderRow(ladderRows[i], display[i], most) else ladderRows[i]:Hide() end
-    end
+    ladder:Paint(display, entry.vendorBetter and 0 or LadderRows(price, count))
 end
 
 local function DrawForm(entry, price)
@@ -502,39 +479,10 @@ local function BuildHead()
     head.sub:SetPoint("TOPLEFT", head.name, "BOTTOMLEFT", 0, -SUB_GAP)
 end
 
-local function LadderRow(i)
-    local row = CreateFrame("Frame", nil, ladder)
-    row:SetHeight(LADDER_ROW_H)
-    row:SetPoint("TOPLEFT", 0, -(LADDER_HEAD_H + (i - 1) * LADDER_ROW_H))
-    row:SetPoint("RIGHT")
-    row.fill = ns.Solid(row, "BACKGROUND", T.accent, St.PICKED_FILL)
-    row.fill:SetAllPoints()
-    row.price = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.price:SetPoint("LEFT", LADDER_IN, 0)
-    row.price:SetWidth(PRICE_W)
-    row.price:SetJustifyH("LEFT")
-    row.bar = row:CreateTexture(nil, "ARTWORK")
-    row.bar:SetHeight(BAR_THICK)
-    row.bar:SetPoint("LEFT", PRICE_W + BAR_IN, 0)
-    row.count = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.count:SetPoint("RIGHT", -LADDER_IN, 0)
-    row.count:SetWidth(QTY_W)
-    row.count:SetJustifyH("RIGHT")
-    return row
-end
-
 local function BuildLadder()
-    ladder = CreateFrame("Frame", nil, content)
+    ladder = Ladder.New(content, TEXT_LADDER)
     ladder:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SECTION_GAP)
     ladder:SetPoint("RIGHT")
-    ladder:SetHeight(LADDER_HEAD_H + LADDER_ROWS * LADDER_ROW_H)
-    Panel(ladder)
-    local title = ns.Font(ladder, SMALL_SIZE, nil, T.muted)
-    title:SetPoint("TOPLEFT", LADDER_IN, -(LADDER_HEAD_H - SMALL_SIZE) / 2)
-    title:SetText(TEXT_LADDER)
-    ladder.status = ns.Font(ladder, SMALL_SIZE, nil, T.muted)
-    ladder.status:SetPoint("TOPRIGHT", -LADDER_IN, -(LADDER_HEAD_H - SMALL_SIZE) / 2)
-    for i = 1, LADDER_ROWS do ladderRows[i] = LadderRow(i) end
 end
 
 local function BuildReason()

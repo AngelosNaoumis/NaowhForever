@@ -19,11 +19,14 @@ NaowhForever_Market/
   Post.lua           posting from a click or key press, and the game's answer (Market.Post)
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
+  Buy.lua            the name search, the cost of a quantity, and buying (Market.Buy)
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
+    Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
   UI/
     Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
+    Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Takeover.lua     covering Blizzard's auction house, and the way back to it
     SettingsPage.lua the settings page, declared as cards
@@ -85,13 +88,27 @@ NaowhForever_Market/
   A check's answer is kept under the item it was asked for, since the auctions are read again (and
   their tables reused) whenever the game sends them. Cancelled items come
   back by mail, so a cancelled auction cannot be posted again from here.
+- Buy searches by name with `SendBrowseQuery`, sorted by price then name, as Blizzard's browse does;
+  a picked item's listings come through the same search as Sell. The throttle freeing, another item's
+  data arriving or an error while not buying redraw nothing: the page rebuilds Professions' whole
+  shopping plan on each draw, and the throttle frees after every message, Blizzard's own included.
+- A commodity is bought in two presses, each a hardware event: the first asks the game for a price
+  (`StartCommoditiesPurchase`, which answers with `COMMODITY_PRICE_UPDATED`), the second confirms it
+  (`ConfirmCommoditiesPurchase`). A quote over `QUOTE_SLACK` (5%) above the listings' average is flagged,
+  the margin Blizzard's own buy dialog refuses at. Picking something else cancels an open quote, through
+  `pcall` as Professions' Buyer does: the game can drop the quote first.
+- Gear buys the cheapest auction that is not yours at its buyout with `PlaceBid`, as Blizzard's buyout
+  does, and answers with `AUCTION_HOUSE_PURCHASE_COMPLETED` for that auction or `AUCTION_HOUSE_SHOW_ERROR`.
+- The Shopping List is Professions' (`ns.Professions.Shopping`), read only when Professions is loaded.
+  A commodity bought here is taken off it with its own `Shopping.Bought`, as its Buy button does.
 - An owned auction's item key info (`GetItemKeyInfo`) can be missing until
   `ITEM_KEY_ITEM_INFO_RECEIVED`; until then it shows as Checking and is checked when it arrives.
 
 ## Checking
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
-`test-market-auctions.lua` My Auctions; both load the rules through `Tools/regression/market_world.lua`.
+`test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy; all load the rules through
+`Tools/regression/market_world.lua`.
 In game, at an auctioneer, with The Market on:
 
 1. The Market opens over Blizzard's window with your bags in Up Next, most valuable first.
@@ -104,3 +121,6 @@ In game, at an auctioneer, with The Market on:
 8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
    auction's price is the price for one (check against Blizzard's Auctions tab).
 9. Cancel asks first and cancels; Cancel Undercut cancels one per press; the list reads again.
+10. Buy: a name and Enter lists results; picking one shows its listings and what you would take.
+11. A commodity: Buy gets the price, Confirm buys it, and the Shopping List counts it.
+12. Gear: Buy buys the cheapest auction that is not yours.

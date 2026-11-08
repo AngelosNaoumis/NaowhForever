@@ -7,9 +7,12 @@
     <Script file="Post.lua"/>
     <Script file="Sell.lua"/>
     <Script file="Auctions.lua"/>
+    <Script file="Buy.lua"/>
     <Script file="View\Style.lua"/>
+    <Script file="View\Ladder.lua"/>
     <Script file="UI\Window.lua"/>
     <Script file="UI\Sell.lua"/>
+    <Script file="UI\Buy.lua"/>
     <Script file="UI\Auctions.lua"/>
     <Script file="UI\Takeover.lua"/>
     <Script file="UI\SettingsPage.lua"/>

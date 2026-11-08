@@ -22,13 +22,13 @@ local function Changed()
     if Listings.onChange then Listings.onChange() end
 end
 
-local function Row(n, price, quantity, own)
+local function Row(n, price, quantity, own, auctionID)
     local row = rows[n]
     if not row then
         row = {}
         rows[n] = row
     end
-    row.price, row.quantity, row.own = price, quantity, own
+    row.price, row.quantity, row.own, row.auctionID = price, quantity, own, auctionID
 end
 
 local function ReadCommodities(itemID)
@@ -50,12 +50,14 @@ local function ReadItems(itemKey)
         local price = result and result.buyoutAmount
         if price then
             local own = result.containsOwnerItem and result.quantity or 0
+            local other = not result.containsOwnerItem and result.auctionID or nil
             local last = rows[n]
             if n > 0 and last.price == price then
                 last.quantity, last.own = last.quantity + result.quantity, last.own + own
+                last.auctionID = last.auctionID or other
             else
                 n = n + 1
-                Row(n, price, result.quantity, own)
+                Row(n, price, result.quantity, own, other)
             end
         end
     end

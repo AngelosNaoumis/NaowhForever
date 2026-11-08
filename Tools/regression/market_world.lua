@@ -8,7 +8,7 @@ local Load = dofile("Tools/regression/load_files.lua")
 local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
 local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
-    "NaowhForever_Market/Auctions.lua" }
+    "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua" }
 
 local function Noop() end
 
@@ -16,7 +16,8 @@ local function Setup(opts)
     opts = opts or {}
     local t = { bags = opts.bags or {}, status = opts.status or {}, scan = opts.scan or {}, vendor = opts.vendor or {},
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
-        owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {} }
+        owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
+        browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000 }
     local registry = {}
     local copper = opts.copper ~= false
     t.ready = true
@@ -126,8 +127,19 @@ local function Setup(opts)
             CanCancelAuction = function(id) return not t.locked[id] end,
             GetCancelCost = function() return 0 end,
             CancelAuction = function(id) t.cancels[#t.cancels + 1] = id end,
+            SendBrowseQuery = function(query) t.browses[#t.browses + 1] = query.searchString end,
+            GetBrowseResults = function() return t.browse end,
+            StartCommoditiesPurchase = function(id, quantity)
+                t.purchases[#t.purchases + 1] = { step = "start", itemID = id, quantity = quantity }
+            end,
+            ConfirmCommoditiesPurchase = function(id, quantity)
+                t.purchases[#t.purchases + 1] = { step = "confirm", itemID = id, quantity = quantity }
+            end,
+            CancelCommoditiesPurchase = function() t.purchases[#t.purchases + 1] = { step = "cancel" } end,
+            PlaceBid = function(id, amount) t.bids[#t.bids + 1] = { auctionID = id, amount = amount } end,
         },
         C_Timer = { After = function(_, fn) t.timers[#t.timers + 1] = fn end },
+        GetMoney = function() return t.money end,
         CreateFrame = function() return setmetatable({}, { __index = frameMethods }) end,
         StaticPopupDialogs = { AUCTION_HOUSE_POST_WARNING = dialog },
         hooksecurefunc = function(target, name, fn)
