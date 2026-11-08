@@ -104,6 +104,13 @@ NaowhForever_Combat/AuraBuffs/
     missing (`single`).
   - one sent at you, when SENT's `target` is readable (it is `ConditionalSecret`) and is your name. A
     raid buff fades on that only while solo (`solo`).
+- Thorns Only on Tank (`thornsTankOnly`, off by default) is Robin's ask. Solo, Thorns reminds you of your
+  own, as before (Hide While Resting still applies). In a group it reminds you only of the tanks (the Tank
+  role or a raid main tank, `IsTank`): a click casts it on the first tank missing it, with the count when more
+  than one is. A group with no tank gets no Thorns reminder, Robin's call: EllesmereUI's raid frames fall back
+  to you there. A tank offline, dead or out of sight cannot be read or reached, so it shows nothing. While it is on, the row follows every group member's `UNIT_AURA`,
+  `GROUP_ROSTER_UPDATE` and `PLAYER_ROLES_ASSIGNED`, as Raid Buff Reminders do. A cast at you fades it
+  only when you are the one tank missing it (`solo`).
 - A weapon reminder fades once every weapon it covers is enchanted (`MissingSlot`), re-read on
   `WEAPON_ENCHANT_CHANGED` and `UNIT_INVENTORY_CHANGED`: a poison on one hand leaves the other's.
   `C_Item.GetWeaponEnchantInfo` returns no secrets.

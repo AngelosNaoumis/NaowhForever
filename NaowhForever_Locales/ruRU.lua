@@ -7697,3 +7697,6 @@ L["Every console variable the game has, to change, export and import."] = "Вс�
 L["Console Variables Window"] = "Окно консольных переменных"
 L["Search them and see each one's value beside its default."] = "Ищите их и смотрите значение каждой рядом со значением по умолчанию."
 L["Needs reputation"] = "Нужна репутация"
+L["Thorns Only on Tank"] = "Шипы только на танка"
+L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = "Напоминает наложить Шипы на танка вашей группы или на вас, если вы одни."
+L["Needs Thorns"] = "Нужны Шипы"

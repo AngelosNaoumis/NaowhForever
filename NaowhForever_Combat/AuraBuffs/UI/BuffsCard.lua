@@ -31,6 +31,7 @@ local NEEDS_RAID = ns.L("Needs Raid Buff Reminders")
 local NEEDS_PERSONAL = ns.L("Needs Personal Buff Reminders")
 local NEEDS_WEAPON = ns.L("Needs Weapon Enhancement Reminder")
 local NEEDS_RANGE = ns.L("Needs Show Buff Range")
+local NEEDS_THORNS = ns.L("Needs Thorns")
 local TEXT_WEAPON = "Weapon Enhancement"
 local TEXT_AT_60 = "Hide in the World at Level 60"
 local TEXT_CARRIED = "Off: a reminder even with none in your bags, so you know to buy some."
@@ -38,6 +39,7 @@ local TEXT_NOTHING = ns.L("Nothing to remind you of here.")
 local TEXT_BLESSINGS = ns.L("Off by default: the Blessings module covers them.")
 local TEXT_RAID_PICKS = "Raid Buffs to Remind"
 local TEXT_PERSONAL_PICKS = "Personal Buffs to Remind"
+local TEXT_THORNS_TANK = "Thorns Only on Tank"
 
 local PERSONAL, ALL_PERSONAL = {}, {}
 local _, playerClass = UnitClass("player")
@@ -180,6 +182,12 @@ local function PersonalRow(family)
         end }, family)
 end
 
+local function TankRow(family)
+    return ClassRow({ key = "thornsTankOnly", label = TEXT_THORNS_TANK, toggle = true,
+        needs = function() return PersonalBuffsOn() and R.PersonalPicked(family) end, why = NEEDS_THORNS,
+        help = "Reminds you to put Thorns on your group's tank, or on yourself while solo." }, family)
+end
+
 local rows = {
     Group("Consumables"),
     { key = "consumablesWorld", label = "Show in the World", toggle = true, needs = Enabled, why = OFF },
@@ -245,7 +253,10 @@ rows[#rows + 1] = { key = "personalBuffsSeconds", label = "Warn With Seconds Lef
     get = R.PersonalWarn,
     set = function(v) S.Set("personalBuffsSeconds", v) end }
 rows[#rows + 1] = Group(TEXT_PERSONAL_PICKS, true)
-for _, family in ipairs(ALL_PERSONAL) do rows[#rows + 1] = PersonalRow(family) end
+for _, family in ipairs(ALL_PERSONAL) do
+    rows[#rows + 1] = PersonalRow(family)
+    if family.key == "thorns" then rows[#rows + 1] = TankRow(family) end
+end
 rows[#rows + 1] = Group("Glow")
 rows[#rows + 1] = { key = "buffGlow", label = "Glow", toggle = true, needs = Enabled, why = OFF,
     help = "A glow around each reminder icon, since each is a buff that is missing or running out." }

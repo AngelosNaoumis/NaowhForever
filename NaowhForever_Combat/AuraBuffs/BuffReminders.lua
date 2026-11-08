@@ -463,12 +463,49 @@ local function Has(family, buffs, warn)
     return aura and Lasts(Left(aura), warn, duration), aura
 end
 
+local function TankOnly(family)
+    return family.key == "thorns" and S.Get("thornsTankOnly")
+end
+
+local function GroupUnit(i)
+    if IsInRaid() then return RAID_UNITS[i] end
+    if i == 1 then return "player" end
+    return PARTY_UNITS_LIST[i - 1]
+end
+
+local function OnTanks(list, family, buffs, warn, spell)
+    local missing, first, firstAura = 0, nil, nil
+    for i = 1, GetNumGroupMembers() do
+        local unit = GroupUnit(i)
+        if IsTank(unit) then
+            local seen = UnitIsConnected(unit) and not UnitIsDeadOrGhost(unit) and UnitIsVisible(unit)
+            local tankBuffs = seen and (UnitIsUnit(unit, "player") and buffs or Buffs(unit))
+            if tankBuffs then
+                local has, aura = Has(family, tankBuffs, warn)
+                if not has then
+                    missing = missing + 1
+                    if not first then first, firstAura = unit, aura end
+                end
+            end
+        end
+    end
+    if missing > 0 then
+        list[#list + 1] = { icon = C_Spell.GetSpellTexture(spell), aura = firstAura, key = family, spell = spell,
+            unit = first, count = missing > 1 and missing, single = missing == 1,
+            solo = missing == 1 and UnitIsUnit(first, "player") }
+    end
+end
+
 local function PersonalBuffs(list, buffs)
     if UnitIsDeadOrGhost("player") or S.Get("hideResting") and IsResting() then return end
     local _, class = UnitClass("player")
     local warn = PersonalWarn()
     for _, family in ipairs(D.PERSONAL) do
         local spell = family.class == class and PersonalPicked(family) and Knows(family.spells)
+        if spell and TankOnly(family) and GetNumGroupMembers() > 0 then
+            OnTanks(list, family, buffs, warn, spell)
+            spell = nil
+        end
         if spell then
             if family.key == "imbue" and lastImbue and C_SpellBook.IsSpellKnown(lastImbue) then
                 spell = lastImbue
@@ -539,6 +576,15 @@ function Reminders.WatchesTarget()
     local _, class = UnitClass("player")
     for _, family in ipairs(D.PERSONAL) do
         if family.target and family.class == class and PersonalPicked(family) then return true end
+    end
+    return false
+end
+
+function Reminders.WatchesTanks()
+    if not S.Get("personalBuffs") then return false end
+    local _, class = UnitClass("player")
+    for _, family in ipairs(D.PERSONAL) do
+        if TankOnly(family) and family.class == class and PersonalPicked(family) then return true end
     end
     return false
 end

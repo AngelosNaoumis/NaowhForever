@@ -7717,3 +7717,6 @@ L["Every console variable the game has, to change, export and import."] = true
 L["Console Variables Window"] = true
 L["Search them and see each one's value beside its default."] = true
 L["Needs reputation"] = true
+L["Thorns Only on Tank"] = true
+L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = true
+L["Needs Thorns"] = true

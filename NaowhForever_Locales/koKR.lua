@@ -7697,3 +7697,6 @@ L["Every console variable the game has, to change, export and import."] = "게�
 L["Console Variables Window"] = "콘솔 변수 창"
 L["Search them and see each one's value beside its default."] = "검색하고 각 변수의 값을 기본값과 나란히 봅니다."
 L["Needs reputation"] = "평판 필요"
+L["Thorns Only on Tank"] = "가시는 방어 전담에게만"
+L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = "파티의 방어 전담에게 가시를 걸도록 알리고, 혼자일 때는 자신에게 알립니다."
+L["Needs Thorns"] = "가시 필요"

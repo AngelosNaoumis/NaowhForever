@@ -226,6 +226,7 @@ ns.FEATURES = {
         hideBlessingsOnPaladin = false,
         raidBuffRangeHide = false,
         personalBuffs = true,
+        thornsTankOnly = false,
         weaponEnhancements = false,
         leftClickMainHand = false,
         sleepingBag = false,

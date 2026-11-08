@@ -7697,3 +7697,6 @@ L["Every console variable the game has, to change, export and import."] = "Toute
 L["Console Variables Window"] = "Fenêtre des variables de console"
 L["Search them and see each one's value beside its default."] = "Recherchez-les et voyez la valeur de chacune à côté de sa valeur par défaut."
 L["Needs reputation"] = "Requiert de la réputation"
+L["Thorns Only on Tank"] = "Épines uniquement sur le tank"
+L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = "Vous rappelle de mettre Épines sur le tank de votre groupe, ou sur vous en solo."
+L["Needs Thorns"] = "Requiert Épines"

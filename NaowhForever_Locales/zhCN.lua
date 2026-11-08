@@ -7701,3 +7701,6 @@ L["Every console variable the game has, to change, export and import."] = "游�
 L["Console Variables Window"] = "控制台变量窗口"
 L["Search them and see each one's value beside its default."] = "搜索变量，并查看每个变量的值和默认值。"
 L["Needs reputation"] = "需要声望"
+L["Thorns Only on Tank"] = "荆棘仅限坦克"
+L["Reminds you to put Thorns on your group's tank, or on yourself while solo."] = "提醒你为队伍中的坦克施放荆棘，单人时为你自己施放。"
+L["Needs Thorns"] = "需要荆棘"

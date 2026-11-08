@@ -25,7 +25,7 @@ local KEYS = {
     consumablesMaxHide = true, raidBuffsMaxHide = true, personalBuffsMaxHide = true,
     onlyIfCarried = true, carriedPicks = true, hideResting = true, raidBuffs = true, raidBuffsOwn = true, raidBuffPicks = true, iconSize = true,
     buffIconMode = true, raidBuffRange = true, raidBuffRangeHide = true, hideBlessingsOnPaladin = true,
-    personalBuffs = true, personalBuffPicks = true, weaponEnhancements = true, leftClickMainHand = true, sleepingBag = true,
+    personalBuffs = true, personalBuffPicks = true, thornsTankOnly = true, weaponEnhancements = true, leftClickMainHand = true, sleepingBag = true,
     buffsFont = true, buffsFontSize = true, buffsOutline = true, buffsBorderColor = true,
     buffGlow = true, buffGlowType = true, buffGlowColor = true, buffGlowLines = true, buffGlowThickness = true,
     buffGlowSpeed = true,
@@ -305,7 +305,7 @@ local function Place()
 end
 
 local function Listen()
-    if S.Get("raidBuffs") then
+    if S.Get("raidBuffs") or R.WatchesTanks() then
         events:RegisterEvent("UNIT_AURA")
         events:RegisterEvent("GROUP_ROSTER_UPDATE")
     elseif R.WatchesTarget() then
@@ -314,6 +314,7 @@ local function Listen()
         events:RegisterUnitEvent("UNIT_AURA", "player")
     end
     if R.WatchesTarget() then events:RegisterEvent("PLAYER_TARGET_CHANGED") end
+    if R.WatchesTanks() then events:RegisterEvent("PLAYER_ROLES_ASSIGNED") end
     if R.WatchesLevel() then events:RegisterEvent("PLAYER_LEVEL_UP") end
     if S.Get("personalBuffs") or S.Get("weaponEnhancements") then
         events:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player")
