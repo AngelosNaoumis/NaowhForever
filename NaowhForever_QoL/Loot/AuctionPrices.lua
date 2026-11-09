@@ -234,6 +234,7 @@ local function Wait()
     local last = house and math.max(house.time or 0, house.requested or 0)
     return last and SCAN_COOLDOWN - (GetServerTime() - last)
 end
+ns.AuctionScanWait = Wait
 
 local function ShowAge()
     if not (button and button.age) then return end

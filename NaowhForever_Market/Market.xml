@@ -18,6 +18,7 @@
     <Script file="View\Ladder.lua"/>
     <Script file="View\Spark.lua"/>
     <Script file="View\Columns.lua"/>
+    <Script file="UI\Rail.lua"/>
     <Script file="UI\Window.lua"/>
     <Script file="UI\Farm.lua"/>
     <Script file="UI\Runs.lua"/>
