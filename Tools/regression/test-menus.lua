@@ -4,8 +4,10 @@
 -- action bar's protected call is then forbidden): Naowh's own list shows titles, dividers, buttons, submenus with
 -- a Back row, radios and checkboxes, keeps the game's responses (a checkbox stays open, a radio or button closes,
 -- MenuResponse.Open keeps it open), skips disabled rows, shows a row's tooltip, splits a long list into columns,
--- is made parentless then parented to the owner's top window, and closes on a click elsewhere. Group Inspect
--- adds to the game's unit menus only off the style. No Naowh file but this one calls MenuUtil or Menu.GetManager.
+-- is made parentless then parented to the owner's top window, and closes on a click elsewhere. It holds the
+-- gamepad like a window (B goes back a level, then closes) and a right-click menu opens under the gamepad's
+-- focus. Group Inspect adds to the game's unit menus only off the style. No Naowh file but this one calls
+-- MenuUtil or Menu.GetManager.
 local TocFiles = dofile("Tools/regression/toc_files.lua")
 
 local checks = 0
@@ -86,10 +88,14 @@ local env = setmetatable({
     end },
 }, { __index = _G })
 
+local pad = {}
 local T = { bg = {}, fg = { r = 1, g = 1, b = 1 }, muted = { r = 0.5, g = 0.5, b = 0.5 }, line = {}, accent = {} }
 local ns = {
     THEME = T, L = function(s) return s end,
     GamepadStandDown = function() return gamepad end,
+    PadWindow = function(frame, spec) pad.frame, pad.spec = frame, spec end,
+    PadFocus = function() return pad.focus end,
+    PadPressFocus = function() return pad.pressing and pad.focus end,
     Font = function(parent) return parent:CreateFontString() end,
     Solid = function(parent) return parent:CreateTexture() end,
     Border = function() return {} end,
@@ -247,6 +253,29 @@ first:Close()
 check("an old handle cannot close the new menu", second:IsShown())
 second:Close()
 check("its own handle can", not list:IsShown())
+
+-- With the gamepad (GamepadNav.lua): the list holds it, B goes back a level then closes, and a right-click menu
+-- opened by an A press opens under the gamepad's focus.
+check("the list holds the gamepad like a window", pad.frame == list and pad.spec.initial and pad.spec.back)
+ns.ContextMenu(owner, Fill)
+check("titles, dividers and disabled rows are not the gamepad's", Row("Title").padSkip and Row("Off").padSkip
+    and not Row("Run").padSkip)
+check("the gamepad starts on the radio picked", pad.spec.initial(Rows()) == Row("Pick A"))
+Click("More")
+pad.spec.back()
+check("B in a submenu goes back a level", Row("Run") and list:IsShown())
+pad.spec.back()
+check("B at the top closes the list", not list:IsShown())
+pad.focus = Region("Button")
+ns.ContextMenu(owner, Fill)
+check("a menu the cursor opens opens at the cursor, wherever the gamepad's focus is", list.point[2] == UIParent)
+pad.pressing = true
+ns.ContextMenu(owner, Fill)
+check("a right-click menu an A press opens opens under the gamepad's focus", list.point[1] == "TOPLEFT"
+    and list.point[2] == pad.focus and list.point[3] == "BOTTOMLEFT")
+pad.focus, pad.pressing = nil, nil
+handle = ns.ContextMenu(owner, Fill)
+handle.Close()
 
 -- The Group Finder's Dungeon menu uses our list under the style and searches the picked dungeon.
 local search = { LEVEL = "level", ALL = "all", pick = "level" }

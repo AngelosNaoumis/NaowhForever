@@ -9,6 +9,8 @@ local env = setmetatable({}, { __index = function(_, k)
     if type(k) == "string" and k:find("^C_") then return NOTHING_NS end
 end })
 env._G = env
+env.InputUtil = { IsGamepadUIEnabled = function() return false end }
+env.IsLoggedIn = function() return true end
 local function New(kind, name, parent)
     local f = setmetatable({ kind = kind, name = name, parent = parent, points = {}, scripts = {},
         children = {}, visible = true, width = 0, height = 0, level = parent and parent.level + 1 or 0 },

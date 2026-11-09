@@ -56,6 +56,10 @@ Shared/
                    (Parts.Pill, Parts.SetPill: Group Inspect's "NF"), the worn bar, the Wowhead copy card
   UI/Menus.lua     every right-click menu and dropdown (ns.ContextMenu, ns.DropdownMenu; ns.MenuOpen for
                    Parts.Tip): the game's menus, or under the Gamepad interface style a list of our own
+  UI/GamepadNav.lua under the Gamepad interface style, our windows with the gamepad's buttons
+                   (ns.PadWindow, ns.PadFocus): the D-pad moves, A selects, B goes back, X flips a
+                   switch, LB/RB switch tabs, with a focus ring and a legend of the buttons under the
+                   window's lower left
   UI/Marks.lua     an item's marks: rank stars and lines, the upgrade line, Forever's mark, the item icon,
                    its slot marks (item level, star, Forever's mark, upgrade arrow) and an atlas badge on
                    its top corner (Parts.ItemBadge: Bag Space's clock and quest "!"), and a class icon's
@@ -455,6 +459,40 @@ What a comment in the code used to say, in short. The house rules behind it are 
 - The list stops at `MAX_COLUMNS` (3) and pages past that with a More row that wraps round: with a
   few media packs installed the font, texture and sound dropdowns outgrow the screen, and clamping
   cannot bring back columns past its edge. A paged list opens on the page with the picked radio.
+- Under that style our windows take the gamepad's buttons themselves (`GamepadNav.lua`). The game's
+  own gamepad navigation is the code our taint blocks, so we never call into it, set no binding and
+  no override binding: while one of our windows is the newest open, a frame of ours reads the
+  buttons first (`OnGamePadButtonDown`), keeps the D-pad, A, B, X, LB and RB, and lets every other
+  button through (`SetPropagateKeyboardInput`). The window is told it showed or hid by a child of
+  ours, so its own OnShow and OnHide stay its own. A fight hands the gamepad back on its first event,
+  before the lockdown refuses the propagation change. The legend uses the game's own icon for each
+  button (`InputIconTextureSetUtility`, only read), so it matches the player's gamepad. The D-pad
+  keeps to a column or a row before it goes off the line. A selects: it presses a button, picks a
+  choice, opens a dropdown (`padClick`, as it opens on mouse down) or a submenu, folds a card, moves
+  from the settings sidebar into its page, and picks a slider for left and right (`padStep`) until A
+  or B, so the D-pad never changes a value by passing over it. B goes back: out of a slider, a
+  submenu, a page to the sidebar, then closes. X flips a switch (`padToggle`: its own, or the one a
+  card's header carries). `padSkip` keeps a widget out (a menu's titles, the header's switch). The
+  legend is the same everywhere: every button the window reads.
+  Menu rows are filled before the list is shown, so its first focus uses the current selection,
+  not the previous menu's reused row.
+- `ns.PadWindow(frame, spec)` takes, all optional: `header` (the title bar's height, kept out of
+  the first focus), `initial(targets)` (the first focus), `back()` (B), `nav` (a side panel the focus
+  starts in) with `navFocus()` (its button for the page shown), and `content` (where the first focus
+  is looked for out of the side panel). A widget the mouse cannot use (`EnableMouse(false)`, as a held
+  or dimmed control is) or a protected one (Disenchant All) is no target: `Click()` from our code would
+  change what the mouse cannot, or run a secure action tainted.
+- A Reload UI button is `padSkip`: it reloads through a secure cover the cursor clicks, and our
+  own click on it can only say it is blocked.
+- The game's own prompts (popups, ready checks, invites) bind the gamepad's buttons through its
+  binding stack (`GamepadSharedUtility.InputBindingManager`, only read). A window notes the sets on
+  that stack when it opens, and while a newer one is on top (not `treatBindsAsCore`) the buttons go
+  through to the game: the newest of ours and the game's has them, so a popup over our window takes
+  A and B, while the bags opened before it do not.
+- Naowh's modals (`ns.MakeModal`) register their panel, B closing them as Escape does. Their first
+  focus is the No or Cancel button, so A twice never confirms a reset.
+- A right-click menu opens under the gamepad's focus only while an A press is being handled
+  (`ns.PadPressFocus`); one the gamepad cursor opens opens at the cursor.
 - Forever has Zephras Isle twice: map 2521 (under Azeroth) and map 2665 (no parent), with the
   same name, continent (2991) and bounds in the game's UiMapAssignment, so a map percentage is
   the same spot on both; the game puts players on 2665 too (the Nightclaw Druids' Wowhead data

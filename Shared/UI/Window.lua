@@ -179,6 +179,7 @@ function Parts.Window(width, height, positionKey)
     window:SetScript("OnShow", OnShow)
     window:SetScript("OnHide", OnHide)
     HeaderRule(window)
+    ns.PadWindow(window, { header = HEADER })
     return window
 end
 

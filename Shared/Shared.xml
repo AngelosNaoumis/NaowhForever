@@ -20,6 +20,7 @@
     <Script file="Game\Played.lua"/>
     <Script file="UI\Parts.lua"/>
     <Script file="UI\Menus.lua"/>
+    <Script file="UI\GamepadNav.lua"/>
     <Script file="UI\Marks.lua"/>
     <Script file="UI\Text.lua"/>
     <Script file="UI\Money.lua"/>

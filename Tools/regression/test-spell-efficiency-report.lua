@@ -65,6 +65,7 @@ local S = { Get = function(k) return settings[k] end, Set = function(k, v) setti
     Default = function(k) return settings[k] end }
 local minimap = {}
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
+    GamepadStandDown = function() return false end,
     QoLSettings = S, QoLConstants = dofile("Tools/regression/qol_constants.lua"),
     Print = NOTHING, Apply = NOTHING, AccountSettings = function() return {} end,
     THEME = THEME,

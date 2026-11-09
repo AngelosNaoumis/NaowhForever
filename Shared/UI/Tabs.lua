@@ -235,6 +235,7 @@ function Parts.Tabs(parent, width, items, onPick, noRail, plain)
         bar.rail = Parts.ForeverRail(bar)
     end
     bar.buttons, bar.splits, bar.onPick = {}, {}, onPick
+    bar.padTabs = true
     Parts.SetTabs(bar, items)
     return bar
 end

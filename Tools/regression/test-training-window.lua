@@ -105,6 +105,7 @@ local UI = {
     },
 }
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, MEDIA = dofile("Tools/regression/core_media.lua"),
+    GamepadStandDown = function() return false end,
     THEME = setmetatable({}, { __index = function() return WHITE end }),
     UI = UI,
     Color = function(_, text) return tostring(text) end,
@@ -205,7 +206,7 @@ env._G = env
 
 Load({
     "Shared/Shared.lua", "Shared/Data/Forever.lua", "Shared/Style.lua", "Shared/Game/Items.lua", "Shared/Game/Gear.lua", "Shared/Game/Places.lua",
-    "Shared/UI/Parts.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/View/View.lua", "Shared/View/Kinds.lua",
+    "Shared/UI/Parts.lua", "Shared/UI/GamepadNav.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/View/View.lua", "Shared/View/Kinds.lua",
     "Shared/Settings/Settings.lua",
     "Core/Features.lua",
 }, env)

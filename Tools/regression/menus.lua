@@ -6,6 +6,9 @@
 --   dofile("Tools/regression/menus.lua")(ns, env)
 return function(ns, env)
     if ns.GamepadStandDown == nil then ns.GamepadStandDown = function() return false end end
+    if ns.PadWindow == nil then ns.PadWindow = function() end end
+    if ns.PadFocus == nil then ns.PadFocus = function() end end
+    if ns.PadPressFocus == nil then ns.PadPressFocus = function() end end
     local view = setmetatable({
         Shared = ns.Shared or { Style = dofile("Tools/regression/shared_style.lua") },
         THEME = ns.THEME or {},

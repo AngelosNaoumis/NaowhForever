@@ -105,7 +105,7 @@ local function New(kind, parent)
 end
 
 local SHARED = { "Core/Core.lua", "Shared/Shared.lua", "Shared/Style.lua", "Core/Options/Widgets.lua",
-    "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua",
+    "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/GamepadNav.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua",
     "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Forever.lua",
     "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/View/View.lua",
     "Shared/Settings/Settings.lua", "Shared/Settings/Style.lua", "Shared/Settings/Controls.lua",
@@ -118,6 +118,7 @@ local function Load(account, atlases, files, extra)
     present, missingFiles = atlases or {}, files or {}
     local env = setmetatable({
         NaowhForeverDB = { account = account, profiles = {}, charActive = {} },
+        InputUtil = { IsGamepadUIEnabled = function() return false end }, IsLoggedIn = function() return true end,
         C_AddOns = { IsAddOnLoaded = function() return true end, GetAddOnMetadata = function() return "test" end,
             GetAddOnEnableState = function() return 2 end },
         C_Timer = { After = function(_, fn) timers[#timers + 1] = fn end },

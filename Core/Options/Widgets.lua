@@ -169,6 +169,7 @@ function UI.BuildToggleControl(parent, frameLevel, get, set, w, h, knobSize, onC
     t:SetSize(W, H)
     if frameLevel then t:SetFrameLevel(frameLevel) end
     t._get, t._set = get, set
+    t.padToggle = t
     if ns.foreverSkin then return ForeverCheck(t) end
     t:SetHitRectInsets(-TOGGLE.hit, -TOGGLE.hit, -TOGGLE.hit, -TOGGLE.hit)
 
@@ -313,6 +314,7 @@ function UI.BuildDropdownControl(parent, ddW, fLevel, values, order, get, set)
     end
     btn.HandlesGlobalMouseEvent = DropdownHandlesMouse
     btn:SetScript("OnMouseDown", OnDropdownMouseDown)
+    btn.padClick = OnDropdownMouseDown
     if not ns.foreverSkin then
         btn:SetScript("OnEnter", function()
             border:SetColor(T.accent.r, T.accent.g, T.accent.b, 1)
@@ -444,6 +446,11 @@ function UI.BuildSliderCore(parent, trackW, trackH, thumbSz, inputW, inputH, inp
 
     Paint()
     track._refreshValue = Paint
+    track.padStep = function(_, dir)
+        local v = Clamp((Clamp(track._get()) or track._minV) + dir * track._step)
+        if v ~= nil and v ~= track._get() then track._set(v) end
+        Paint()
+    end
     track._valBox = valBox
     track.rail, track.fill, track.thumb = rail, fill, thumb
     track.valueBox, track.valueFill, track.valueBorder = valBox, boxBg, boxBorder

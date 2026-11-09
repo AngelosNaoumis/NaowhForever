@@ -497,6 +497,7 @@ end
 
 function ns.MakeReloadButton(btn)
     btn._onClick = ReloadBlocked
+    btn.padSkip = true
     if not btn._reload then
         btn._reload = true
         btn:HookScript("OnEnter", CoverWithReload)
@@ -880,6 +881,20 @@ local function ModalPanel(dimmer, width, height)
     return panel
 end
 
+local MODAL_SAFE = { "no", "cancel" }
+
+local function ModalFirst(panel)
+    return function(targets)
+        local cache = panel._rowCache
+        for _, key in ipairs(MODAL_SAFE) do
+            local button = cache and cache[key] and cache[key][1]
+            for _, target in ipairs(targets) do
+                if target == button then return button end
+            end
+        end
+    end
+end
+
 function ns.MakeModal(width, height, key)
     local shell = key and shells[key]
     if shell then return ReuseShell(shell, width, height) end
@@ -903,6 +918,7 @@ function ns.MakeModal(width, height, key)
     end)
     dimmer:Hide()
     dimmer:SetScript("OnHide", OnModalHide)
+    ns.PadWindow(panel, { back = function() dimmer:Hide() end, initial = ModalFirst(panel) })
 
     ns.UI.BeginReusableRows(panel)
     if key then shells[key] = { dimmer = dimmer, panel = panel } end

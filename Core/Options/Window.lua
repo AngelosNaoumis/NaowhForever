@@ -972,6 +972,7 @@ local function Sidebar()
     ModuleNav(nav)
     SystemNav(sidebar)
     SidebarFooter(sidebar)
+    return sidebar
 end
 
 local function CurrentModuleOn()
@@ -1088,10 +1089,14 @@ local function OnWindowHide()
     ns.HideUnlockMode(true)
 end
 
+local function ActiveNavButton()
+    return navButtons[ActiveNav()]
+end
+
 local function CreateWindow()
     local border = WindowFrame()
     if window.forever then Forever.Frame() else TopBar(border) end
-    Sidebar()
+    local sidebar = Sidebar()
     ContentHeader()
     scrollFrame = UI.SlimScroll(window, nil, SCROLL_BAR_GAP)
     scrollChild = CreateFrame("Frame", nil, scrollFrame)
@@ -1102,6 +1107,7 @@ local function CreateWindow()
     window:SetScript("OnHide", OnWindowHide)
     FitMainWindow()
     window:Hide()
+    ns.PadWindow(window, { nav = sidebar, navFocus = ActiveNavButton, content = scrollFrame })
 end
 
 local function PageNamed(pageName)

@@ -313,6 +313,8 @@ local function NewHead(view)
     head.name:SetPoint("LEFT", head.chevron, "RIGHT", CONTROL_GAP, 0)
     head.nameHit = HelpHit(head, head.name)
     head.switch = HeadSwitch(head)
+    head.switch.padSkip = true
+    head.padToggle = head.switch
     head.dot = Dot(head)
     head.dot.noReset = true
     head.dot:SetScript("OnClick", nil)
