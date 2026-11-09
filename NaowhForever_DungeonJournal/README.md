@@ -101,7 +101,7 @@ NaowhForever_DungeonJournal/
     MapOverlay.lua     the dungeon's map over the world map's picture, inside the dungeon
     MapTools.lua       /nf mappins (place the pins, Copy for Data/Maps.lua) and /nf mapcheck
     SettingsPage.lua   its settings pages (Journal, Quest Tracker, Map), declared as cards
-  Media/Maps/          local dungeon pictures as BLP, including 34 imported, 22 assembled, 7 of Santiago Reyes's downloads and 4 drawn from the game's files; selected by Data/Maps.lua
+  Media/Maps/          local dungeon pictures as BLP, including 34 imported, 22 assembled, 8 of Santiago Reyes's downloads and 4 drawn from the game's files; selected by Data/Maps.lua
   README.md            this file
 ```
 
@@ -390,7 +390,8 @@ the game's own tables, and what they can't settle is listed in the pull request 
   two floors and the Drowned City's main city are his 11/26 versions, Atal'Byzal and Krol'dok
   his pre-beta ones. The Hall of Thanes, Ruins of Lordaeron and Excavation Site (his
   version 2.0) already matched his current pictures.
-- Alcaz Prison is his sreyesmaps.com download of 2026-11-08, scaled the same way.
+- Alcaz Prison's Main Unit and Maximum Security Unit (his 11/26 version) are his sreyesmaps.com
+  downloads of 2026-11-08, scaled the same way.
 - The Drowned City, Krol'dok Stronghold, Shaper's Terrace and Alcaz Prison have no pins yet:
   his maps mark no bosses and no source says where they stand. With no pins, every floor is
   offered.

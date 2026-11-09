@@ -329,8 +329,12 @@ ns.Journal.Maps = {
             [8443] = { 1, 0.239, 0.457 },
         },
     },
-    AlcazPrison = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\AlcazPrison", floors = 1,
+    AlcazPrison = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\AlcazPrison", floors = 2,
         imageBottom = 1,
+        names = {
+            [1] = "Main Unit",
+            [2] = "Maximum Security Unit",
+        },
         pins = {},
     },
     BlackrockDepths = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\BlackrockDepths", floors = 2,
