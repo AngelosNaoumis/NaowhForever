@@ -5,7 +5,7 @@ local T = ns.THEME
 local Market = ns.Market
 local St = Market.Style
 local Parts = ns.Shared.Parts
-local Crafts = Market.Crafts
+local Crafts, Columns = Market.Crafts, Market.Columns
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local HEAD_H, SUMMARY_H, COLUMNS_H, ROW_H = 44, 30, 22, 40
@@ -44,7 +44,7 @@ local TEXT_BUY = ns.L("Buy")
 local TEXT_BUY_TIP = ns.L("Opens Buy with %d %s, what you are short of for one craft.")
 local TEXT_NEGATIVE = "-%s"
 
-local page, summary, scroll, list, empty, viewTabs, columnsGain
+local page, summary, scroll, list, empty, viewTabs, sorter
 local rowPool, view, queued = {}, {}, {}
 local fromBags = true
 local active = false
@@ -232,7 +232,7 @@ end
 function Page.Draw()
     if not active then return end
     local read = Crafts.Fresh()
-    Crafts.View(fromBags, view)
+    Columns.Sort(sorter, Crafts.View(fromBags, view))
     local y = 0
     for i, data in ipairs(view) do
         local row = rowPool[i] or NewRow()
@@ -260,22 +260,14 @@ end
 local function ViewPicked(key)
     fromBags = key == "bags"
     Parts.PaintTabs(viewTabs, key)
-    columnsGain:SetText(fromBags and TEXT_GAIN or TEXT_PROFIT)
+    Columns.SetText(sorter, "gain", fromBags and TEXT_GAIN or TEXT_PROFIT)
+    Columns.SetDefault(sorter, fromBags and "bags" or "gain")
     Page.Draw()
 end
 
-local function ColumnLabel(parent, text, right, width, left)
-    local label = ns.Font(parent, SMALL_SIZE, nil, T.muted)
-    if left then
-        label:SetPoint("LEFT", left, 0)
-        label:SetJustifyH("LEFT")
-    else
-        label:SetPoint("RIGHT", -right, 0)
-        label:SetWidth(width)
-        label:SetJustifyH("RIGHT")
-    end
-    label:SetText(text)
-    return label
+local function Gain(data)
+    if fromBags then return data.gain end
+    return data.profit
 end
 
 local function BuildHeader()
@@ -301,12 +293,17 @@ local function BuildHeader()
     columns:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -SUMMARY_H)
     columns:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), -SUMMARY_H)
     columns:SetHeight(COLUMNS_H)
-    ColumnLabel(columns, TEXT_RECIPE, nil, nil, ROW_IN)
-    ColumnLabel(columns, TEXT_WHO, nil, nil, WHO_LEFT)
-    ColumnLabel(columns, TEXT_MATS, nil, nil, MATS_LEFT)
-    ColumnLabel(columns, TEXT_SALE, SALE_RIGHT, MONEY_W)
-    columnsGain = ColumnLabel(columns, TEXT_GAIN, GAIN_RIGHT, MONEY_W)
-    ColumnLabel(columns, TEXT_BAGS, BAGS_RIGHT, BAGS_W)
+    sorter = Columns.New(columns, Market.Settings, "sortCrafts", "bags", Page.Draw)
+    Columns.Add(sorter, { key = "recipe", text = TEXT_RECIPE, left = ROW_IN, up = true,
+        value = function(data) return (C_Item.GetItemNameByID(data.output) or ""):lower() end })
+    Columns.Add(sorter, { key = "who", text = TEXT_WHO, left = WHO_LEFT, up = true,
+        value = function(data) return (data.who or TEXT_YOU):lower() end })
+    Columns.Label(sorter, TEXT_MATS, MATS_LEFT)
+    Columns.Add(sorter, { key = "sale", text = TEXT_SALE, right = SALE_RIGHT, width = MONEY_W,
+        value = function(data) return data.sale end })
+    Columns.Add(sorter, { key = "gain", text = TEXT_GAIN, right = GAIN_RIGHT, width = MONEY_W, value = Gain })
+    Columns.Add(sorter, { key = "bags", text = TEXT_BAGS, right = BAGS_RIGHT, width = BAGS_W,
+        value = function(data) return math.max(0, data.gain) * data.can end })
     return columns
 end
 

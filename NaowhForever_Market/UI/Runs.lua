@@ -6,7 +6,7 @@ local Market = ns.Market
 local St = Market.Style
 local C = Market.C
 local Parts = ns.Shared.Parts
-local Runs, History = Market.Runs, Market.History
+local Runs, History, Columns = Market.Runs, Market.History, Market.Columns
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local HEAD_H, CHART_H, COLUMNS_H, ROW_H, FOOT_H = 52, 170, 22, 32, 34
@@ -37,7 +37,7 @@ local TEXT_COUNT = "%s x%d"
 local TIME_FORMAT = "%H:%M"
 
 local page, head, title, sub, total, perHour, prev, nextButton, runText, chart, plot, cursor
-local columns, scroll, list, empty, foot, footText, postButton
+local columns, sorter, scroll, list, empty, foot, footText, postButton
 local rows, haul, gridLines, gridLabels, xLabels, steps, dots = {}, {}, {}, {}, {}, {}, {}
 local at = 1
 local active = false
@@ -228,7 +228,7 @@ local function NewRow()
 end
 
 local function DrawHaul(run)
-    Runs.Haul(run, haul)
+    Columns.Sort(sorter, Runs.Haul(run, haul))
     local y, count, worth = 0, 0, 0
     for i, entry in ipairs(haul) do
         local row = rows[i] or NewRow()
@@ -313,18 +313,6 @@ local function PostClicked()
     Market.Window.ShowPage("sell")
 end
 
-local function ColumnLabel(parent, text, right, width, left)
-    local label = ns.Font(parent, SMALL_SIZE, nil, T.muted)
-    if left then
-        label:SetPoint("LEFT", left, 0)
-    else
-        label:SetPoint("RIGHT", -right, 0)
-        label:SetWidth(width)
-        label:SetJustifyH("RIGHT")
-    end
-    label:SetText(text)
-end
-
 local function BuildHead()
     head = CreateFrame("Frame", nil, page)
     head:SetPoint("TOPLEFT")
@@ -384,12 +372,19 @@ local function BuildHaul()
     columns:SetPoint("TOPLEFT", chart, "BOTTOMLEFT", 0, -GAP)
     columns:SetPoint("TOPRIGHT", chart, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), -GAP)
     columns:SetHeight(COLUMNS_H)
-    ColumnLabel(columns, TEXT_HAUL, nil, nil, ROW_IN)
+    sorter = Columns.New(columns, Market.Settings, "sortRun", "worth", Page.Draw)
+    Columns.Add(sorter, { key = "haul", text = TEXT_HAUL, left = ROW_IN, up = true,
+        value = function(entry) return (C_Item.GetItemNameByID(entry.item) or ""):lower() end })
     local right = ROW_IN
-    for _, column in ipairs({ { TEXT_WORTH, MONEY_W }, { TEXT_WEEK, CHANGE_W }, { TEXT_LOWEST, MONEY_W },
-        { TEXT_BAGS, QTY_W }, { TEXT_GOT, QTY_W } }) do
-        ColumnLabel(columns, column[1], right, column[2])
-        right = right + column[2] + GAP
+    for _, column in ipairs({
+        { "worth", TEXT_WORTH, MONEY_W, function(entry) return entry.worth end },
+        { "week", TEXT_WEEK, CHANGE_W, function(entry) return (History.Change(entry.item, C.CHANGE_DAYS)) end },
+        { "lowest", TEXT_LOWEST, MONEY_W, function(entry) return ns.AuctionPrice and (ns.AuctionPrice(entry.item)) end },
+        { "bags", TEXT_BAGS, QTY_W, function(entry) return C_Item.GetItemCount(entry.item) end },
+        { "got", TEXT_GOT, QTY_W, function(entry) return entry.qty end },
+    }) do
+        Columns.Add(sorter, { key = column[1], text = column[2], right = right, width = column[3], value = column[4] })
+        right = right + column[3] + GAP
     end
     scroll = ns.UI.SlimScroll(page)
     scroll:SetPoint("TOPLEFT", columns, "BOTTOMLEFT")

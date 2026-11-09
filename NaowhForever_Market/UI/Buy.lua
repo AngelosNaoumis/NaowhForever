@@ -7,6 +7,7 @@ local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
 local Buy, Listings, Ladder, Spark = Market.Buy, Market.Listings, Market.Ladder, Market.Spark
+local Columns = Market.Columns
 
 local GAP, TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local PANE_GAP, SECTION_GAP = 12, 12
@@ -45,16 +46,16 @@ local TEXT_OVER = ns.L("The price went up to %s each. Confirm only if you still 
 local TEXT_BOUGHT = ns.L("Bought %d.")
 local TEXT_FAILED = ns.L("The purchase did not go through.")
 local TEXT_UNAVAILABLE = ns.L("Not enough is left at that price. Pick it again for new listings.")
-local TEXT_LOWEST, TEXT_LISTED_HEAD = ns.L("Lowest"), ns.L("Listed")
+local TEXT_ITEM, TEXT_LOWEST, TEXT_LISTED_HEAD = ns.L("Item"), ns.L("Lowest"), ns.L("Listed")
 local TEXT_FAVOURITES = ns.L("Favourites")
 local TEXT_FAV_EMPTY = ns.L("Star an item you buy often and it stays here.")
 local TEXT_STAR = ns.L("Favourite")
 local TEXT_STAR_TIP = ns.L("Keeps this item under Favourites, one click from its listings.")
 
 local page, shopPane, shopScroll, shopList, shopNote, main, search, resultsScroll, resultsList, resultsNote
-local detail, nameText, ladder, quantity, buyButton, statusText, star, spark
+local detail, nameText, ladder, quantity, buyButton, statusText, star, spark, sorter
 local favPane, favScroll, favList, favNote, itemEvents
-local shopRows, resultRows, rungs, favRows, favourites = {}, {}, {}, {}, {}
+local shopRows, resultRows, rungs, favRows, favourites, results = {}, {}, {}, {}, {}, {}
 local active = false
 
 local Page = {}
@@ -201,7 +202,7 @@ local function PaintShopRow(row, i)
 end
 
 local function PaintResultRow(row, i)
-    local result = Buy.results[i]
+    local result = results[i]
     row.itemKey = result.itemKey
     row.stripe:SetShown(i % 2 == 0)
     row.picked:SetShown(Buy.picked.itemKey == result.itemKey)
@@ -228,7 +229,10 @@ local function DrawFavourites()
 end
 
 local function DrawResults()
-    local count = #Buy.results
+    wipe(results)
+    for i, result in ipairs(Buy.results) do results[i] = result end
+    Columns.Sort(sorter, results)
+    local count = #results
     Rows(resultsList, count, resultRows, NewResultRow, PaintResultRow, RESULT_ROW_H)
     resultsNote:SetShown(count == 0)
     resultsNote:SetText(Buy.searching and TEXT_SEARCHING or TEXT_NO_RESULTS)
@@ -439,16 +443,13 @@ local function BuildResults()
     head:SetPoint("TOPLEFT", search, "BOTTOMLEFT", 0, -SECTION_GAP)
     head:SetPoint("RIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
     head:SetHeight(SMALL_SIZE)
-    local listed = ns.Font(head, SMALL_SIZE, nil, T.muted)
-    listed:SetPoint("RIGHT", -ROW_IN, 0)
-    listed:SetWidth(LISTED_W)
-    listed:SetJustifyH("RIGHT")
-    listed:SetText(TEXT_LISTED_HEAD)
-    local lowest = ns.Font(head, SMALL_SIZE, nil, T.muted)
-    lowest:SetPoint("RIGHT", listed, "LEFT", -GAP, 0)
-    lowest:SetWidth(LOWEST_W)
-    lowest:SetJustifyH("RIGHT")
-    lowest:SetText(TEXT_LOWEST)
+    sorter = Columns.New(head, Market.Settings, "sortBuy", "lowest", Page.Draw)
+    Columns.Add(sorter, { key = "item", text = TEXT_ITEM, left = ROW_IN + RESULT_ICON + ICON_GAP, up = true,
+        value = function(result) return ((KeyLook(result.itemKey)) or ""):lower() end })
+    Columns.Add(sorter, { key = "lowest", text = TEXT_LOWEST, right = ROW_IN + LISTED_W + GAP, width = LOWEST_W,
+        up = true, value = function(result) return result.minPrice end })
+    Columns.Add(sorter, { key = "listed", text = TEXT_LISTED_HEAD, right = ROW_IN, width = LISTED_W,
+        value = function(result) return result.totalQuantity end })
     resultsScroll = ns.UI.SlimScroll(main)
     resultsScroll:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SUB_GAP)
     resultsScroll:SetPoint("BOTTOMRIGHT", detail, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), SECTION_GAP)

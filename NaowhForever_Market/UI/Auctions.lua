@@ -9,7 +9,7 @@ local St = Market.Style
 local C = Market.C
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Auctions = Market.Auctions
+local Auctions, Columns = Market.Auctions, Market.Columns
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local HEAD_H, TITLE_SIZE, SUB_GAP = 44, 16, 4
@@ -19,6 +19,9 @@ local ROW_BUTTON_H, PILL_SIZE = 22, 11
 local UNDERCUT_SMALL = 0.03
 local PERCENT = 100
 local SECONDS_PER_HOUR, SECONDS_PER_MINUTE = 3600, 60
+-- Time Left sorts a band-only auction at the band's longest.
+local BAND_SECONDS = { [0] = 1800, 7200, 43200, 172800 }
+local STATUS_ORDER = { undercut = 1, checking = 2, noanswer = 3, lowest = 4, sold = 5 }
 local NEXT_W, SCROLL_IN = 220, 4
 local TIME_RIGHT = ROW_IN + CANCEL_W + COLUMN_GAP
 local STATUS_LEFT = TIME_RIGHT + TIME_W + COLUMN_GAP + STATUS_W
@@ -48,8 +51,8 @@ local STATUS_TEXT = {
     large = ns.L("Undercut %d%%"),
 }
 
-local page, header, scroll, list, empty, nextButton
-local rows = {}
+local page, header, scroll, list, empty, nextButton, sorter
+local rows, view = {}, {}
 local active = false
 
 local Page = {}
@@ -163,8 +166,11 @@ local function PaintRow(row, auction, index)
 end
 
 local function DrawList()
+    wipe(view)
+    for i, auction in ipairs(Auctions.list) do view[i] = auction end
+    Columns.Sort(sorter, view)
     local y = 0
-    for i, auction in ipairs(Auctions.list) do
+    for i, auction in ipairs(view) do
         local row = rows[i] or NewRow()
         rows[i] = row
         PaintRow(row, auction, i)
@@ -174,9 +180,9 @@ local function DrawList()
         row:Show()
         y = y + ROW_H
     end
-    for i = #Auctions.list + 1, #rows do rows[i]:Hide() end
+    for i = #view + 1, #rows do rows[i]:Hide() end
     list:SetHeight(math.max(1, y))
-    empty:SetShown(#Auctions.list == 0)
+    empty:SetShown(#view == 0)
 end
 
 function Page.Draw()
@@ -190,17 +196,13 @@ function Page.Draw()
     DrawList()
 end
 
-local function ColumnLabel(parent, text, right, width, left)
-    local label = ns.Font(parent, SMALL_SIZE, nil, T.muted)
-    if left then
-        label:SetPoint("LEFT", parent, left < 0 and "RIGHT" or "LEFT", left, 0)
-        label:SetJustifyH("LEFT")
-    else
-        label:SetPoint("RIGHT", parent, "RIGHT", -right, 0)
-        label:SetWidth(width)
-        label:SetJustifyH("RIGHT")
-    end
-    label:SetText(text)
+local function AuctionName(auction)
+    return (auction.link and GetItemInfo(auction.link) or Items.Name(auction.itemID) or ""):lower()
+end
+
+local function Lowest(auction)
+    local _, low = Auctions.Status(auction)
+    return low or nil
 end
 
 local function BuildHeader()
@@ -220,12 +222,17 @@ local function BuildHeader()
     columns:SetPoint("TOPLEFT", header, "BOTTOMLEFT")
     columns:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
     columns:SetHeight(COLUMNS_H)
-    ColumnLabel(columns, TEXT_ITEM, nil, nil, NAME_LEFT)
-    ColumnLabel(columns, TEXT_QTY, QTY_RIGHT, QTY_W)
-    ColumnLabel(columns, TEXT_PRICE, PRICE_RIGHT, MONEY_W)
-    ColumnLabel(columns, TEXT_LOWEST, LOWEST_RIGHT, MONEY_W)
-    ColumnLabel(columns, TEXT_STATUS, nil, nil, -STATUS_LEFT)
-    ColumnLabel(columns, TEXT_TIME, TIME_RIGHT, TIME_W)
+    sorter = Columns.New(columns, Market.Settings, "sortMine", "item", Page.Draw)
+    Columns.Add(sorter, { key = "item", text = TEXT_ITEM, left = NAME_LEFT, up = true, value = AuctionName })
+    Columns.Add(sorter, { key = "qty", text = TEXT_QTY, right = QTY_RIGHT, width = QTY_W,
+        value = function(auction) return auction.quantity end })
+    Columns.Add(sorter, { key = "price", text = TEXT_PRICE, right = PRICE_RIGHT, width = MONEY_W,
+        value = function(auction) return auction.price end })
+    Columns.Add(sorter, { key = "lowest", text = TEXT_LOWEST, right = LOWEST_RIGHT, width = MONEY_W, value = Lowest })
+    Columns.Add(sorter, { key = "status", text = TEXT_STATUS, left = -STATUS_LEFT, up = true,
+        value = function(auction) return STATUS_ORDER[Auctions.Status(auction)] end })
+    Columns.Add(sorter, { key = "time", text = TEXT_TIME, right = TIME_RIGHT, width = TIME_W, up = true,
+        value = function(auction) return auction.seconds or BAND_SECONDS[auction.band] end })
     return columns
 end
 
