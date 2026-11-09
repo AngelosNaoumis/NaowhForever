@@ -106,6 +106,9 @@ UI/SettingsPage.lua  its card on BiS List > Character
   and never while the game's Inspect window, the talents opened from it, or another request holds the
   one inspect the game keeps. Your own inspect wins: ours is dropped, so its answer can't clear yours,
   and ours waits `USER_WAIT` seconds while its window loads.
+- When your Inspect window never opens (the server dropped the request), the game keeps its unit and
+  opens the window on the next answer for whoever that unit is then, such as your new target. So the
+  player it points at is never asked for (`Held`) until the window has opened and closed.
 - An inspected score is kept `KEEP` seconds and goes stale when they change gear; a shared one is kept
   for the session and always wins. At most `MAX_KEPT` players are kept, the oldest going first.
 - Guildmates' last scores are saved account-wide for the guild list's offline members: at most

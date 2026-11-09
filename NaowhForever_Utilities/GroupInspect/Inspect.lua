@@ -116,6 +116,7 @@ local function Try(rec, now)
         return "far"
     end
     R.SetState(rec, rec._far and "out_of_range" or "queued")
+    if result == "held" then return "held" end
     local wait = Queue.Wait()
     return "wait", wait > 0 and wait or Queue.GAP
 end
@@ -134,7 +135,7 @@ function Walk()
                 local result, delay = Try(rec, now)
                 if result == "wait" then return WalkSoon(delay) end
                 if result == "moved" then return RosterSoon() end
-                if result == "far" then
+                if result == "far" or result == "held" then
                     far = true
                 elseif result == "known" then
                     local due = rec._read + STALE - now

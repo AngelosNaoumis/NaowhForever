@@ -132,8 +132,9 @@ Answering needs Group Inspect on, Share Your Stats (`groupInspectShare`) and a g
 - The scan runs only while the window is open (`GI.Open`, `GI.Close`): one request at a time
   through Gear Score's shared queue (`ns.NaowhScore.InspectQueue`), at least its gap apart, out
   of combat, in range, yielding to your own inspect. Players running Naowh Forever are inspected
-  after the rest, since they share their stats anyway and only their gear is wanted. Out of range
-  is tried again later, and the walk stops once everyone is known; a read goes stale after
+  after the rest, since they share their stats anyway and only their gear is wanted. Out of range,
+  or the player your unopened Inspect window still points at (Gear Score's README, Why), is tried
+  again later, and the walk stops once everyone is known; a read goes stale after
   `STALE` seconds (five minutes).
 - `INSPECT_READY` is read only for the GUID asked for, so another addon's inspect is left alone.
 - Records are pooled and keyed by GUID, and callbacks (`GI.OnChange`) come once per burst of

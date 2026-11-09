@@ -22,7 +22,7 @@ local STALE = 0
 local VALUE_RGB = { r = 1, g = 1, b = 1 }
 local LABEL = "Gear Score"
 local WAITING = "..."
-local ASKED, WAIT, FAR = "asked", "wait", "far"
+local ASKED, WAIT, FAR, HELD = "asked", "wait", "far", "held"
 local TOOLTIP_RIGHT = "GameTooltipTextRight"
 local AROUND = { "target", "focus", "mouseover" }
 local SCAN_EVENTS = { "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_ENABLED", "UNIT_INVENTORY_CHANGED" }
@@ -170,12 +170,20 @@ local function Busy()
     return UserInspecting() or (pending.guid ~= nil and GetTime() - pending.at < WAIT_FOR)
 end
 
+local function Held(guid)
+    local unit = InspectFrame and InspectFrame.unit
+    if not Readable(unit) then return false end
+    local held = UnitGUID(unit)
+    return Readable(held) and held == guid
+end
+
 local function InRange(unit)
     return CanInspect(unit) and CheckInteractDistance(unit, INSPECT_DISTANCE)
 end
 
-local function CanAsk(unit)
-    return not Busy() and not InCombatLockdown() and GetTime() - lastAsked >= INSPECT_GAP and InRange(unit)
+local function CanAsk(unit, guid)
+    return not Busy() and not InCombatLockdown() and GetTime() - lastAsked >= INSPECT_GAP and not Held(guid)
+        and InRange(unit)
 end
 
 local function Ask(unit, guid, onReady)
@@ -268,6 +276,7 @@ end
 
 local function Request(unit, guid, onReady)
     if Busy() or InCombatLockdown() or GetTime() - lastAsked < INSPECT_GAP then return WAIT end
+    if Held(guid) then return HELD end
     if not InRange(unit) then return FAR end
     Ask(unit, guid, onReady)
     return ASKED
@@ -366,7 +375,7 @@ end
 local function TheirValue(unit, guid, level)
     local entry = Score.Known(guid)
     if entry then return Score.Tooltip(entry.score, level) end
-    if CanAsk(unit) then
+    if CanAsk(unit, guid) then
         Ask(unit, guid)
     elseif pending.guid ~= guid then
         WantNext(unit, guid)

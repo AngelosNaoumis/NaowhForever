@@ -342,6 +342,30 @@ do
     check("a member's gear changed: read again", state.asked == 5 and state.lastAsked == "party3")
 end
 
+-- Your Inspect window never opened and still points at party1: the game would open it on our answer.
+do
+    local ns, state, env = Fixture()
+    local GI = ns.GroupInspect
+    state.values.groupInspect = true
+    state.Party(3)
+    local window = { unit = "party1" }
+    function window.IsShown() return false end
+    env.InspectFrame = window
+    GI.Open()
+    state.Advance(0)
+    check("the member your unopened Inspect window points at: passed over, the next asked",
+        state.lastAsked == "party2" and GI.Member("Player-1-0011").state == "queued")
+    state.Fire("INSPECT_READY", "Player-1-0012")
+    state.Advance(2)
+    check("then the rest", state.asked == 2 and state.lastAsked == "party3")
+    state.Fire("INSPECT_READY", "Player-1-0013")
+    state.Advance(5)
+    check("still pointed at: not asked", state.asked == 2)
+    window.unit = nil
+    state.Advance(5)
+    check("the window opened and closed: asked", state.asked == 3 and state.lastAsked == "party1")
+end
+
 do
     local ns, state = Fixture()
     local GI = ns.GroupInspect

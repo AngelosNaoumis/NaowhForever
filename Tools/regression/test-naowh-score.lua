@@ -777,6 +777,42 @@ do
         and ns.NaowhScore.Known("Player-1-39") ~= nil)
 end
 
+-------------------------------------------------------------------------------
+--  Your Inspect window never opened: the game keeps its unit and opens the window on the next
+--  answer for whoever that unit is now, so that player is never asked for
+-------------------------------------------------------------------------------
+do
+    local ns, state, env = Fixture()
+    local S = ns.QoLSettings
+    S.Set("naowhScoreScan", false)
+    local window = { unit = "target" }
+    function window.IsShown() return false end
+    env.InspectFrame = window
+    S.Set("naowhScore", true)
+    state.RunTimers()
+    local OnUnit = state.postCalls[1]
+    local function Hover(unit)
+        state.hovered = unit
+        for k in pairs(state.lines) do state.lines[k] = nil end
+        OnUnit(state.tooltip)
+        state.RunTimers()
+        return state.rights[#state.lines].text
+    end
+    state.gear.target, state.gear.party1, state.gear.party2 = Set(30, 4), Set(26, 4), Set(28, 4)
+    state.units.target = "Player-1-77"
+    check("your target, whom the window points at: '...', not asked for, nothing left waiting",
+        Hover("target") == "..." and #state.inspected == 0 and #state.timers == 0)
+    check("anyone else: asked", Hover("party1") == "..." and state.inspected[1] == "party1")
+    state.Fire("INSPECT_READY", "Player-1-19")
+    state.now = state.now + 5
+    state.units.target = "Player-1-29"
+    check("you target someone else: now they are the one not asked for",
+        Hover("party2") == "..." and #state.inspected == 1)
+    window.unit = nil
+    Hover("party2")
+    check("the window opened and closed: asked", state.inspected[2] == "party2")
+end
+
 -- The gear comes while the tooltip is forbidden: it is left alone.
 do
     local ns, state = Fixture()
