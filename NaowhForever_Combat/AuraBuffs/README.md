@@ -7,7 +7,9 @@ defaults come from `ns.FEATURES.auraBuffs`.
 - **Buffs & Consumables:** a row of icons for missing food, flask, elixir and scroll buffs,
   class buffs missing in your group, and your own class buff (armor, Inner
   Fire, Battle Shout, poisons, a weapon imbue, a hunter's aspect) when it is missing, and the Cozy Sleeping Bag
-  out in the world when it is ready and Well-Rested is missing (Sleeping Bag Reminder, off by default). Click one to use the item it
+  out in the world when it is ready and Well-Rested is missing (Sleeping Bag Reminder, off by default), and the
+  Elemental Attractor in the world and dungeons while Magical Awareness is missing (Elemental Attractor Reminder,
+  on by default). Click one to use the item it
   shows or cast the buff, or hover it to pick another carried item. Middle-click one to hide it until you
   reload. The worn gear and fishing pole reminders moved to QoL > Loot & Items > Gear Reminders
   (`NaowhForever_QoL/Loot/GearReminders.lua`).
@@ -227,6 +229,13 @@ NaowhForever_Combat/AuraBuffs/
   missing or under `BAG_WARN_MINUTES` (15). It has its own switch, not the Consumables World/Dungeons/Raids
   ones: consumables are off in the world by default, and the bag is only for the world. The Campfire's bag icon
   stays as it is.
+- Elemental Attractor Reminder (`elementalAttractor`) is Robin's ask, and on by default at the maintainer's call:
+  only someone carrying the item sees it. The Elemental Attractor (281371) and the Arcane Censer (275730) both
+  give Magical Awareness (1297774, two hours), which lets you collect Motes of Unstable Magic. Neither is used up,
+  so it shows only while one is carried (`D.ATTRACTOR`). It has its own switch, not the Consumables
+  World/Dungeons/Raids ones, because consumables are off in the world by default and the motes are out there.
+  It shows in the world and dungeons only (`ATTRACTOR_ZONES`): not raids, battlegrounds or arenas. Warn With
+  Minutes Left and Hide While Resting apply as for consumables.
 - No event fires when the bag's hour-long cooldown ends or Well-Rested drops under 15 minutes, so both are a
   wake (`Wake`). One of `GCD` (1.5 s) or less is the global cooldown, not the bag's; a secret cooldown shows
   nothing. Using the bag starts its cooldown: `BAG_UPDATE_COOLDOWN` fires on every global cooldown, so it

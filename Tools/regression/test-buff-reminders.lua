@@ -114,6 +114,7 @@ local function Fixture(opts)
         buffsFont = "", buffsFontSize = 14, buffsOutline = "OUTLINE",
         raidBuffPicks = { intellect = true, stamina = true, spirit = true, wild = true, blessing = false },
         personalBuffs = true, personalBuffPicks = {}, weaponEnhancements = false, sleepingBag = false,
+        elementalAttractor = true,
         leftClickMainHand = false,
         buffGlow = false, buffGlowType = "standard", buffGlowColor = { r = 1, g = 0.82, b = 0.2 },
         buffGlowLines = 8, buffGlowThickness = 2, buffGlowSpeed = 5,
@@ -1903,6 +1904,41 @@ do
     r.state.weapons[17] = 1800
     r.Fire("UNIT_INVENTORY_CHANGED", "player")
     Check("both hands poisoned fades it", r.Faded(), poisons)
+end
+
+-- The Elemental Attractor or the Arcane Censer reminds while carried and Magical Awareness is missing, in the
+-- world and dungeons only, whatever the consumables' own World switch says. On by default.
+do
+    local ATTRACTOR, CENSER, AWARENESS = 281371, 275730, 1297774
+    local t = Fixture({ units = { player = "WARRIOR" }, bags = { ATTRACTOR }, settings = { personalBuffs = false } })
+    t.Login()
+    Check("on by default: carried in the world, no Magical Awareness", t.Shown(), "item:" .. ATTRACTOR)
+    t.state.auras.player = { { AWARENESS, 7000, 7200 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("Magical Awareness up: nothing", t.Shown(), "")
+    t.state.auras.player = { { AWARENESS, 60, 7200 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("under Warn With Minutes Left it reminds again, with its time", t.Shown(), "item:" .. ATTRACTOR .. "(t)")
+    t.state.auras.player = {}
+    t.state.bags = { CENSER }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("the Arcane Censer reminds too", t.Shown(), "item:" .. CENSER)
+    t.state.instance = "party"
+    t.Fire("PLAYER_ENTERING_WORLD"); t.Advance(0.5)
+    Check("in a dungeon", t.Shown(), "item:" .. CENSER)
+    t.state.instance = "raid"
+    t.Fire("PLAYER_ENTERING_WORLD"); t.Advance(0.5)
+    Check("not in a raid", t.Shown(), "")
+    t.state.instance = "pvp"
+    t.Fire("PLAYER_ENTERING_WORLD"); t.Advance(0.5)
+    Check("not in a battleground", t.Shown(), "")
+    t.state.instance = "none"
+    t.state.bags = {}
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("none carried: nothing", t.Shown(), "")
+    t.state.bags = { ATTRACTOR }
+    t.Set("elementalAttractor", false)
+    Check("switched off: nothing", t.Shown(), "")
 end
 
 -- The Sleeping Bag: out in the world, below 60, while you carry it, it is ready and Well-Rested is missing or

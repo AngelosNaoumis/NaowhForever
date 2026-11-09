@@ -204,6 +204,8 @@ local rows = {
       help = "Left-click puts a poison, stone or oil on your main hand, right-click on your off hand." },
     { key = "sleepingBag", label = "Sleeping Bag Reminder", toggle = true, needs = Enabled, why = OFF,
       help = "Your Cozy Sleeping Bag out in the world, when it is ready and Well-Rested is missing." },
+    { key = "elementalAttractor", label = "Elemental Attractor Reminder", toggle = true, needs = Enabled, why = OFF,
+      help = "Your Elemental Attractor in the world and dungeons, when Magical Awareness is missing." },
     { key = "hideResting", label = "Hide While Resting", toggle = true, needs = Enabled, why = OFF,
       help = "No consumable or personal buff reminders in cities and inns." },
     Group("Only If I Carry One"),

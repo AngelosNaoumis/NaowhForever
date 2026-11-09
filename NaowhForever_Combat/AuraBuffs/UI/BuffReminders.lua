@@ -26,6 +26,7 @@ local KEYS = {
     onlyIfCarried = true, carriedPicks = true, hideResting = true, raidBuffs = true, raidBuffsOwn = true, raidBuffPicks = true, iconSize = true,
     buffIconMode = true, raidBuffRange = true, raidBuffRangeHide = true, hideBlessingsOnPaladin = true,
     personalBuffs = true, personalBuffPicks = true, thornsTankOnly = true, weaponEnhancements = true, leftClickMainHand = true, sleepingBag = true,
+    elementalAttractor = true,
     buffsFont = true, buffsFontSize = true, buffsOutline = true, buffsBorderColor = true,
     buffGlow = true, buffGlowType = true, buffGlowColor = true, buffGlowLines = true, buffGlowThickness = true,
     buffGlowSpeed = true,

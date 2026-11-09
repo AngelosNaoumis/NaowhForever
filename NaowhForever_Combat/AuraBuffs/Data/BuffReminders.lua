@@ -107,6 +107,8 @@ for _, scroll in ipairs(D.SCROLLS) do
     end
 end
 
+D.ATTRACTOR = { items = { 281371, 275730 }, auras = { 1297774 } }
+
 D.POISON_ITEMS = {
     8928, 8927, 8926, 6950, 6949, 6947,
     20844, 8985, 8984, 2893, 2892,

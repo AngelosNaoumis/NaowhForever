@@ -20,6 +20,7 @@ local ELITE = { elite = true, rareelite = true, worldboss = true }
 local MAX_LEVEL = 60
 local SLEEPING_BAG = ns.Shared.Items.SLEEPING_BAG
 local BAG_WARN_MINUTES = 15
+local ATTRACTOR_ZONES = { none = true, party = true }
 local WHERE = {
     consumables = { none = "consumablesWorld", party = "consumablesDungeon", raid = "consumablesRaid",
         atMax = "consumablesMaxHide" },
@@ -391,6 +392,15 @@ local function SleepingBag(list, buffs, zone)
     list[#list + 1] = { icon = ItemIcon(SLEEPING_BAG), aura = aura, item = SLEEPING_BAG, key = "sleepingBag" }
 end
 
+local function Attractor(list, buffs, zone)
+    if not ATTRACTOR_ZONES[zone] or S.Get("hideResting") and IsResting() then return end
+    local item = FirstCarried(D.ATTRACTOR.items)
+    if not item then return end
+    local before = #list
+    Consumable(list, buffs, D.ATTRACTOR, item, nil, nil, true)
+    if #list > before then list[#list].items, list[#list].key = D.ATTRACTOR.items, "attractor" end
+end
+
 local function SlotEnchanted(weaponSlot, warn)
     for _, enchant in pairs(C_Item.GetWeaponEnchantInfo(weaponSlot)) do
         if enchant.hasEnchant and Lasts(enchant.timeLeft / 1000, warn) then return true end
@@ -719,6 +729,7 @@ function Reminders.Collect()
         if S.Get("weaponEnhancements") then WeaponEnhancement(list, zone) end
     end
     if S.Get("sleepingBag") then SleepingBag(list, buffs, zone) end
+    if S.Get("elementalAttractor") then Attractor(list, buffs, zone) end
     if S.Get("personalBuffs") and ShowsHere("personalBuffs", zone) then PersonalBuffs(list, buffs) end
     if S.Get("raidBuffs") and ShowsHere("raidBuffs", zone) then RaidBuffs(list, buffs) end
     for i = #list, 1, -1 do
