@@ -21,6 +21,7 @@ Core\Locales\enUS.lua
 
 Core\Core.xml
 Core\Integrations\RestedXP\RestedXP.xml
+Core\Integrations\Polestar\Polestar.xml
 Core\Options.xml
 Shared\Shared.xml
 Core\Profiles.xml

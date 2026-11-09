@@ -77,6 +77,7 @@ Core/
                                     and the voice clips (Voice/, with its own README)
   Locales/             the locale tables, with their own README
   Integrations/RestedXP/ the Naowh themes in RestedXP Guides, with their own README
+  Integrations/Polestar/ the Waypoint Pin's feed from Polestar's guide target, with its own README
   Badges/              the supporter badges, with their own README
 ```
 
@@ -381,6 +382,8 @@ Profile strings
 
 Waypoints
 - Guide waypoints carry optional quest/objective context through the same map-open hold as other placements. `GuideWaypointIsCurrent` checks coordinates before a guide clears anything, so a manual replacement is preserved.
+- `ns.ClearGuideWaypoint(details)` clears only the guide destination placed with that `details` table (what the feed gave `ns.SetGuideWaypoint`), so one guide feed turned on or off never clears another's; with no `details` it clears any guide destination, as before.
+- `ns.DismissGuideWaypoint(details)` is the player letting go of a guide destination by hand (the Waypoint Pin's Navigator Bar clear): it clears the waypoint, and the feed that placed `details` hooks it to tell its guide.
 - With Journeys on, a guide destination becomes a journey whose steps all carry that context; clearing the guide waypoint ends the journey too. On a journey the pin names the step's own title, not the guide's.
 - The game redraws the world map's waypoint pin inside every change to its waypoint, so while that
   map is open a change waits for it to close: made from addon code it would taint the pin and the

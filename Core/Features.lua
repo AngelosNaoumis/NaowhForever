@@ -122,6 +122,7 @@ ns.FEATURES = {
         dailyWord = false,
         waypoints = true,
         waypointRestedXP = false,
+        waypointPolestar = false,
         waypointObjectives = false,
         waypointDownArrows = false,
     },

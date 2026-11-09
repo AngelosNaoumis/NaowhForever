@@ -365,11 +365,20 @@ local function SaveNavPos(pos)
     S.Set("waypointNavPos", { point = pos.point, relPoint = pos.relPoint, x = pos.x, y = pos.y })
 end
 
+local function ClearByHand()
+    local _, _, _, _, _, details = Target(C_SuperTrack.GetHighestPrioritySuperTrackingType())
+    if type(details) == "table" and details.guide == true then
+        ns.DismissGuideWaypoint(details)
+    else
+        ns.ClearWaypoint()
+    end
+end
+
 local function Build()
     pin = Look.NewPin(UIParent)
     pin:SetFrameStrata("BACKGROUND")
     pin:Hide()
-    nav = Look.NewNav(UIParent, ns.ClearWaypoint)
+    nav = Look.NewNav(UIParent, ClearByHand)
     nav:SetFrameStrata("MEDIUM")
     nav:SetClampedToScreen(true)
     nav.mover = ns.UI.AttachMover(nav, TEXT_NAVIGATOR, SaveNavPos, "QoL/Interface", "QoL/Interface:waypoints")
@@ -805,6 +814,38 @@ local function PaintPreview(preview, state)
     Look.PaintPin(sample, o)
 end
 
+local function PolestarMissing()
+    local ok, why = ns.PolestarFollowable()
+    if not ok then return why end
+end
+
+local function RestedXPMissing()
+    local loaded = C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("RXPGuides")
+    if not (loaded or _G.RXP) then return "RestedXP is not loaded" end
+end
+
+local function Following(key, missing)
+    return S.Get(key) and not missing()
+end
+
+local function FollowGet(key)
+    return function() return S.Get(key) end
+end
+
+local function FollowSet(key, other)
+    return function(on)
+        if on then S.Set(other, false) end
+        S.Set(key, on)
+    end
+end
+
+local function MissingNote(key, missing)
+    return function()
+        local why = S.Get(key) and missing()
+        return why and ns.L(why) or nil
+    end
+end
+
 local function Summary(store)
     return SHAPE_CHOICES[1][store.Get("waypointShape")] .. TEXT_PIN
 end
@@ -815,8 +856,26 @@ Settings.Page("QoL/Interface", S):Card({
     summary = Summary,
     studio = { height = STAGE_H, states = STATES, new = NewPreview, paint = PaintPreview },
     rows = {
+        Settings.Group("Guide Addons"),
+        { key = "waypointPolestar", label = "Follow Polestar", toggle = true,
+          get = FollowGet("waypointPolestar"), set = FollowSet("waypointPolestar", "waypointRestedXP"),
+          needs = function()
+              return S.Get("waypointPolestar") or not (PolestarMissing() or Following("waypointRestedXP", RestedXPMissing))
+          end,
+          why = function() return PolestarMissing() or "Follow RestedXP is on" end,
+          note = MissingNote("waypointPolestar", PolestarMissing),
+          help = "Uses Polestar's guide target for the world pin." },
+        { key = "waypointPolestarStops", label = "Polestar's Next Stop", toggle = true, needs = "waypointPolestar",
+          help = "Pins the stop Polestar's arrow points at first, such as the flight master, instead of the end of the trip." },
         { key = "waypointRestedXP", label = "Follow RestedXP", toggle = true,
+          get = FollowGet("waypointRestedXP"), set = FollowSet("waypointRestedXP", "waypointPolestar"),
+          needs = function()
+              return S.Get("waypointRestedXP") or not (RestedXPMissing() or Following("waypointPolestar", PolestarMissing))
+          end,
+          why = function() return RestedXPMissing() or "Follow Polestar is on" end,
+          note = MissingNote("waypointRestedXP", RestedXPMissing),
           help = "Uses your active RestedXP guide destination for the world pin." },
+        Settings.Group("Display"),
         { key = "waypointObjectives", label = "Quest Objectives", toggle = true,
           help = "Shows unfinished quest objectives above the destination." },
         { key = "waypointDownArrows", label = "Downward Arrows", toggle = true,

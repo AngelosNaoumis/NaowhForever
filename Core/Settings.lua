@@ -305,7 +305,8 @@ local S = UI.ModuleSettings("qol", {
     waypoints = F.waypoints, waypointShape = "hex", waypointScale = 1, waypointCard = true,
     waypointCardAlpha = 0.85, waypointTime = true, waypointBeam = true, waypointFadeNear = 40, waypointArrive = 5,
     waypointEdge = true, waypointNav = true, waypointSound = "none", waypointHideGame = true,
-    waypointRestedXP = F.waypointRestedXP, waypointObjectives = F.waypointObjectives,
+    waypointRestedXP = F.waypointRestedXP, waypointPolestar = F.waypointPolestar,
+    waypointPolestarStops = true, waypointObjectives = F.waypointObjectives,
     waypointDownArrows = F.waypointDownArrows,
 })
 ns.QoLSettings = S

@@ -67,6 +67,7 @@ edits it**: a file is added to its area's XML.
 | `Core\Locales\enUS.lua` | the English catalog, before the namespace; other languages are files in the `NaowhForever_Locales` addon, loaded by `Core.lua` when the picked or client language is not English |
 | `Core\Core.xml` | the namespace and DB (`Core.lua`), the feature switches, presets, message senders, waypoints |
 | `Core\Integrations\RestedXP\RestedXP.xml` | the Naowh themes in RestedXP Guides; needs the core's theme palettes |
+| `Core\Integrations\Polestar\Polestar.xml` | the Waypoint Pin's feed from Polestar's guide target |
 | `Core\Options.xml` | the widget kit (`ns.UI`), Unlock Mode, the options window, the Game Menu button, the settings search |
 | `Shared\Shared.xml` | what every module shares (see `Shared/README.md`) |
 | `Core\Profiles.xml` | the profile strings, their dialogs and the Profiles page |

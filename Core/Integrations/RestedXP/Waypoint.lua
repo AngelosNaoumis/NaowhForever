@@ -61,7 +61,7 @@ local function ReadDetails(element)
 end
 
 local function Stop()
-    ns.ClearGuideWaypoint()
+    if details then ns.ClearGuideWaypoint(details) end
     lastMap, lastX, lastY, lastTitle, details = nil, nil, nil, nil, nil
     lastGuide, lastStep = nil, nil
 end
@@ -96,8 +96,9 @@ local function Sync(force)
     if not force and not changed and not routing and not ns.GuideWaypointIsCurrent() then return end
     local title, quest, objectives = ReadDetails(element)
     if force or changed then
-        details = { guide = true, quest = quest, objectives = objectives, title = title }
-        if not ns.SetGuideWaypoint(title, map, x, y, details) then Stop() return end
+        local replacement = { guide = true, quest = quest, objectives = objectives, title = title }
+        if not ns.SetGuideWaypoint(title, map, x, y, replacement) then Stop() return end
+        details = replacement
         lastMap, lastX, lastY, lastTitle = map, x, y, title
     elseif details.quest ~= quest or details.objectives ~= objectives or lastTitle ~= title then
         details.quest, details.objectives, details.title = quest, objectives, title

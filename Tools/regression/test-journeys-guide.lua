@@ -654,6 +654,8 @@ Fire("SUPER_TRACKING_CHANGED")
 Check(Jy.Guide.Dismissed() == 101 and not Jy.Guide.Current(), "and the dismissed quest stays dismissed")
 tracking = 0
 Check(ns.SetGuideWaypoint("Mathrengyl Bearwalker", DARNASSUS, 50, 50, guide) and Jy.Guide.Current(), "a guide journey again")
+ns.ClearGuideWaypoint({ guide = true, title = "Another guide's" })
+Check(Jy.Guide.Current() and Jy.Guide.Current().details == guide, "another guide feed's clear leaves this journey alone")
 current = nil
 ns.ClearGuideWaypoint()
 Check(not Jy.Guide.Current(), "a guide journey with nothing placed yet still ends when the guide lets go")
@@ -670,6 +672,10 @@ Jy.Planner.Plan = function() return nil end
 Check(ns.SetGuideWaypoint("Mathrengyl Bearwalker", DARNASSUS, 50, 50, guide) and not Jy.Guide.Current()
     and ns.placedWaypoint.details == guide and ns.placedWaypoint.x == 50, "no way found: the plain guide waypoint")
 Check(#printed == printedBefore, "and the guide feed says nothing in chat about it")
+ns.ClearGuideWaypoint({ guide = true, title = "Another guide's" })
+Check(current and ns.placedWaypoint.details == guide, "another guide feed's clear leaves this destination alone")
+ns.ClearGuideWaypoint(guide)
+Check(current == nil, "its own feed's clear takes it")
 Jy.Planner.Plan = realPlan
 ns.ClearGuideWaypoint()
 

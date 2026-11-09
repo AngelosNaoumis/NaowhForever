@@ -9,8 +9,10 @@ local S = { Get = function(k) return settings[k] end, Set = function(k, v) setti
 local ns = { QoLSettings = S, L = function(s) return s end, Apply = function() end,
     WaypointPinOn = function() return settings.waypoints end,
     GuideWaypointIsCurrent = function() return tracking and current and current.guide == true end,
-    ClearGuideWaypoint = function()
-        if tracking and current and current.guide then clears = clears + 1; current = nil end
+    ClearGuideWaypoint = function(d)
+        if tracking and current and current.guide and (d == nil or d == current.details) then
+            clears = clears + 1; current = nil
+        end
     end,
     RefreshWaypointPin = function() refreshes = refreshes + 1 end,
 }
@@ -55,6 +57,11 @@ ns.Apply()
 Check(hooks == 0 and #frames == 0 and writes == 0, "off: no guide hooks or events")
 S.Set("waypointRestedXP", true)
 Check(frames[1].events.ADDON_LOADED and writes == 0, "optional guide absent: waits without errors")
+current = { guide = true, title = "Another guide's" }
+S.Set("waypointRestedXP", false)
+S.Set("waypointRestedXP", true)
+Check(current ~= nil and clears == 0, "with RestedXP absent, turning it on leaves another guide's destination")
+current = nil
 local objective = { tag = "complete", questId = 7, frame = { text = { GetText = function() return "0/10 Bandits" end } } }
 local element = { zone = 88, x = 45, y = 60, step = { active = true, elements = { objective } } }
 local arrow = { element = element, texture = Part(0.8), text = Part(0.6) }
@@ -116,6 +123,11 @@ Check(current == nil, "unsupported map does not create a pin")
 available = true
 rxp.UpdateMap()
 Check(current and current.x == 40, "valid guide destination recovers")
+arrow.element.x, available = 42, false
+rxp.UpdateMap()
+Check(current == nil, "a step on an unsupported map takes the last destination down")
+arrow.element.x, available = 40, true
+rxp.UpdateMap()
 local beforeUntrack = writes
 tracking = false
 rxp.UpdateGotoSteps()

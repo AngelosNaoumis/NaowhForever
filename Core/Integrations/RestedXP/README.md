@@ -379,6 +379,7 @@ Core/Integrations/RestedXP/
 - The pin's name is the quest's, else the waypoint's or its step's title, else the words RestedXP shows for it (the
   waypoint's own line when the guide gave it one, the line it belongs to, the step's first open line), and only then "Guide destination": most
   waypoints have no quest and no title. A name that is the only objective line is not repeated under it.
+- The feed clears only a destination it placed (`ns.ClearGuideWaypoint(details)`): turned on with RestedXP not loaded, it left nothing and cleared Follow Polestar's pin.
 - RestedXP's guide arrow stays as it is beside the pin. No RestedXP settings, frames, frame scripts or guide completion state are changed.
 
 - With the guide arrow hidden, map refreshes may be intermediate; the guide target is read after the

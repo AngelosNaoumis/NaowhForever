@@ -272,11 +272,18 @@ function ns.SetGuideWaypoint(title, map, x, y, details)
     return true
 end
 
-function ns.ClearGuideWaypoint()
+function ns.ClearGuideWaypoint(details)
+    local function Mine(d) return type(d) == "table" and d.guide == true and (details == nil or d == details) end
     local journey = ns.JourneyDetails and ns.JourneyDetails()
-    if journey and journey.guide == true and ns.JourneyCancel then ns.JourneyCancel() end
-    if pending and pending[PLACE_FIELDS] and pending[PLACE_FIELDS].guide == true then DropPending() end
+    if Mine(journey) and ns.JourneyCancel then ns.JourneyCancel() end
+    if pending and Mine(pending[PLACE_FIELDS]) then DropPending() end
     if not ns.GuideWaypointIsCurrent() then return end
+    local placed = ns.placedWaypoint
+    if details ~= nil and not (placed and placed.details == details) then return end
+    ns.ClearWaypoint()
+end
+
+function ns.DismissGuideWaypoint(details)
     ns.ClearWaypoint()
 end
 

@@ -700,6 +700,76 @@ driver.scripts.OnUpdate()
 Check(cleared == guideClears and pin:IsShown(), "guide pin skips manual distance auto-clear")
 events.scripts.OnEvent(events, "NAVIGATION_DESTINATION_REACHED", false)
 Check(driver.scripts.OnUpdate ~= nil, "guide arrival leaves guide advancement in charge")
+
+-- The navigator dismisses Polestar only for the validated target, not stale guide metadata.
+nav.distance = 100
+local polestarDismisses, dismissedDetails, notify = 0, nil, nil
+local guideTarget = { map = 88, x = 0.45, y = 0.60, title = "Polestar target" }
+ns.DismissGuideWaypoint = function(d) dismissedDetails = d; ns.ClearWaypoint() end
+ns.SetGuideWaypoint = function(title, map, x, y, d)
+    ns.placedWaypoint = { title = title, map = map, x = x, y = y, details = d }
+    userWaypoint = { uiMapID = map, position = { x = x / 100, y = y / 100 } }
+    tracking = 1
+    return true
+end
+ns.ClearGuideWaypoint = NOOP
+env.IsLoggedIn = function() return true end
+env.Polestar = { Nav = { API = {
+    minor = 1,
+    Target = function() return guideTarget end,
+    Follow = function(_, fn) notify = fn; return true end,
+    Unfollow = NOOP,
+    Dismiss = function() polestarDismisses = polestarDismisses + 1; guideTarget = nil; return true end,
+} } }
+local polestar = assert(loadfile("Core/Integrations/Polestar/Waypoint.lua"))
+setfenv(polestar, env); polestar()
+ns.Apply()
+S.Set("waypointPolestar", true)
+events.scripts.OnEvent(events, "SUPER_TRACKING_CHANGED")
+driver.scripts.OnUpdate()
+local polestarDetails = ns.placedWaypoint.details
+Check(navBar.name.text == "Polestar target", "the navigator displays the guide target before clearing")
+navBar.clear.click()
+Check(polestarDismisses == 1 and dismissedDetails == polestarDetails and userWaypoint == nil,
+    "clearing a genuine guide target clears its pin and dismisses Polestar with its token")
+
+guideTarget = { map = 88, x = 0.46, y = 0.60, title = "Next guide target" }
+notify()
+polestarDetails = ns.placedWaypoint.details
+ns.JourneyDetails = function() return polestarDetails end
+userWaypoint = { uiMapID = 88, position = { x = 0.1, y = 0.2 } }
+events.scripts.OnEvent(events, "SUPER_TRACKING_CHANGED")
+driver.scripts.OnUpdate()
+Check(navBar.name.text == "Map Pin", "a native replacement is displayed instead of stale guide metadata")
+local beforeNativeClear = cleared
+navBar.clear.click()
+Check(polestarDismisses == 1 and userWaypoint == nil and cleared == beforeNativeClear + 1,
+    "clearing the native replacement clears it without dismissing Polestar, even with stale journey context")
+
+guideTarget = { map = 88, x = 0.47, y = 0.60, title = "Guide before quest" }
+notify()
+polestarDetails = ns.placedWaypoint.details
+tracking = 0
+events.scripts.OnEvent(events, "SUPER_TRACKING_CHANGED")
+driver.scripts.OnUpdate()
+Check(navBar.name.text == "The Barrens Oases", "a tracked quest is displayed instead of the guide pin")
+local beforeQuestClear = superCleared
+navBar.clear.click()
+Check(polestarDismisses == 1 and superCleared == beforeQuestClear + 1,
+    "clearing the tracked quest clears tracking without dismissing Polestar")
+
+guideTarget = { map = 88, x = 0.48, y = 0.60, title = "Journey guide target" }
+notify()
+polestarDetails = ns.placedWaypoint.details
+routeInfo = { "Journey guide target", 1, 3, "Fly to Sentinel Hill" }
+ns.placedWaypoint.title = "Deeprun Tram to Stormwind"
+events.scripts.OnEvent(events, "SUPER_TRACKING_CHANGED")
+driver.scripts.OnUpdate()
+Check(navBar.name.text == "Deeprun Tram to Stormwind", "a genuine guide journey displays its current step")
+navBar.clear.click()
+Check(polestarDismisses == 2 and dismissedDetails == polestarDetails,
+    "clearing a genuine guide journey step still dismisses Polestar")
+routeInfo, ns.JourneyDetails = nil, nil
 S.Set("waypoints", false)
 
 print(("test-waypoints: %d checks passed"):format(checks))
