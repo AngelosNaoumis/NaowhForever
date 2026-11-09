@@ -28,6 +28,7 @@ CP.C = {
     EMBLEM = 44,
     BADGE_INSET = 10,
     STAT_ROWS = 16,
+    PER_5_SEC = 5,
 }
 
 CP.TAB_RGB = CP.C.TAB_RGB

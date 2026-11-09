@@ -137,7 +137,19 @@ the game's art comes back and ours hides.
   Paladins and Shamans get block value from Strength. Warriors and Rogues get no mana from Intellect
   or Spirit.
 - The game's numbers stay out of the description: they go secret under the game's addon restrictions,
-  and the hover card already shows your total.
+  and the hover card already shows your total. Spirit is the exception, as its total does not say what
+  it gives back: its card shows the health and mana it regenerates every 5 seconds, worked out as the
+  game's sheet does (`GetHealthRegenFromSpirit` times 0.75 for standing, `GetManaRegenFromSpirit`, each
+  times `PER_5_SEC`), with the sheet's notes on spending mana and sitting; a class that uses no mana
+  (`ns.UsesMana`) gets the health only, as the game's `WARRIOR_SPIRIT_TOOLTIP` and `ROGUE_SPIRIT_TOOLTIP`
+  do. Each is read when the card opens, as the restriction's event fires before stats go secret; if one
+  it shows is secret, the card says what Spirit does in words instead. Forever's API docs mark
+  `GetManaRegen` secret under the restrictions, but not these two, while Spirit itself goes secret. The
+  text is our own, not the game's strings, so it follows the language picked in Settings (the game's
+  Italian strings are English, too).
+- Mana / 5 sec is the mana back while casting, `GetManaRegen`'s second return floored, as the game's
+  sheet shows its Mana Regen: mp5 gear, and the Spirit regen talents and buffs keep going while
+  casting.
 - The badge art is 128px: drawn at a third of that it needs the mipmapped (`TRILINEAR`) filter to
   stay sharp. Its plate sits over the model, which is at frame level 50.
 - While `ns.FEATURE_BADGES` is 0 only the team's badges exist, and the badge setting's default holds;

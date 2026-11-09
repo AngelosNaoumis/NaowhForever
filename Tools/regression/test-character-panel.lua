@@ -326,7 +326,19 @@ local env = setmetatable({
     GetMeleeHaste = function() return 0 end,
     UnitDamage = function() return 20, 30 end,
     UnitAttackSpeed = function() return 2 end,
-    GetManaRegen = function() return 1 end,
+    -- Mana back a second while not casting, then while casting.
+    GetManaRegen = function() return 2, 1.18 end,
+    issecretvalue = function(value) return type(value) == "table" end,
+    -- Spirit's regeneration a second. Forever's docs do not mark it secret with your stats, so it has
+    -- its own switch here: state.regenSecret.
+    GetHealthRegenFromSpirit = function()
+        if state.regenSecret then return { value = 8 }, { value = 0 } end
+        return 8, 0
+    end,
+    GetManaRegenFromSpirit = function()
+        if state.regenSecret or state.manaSecret then return { value = 17 }, { value = 0 } end
+        return 17, 0
+    end,
     GameFontNormal = "GameFontNormal",
     CreateColor = function() return { SetRGBA = NOTHING } end,
 }, { __index = function(_, key)
@@ -602,6 +614,8 @@ end
 statsList.hooks.OnShow(statsList)
 check("many stats: every row fits above the switch", rows[14].shown ~= false and rows[15].shown == false
     and 14 * rows[1].h <= 300 - 52)
+check("Mana / 5 sec: the mana back while casting, floored as the game's sheet shows it", rows[12].stat == "mp5"
+    and rows[12].total.text == "5")
 -- What each primary stat does, for each class, as the game's own character sheet says it
 -- (<CLASS>_<STAT>_TOOLTIP, else DEFAULT_<STAT>_TOOLTIP, Forever's GlobalStrings). Reported on
 -- Forever: a Warrior's Agility gives only ranged attack power, a Shaman's no attack power at all.
@@ -611,8 +625,13 @@ local AGI_ALL = "Attack power, ranged attack power, crit chance, armor and dodge
 local AGI_NONE = "Crit chance, armor and dodge."
 local STR_BLOCK, STR_PLAIN = "Attack power and block value.", "Attack power."
 local INT_MANA, INT_NONE = "Mana, spell crit chance and faster weapon skill gains.", "Faster weapon skill gains."
-local SPI_MANA = "Health back out of combat, and mana back while not casting."
-local SPI_NONE = "Health back out of combat."
+-- Spirit's, worked out as the game's sheet does: 8 health a second, less a quarter for standing,
+-- and 17 mana, each over 5 seconds. Warriors and Rogues get the health only.
+local SPI_HEALTH = "Health back out of combat: 30 every 5 sec.\n"
+local SITTING = "Sitting or lying down gives 33% more health back."
+local SPI_MANA = SPI_HEALTH .. "Mana back while not casting: 85 every 5 sec.\n"
+    .. "Mana from Spirit pauses for 5 sec after you spend mana.\n" .. SITTING
+local SPI_NONE = SPI_HEALTH .. SITTING
 local DOES = {
     WARRIOR = { "Ranged attack power, crit chance, armor and dodge.", STR_BLOCK, INT_NONE, SPI_NONE },
     ROGUE = { AGI_ALL, STR_PLAIN, INT_NONE, SPI_NONE },
@@ -639,6 +658,23 @@ for class, does in pairs(DOES) do
     check(class .. "'s Stamina: health", Does(13) == "Health.")
 end
 check("all nine classes", classes == 9)
+-- A restriction starting: the list repaints in its event (Activating), before stats go secret. Spirit's
+-- card reads its regeneration when it opens: shown while the game lets it be read, in words once secret.
+spec.scripts.OnEvent(spec, "ADDON_RESTRICTION_STATE_CHANGED", 0, 1)
+state.statsSecret = true
+env.UnitClass = function() return "Mage", "MAGE" end
+check("secret stats: Spirit's regeneration still shown while it can be read", Does(4) == SPI_MANA)
+env.UnitClass = function() return "Warrior", "WARRIOR" end
+state.manaSecret = true
+check("a Warrior's Spirit card never needs the mana it does not show", Does(4) == SPI_NONE)
+state.regenSecret = true
+check("secret regeneration: a Warrior's Spirit in words", Does(4) == "Health back out of combat.")
+env.UnitClass = function() return "Mage", "MAGE" end
+state.regenSecret = false
+check("secret mana regeneration: a Mage's Spirit in words",
+    Does(4) == "Health back out of combat, and mana back while not casting.")
+state.statsSecret, state.manaSecret = false, false
+spec.scripts.OnEvent(spec, "ADDON_RESTRICTION_STATE_CHANGED", 0, 0)
 env.UnitClass = function() return "Warrior", "WARRIOR" end
 check("a Warrior's Agility: ranged attack power, never melee", Does(1):find("Ranged attack power", 1, true)
     and not MeleeAttackPower(Does(1)))

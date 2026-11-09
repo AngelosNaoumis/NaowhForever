@@ -34,9 +34,16 @@ local TITLE_RGB = C.TITLE_RGB
 local YOU_LINE = ns.L("You: %s")
 local TOOLTIP_LINE = "GameTooltipTextLeft"
 local BLANK = " "
+local SPIRIT = "spi"
+local SPIRIT_STANDING = 0.75
+local LINE_BREAK = "\n"
 local TEXT_YOU = ns.L("YOU")
 local TEXT_WEIGHTS = ns.L("Stat Weights")
 local TEXT_WEIGHTS_HINT = ns.L("What each stat is worth to your spec: change them as you like.")
+local TEXT_SPIRIT_HEALTH = ns.L("Health back out of combat: %d every 5 sec.")
+local TEXT_SPIRIT_MANA = ns.L("Mana back while not casting: %d every 5 sec.")
+local TEXT_SPIRIT_PAUSE = ns.L("Mana from Spirit pauses for 5 sec after you spend mana.")
+local TEXT_SPIRIT_SITTING = ns.L("Sitting or lying down gives 33% more health back.")
 
 local NAME = Worth.NAME
 
@@ -57,13 +64,25 @@ local function Does(stat)
     return byClass[class] or D.DOES[stat]
 end
 
+local function SpiritRegen()
+    local health = GetHealthRegenFromSpirit()
+    if issecretvalue(health) then return nil end
+    local text = TEXT_SPIRIT_HEALTH:format(health * SPIRIT_STANDING * C.PER_5_SEC)
+    if ns.UsesMana() then
+        local mana = GetManaRegenFromSpirit()
+        if issecretvalue(mana) then return nil end
+        text = text .. LINE_BREAK .. TEXT_SPIRIT_MANA:format(mana * C.PER_5_SEC) .. LINE_BREAK .. TEXT_SPIRIT_PAUSE
+    end
+    return text .. LINE_BREAK .. TEXT_SPIRIT_SITTING
+end
+
 local function RowEnter(row)
     if not row.stat or not Parts.Tip(row, "ANCHOR_RIGHT") then return end
     local a, m, view = T.accentSoft, T.muted, row.view
     GameTooltip:SetText(NAME[row.stat] or row.stat, TITLE_RGB.r, TITLE_RGB.g, TITLE_RGB.b)
     GameTooltip:AddLine(Worth.Line(row.stat, row.weight, view.specName, view.yard, view.yardWeight), a.r, a.g, a.b,
         true)
-    local does = Does(row.stat)
+    local does = row.stat == SPIRIT and SpiritRegen() or Does(row.stat)
     if does then GameTooltip:AddLine(does, m.r, m.g, m.b, true) end
     YouLine(row)
     GameTooltip:Show()

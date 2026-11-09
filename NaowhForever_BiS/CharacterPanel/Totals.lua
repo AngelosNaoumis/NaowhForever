@@ -4,7 +4,6 @@ local ns = _G.NaowhForever
 local CP = ns.CharacterPanel
 local C = CP.C
 
-local MP5_TICK = 5
 local SWINGS = 2
 local FIRST_SCHOOL, LAST_SCHOOL = 2, 7
 local NO_SPEED = "-"
@@ -75,7 +74,7 @@ local TOTAL = {
     spell = function() return Whole(SpellDamage()) end,
     heal = function() return Whole(GetSpellBonusHealing()) end,
     scrit = function() return Percent(GetSpellCritChance()) end,
-    mp5 = function() return Whole(GetManaRegen() * MP5_TICK) end,
+    mp5 = function() return WHOLE_FORMAT:format(math.floor(select(2, GetManaRegen()) * C.PER_5_SEC)) end,
     def = Defense,
     dodge = function() return Percent(GetDodgeChance()) end,
     block = function() return Percent(GetBlockChance()) end,
