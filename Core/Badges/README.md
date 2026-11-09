@@ -73,6 +73,7 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-6925-003AFF1C   | Eilah    |
 | Player-6925-0040FF87   | Eilah    |
 | Player-6925-0048D638   | Eilah    |
+| Player-6948-001ED6D0   | Krz      |
 
 ## Why
 
