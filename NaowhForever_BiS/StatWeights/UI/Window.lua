@@ -190,7 +190,7 @@ local function Split(weights)
 end
 
 local function AddMenu(owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_ADD_TITLE)
         for _, key in ipairs(rest) do
             root:CreateButton(byStat[key][2], function() AddStat(key) end)

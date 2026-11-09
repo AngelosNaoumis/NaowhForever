@@ -18,7 +18,7 @@ local CHEVRON_DOWN = -math.pi / 2
 local PICK_TOLERANCE = 1 / 255
 local DROPDOWN_W, DROPDOWN_H, DROPDOWN_TEXT_SIZE = 160, 24, 12
 local DROPDOWN_TEXT_X, DROPDOWN_ARROW_ROOM, DROPDOWN_ARROW, DROPDOWN_ARROW_X = 8, 18, 10, 7
-local MENU_HEIGHT, MENU_DROP = 420, 2
+local MENU_HEIGHT = 420
 local SLIDER_TEXT_SIZE, SLIDER_BOX_INSET, SLIDER_MIN_FILL = 12, 4, 0.001
 local SLIDER_PRECISION = "%.4f"
 local ROW_H, HEADER_H = 50, 40
@@ -244,18 +244,7 @@ local function DropdownHandlesMouse(_, buttonName, event)
     return event == "GLOBAL_MOUSE_DOWN" and buttonName == "LeftButton"
 end
 
-local function MenuApi()
-    return MenuUtil and MenuUtil.CreateRootMenuDescription and MenuVariants
-        and Menu and Menu.GetManager and AnchorUtil
-end
-
-local function OpenDropdownMenu(btn)
-    if not MenuApi() then return end
-    local desc = MenuUtil.CreateRootMenuDescription(MenuVariants.GetDefaultMenuMixin())
-    if not desc then return end
-    local menuHeight = btn._menuHeight
-    if type(menuHeight) == "function" then menuHeight = menuHeight() end
-    if desc.SetScrollMode then desc:SetScrollMode(menuHeight or MENU_HEIGHT) end
+local function FillDropdown(btn, desc)
     if btn._menuFill then
         btn._menuFill(desc)
     else
@@ -269,8 +258,12 @@ local function OpenDropdownMenu(btn)
                 end)
         end
     end
-    btn._menu = Menu.GetManager():OpenMenu(btn, desc,
-        AnchorUtil.CreateAnchor("TOPLEFT", btn, "BOTTOMLEFT", 0, -MENU_DROP))
+end
+
+local function OpenDropdownMenu(btn)
+    local menuHeight = btn._menuHeight
+    if type(menuHeight) == "function" then menuHeight = menuHeight() end
+    btn._menu = ns.DropdownMenu(btn, function(desc) FillDropdown(btn, desc) end, menuHeight or MENU_HEIGHT)
 end
 
 local function CloseDropdownMenu(btn)

@@ -48,7 +48,7 @@ end
 local function OpenSettings(item, owner)
     local choices = item.choices
     if not (choices and #choices > 1) then return OpenPage(item.page, item.feature) end
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_SETTINGS)
         for _, choice in ipairs(choices) do
             root:CreateButton(ns.L(choice.name), function() OpenPage(choice.page, choice.feature) end)

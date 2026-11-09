@@ -117,7 +117,7 @@ local function AskPlans()
 end
 
 local function ReportMenu()
-    MenuUtil.CreateContextMenu(UIParent, function(_, root)
+    ns.ContextMenu(UIParent, function(_, root)
         root:CreateTitle(TEXT_REPORT_TO)
         for _, channel in ipairs(B.ReportChannels()) do
             root:CreateButton(channel.label, function() B.Report(channel.key) end)

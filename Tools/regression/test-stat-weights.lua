@@ -28,7 +28,7 @@ local SECRET = {}
 
 local function Fixture(class)
     local state = { worn = {}, account = {}, printed = {}, postCalls = {}, watchers = {} }
-    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, Shared = {}, QoLSettings = {} }
+    local ns = { GamepadStandDown = function() return false end, L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, Shared = {}, QoLSettings = {} }
     local db, listeners = {}, {}
     ns.UI = {
         ModuleSettings = function(_, defaults)
@@ -111,7 +111,7 @@ local function Fixture(class)
         },
     }, { __index = _G })
     local files = { "Core/Features.lua", "Shared/Shared.lua", "Shared/Data/Forever.lua", "Shared/Style.lua", "Shared/Game/Items.lua", "Shared/Game/Gear.lua",
-        "Shared/UI/Parts.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua" }
+        "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua" }
     for _, path in ipairs(TocFiles("^NaowhForever_BiS/StatWeights/.*%.lua$")) do files[#files + 1] = path end
     Load(files, env)
     ns.Shared.Decode = dofile("Tools/regression/load_decode.lua")(env)

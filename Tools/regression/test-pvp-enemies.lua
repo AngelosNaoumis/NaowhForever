@@ -131,6 +131,7 @@ local function Fixture()
         end },
         Settings = { Page = function(key) return { Card = function(_, card) s.page, s.card = key, card end } end } }
     env.NaowhForever = ns
+    dofile("Tools/regression/menus.lua")(ns, env)
     Load({ "Core/Features.lua", "NaowhForever_Combat/PvP/PvP.lua", "NaowhForever_Combat/PvP/View/Style.lua",
         "NaowhForever_Combat/PvP/Enemies.lua", "NaowhForever_Combat/PvP/UI/EnemyList.lua",
         "NaowhForever_Combat/PvP/UI/EnemiesPage.lua" }, env)

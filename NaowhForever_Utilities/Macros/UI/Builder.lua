@@ -298,7 +298,7 @@ local function SmallButton(parent, text, w, onClick)
 end
 
 local function Menu(owner, fill)
-    MenuUtil.CreateContextMenu(owner, function(_, root) fill(root) end)
+    ns.ContextMenu(owner, function(_, root) fill(root) end)
 end
 
 local function SpellBox(box)

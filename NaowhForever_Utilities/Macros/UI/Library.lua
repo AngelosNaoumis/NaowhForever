@@ -130,7 +130,7 @@ local function FillPicker(_, root)
 end
 
 function F.SavePicker(owner)
-    MenuUtil.CreateContextMenu(owner, FillPicker)
+    ns.ContextMenu(owner, FillPicker)
 end
 
 local function NewClassRow(parent)

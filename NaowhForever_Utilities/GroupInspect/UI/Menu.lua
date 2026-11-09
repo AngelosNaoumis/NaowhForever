@@ -20,7 +20,7 @@ local function AddToMenu(_, root)
 end
 
 local function SyncMenu()
-    local on = GI.On()
+    local on = GI.On() and not ns.GamepadStandDown()
     if on and not menuHandles and Menu and Menu.ModifyMenu then
         menuHandles = {}
         for i, tag in ipairs(MENU_TAGS) do menuHandles[i] = Menu.ModifyMenu(tag, AddToMenu) end

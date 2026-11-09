@@ -346,6 +346,7 @@ local function Boot(settings, loaded, windows)
         end }
     env._G = env
     if loaded then env.DamageMeter = meter end
+    dofile("Tools/regression/menus.lua")(ns, env)
     local chunk = assert(loadfile("NaowhForever_QoL/Combat/DamageMeterSkin.lua"))
     setfenv(chunk, env)
     local frames = {}

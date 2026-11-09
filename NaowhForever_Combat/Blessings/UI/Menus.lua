@@ -48,7 +48,7 @@ end
 
 function B.OpenMenu(owner, title, list, current, choose, noneText, can)
     can = can or Learned
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(title)
         for _, entry in ipairs(list) do
             if can(entry) then
@@ -84,7 +84,7 @@ function B.SetFree(on)
 end
 
 function B.ClassMenu(owner, class, inSettings)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(ClassName(class))
         for _, entry in ipairs(BLESSINGS) do
             if Learned(entry) and (Store().classes[class] == entry.key or B.Allowed(class, entry.key)) then

@@ -36,7 +36,7 @@ function J.View.ItemMenu(owner, itemID, onChange)
         if onChange then onChange() end
     end
     local name = Loot.Name(itemID)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(name or (TEXT_ITEM .. itemID))
         if Loot.BisGear(itemID) and not J.IsNotYet(itemID) then
             AddBisButtons(root, itemID, Then, onChange)

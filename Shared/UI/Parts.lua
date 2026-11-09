@@ -22,7 +22,7 @@ local FLAT_BLEND = "BLEND"
 local PUSHED_LAYER, PUSHED_SUBLEVEL = "ARTWORK", 1
 
 local function Tip(owner, anchor, x, y)
-    if Menu.GetManager():IsAnyMenuOpen() then return false end
+    if ns.MenuOpen() then return false end
     GameTooltip:SetOwner(owner, anchor, x, y)
     return true
 end

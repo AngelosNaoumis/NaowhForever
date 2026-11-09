@@ -118,7 +118,7 @@ local function Desc()
 end
 
 local SHARED = { "Core/Core.lua", "Shared/Shared.lua", "Shared/Style.lua", "Core/Options/Widgets.lua",
-    "Shared/UI/Parts.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua",
+    "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua",
     "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Forever.lua",
     "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua" }
 local UNLOCK = dofile("Tools/regression/toc_files.lua")("^Core/Unlock/.-%.lua$")
@@ -194,6 +194,7 @@ local function Load(account, atlases, files)
             end }
         end },
         AnchorUtil = { CreateAnchor = function() return {} end },
+        InputUtil = { IsGamepadUIEnabled = function() return false end }, IsLoggedIn = function() return true end,
     }, { __index = _G })
     env._G = env
     local paths = {}

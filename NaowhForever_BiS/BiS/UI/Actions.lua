@@ -65,7 +65,7 @@ end
 function A.ListMenu(owner)
     local values, order, active, shared = ns.BisListChoices()
     local spec = L.CurrentSpec()
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_MENU_TITLE)
         for i, id in ipairs(order) do
             if i == shared + 1 then root:CreateTitle(TEXT_SPEC_ONLY:format(L.SpecShort(spec))) end

@@ -161,6 +161,7 @@ local function Load()
             landSlot, landItem = i, item
         end
     end
+    dofile("Tools/regression/menus.lua")(ns, env)
     local chunk = assert(loadfile(path))
     setfenv(chunk, env)
     chunk()

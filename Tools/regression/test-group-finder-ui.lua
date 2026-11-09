@@ -214,7 +214,7 @@ function GF.Search.Suits(id) return id ~= 2 end
 local tooltip = Frame()
 tooltip.SetOwner, tooltip.SetText, tooltip.AddLine = NOTHING, NOTHING, NOTHING
 local ns
-ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
+ns = { GamepadStandDown = function() return false end, L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
     MEDIA = dofile("Tools/regression/core_media.lua"),
     THEME = setmetatable({ accent = ACCENT, muted = MUTED }, { __index = function() return WHITE end }),
     Journal = {

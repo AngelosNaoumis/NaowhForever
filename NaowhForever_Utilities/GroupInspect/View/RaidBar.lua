@@ -66,7 +66,7 @@ local function SortMenu(_, root)
 end
 
 local function SortClicked(link)
-    MenuUtil.CreateContextMenu(link, SortMenu)
+    ns.ContextMenu(link, SortMenu)
 end
 
 local function FilterMenu(_, root)
@@ -84,7 +84,7 @@ local function FilterMenu(_, root)
 end
 
 local function FilterClicked(button)
-    MenuUtil.CreateContextMenu(button, FilterMenu)
+    ns.ContextMenu(button, FilterMenu)
 end
 
 local function PickView(key)

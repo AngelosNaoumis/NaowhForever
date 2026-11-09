@@ -271,6 +271,7 @@ local env = setmetatable({
     end,
 }, { __index = _G })
 env._G = env
+dofile("Tools/regression/menus.lua")(ns, env)
 -- The HUD Editor is several files (Core/Options.xml lists them in load order).
 for _, path in ipairs(dofile("Tools/regression/toc_files.lua")("^Core/Unlock/.-%.lua$")) do
     local f = assert(io.open(path, "rb"))

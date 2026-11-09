@@ -45,7 +45,7 @@ function Parts.ShareMenu(owner, title, message, copyTitle, copyText, trade, icon
         C_ChatInfo.SendChatMessage(text, channel, nil, to)
     end
     local tradeChannel = trade and TradeChannel()
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(title)
         if say then
             root:CreateButton(TEXT_SAY, function() Send("SAY") end):SetEnabled(not locked and IsInInstance())

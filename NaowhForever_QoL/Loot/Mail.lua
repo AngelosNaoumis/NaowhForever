@@ -67,7 +67,7 @@ local function OpenAltsMenu(owner)
     local list = ns.AltList()
     local total = GetMoney()
     for _, alt in ipairs(list) do total = total + alt.money end
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_GOLD .. Coins(total))
         if #list == 0 then
             root:CreateTitle(TEXT_NO_ALTS, WHITE_FONT_COLOR)
@@ -233,7 +233,7 @@ end
 
 local function OpenAttachMenu(owner)
     Count()
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_ATTACH_TITLE)
         if #order == 0 then
             root:CreateTitle(TEXT_NOTHING, WHITE_FONT_COLOR)

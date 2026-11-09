@@ -133,6 +133,7 @@ local env = setmetatable({
     COMBATLOG_XPGAIN_FIRSTPERSON_UNNAMED = "You gain %d experience.",
 }, { __index = _G })
 env._G = env
+dofile("Tools/regression/menus.lua")(ns, env)
 local settingsFile = assert(loadfile("Shared/Settings/Settings.lua"))
 setfenv(settingsFile, env)
 settingsFile()

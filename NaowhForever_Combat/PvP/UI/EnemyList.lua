@@ -59,7 +59,7 @@ end
 
 local function KillMenu(row)
     local enemy = row.entry.enemy
-    MenuUtil.CreateContextMenu(row, function(_, root)
+    ns.ContextMenu(row, function(_, root)
         root:CreateTitle(enemy.name)
         root:CreateButton(enemy.kill and TEXT_REMOVE or TEXT_ADD, ToggleKill, enemy)
     end)

@@ -874,7 +874,7 @@ local function HitUp(hit, button)
     if not preview.editable or preview.drag then return end
     if button == "RightButton" then
         HideTip(preview)
-        MenuUtil.CreateContextMenu(hit, LineMenu)
+        ns.ContextMenu(hit, LineMenu)
     elseif button == "LeftButton" and hit.toggle and hit:IsMouseOver() then
         Toggle(hit.toggle)
     end

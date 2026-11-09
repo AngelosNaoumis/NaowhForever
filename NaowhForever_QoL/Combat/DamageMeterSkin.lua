@@ -709,7 +709,7 @@ function Title.Inner(window)
 end
 
 function Title.Menu(owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_MENU_TITLE)
         for _, item in ipairs(Title.items) do
             local key = item[2]

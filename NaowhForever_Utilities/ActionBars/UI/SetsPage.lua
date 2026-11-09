@@ -148,7 +148,7 @@ function A.SetExtras(set)
 end
 
 function A.SetMenu(key)
-    MenuUtil.CreateContextMenu(UIParent, function(_, root)
+    ns.ContextMenu(UIParent, function(_, root)
         root:CreateButton(TEXT.EDIT, function() ns.OpenActionBarsBuilder(key) end)
         root:CreateButton(TEXT.KEY_MAP, function() ns.OpenActionBarsKeys(key) end)
         root:CreateButton(TEXT.EXPORT, function() A.Sharing.ShowExport(key) end)
@@ -160,7 +160,7 @@ function A.SetMenu(key)
 end
 
 function ns.ActionBarsMenu(owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT.MENU_TITLE)
         for _, key in ipairs(A.SortedNames()) do
             local text = OnBars(key) and TEXT.MENU_ON:format(key) or key

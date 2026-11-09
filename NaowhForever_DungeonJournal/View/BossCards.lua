@@ -78,7 +78,7 @@ end
 local function OpenWowheadMenu(row, boss)
     local kind, id = WowheadPage(boss)
     if not kind then return end
-    MenuUtil.CreateContextMenu(row, function(_, root)
+    ns.ContextMenu(row, function(_, root)
         root:CreateTitle(boss.name)
         root:CreateButton(TEXT_WOWHEAD, function() Parts.CopyWowhead(kind, id, boss.name) end)
     end)

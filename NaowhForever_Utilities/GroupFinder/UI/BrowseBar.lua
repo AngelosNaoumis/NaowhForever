@@ -62,7 +62,7 @@ local function DungeonMenu(_, root)
 end
 
 local function DungeonClicked(link)
-    MenuUtil.CreateContextMenu(link, DungeonMenu)
+    ns.ContextMenu(link, DungeonMenu)
 end
 
 local function Filtered(text)
@@ -84,7 +84,7 @@ local function SortMenu(_, root)
 end
 
 local function SortClicked(link)
-    MenuUtil.CreateContextMenu(link, SortMenu)
+    ns.ContextMenu(link, SortMenu)
 end
 
 function UI.BrowseBar(parent, onChange)

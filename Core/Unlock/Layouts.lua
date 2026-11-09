@@ -119,7 +119,7 @@ local function LayoutEntries(root)
 end
 
 local function LayoutMenu(owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root) LayoutEntries(root) end)
+    ns.ContextMenu(owner, function(_, root) LayoutEntries(root) end)
 end
 
 H.CurrentLayout, H.LayoutMenu, H.LayoutEntries = CurrentLayout, LayoutMenu, LayoutEntries

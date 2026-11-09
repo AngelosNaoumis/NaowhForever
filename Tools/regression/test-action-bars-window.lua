@@ -90,6 +90,7 @@ end
 local rowParents = setmetatable({}, { __mode = "k" })
 local ns
 ns = {
+    GamepadStandDown = function() return false end,
     THEME = setmetatable({}, { __index = function() return WHITE end }),
     UI = {
         ModuleSettings = function(_, defaults) return Values(defaults) end,
@@ -303,7 +304,7 @@ local env = setmetatable({
 }, { __index = _G })
 env._G.NaowhForever = ns
 
-Load({ "Shared/Shared.lua", "Shared/Style.lua", "Shared/Decode.lua", "Shared/Encode.lua", "Shared/Game/ActionKeys.lua", "Shared/UI/Parts.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/CodeModal.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua",
+Load({ "Shared/Shared.lua", "Shared/Style.lua", "Shared/Decode.lua", "Shared/Encode.lua", "Shared/Game/ActionKeys.lua", "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/CodeModal.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua",
     }, env)
 local MODULE = { "Core/Features.lua" }
 for _, path in ipairs(dofile("Tools/regression/toc_files.lua")("^NaowhForever_Utilities/ActionBars/.*%.lua$")) do

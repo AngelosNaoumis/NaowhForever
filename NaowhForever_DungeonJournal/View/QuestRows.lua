@@ -185,7 +185,7 @@ local function OpenChain(owner, quest)
     local chain, own = Quests.Chain(quest)
     if not chain then return end
     local logged = Quests.LoggedID(quest)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_CHAIN_TITLE:format(Quests.Name(quest), own, #chain))
         root:CreateTitle(ns.Color("muted", TEXT_CHAIN_HINT))
         for i, step in ipairs(chain) do AddStep(root, i, step, own) end
@@ -234,7 +234,7 @@ local function OpenQuestMenu(row)
     local quest, logged, name, canWaypoint = entry.quest, entry.loggedID, entry.name, entry.canWaypoint
     local linkID = logged or quest[QUEST.ID]
     local shareable = logged ~= nil and IsInGroup() and C_QuestLog.IsPushableQuest(logged)
-    MenuUtil.CreateContextMenu(row, function(_, root)
+    ns.ContextMenu(row, function(_, root)
         root:CreateTitle(name)
         root:CreateButton(SHARE_QUEST, function()
             QuestLogPushQuest(C_QuestLog.GetLogIndexForQuestID(logged))

@@ -51,7 +51,7 @@ local function SessionChoices(menu, w)
 end
 
 function Menus.Session(w, owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_SESSION)
         SessionChoices(root, w)
     end)
@@ -74,7 +74,7 @@ local function Report(w, channel)
 end
 
 function Menus.Window(w, owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(DM.WindowName(w.index, true))
         ListChoices(root:CreateButton(TEXT_LIST), w, false)
         SessionChoices(root:CreateButton(TEXT_SESSION), w)

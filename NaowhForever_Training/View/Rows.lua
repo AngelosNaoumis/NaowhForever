@@ -197,7 +197,7 @@ local function SpellClick(self, button)
     local spell = self.entry[SPELL]
     if button == "RightButton" then
         if self.state == "weapon" or BOOK[self.state] or self.state == "ignored" and FromBuild(spell) then return end
-        MenuUtil.CreateContextMenu(self, SkipMenu(spell, self.state == "ignored"))
+        ns.ContextMenu(self, SkipMenu(spell, self.state == "ignored"))
     elseif IsModifiedClick("CHATLINK") then
         ChatFrameUtil.InsertLink(BOOK[self.state] and select(2, C_Item.GetItemInfo(self.entry.item))
             or C_Spell.GetSpellLink(spell))

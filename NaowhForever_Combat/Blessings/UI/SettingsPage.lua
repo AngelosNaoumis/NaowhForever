@@ -198,7 +198,7 @@ local function PlusClick(plus)
     local aura, fury = S.Get("blessShowAura"), S.Get("blessShowFury")
     if not (aura or fury) then
         if ns.UI.HideWidgetTooltip then ns.UI.HideWidgetTooltip() end
-        MenuUtil.CreateContextMenu(plus, AddMenu)
+        ns.ContextMenu(plus, AddMenu)
     elseif not aura then
         ShowAura()
     elseif not fury then

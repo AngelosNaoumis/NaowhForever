@@ -23,7 +23,6 @@ local TRACK_RAISE, EDGE_RAISE, TEXT_RAISE = 1, 4, 5
 local QUEST_SCAN_DELAY = 0.3
 local CLOCK_TICK = 1
 local DEFAULT_Y = 190
-local MENU_DROP = 2
 local TOP_LEFT, TOP, TOP_RIGHT, LEFT, RIGHT, BOTTOM_LEFT, BOTTOM, BOTTOM_RIGHT = 1, 2, 3, 4, 5, 6, 7, 8
 local BESIDE = { LEFT, RIGHT }
 local SAME_TEXT = { levelshort = "level", levelnum = "level" }
@@ -939,17 +938,8 @@ end
 
 local SLOT_HINT = ns.L("|n|nOnly Played Time and Session Time show at max level.")
 
-local function OpenChoices(zone)
-    if zone._menu and zone._menu:IsShown() then
-        zone._menu:Close()
-        zone._menu = nil
-        return
-    end
-    if not (MenuUtil and MenuUtil.CreateRootMenuDescription and MenuVariants
-        and Menu and Menu.GetManager and AnchorUtil) then return end
-    local desc = MenuUtil.CreateRootMenuDescription(MenuVariants.GetDefaultMenuMixin())
-    if not desc then return end
-    if desc.CreateTitle then desc:CreateTitle(ns.L(zone._label)) end
+local function FillChoices(zone, desc)
+    desc:CreateTitle(ns.L(zone._label))
     local shownAt = {}
     for _, spot in ipairs(zone._spots) do
         if spot.key ~= zone._key then shownAt[TextOf(S.Get(spot.key) or "none")] = spot.label end
@@ -967,8 +957,15 @@ local function OpenChoices(zone)
                 S.Set(zone._key, key)
             end)
     end
-    zone._menu = Menu.GetManager():OpenMenu(zone, desc,
-        AnchorUtil.CreateAnchor("TOPLEFT", zone, "BOTTOMLEFT", 0, -MENU_DROP))
+end
+
+local function OpenChoices(zone)
+    if zone._menu and zone._menu:IsShown() then
+        zone._menu:Close()
+        zone._menu = nil
+        return
+    end
+    zone._menu = ns.DropdownMenu(zone, function(desc) FillChoices(zone, desc) end)
 end
 
 local function ChoiceName(zone)
@@ -1017,7 +1014,7 @@ end
 local function ZoneDown(zone, button)
     if button ~= STAGE.MENU_BUTTON then return OpenChoices(zone) end
     ns.UI.HideWidgetTooltip()
-    MenuUtil.CreateContextMenu(zone, BarMenu)
+    ns.ContextMenu(zone, BarMenu)
 end
 
 local function ZoneHidden(zone)

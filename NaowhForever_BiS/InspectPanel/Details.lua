@@ -295,7 +295,7 @@ local function TagMenu(owner)
     local H = ns.PlayerHistory
     if not (guid and H and H.SetNote) then return end
     menuGUID = guid
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(ns.L("Tag"))
         for _, tag in ipairs(type(H.TAGS) == "table" and H.TAGS or NONE) do
             root:CreateRadio(ns.PlainText(tag.label, NOTE_MAX), IsTag, SetTag, tag.key)

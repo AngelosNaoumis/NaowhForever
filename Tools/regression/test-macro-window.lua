@@ -160,7 +160,7 @@ local UI = {
         Button = function() return nil, 30 end,
     },
 }
-local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, MEDIA = dofile("Tools/regression/core_media.lua"),
+local ns = { GamepadStandDown = function() return false end, L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, MEDIA = dofile("Tools/regression/core_media.lua"),
     THEME = setmetatable({}, { __index = function() return WHITE end }),
     UI = UI,
     Color = function(_, text) return tostring(text) end,

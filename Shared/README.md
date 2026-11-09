@@ -54,6 +54,8 @@ Shared/
                    on a bar button (Parts.Press: the item bars, Blessings, Gear Set and Trinket bars, Group
                    Buttons), a short label in a pill of its color
                    (Parts.Pill, Parts.SetPill: Group Inspect's "NF"), the worn bar, the Wowhead copy card
+  UI/Menus.lua     every right-click menu and dropdown (ns.ContextMenu, ns.DropdownMenu; ns.MenuOpen for
+                   Parts.Tip): the game's menus, or under the Gamepad interface style a list of our own
   UI/Marks.lua     an item's marks: rank stars and lines, the upgrade line, Forever's mark, the item icon,
                    its slot marks (item level, star, Forever's mark, upgrade arrow) and an atlas badge on
                    its top corner (Parts.ItemBadge: Bag Space's clock and quest "!"), and a class icon's
@@ -440,6 +442,19 @@ What a comment in the code used to say, in short. The house rules behind it are 
   `ns.GamepadOwnsPanels()` it says so in chat instead: `C_Map.OpenWorldMap` runs the game's
   `ShowUIPanel` from our click, and the gamepad builds its bindings inside that, which is how the
   Map Window tainted them. Every "show on the map" in the addon goes through it.
+- Every menu, including the Group Finder's Dungeon and Sort menus, goes through `Menus.lua`.
+  The game's menu runs our callback securely, but the menu and its entries are
+  ours, so its close runs tainted, and under the Gamepad interface style that close changes the
+  gamepad's bindings: the action bar's `SetPreferredGamepadInteractTarget` was then blocked. Nothing
+  inside the game's menu can fix that, so under `ns.GamepadStandDown()` the same generators fill a
+  list of our own instead, made parentless (the game hooks `CreateFrame` to rebuild the open panel's
+  gamepad buttons) and parented to the owner's window. It keeps the game's responses (a checkbox stays
+  open, a radio or button closes), opens a submenu in place with a Back row, and splits a long list
+  into columns rather than scrolling. Group Inspect's entry on the game's unit menus
+  (`Menu.ModifyMenu`) is left out under that style for the same reason.
+- The list stops at `MAX_COLUMNS` (3) and pages past that with a More row that wraps round: with a
+  few media packs installed the font, texture and sound dropdowns outgrow the screen, and clamping
+  cannot bring back columns past its edge. A paged list opens on the page with the picked radio.
 - Forever has Zephras Isle twice: map 2521 (under Azeroth) and map 2665 (no parent), with the
   same name, continent (2991) and bounds in the game's UiMapAssignment, so a map percentage is
   the same spot on both; the game puts players on 2665 too (the Nightclaw Druids' Wowhead data

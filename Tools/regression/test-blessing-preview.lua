@@ -154,6 +154,7 @@ local function Load(path)
     setfenv(fn, env)
     fn("NaowhForever", ns)
 end
+dofile("Tools/regression/menus.lua")(ns, env)
 Load("Shared/UI/ItemBar.lua")
 for _, path in ipairs(dofile("Tools/regression/toc_files.lua")("^NaowhForever_Combat/Blessings/.*%.lua$")) do
     if not path:find("/UI/Window%.lua$") then Load(path) end

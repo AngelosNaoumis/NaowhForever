@@ -210,6 +210,7 @@ local function World(known)
     }
     env._G.NaowhForever = ns
     setmetatable(env, { __index = _G })
+    dofile("Tools/regression/menus.lua")(ns, env)
     for _, path in ipairs(FILES) do
         local chunk = assert(loadfile(path)); setfenv(chunk, env); chunk()
     end

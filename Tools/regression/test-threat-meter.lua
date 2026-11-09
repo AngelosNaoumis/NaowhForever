@@ -113,6 +113,7 @@ local function fixture(settings, withSettings)
             end,
             Page=function() return {Window=function() end,Card=function(_,c) s.cards[c.id]=c end} end}
     end
+    dofile("Tools/regression/menus.lua")(ns, env)
     setmetatable(env,{__index=_G})
     local files=TocFiles('^NaowhForever_Combat/ThreatMeter/.*%.lua$')
     table.insert(files,1,'Core/Features.lua')

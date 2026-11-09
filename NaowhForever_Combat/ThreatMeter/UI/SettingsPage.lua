@@ -155,7 +155,7 @@ end
 local function RowsUp(hit, button)
     if button ~= "RightButton" then return end
     HideTip(hit.shot)
-    MenuUtil.CreateContextMenu(hit, RowMenu)
+    ns.ContextMenu(hit, RowMenu)
 end
 
 local function Fit(shot)

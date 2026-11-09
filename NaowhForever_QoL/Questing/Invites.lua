@@ -123,7 +123,7 @@ local function AddName()
 end
 
 local function AddFriend(owner)
-    MenuUtil.CreateContextMenu(owner, function(_, root)
+    ns.ContextMenu(owner, function(_, root)
         root:CreateTitle(TEXT_FRIENDS)
         local count = BNGetNumFriends()
         for i = 1, count do

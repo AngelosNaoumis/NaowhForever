@@ -197,7 +197,7 @@ local function FilterMenu(_, root)
 end
 
 local function OpenFilterMenu()
-    MenuUtil.CreateContextMenu(win.filter, FilterMenu)
+    ns.ContextMenu(win.filter, FilterMenu)
 end
 
 local function OnWaypointEnter(self)

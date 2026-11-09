@@ -1081,7 +1081,7 @@ local function Wheel(f, delta)
 end
 
 local function CardUp(f, button)
-    if f.preview.editable and button == "RightButton" then MenuUtil.CreateContextMenu(f, CardMenu) end
+    if f.preview.editable and button == "RightButton" then ns.ContextMenu(f, CardMenu) end
 end
 
 local function HitEnter(hit)

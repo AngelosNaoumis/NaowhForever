@@ -246,7 +246,7 @@ local function AddMenu(plus)
     local fixed = CollectAddable(layout, ldb)
     CollectOnBar(layout, ldb)
     GameTooltip:Hide()
-    MenuUtil.CreateContextMenu(plus, function(_, root)
+    ns.ContextMenu(plus, function(_, root)
         root:CreateTitle(side == "left" and TEXT_ADD_LEFT or TEXT_ADD_RIGHT)
         if #addKeys == 0 then root:CreateTitle(TEXT_ALL_ON) end
         for i = 1, #addKeys do

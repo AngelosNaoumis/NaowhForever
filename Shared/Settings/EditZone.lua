@@ -62,7 +62,7 @@ local function ZoneUp(zone, button)
     if not zone:IsMouseOver() then return end
     if button == MENU_BUTTON and zone.menu then
         GameTooltip:Hide()
-        MenuUtil.CreateContextMenu(zone, zone.menu)
+        ns.ContextMenu(zone, zone.menu)
     elseif button == DRAG_BUTTON and zone.click then
         zone.click(zone)
     end

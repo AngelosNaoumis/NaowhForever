@@ -164,6 +164,7 @@ local function Boot(account, settings, who)
         UnitClass = function() return "Warrior", "WARRIOR", 1 end,
         RAID_CLASS_COLORS = { WARRIOR = { r = 0.78, g = 0.61, b = 0.43 }, MAGE = { r = 0.25, g = 0.78, b = 0.92 } },
         MenuUtil = { CreateContextMenu = function(owner, gen) menu = { owner = owner, gen = gen } end },
+        InputUtil = { IsGamepadUIEnabled = function() return false end }, IsLoggedIn = function() return true end,
         Menu = { GetManager = function() return { IsAnyMenuOpen = function() return menuOpen end } end },
         GameTooltip = GameTooltip,
         hooksecurefunc = function(t, k, fn)
@@ -179,7 +180,7 @@ local function Boot(account, settings, who)
     local ns = env.NaowhForever
     ns.ApplyThemeColors()
     ns.QoLConstants = dofile("Tools/regression/qol_constants.lua")
-    Load({ "Shared/Shared.lua", "Shared/Style.lua", "Shared/UI/Parts.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/Game/Played.lua" }, env)
+    Load({ "Shared/Shared.lua", "Shared/Style.lua", "Shared/UI/Parts.lua", "Shared/UI/Menus.lua", "Shared/UI/Marks.lua", "Shared/UI/Text.lua", "Shared/UI/Hud.lua", "Shared/UI/Timer.lua", "Shared/UI/Share.lua", "Shared/UI/Panels.lua", "Shared/UI/Window.lua", "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/Game/Played.lua" }, env)
 
     local defaults = { enabled = true, xpTicker = true, xpTickerLevel = true, xpTickerElapsed = true,
         xpTickerHideResting = false, xpTickerFont = "", xpTickerFontSize = 24, xpTickerOutline = "",

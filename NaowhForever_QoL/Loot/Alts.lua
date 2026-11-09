@@ -88,7 +88,7 @@ end
 
 function ns.OpenForgetAltMenu(owner)
     local all = ns.AccountSettings().alts or {}
-    MenuUtil.CreateContextMenu(owner, function(_, root) FillForgetMenu(root, all) end)
+    ns.ContextMenu(owner, function(_, root) FillForgetMenu(root, all) end)
 end
 
 local function UpdateRoster()

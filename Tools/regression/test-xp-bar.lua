@@ -434,7 +434,7 @@ do
         "root:CreateButton(TEXT.RESET_LAYOUT_LABEL, ns.ResetXPBarLayout)", 1, true)
         and source:find("root:CreateButton(TEXT.RESET_COLORS_LABEL, ns.ResetXPBarColors)", 1, true)
         and source:find("EditZone(b, { menu = BarMenu", 1, true)
-        and source:find("MenuUtil.CreateContextMenu(zone, BarMenu)", 1, true))
+        and source:find("ns.ContextMenu(zone, BarMenu)", 1, true))
     check("the empty spots are no longer written into the texts", not source:find("TEXT.ADD", 1, true))
 end
 

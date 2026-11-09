@@ -399,6 +399,7 @@ local function Boot(opts)
     local files = { "DamageMeter.lua", "Constants.lua", "Data/Samples.lua", "Source.lua", "Numbers.lua", "Spells.lua", "Looks.lua", "Names.lua", "Report.lua",
         "History.lua", "View/Meter.lua", "View/Breakdown.lua", "UI/History.lua", "UI/Menus.lua", "UI/Meter.lua",
         "UI/ImageHelp.lua", "UI/SettingsPage.lua" }
+    dofile("Tools/regression/menus.lua")(ns, env)
     for _, file in ipairs(files) do
         local chunk = assert(loadfile("NaowhForever_DamageMeter/" .. file))
         setfenv(chunk, env)
