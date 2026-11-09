@@ -10,22 +10,37 @@ D.WELL_FED = ns.WELL_FED
 D.FOOD_SPELLS = ns.FOOD_SPELLS
 
 D.FLASKS = {
-    items = { 13510, 13511, 13512, 13513 },
-    auras = { 17626, 17627, 17628, 17629 },
+    items = { 13510, 13511, 13512, 13513, 274273, 274274, 274275, 274276 },
+    auras = { 17626, 17627, 17628, 17629, 1293740, 1293741, 1293742, 1293743 },
 }
 
 D.ELIXIRS = {
-    { stat = "Agility", items = { 13452, 9187 }, auras = { 17538, 11334 } },
-    { stat = "Strength", items = { 13453, 9206 }, auras = { 17537, 11405 } },
-    { stat = "Spell damage", items = { 13454, 9155 }, auras = { 17539, 11390 } },
+    { stat = "Agility", items = { 13452, 9187, 8949, 3390, 2457 }, auras = { 17538, 11334, 11328, 3160, 2374 } },
+    { stat = "Strength", items = { 250351, 250349, 13453, 9206, 3391, 2454 },
+        auras = { 1250986, 1250984, 17537, 11405, 3164, 2367 } },
+    { stat = "Strength and Agility", items = { 250350 }, auras = { 1250985 } },
+    { stat = "Agility and Intellect", items = { 250328 }, auras = { 1250918 } },
+    { stat = "Attack Power", items = { 12820, 246948 }, auras = { 17038 } },
+    { stat = "Physical damage", items = { 247755 }, auras = { 1245249 } },
+    { stat = "Spell damage", items = { 13454, 9155, 217398, 250342, 247754 },
+        auras = { 17539, 11390, 439959, 1250971, 1245244 } },
     { stat = "Shadow Power", items = { 9264 }, auras = { 11474 } },
     { stat = "Holy Power", items = { 21546 }, auras = { 1310077 } },
     { stat = "Fire Power", items = { 6373 }, auras = { 7844 } },
     { stat = "Frost Power", items = { 17708 }, auras = { 21920 } },
-    { stat = "Intellect", items = { 13447, 9179 }, auras = { 17535, 11396 } },
-    { stat = "Armor", items = { 13445, 8951 }, auras = { 11348, 11349 } },
-    { stat = "Mageblood", items = { 20007 }, auras = { 24363 } },
-    { stat = "Major Troll's Blood", items = { 20004 }, auras = { 24361 } },
+    { stat = "Nature Power", items = { 250343 }, auras = { 1250972 } },
+    { stat = "Healing", items = { 250333, 250332, 250331, 250330 }, auras = { 1250926, 1250925, 1250924, 1250922 } },
+    { stat = "Intellect", items = { 250337, 250354, 13447, 9179, 250353, 3383 },
+        auras = { 1250940, 1250989, 17535, 11396, 1250988, 3166 } },
+    { stat = "Spirit", items = { 250348, 250338, 250347, 250346, 250345, 250344 },
+        auras = { 1250981, 1250941, 1250979, 1250978, 1250976, 1250974 } },
+    { stat = "Armor", items = { 13445, 8951, 3389, 5997 }, auras = { 11348, 11349, 3220, 673 } },
+    { stat = "Health", items = { 250335, 250334, 3825, 2458 }, auras = { 1250931, 1250928, 3593, 2378 } },
+    { stat = "Health and Armor", items = { 250329 }, auras = { 1250920 } },
+    { stat = "Shadow Resistance", items = { 9088 }, auras = { 11371 } },
+    { stat = "Mageblood", items = { 250341, 20007, 250340, 250339 }, auras = { 1250948, 24363, 1250944, 1250942 } },
+    { stat = "Regeneration", items = { 250336 }, auras = { 1250932 } },
+    { stat = "Troll's Blood", items = { 20004, 3826, 3388, 3382 }, auras = { 24361, 3223, 3222, 3219 } },
 }
 
 D.WEAPON_ITEMS = {

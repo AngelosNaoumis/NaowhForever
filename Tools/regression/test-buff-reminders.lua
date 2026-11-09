@@ -678,6 +678,21 @@ do
     Check("empty profile, nothing carried", t.Shown(), "")
 end
 
+-- Forever's own flasks and elixirs remind while carried, and their buffs count as a flask and an elixir.
+do
+    local t = Fixture({ settings = { personalBuffs = false }, instance = "raid",
+        bags = { 274274, 250341 } })
+    t.Login()
+    Check("a Natural flask and Greater Mageblood carried", t.Shown(), "item:274274 item:250341")
+    t.state.auras.player = { { 1293741, 7000, 7200 }, { 1250948, 1700, 1800 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("their buffs count", t.Shown(), "")
+    t.Set("onlyIfCarried", false)
+    t.state.bags = {}
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("Only If I Carry One off: the Forever flask and elixir still count", t.Shown(), "spell:1248406")
+end
+
 -- A carried scroll reminds one stat at a time, the class buff it does not stack with counts as
 -- its buff, and a scroll you do not carry never reminds, with Only If I Carry One on or off.
 do

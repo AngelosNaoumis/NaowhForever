@@ -165,6 +165,12 @@ NaowhForever_Combat/AuraBuffs/
   buffs; cooked food moved to Forever-only "Nutritious Food" spells with one shared Well Fed aura
   per stat (Wowhead's Forever data, build 1.60.1). Flask of Petrification is left out: it is a
   minute of stone form, not a buff to keep up.
+- Forever adds flasks and elixirs of its own: the four Natural flasks, the elixirs from 250328 to
+  250354 (Mageblood, Cleric's, Spirit and the rest) and a few more, in the client's tables since
+  its first beta build (1.60.1.69876), with each item's buff read from wago.tools build
+  1.60.1.70862. Draughts (water breathing, detection) are left out, and so are the Endless elixirs
+  that arrived in 1.60.1.70840: they stack with themselves and nothing is known yet of where they
+  come from.
 - Hide Blessings on Paladins (`hideBlessingsOnPaladin`, off by default) suppresses both paladin
   raid reminder families while the player is a grouped paladin, since
   the Blessings tab already covers them. It keeps the saved picks and does not hide the Blessing bar.
