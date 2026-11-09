@@ -136,6 +136,26 @@ pinAt = { map = 1429, x = 0.5, y = 0.6 }
 Check(ns.RestedXPPin() == false, "a pin elsewhere on the same map is not")
 pinAt, pinned.waypointSet = { map = 1429, x = 0.4, y = 0.6 }, false
 Check(ns.RestedXPPin() == false, "a step that let its pin go no longer owns it")
+-- A waypoint with no quest and no title is named by RestedXP's own words for it.
+local function Line(text) return { tag = "complete", frame = { text = { GetText = function() return text end } } } end
+local function Show(shown)
+    arrow.element, rxp.activeWaypoints = shown, { shown }
+    rxp.UpdateGotoSteps()
+end
+tracking, current = true, nil
+rxp.settings.profile.disableArrow, rxp.hideArrow = false, false
+S.Set("enabled", true)
+Show({ zone = 88, x = 61, y = 40, textOnly = true,
+    frame = { text = { GetText = function() return "|cffffd100Run up|r the hill" end } }, step = { active = true, elements = {} } })
+Check(current and current.title == "Run up the hill" and current.details.objectives == nil,
+    "no quest or title: the waypoint's own line names it, and is not repeated as an objective")
+Show({ zone = 88, x = 62, y = 40, text = "Go to 62.0,40.0 (Westfall)",
+    step = { active = true, elements = { Line("Talk to Gryan Stoutmantle") } } })
+Check(current and current.title == "Talk to Gryan Stoutmantle",
+    "no words of its own (RestedXP's made-up \"Go to x,y\" is not a name): the step's first open line")
+Show({ zone = 88, x = 63, y = 40, step = { active = true, elements = {} } })
+Check(current and current.title == "Guide destination", "no words at all: the generic name")
+S.Set("enabled", false)
 -- A hidden arrow is presentation state, not a missing guide destination.
 local target = { zone = 88, x = 45, y = 60, title = "Quest area", step = { active = true } }
 arrow.element = target

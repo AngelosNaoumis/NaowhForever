@@ -376,6 +376,9 @@ Core/Integrations/RestedXP/
   frame that is shown (`IsShown() == false` is none); that is what put a question mark on it.
 
 - Follow RestedXP is a separate QoL > Interface > Waypoint Pin switch, independent of the theme/window. It hooks guide map/goto refreshes only after first enable, with no added polling. Only zone/map coordinates the native waypoint supports are forwarded; unsupported or world-only guide targets get no pin.
+- The pin's name is the quest's, else the waypoint's or its step's title, else the words RestedXP shows for it (the
+  waypoint's own line when the guide gave it one, the line it belongs to, the step's first open line), and only then "Guide destination": most
+  waypoints have no quest and no title. A name that is the only objective line is not repeated under it.
 - RestedXP's guide arrow stays as it is beside the pin. No RestedXP settings, frames, frame scripts or guide completion state are changed.
 
 - With the guide arrow hidden, map refreshes may be intermediate; the guide target is read after the

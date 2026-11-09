@@ -51,9 +51,13 @@ local function ReadDetails(element)
         end
     end
     if type(quest) ~= "number" or quest <= 0 then quest = nil end
+    local objectives = #lines > 0 and table.concat(lines, "\n") or ElementText(element.parent or element)
     local title = quest and C_QuestLog.GetTitleForQuestID(quest)
-    title = title or Plain(element.title) or step and Plain(step.title) or TEXT_GUIDE
-    return title, quest, #lines > 0 and table.concat(lines, "\n") or ElementText(element.parent or element)
+    title = title or Plain(element.title) or step and Plain(step.title)
+        or element.textOnly and ElementText(element) or element.parent and ElementText(element.parent) or lines[1]
+    if not title then return TEXT_GUIDE, quest, objectives end
+    if objectives == title then objectives = nil end
+    return title, quest, objectives
 end
 
 local function Stop()
