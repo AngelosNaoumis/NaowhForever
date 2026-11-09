@@ -1,4 +1,4 @@
--- Buy.lua: the Buy page: your Shopping List, a search by name, the listings of what you pick, and buying it.
+-- Buy.lua: the Buy page: your Shopping List, a search by name and category, the listings of what you pick, and buying it.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -17,6 +17,8 @@ local ROW_IN, ICON_GAP, TITLE_SIZE, SUB_GAP = 8, 8, 14, 4
 local SEARCH_H, NAME_SIZE, NAME_H = St.SEARCH_H, 16, 24
 local QTY_W, QTY_LETTERS, BUY_W = 70, 5, 260
 local SCROLL_IN = 4
+local CATEGORY_W, MORE_ROWS = 200, 10
+local ALL = "all"
 local FAV_HEAD_H, FAV_ROW_H, FAV_ROWS, STAR, SPARK_W = 30, 30, 5, 18, 110
 local FAV_H = FAV_HEAD_H + FAV_ROWS * FAV_ROW_H
 local DETAIL_H = NAME_H + SECTION_GAP + Ladder.HEIGHT + SECTION_GAP + BUTTON_H
@@ -27,7 +29,11 @@ local TEXT_SHOP_OFF = ns.L("Turn on Professions for its Shopping List.")
 local TEXT_MORE = ns.L("%d more")
 local TEXT_SEARCH = ns.L("Search the auction house")
 local TEXT_SEARCHING = ns.L("Searching")
-local TEXT_NO_RESULTS = ns.L("Search by name, then press Enter.")
+local TEXT_HINT = ns.L("Type a name and press Enter, or pick a category.")
+local TEXT_NOTHING = ns.L("Nothing found.")
+local TEXT_ALL_CATEGORIES = ns.L("All Categories")
+local TEXT_ALL = ns.L("All")
+local TEXT_PATH = ns.L("%s / %s")
 local TEXT_LADDER = ns.L("Listings now, cheapest first")
 local TEXT_LISTED = ns.L("%s listed")
 local TEXT_NONE = ns.L("Nobody is selling this")
@@ -54,8 +60,9 @@ local TEXT_STAR_TIP = ns.L("Keeps this item under Favourites, one click from its
 
 local page, shopPane, shopScroll, shopList, shopNote, main, search, resultsScroll, resultsList, resultsNote
 local detail, nameText, ladder, quantity, buyButton, statusText, star, spark, sorter
-local favPane, favScroll, favList, favNote, itemEvents
+local favPane, favScroll, favList, favNote, itemEvents, picker
 local shopRows, resultRows, rungs, favRows, favourites, results = {}, {}, {}, {}, {}, {}
+local categories, labels = {}, { [ALL] = TEXT_ALL_CATEGORIES }
 local active, watching = false, false
 
 local Page = {}
@@ -235,7 +242,7 @@ local function DrawResults()
     local count = #results
     Rows(resultsList, count, resultRows, NewResultRow, PaintResultRow, RESULT_ROW_H)
     resultsNote:SetShown(count == 0)
-    resultsNote:SetText(Buy.searching and TEXT_SEARCHING or TEXT_NO_RESULTS)
+    resultsNote:SetText(Buy.searching and TEXT_SEARCHING or Buy.searched and TEXT_NOTHING or TEXT_HINT)
 end
 
 local function LadderRungs(want)
@@ -353,6 +360,49 @@ local function SearchEntered(box)
     Page.Draw()
 end
 
+local function ShownCategory()
+    return Buy.category or ALL
+end
+
+local function IsCategory(c)
+    return ShownCategory() == c
+end
+
+local function CategoryLabel(c)
+    if not c.parent then return c.name end
+    return TEXT_PATH:format(c.parent.name, c.name)
+end
+
+local function PickCategory(c)
+    local chosen = c ~= ALL and c or nil
+    if chosen then labels[chosen] = CategoryLabel(chosen) end
+    Buy.SetCategory(chosen)
+    picker._refreshLabel()
+    Buy.Search(search:GetText() or "")
+    Page.Draw()
+end
+
+local function AddCategory(parent, c)
+    if not c.subCategories then
+        parent:CreateRadio(c.name, IsCategory, PickCategory, c)
+        return
+    end
+    local sub = parent:CreateButton(c.name)
+    sub:CreateRadio(TEXT_ALL, IsCategory, PickCategory, c)
+    sub:CreateDivider()
+    for _, child in ipairs(c.subCategories) do AddCategory(sub, child) end
+end
+
+local function FillCategories(desc)
+    desc:CreateRadio(TEXT_ALL_CATEGORIES, IsCategory, PickCategory, ALL)
+    desc:CreateDivider()
+    for _, c in ipairs(Buy.Categories(categories)) do AddCategory(desc, c) end
+end
+
+local function ResultsScrolled(scroll, offset)
+    if offset >= scroll:GetVerticalScrollRange() - MORE_ROWS * RESULT_ROW_H then Buy.More() end
+end
+
 local function BuildShopping()
     shopPane = CreateFrame("Frame", nil, page)
     shopPane:SetPoint("TOPLEFT")
@@ -444,7 +494,7 @@ end
 
 local function BuildResults()
     local head = CreateFrame("Frame", nil, main)
-    head:SetPoint("TOPLEFT", search, "BOTTOMLEFT", 0, -SECTION_GAP)
+    head:SetPoint("TOPLEFT", picker, "BOTTOMLEFT", 0, -SECTION_GAP)
     head:SetPoint("RIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
     head:SetHeight(SMALL_SIZE)
     sorter = Columns.New(head, Market.Settings, "sortBuy", "lowest", Page.Draw)
@@ -461,6 +511,7 @@ local function BuildResults()
     resultsList:SetHeight(1)
     resultsScroll:SetScrollChild(resultsList)
     resultsScroll:HookScript("OnSizeChanged", function(_, width) resultsList:SetWidth(width) end)
+    resultsScroll:HookScript("OnVerticalScroll", ResultsScrolled)
     resultsNote = ns.Font(main, TEXT_SIZE, nil, T.muted)
     resultsNote:SetPoint("TOP", resultsScroll, "TOP", 0, -SECTION_GAP)
 end
@@ -472,9 +523,13 @@ function Page.Build(parent)
     main = CreateFrame("Frame", nil, page)
     main:SetPoint("TOPLEFT", SHOP_W + PANE_GAP, 0)
     main:SetPoint("BOTTOMRIGHT")
+    picker = ns.UI.BuildDropdownControl(main, CATEGORY_W, nil, labels, nil, ShownCategory)
+    picker._menuFill = FillCategories
+    picker:SetHeight(SEARCH_H)
+    picker:SetPoint("TOPLEFT")
     search = Parts.SearchBox(main, TEXT_SEARCH)
     search:SetHeight(SEARCH_H)
-    search:SetPoint("TOPLEFT")
+    search:SetPoint("TOPLEFT", picker, "TOPRIGHT", GAP, 0)
     search:SetPoint("TOPRIGHT")
     search:HookScript("OnEnterPressed", SearchEntered)
     BuildDetail()

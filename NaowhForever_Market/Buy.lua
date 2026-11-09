@@ -1,4 +1,4 @@
--- Buy.lua: searching the auction house by name, and buying: a commodity at the price the game quotes, an item at its buyout (ns.Market.Buy).
+-- Buy.lua: searching the auction house by name and category, and buying: a commodity at the price the game quotes, an item at its buyout (ns.Market.Buy).
 local ns = _G.NaowhForever
 
 local Market = ns.Market
@@ -9,7 +9,9 @@ local BROWSE_SORTS = { { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSo
 local NO_FILTERS = {}
 local QUOTE_SLACK = 1.05
 local FAVOURITES = "marketFavourites"
-local EVENTS = { "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", "AUCTION_HOUSE_BROWSE_FAILURE", "ITEM_KEY_ITEM_INFO_RECEIVED",
+local TOKEN_FLAG = "WOW_TOKEN_FLAG"
+local EVENTS = { "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", "AUCTION_HOUSE_BROWSE_RESULTS_ADDED",
+    "AUCTION_HOUSE_BROWSE_FAILURE", "ITEM_KEY_ITEM_INFO_RECEIVED",
     "COMMODITY_PRICE_UPDATED", "COMMODITY_PRICE_UNAVAILABLE", "COMMODITY_PURCHASE_SUCCEEDED",
     "COMMODITY_PURCHASE_FAILED", "AUCTION_HOUSE_PURCHASE_COMPLETED", "AUCTION_HOUSE_SHOW_ERROR",
     "AUCTION_HOUSE_THROTTLED_SYSTEM_READY" }
@@ -17,7 +19,7 @@ local EVENTS = { "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", "AUCTION_HOUSE_BROWSE_F
 local results = {}
 local picked, purchase = {}, {}
 local query = { sorts = BROWSE_SORTS, filters = NO_FILTERS, itemClassFilters = NO_FILTERS }
-local searchText, searchWaiting
+local searchText, searchWaiting, category, moreAsked
 local events
 
 local Buy = { results = results, picked = picked, purchase = purchase }
@@ -33,19 +35,20 @@ local function Shopping()
 end
 
 local function SendSearch()
-    if not searchText then return end
+    if not (searchText or category) then return end
     if not C_AuctionHouse.IsThrottledMessageSystemReady() then
         searchWaiting = true
         return
     end
     searchWaiting = false
-    query.searchString = searchText
+    query.searchString = searchText or ""
+    query.itemClassFilters = category and category.filters or NO_FILTERS
     C_AuctionHouse.SendBrowseQuery(query)
-    Buy.searching = true
+    Buy.searching, Buy.searched = true, true
 end
 
 local function ReadResults()
-    Buy.searching = false
+    Buy.searching, moreAsked = false, false
     wipe(results)
     for i, result in ipairs(C_AuctionHouse.GetBrowseResults()) do results[i] = result end
 end
@@ -74,6 +77,9 @@ end
 local function OnEvent(_, event, a, b)
     if event == "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED" then
         ReadResults()
+    elseif event == "AUCTION_HOUSE_BROWSE_RESULTS_ADDED" then
+        moreAsked = false
+        for _, result in ipairs(a) do results[#results + 1] = result end
     elseif event == "AUCTION_HOUSE_BROWSE_FAILURE" then
         Buy.searching = false
     elseif event == "AUCTION_HOUSE_THROTTLED_SYSTEM_READY" then
@@ -102,8 +108,28 @@ end
 
 function Buy.Search(text)
     searchText = text ~= "" and text or nil
+    Buy.searched = false
     wipe(results)
     SendSearch()
+end
+
+function Buy.SetCategory(chosen)
+    category = chosen
+    Buy.category = chosen
+end
+
+function Buy.Categories(out)
+    wipe(out)
+    for _, c in ipairs(AuctionCategories) do
+        if not c:HasFlag(TOKEN_FLAG) then out[#out + 1] = c end
+    end
+    return out
+end
+
+function Buy.More()
+    if moreAsked or Buy.searching or not Buy.searched or C_AuctionHouse.HasFullBrowseResults() then return end
+    moreAsked = true
+    C_AuctionHouse.RequestMoreBrowseResults()
 end
 
 function Buy.Pick(itemKey, quantity)

@@ -40,7 +40,7 @@ read_globals = {
     "SetOverrideBinding", "SetOverrideBindingClick", "ClearOverrideBindings",
     "CLASS_SORT_ORDER", "CreateAbbreviateConfig",
     "AcceptQuest", "ActionBarButtonEventsFrame", "ActionStatus", "AlertFrame", "Ambiguate",
-    "AnchorUtil", "AuraContainerSortMethod", "AuraUtil", "BACKPACK_CONTAINER",
+    "AnchorUtil", "AuctionCategories", "AuraContainerSortMethod", "AuraUtil", "BACKPACK_CONTAINER",
     "bit", "BNET_CLIENT_WOW", "BNGetInfo", "BNGetNumFriends", "BreakUpLargeNumbers", "BuyMerchantItem", "BuyTrainerService",
     "canaccessallvalues", "canaccessvalue", "CanInspect", "CanLootUnit", "CanMerchantRepair",
     "ConsoleGetAllCommands", "ContainerFrameContainer", "ContainerFrameCombinedBags",

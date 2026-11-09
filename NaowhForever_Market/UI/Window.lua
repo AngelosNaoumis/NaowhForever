@@ -38,7 +38,7 @@ local PAGES = {
     { key = "sell", label = "Sell", icon = "coins", tip = "Your bags, most valuable first, posted one key press at a time.",
       auction = true },
     { key = "crafts", label = "Crafts", icon = "hammer", tip = "What your characters' recipes make from your bags, priced from your last scan." },
-    { key = "buy", label = "Buy", icon = "search", tip = "Search by name, or pick from your Shopping List, and buy it.", auction = true },
+    { key = "buy", label = "Buy", icon = "search", tip = "Search by name or category, or pick from your Shopping List, and buy it.", auction = true },
     { key = "mine", label = "My Auctions", icon = "notes", tip = "Your auctions, and the ones someone is selling for less.",
       auction = true },
 }

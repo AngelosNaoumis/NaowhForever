@@ -1,4 +1,4 @@
--- Run with Lua 5.1 from the repository root: The Market's Buy: the name search, the cost of a quantity, and buying.
+-- Run with Lua 5.1 from the repository root: The Market's Buy: the name and category search, the cost of a quantity, and buying.
 local World = dofile("Tools/regression/market_world.lua")
 
 local checks = 0
@@ -106,5 +106,45 @@ Check("and is searched when it arrives", not B.picked.waiting and t.searches[sea
 B.Close()
 t.Fire("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
 Check("closing the page stops listening", #B.results == 1)
+
+local function Category(name, flags, subs)
+    local c = { name = name, filters = { { classID = #name } }, flags = flags, subCategories = subs }
+    function c:HasFlag(flag) return self.flags ~= nil and self.flags[flag] == true end
+    return c
+end
+local plate = Category("Plate")
+local armor = Category("Armor", nil, { plate })
+local token = Category("WoW Token", { WOW_TOKEN_FLAG = true })
+local c = World.Setup({ categories = { armor, token } })
+local CB = c.M.Buy
+CB.Open()
+local found = CB.Categories({})
+Check("the categories are Blizzard's, without the WoW Token", #found == 1 and found[1] == armor)
+CB.SetCategory(plate)
+CB.Search("")
+Check("a category searches with no name", c.browses[1] == "" and c.lastBrowse.itemClassFilters == plate.filters
+    and CB.searched)
+CB.Search("helm")
+Check("a name searches inside the category", c.browses[2] == "helm"
+    and c.lastBrowse.itemClassFilters == plate.filters)
+CB.SetCategory(nil)
+CB.Search("")
+Check("no name and no category searches nothing", #c.browses == 2 and not CB.searched)
+CB.Search("helm")
+Check("a name alone searches every category", #c.lastBrowse.itemClassFilters == 0)
+CB.SetCategory(armor)
+CB.Search("")
+c.browse, c.full = { { itemKey = Key(1) }, { itemKey = Key(2) } }, false
+CB.More()
+Check("more is not asked for before the first page", c.more == 0)
+c.Fire("AUCTION_HOUSE_BROWSE_RESULTS_UPDATED")
+CB.More()
+CB.More()
+Check("the end of a long list asks for more once", c.more == 1)
+c.Fire("AUCTION_HOUSE_BROWSE_RESULTS_ADDED", { { itemKey = Key(3) } })
+Check("and the next page is added to it", #CB.results == 3 and CB.results[3].itemKey.itemID == 3)
+c.full = true
+CB.More()
+Check("a full list asks for nothing", c.more == 1)
 
 print("market buy: " .. checks .. " checks passed")

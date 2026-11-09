@@ -27,7 +27,7 @@ NaowhForever_Market/
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
   Sales.lua          what you sold, from your sold auctions, per realm and faction (Market.Sales)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
-  Buy.lua            the name search, the cost of a quantity, and buying (Market.Buy)
+  Buy.lua            the name and category search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
   Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
@@ -46,7 +46,7 @@ NaowhForever_Market/
     Runs.lua         the Last Run page: the run's gold over time, its haul, earlier runs
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
     Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
-    Buy.lua          the Buy page: the Shopping List, the search, the listings, the buy button
+    Buy.lua          the Buy page: the Shopping List, the category and search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Takeover.lua     covering Blizzard's auction house, and the way back to it
     BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
@@ -124,7 +124,13 @@ NaowhForever_Market/
   their tables reused) whenever the game sends them. Cancelled items come
   back by mail, so a cancelled auction cannot be posted again from here.
 - Buy searches by name with `SendBrowseQuery`, sorted by price then name, as Blizzard's browse does;
-  a picked item's listings come through the same search as Sell. The throttle freeing, another item's
+  a picked item's listings come through the same search as Sell. Its categories are Blizzard's own
+  (`AuctionCategories`, from Blizzard_AuctionHouseUI, which is loaded whenever Buy can be used), so
+  they match the game's auction house on every client language; a picked one's `filters` go in as
+  `itemClassFilters`, alone or with a name. The WoW Token category is left out: it is bought another way.
+  A list longer than the game's first page asks for the next one (`RequestMoreBrowseResults`) when
+  scrolled within `MORE_ROWS` of its end, as Blizzard's list does, and the page arrives with
+  `AUCTION_HOUSE_BROWSE_RESULTS_ADDED`. The throttle freeing, another item's
   data arriving or an error while not buying redraw nothing: the page rebuilds Professions' whole
   shopping plan on each draw, and the throttle frees after every message, Blizzard's own included.
 - A commodity is bought in two presses, each a hardware event: the first asks the game for a price
@@ -309,3 +315,6 @@ Away from the auction house:
     If it names the bobber instead, no pool is ever recorded.
 37. With Buy open at an auctioneer, add a craft to Professions' Shopping List: its materials show under
     Shopping List at once.
+38. Buy's category menu has the game's categories (Weapons, Armor, Containers, ...); picking one, or All
+    inside one, lists what is for sale there without a name, and a name then searches only that category.
+39. A big category (Armor, Trade Goods) lists more as you scroll to its end.

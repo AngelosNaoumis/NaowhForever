@@ -19,7 +19,7 @@ local function Setup(opts)
     local t = { bags = opts.bags or {}, status = opts.status or {}, scan = opts.scan or {}, vendor = opts.vendor or {},
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
         owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
-        browses = {}, browse = {}, purchases = {}, bids = {}, money = opts.money or 1000000,
+        browses = {}, browse = {}, more = 0, full = true, purchases = {}, bids = {}, money = opts.money or 1000000,
         account = {}, char = {}, scanAt = opts.scanAt, counts = opts.counts or {} }
     local registry = {}
     local copper = opts.copper ~= false
@@ -82,6 +82,7 @@ local function Setup(opts)
     t.results = results
     local env = setmetatable({
         NUM_BAG_SLOTS = 1,
+        AuctionCategories = opts.categories or {},
         Enum = { ItemCommodityStatus = { Unknown = UNKNOWN, Item = ITEM, Commodity = COMMODITY },
             AuctionHouseSortOrder = { Price = 0, Name = 1, Buyout = 4, Bid = 3 },
             AuctionStatus = { Active = 0, Sold = 1 } },
@@ -145,7 +146,12 @@ local function Setup(opts)
             CanCancelAuction = function(id) return not t.locked[id] end,
             GetCancelCost = function() return 0 end,
             CancelAuction = function(id) t.cancels[#t.cancels + 1] = id end,
-            SendBrowseQuery = function(query) t.browses[#t.browses + 1] = query.searchString end,
+            SendBrowseQuery = function(query)
+                t.browses[#t.browses + 1] = query.searchString
+                t.lastBrowse = query
+            end,
+            HasFullBrowseResults = function() return t.full end,
+            RequestMoreBrowseResults = function() t.more = t.more + 1 end,
             GetBrowseResults = function() return t.browse end,
             StartCommoditiesPurchase = function(id, quantity)
                 t.purchases[#t.purchases + 1] = { step = "start", itemID = id, quantity = quantity }
