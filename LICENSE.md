@@ -663,7 +663,8 @@ SOFTWARE.
 required levels, sharing and one quest giver), and NaowhForever_DiscoveryData/Quests.lua (the races
 that hand in some quests, by way of Tools/data/completo_fixes.json), and NaowhForever_Market/Data/Skinning.lua
 and Fishing.lua (what players skinned and fished, and the names, levels and kill spots of the creatures
-Forever added), from https://github.com/JIVESCORP/eg-link-output-wowf, reduced to those facts
+Forever added), and NaowhForever_Discovery/Data/FieldJournal.lua (where each fish is caught), from
+https://github.com/JIVESCORP/eg-link-output-wowf, reduced to those facts
 
 ### License
 
@@ -675,8 +676,9 @@ Data from [Efficient Games](https://efficient.games), licensed under
 **Path**: NaowhForever_Market/Data/Skinning.lua and Fishing.lua (the creatures that can be skinned, their
 levels and skinning loot, each zone's fishing catches and the fishing pools), NaowhForever_QoL/Interface/ScoutData.lua
 (creatures' abilities, armor, resistances, immunities and tameable beasts) and NaowhForever_DiscoveryData/Quests.lua
-(the levels, races, classes and prerequisites of dungeon, class and battleground quests), from
-https://github.com/cmangos/classic-db, reduced to those facts
+(the levels, races, classes and prerequisites of dungeon, class and battleground quests) and
+NaowhForever_Discovery/Data/FieldJournal.lua (where each fish is caught, and the fish fishing pools
+give), from https://github.com/cmangos/classic-db, reduced to those facts
 
 ### License
 

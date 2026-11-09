@@ -1,10 +1,11 @@
--- Window.lua: Discovery's own window (/nfdiscovery): the Library Books, Sleeping Bag, Quest List and Rares tabs.
+-- Window.lua: Discovery's own window (/nfdiscovery): the Library Books, Sleeping Bag, Field Journal, Quest List and Rares tabs.
 local ns = _G.NaowhForever
 
 local Discovery = ns.Discovery
 local C = Discovery.C
 local Library = Discovery.Library
 local Bag = Discovery.Bag
+local Field = Discovery.Field
 local Style = Discovery.Style
 local V = Discovery.View
 local Shared = ns.Shared
@@ -24,12 +25,20 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "QUEST_TURNED_IN", "QUEST_ACCEPTED", "PLA
 local FILTERS = {
     { key = "books", label = "Library Books", tip = "Every book for your faction, a tick on those handed in." },
     { key = "bag", label = "Sleeping Bag", tip = "The Cozy Sleeping Bag's hidden quest chain, step by step." },
+    { key = "journal", label = "Field Journal", tip = "The fish you have caught, the herbs you have picked and the dishes you have cooked." },
     { key = "quests", label = "Quest List", tip = "Every quest of every zone, and where you are in each chain." },
     { key = "rares", label = "Rares", tip = "Every rare of every zone, and which of them you have killed." },
 }
 local QUEST_TABS = { quests = true, rares = true }
+local PAGES = {
+    { key = "fish", label = "Fish", tip = "Every fish you can catch, and where." },
+    { key = "herbs", label = "Herbs", tip = "Every herb you can pick, and where it grows." },
+    { key = "dishes", label = "Cooking", tip = "Every dish you can cook, and where to learn it." },
+}
+local RANKS = { "Apprentice", "Journeyman", "Expert", "Artisan" }
+local NO_EVENTS = {}
 local TEXT_TITLE = ns.L("Discovery")
-local TEXT_ABOUT = ns.L("Library books, the Sleeping Bag, quests and rares to find around Azeroth.")
+local TEXT_ABOUT = ns.L("Library books, the Sleeping Bag, a field journal, quests and rares to find around Azeroth.")
 local TEXT_STEPS = ns.L("Steps")
 local TEXT_OPTIONAL = ns.L("Optional")
 local TEXT_NOT_FOUND = ns.L("Not found yet")
@@ -37,11 +46,15 @@ local TEXT_NOBODY = ns.L("Nobody has found this one on Forever yet.")
 local TEXT_NO_BOOKS = ns.L("No books for your faction yet.")
 local TEXT_SEPARATOR = "  -  "
 local TEXT_FOR_FACTION = ns.L(" books for your faction")
+local TEXT_SCHOOLS = "Schools of fish"
+local TEXT_KEPT = ns.L("Kept for this character.")
 
 local window, scroll, view, questScroll
 local filter = "books"
+local page = "fish"
 local zones
 local zoneBooks = {}
+local rankCounts = {}
 
 local Draw = {}
 
@@ -126,20 +139,59 @@ local function DrawBooks(self)
     self:Fit(EVENTS)
 end
 
+local function CountRanks(entries)
+    wipe(rankCounts)
+    for _, entry in ipairs(entries) do
+        local rank = Field.Rank(entry.skill) or 0
+        rankCounts[rank] = (rankCounts[rank] or 0) + 1
+    end
+end
+
+local function DrawJournal(self)
+    self:Add("fieldHero", page)
+    self:Space(Style.SECTION_GAP)
+    local entries = Field.Entries(page)
+    CountRanks(entries)
+    local rank, n
+    for _, entry in ipairs(entries) do
+        local r = Field.Rank(entry.skill) or 0
+        if r ~= rank then
+            rank, n = r, 0
+            self:Section(RANKS[r] or TEXT_SCHOOLS, rankCounts[r])
+        end
+        n = n + 1
+        self:Add("field", page, entry, n % 2 == 0)
+    end
+    self:Fit(NO_EVENTS)
+end
+
 function Draw:Redraw()
     zones = zones or ZoneOrder()
     self:Clear()
     if filter == "bag" then return DrawBag(self) end
+    if filter == "journal" then return DrawJournal(self) end
     DrawBooks(self)
+end
+
+local function PaintNote()
+    local text = TEXT_KEPT
+    if filter ~= "journal" then
+        local _, total = Library.Progress()
+        text = total .. TEXT_FOR_FACTION
+    end
+    window.note.text:SetText(text)
+    window.note:SetWidth(math.max(1, math.ceil(window.note.text:GetStringWidth())))
 end
 
 local function ShowFilter(opening)
     local quests = QUEST_TABS[filter]
     scroll:SetShown(not quests)
+    window.pages:SetShown(filter == "journal")
     if quests then
         ns.Completo.Tabs.Show(filter, opening)
     else
         ns.Completo.Tabs.Hide()
+        PaintNote()
         view:Redraw()
     end
 end
@@ -149,6 +201,13 @@ local function PickFilter(key)
     Parts.PaintTabs(window.filters, filter)
     scroll:SetVerticalScroll(0)
     ShowFilter(false)
+end
+
+local function PickPage(key)
+    page = key
+    Parts.PaintTabs(window.pages, page)
+    scroll:SetVerticalScroll(0)
+    view:Redraw()
 end
 
 local function PlaceScroll(frame, left, top, footer)
@@ -165,7 +224,7 @@ local function Build()
     window.note = Parts.FooterNote(window, "")
     local left, top = CARD + Style.CONTENT_INSET, header + CARD + Style.WINDOW_PAD + TABS_TOP_GAP
     window.filters = Parts.Tabs(window, 1, FILTERS, PickFilter)
-    Parts.FitTabs(window.filters, FILTERS, TAB_MARGIN)
+    Parts.FitTabs(window.filters, FILTERS, TAB_MARGIN, WIDTH - 2 * left - SEARCH_MIN_W - SEARCH_GAP)
     window.filters:SetPoint("TOPLEFT", left, -top)
     local width = WIDTH - left - CARD - Style.SCROLLBAR - Style.CONTENT_INSET
     questScroll = ns.UI.SlimScroll(window)
@@ -173,6 +232,9 @@ local function Build()
     local room = WIDTH - 2 * left - window.filters:GetWidth() - SEARCH_GAP
     search:SetSize(math.max(SEARCH_MIN_W, math.min(SEARCH_W, room)), Style.SEARCH_H)
     search:SetPoint("RIGHT", window, "TOPRIGHT", -left, -(top + Style.TAB_H / 2))
+    window.pages = Parts.Tabs(window, 1, PAGES, PickPage)
+    Parts.FitTabs(window.pages, PAGES, TAB_MARGIN, search:GetWidth())
+    window.pages:SetPoint("RIGHT", search, "RIGHT")
     top = top + Style.TAB_H + Style.TAB_GAP + SCROLL_TOP_GAP
     scroll = ns.UI.SlimScroll(window)
     PlaceScroll(scroll, left, top, footer)
@@ -185,10 +247,9 @@ end
 local function Paint()
     window.backdrop:Paint(1)
     Parts.PaintTabs(window.filters, filter)
+    Parts.PaintTabs(window.pages, page)
     if QUEST_TABS[filter] then return end
-    local _, total = Library.Progress()
-    window.note.text:SetText(total .. TEXT_FOR_FACTION)
-    window.note:SetWidth(math.max(1, math.ceil(window.note.text:GetStringWidth())))
+    PaintNote()
 end
 
 local function IsShown()
@@ -199,6 +260,10 @@ local function OnApply()
     if not IsShown() or QUEST_TABS[filter] then return end
     Paint()
     view:Redraw()
+end
+
+local function OnFieldChanged(changed)
+    if IsShown() and filter == "journal" and (changed == nil or changed == page) then view:QueueRedraw() end
 end
 
 function ns.OpenDiscoveryWindow(tab)
@@ -214,4 +279,5 @@ function ns.ToggleDiscoveryWindow(tab)
     if IsShown() and (not tab or tab == filter) then window:Hide() else ns.OpenDiscoveryWindow(tab) end
 end
 
+Field.OnChange(OnFieldChanged)
 hooksecurefunc(ns, "Apply", OnApply)

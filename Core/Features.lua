@@ -159,6 +159,7 @@ ns.FEATURES = {
         nearbySound = false,
         bagTracker = false,
         bagMapPins = false,
+        fieldJournal = false,
     },
     completo = {
         enabled = false,

@@ -13,6 +13,7 @@ local S = ns.UI.ModuleSettings("discovery", {
     trackerAlpha = 1,
     bagTracker = F.bagTracker, bagTrackerScale = 1, bagTrackerAlpha = 1, bagMapPins = F.bagMapPins,
     bagMapPinSize = 20,
+    fieldJournal = F.fieldJournal,
 })
 ns.DiscoverySettings = S
 

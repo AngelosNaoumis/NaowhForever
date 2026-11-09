@@ -86,10 +86,11 @@ local MODULES = {
       addon = "NaowhForever_Discovery",
       open = "ToggleDiscoveryWindow",
       command = "discovery", short = "Discovery", icon = "Interface\\Icons\\INV_Misc_Book_07",
-      subtitle = "Library books, the Cozy Sleeping Bag, and every quest and rare by zone.",
+      subtitle = "Library books, the Cozy Sleeping Bag, a journal of your fish, herbs and dishes, and every quest and rare by zone.",
       tabs = {
           { name = "Library Books", reuse = true },
           { name = "Sleeping Bag", reuse = true },
+          { name = "Field Journal", reuse = true },
           { name = "Quest List", reuse = true },
           { name = "Rares", reuse = true },
       } },
