@@ -12,13 +12,33 @@ local IN, PRICE_W, COUNT_W, BAR_IN, BAR_THICK = 10, 170, 80, 12, 8
 local Ladder = { ROWS = ROWS, HEIGHT = HEAD_H + ROWS * ROW_H }
 Market.Ladder = Ladder
 
+local function RowEnter(row)
+    row.hover:SetShown(row.pick ~= nil)
+end
+
+local function RowLeave(row)
+    row.hover:Hide()
+end
+
+local function RowClick(row)
+    if row.pick then row:GetParent().onPick(row.pick) end
+end
+
 local function NewRow(ladder, i)
-    local row = CreateFrame("Frame", nil, ladder)
+    local row = CreateFrame(ladder.onPick and "Button" or "Frame", nil, ladder)
     row:SetHeight(ROW_H)
     row:SetPoint("TOPLEFT", 0, -(HEAD_H + (i - 1) * ROW_H))
     row:SetPoint("RIGHT")
     row.fill = ns.Solid(row, "BACKGROUND", T.accent, St.PICKED_FILL)
     row.fill:SetAllPoints()
+    if ladder.onPick then
+        row.hover = ns.Solid(row, "BACKGROUND", T.fg, St.ROW_HOVER)
+        row.hover:SetAllPoints()
+        row.hover:Hide()
+        row:SetScript("OnEnter", RowEnter)
+        row:SetScript("OnLeave", RowLeave)
+        row:SetScript("OnClick", RowClick)
+    end
     row.price = ns.Font(row, St.TEXT_SIZE, nil, T.fg)
     row.price:SetPoint("LEFT", IN, 0)
     row.price:SetWidth(PRICE_W)
@@ -40,6 +60,8 @@ local function PaintRow(row, rung, most)
     row.price:SetText(Parts.Coins(rung.price) .. (rung.label or ""))
     row.count:SetText(rung.countText or rung.count)
     row.fill:SetShown(rung.lit == true)
+    row.pick = rung.pick
+    if row.hover then row.hover:SetShown(row.pick ~= nil and row:IsMouseOver()) end
     local room = row:GetWidth() - PRICE_W - COUNT_W - BAR_IN * 2
     row.bar:SetWidth(math.max(1, room * rung.count / most))
     local tint = rung.lit and T.accent or T.muted
@@ -59,8 +81,9 @@ local function SetStatus(ladder, text)
     ladder.status:SetText(text)
 end
 
-function Ladder.New(parent, title)
+function Ladder.New(parent, title, onPick)
     local ladder = CreateFrame("Frame", nil, parent)
+    ladder.onPick = onPick
     ladder:SetHeight(Ladder.HEIGHT)
     ns.Solid(ladder, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()
     ns.Border(ladder, St.BORDER_RGB)
@@ -81,6 +104,6 @@ function Ladder.Rung(rungs, n)
         rung = {}
         rungs[n] = rung
     end
-    rung.label, rung.countText, rung.lit = nil, nil, false
+    rung.label, rung.countText, rung.lit, rung.pick = nil, nil, false, nil
     return rung
 end

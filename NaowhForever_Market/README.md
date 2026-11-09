@@ -115,7 +115,8 @@ NaowhForever_Market/
 - Selling's Undercut sets how far under the cheapest listing that is not yours the price goes: a step
   (Smallest Step, the default, as before), a silver (One Silver: 100 copper on a commodity, the same as a
   step on an item) or nothing (Match the Cheapest). Up and Down step to the same distance under each
-  listing. A price that lands on the cheapest listing, chosen or because a step under it would go under
+  listing, and clicking a listing on Sell's ladder goes straight to its rung; one that is all yours is
+  matched. A price that lands on the cheapest listing, chosen or because a step under it would go under
   one step, says it matches.
 - With no listings and no scan price, an item is priced as Blizzard's sell frame prices it: its
   vendor price times `DEFAULT_AUCTION_PRICE_MULTIPLIER`, rounded up to a silver.
@@ -351,3 +352,5 @@ Away from the auction house:
 44. Set Selling's Undercut to Match the Cheapest: Sell prices at the cheapest listing that is not yours and
     says it matches it; Up and Down step between the listings' prices. One Silver puts a commodity a silver
     under, and gear a silver under as before.
+45. On Sell, hovering a listing other than your post lights it; clicking it moves your price to that
+    listing's rung (where Up and Down would land) and your post onto the ladder beside it.

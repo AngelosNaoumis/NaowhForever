@@ -137,9 +137,9 @@ local function Reason(entry, price, why, ref)
     return REASONS[why]:format(Coins(ref))
 end
 
-local function Fill(n, price, count, own, mine)
+local function Fill(n, price, count, own, mine, listing)
     local rung = Ladder.Rung(display, n)
-    rung.price, rung.count, rung.lit = price, count, mine
+    rung.price, rung.count, rung.lit, rung.pick = price, count, mine, listing
     rung.label = mine and TEXT_YOUR_POST or (own > 0 and TEXT_YOURS or nil)
 end
 
@@ -154,7 +154,7 @@ local function LadderRows(price, count)
         end
         if n >= LADDER_ROWS then break end
         n = n + 1
-        Fill(n, row.price, row.quantity, row.own, false)
+        Fill(n, row.price, row.quantity, row.own, false, i)
     end
     if not placed then
         n = math.min(n, LADDER_ROWS - 1) + 1
@@ -427,6 +427,13 @@ local function PriceDown()
     if entry and Sell.StepPrice(entry, false) then Page.Draw() end
 end
 
+local function ListingPicked(i)
+    local entry = Sell.Focus()
+    if not entry then return end
+    Sell.PriceAt(entry, i)
+    Page.Draw()
+end
+
 local function Posted(key, count, price, ok)
     if not ok then
         failed = true
@@ -486,7 +493,7 @@ local function BuildHead()
 end
 
 local function BuildLadder()
-    ladder = Ladder.New(content, TEXT_LADDER)
+    ladder = Ladder.New(content, TEXT_LADDER, ListingPicked)
     ladder:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SECTION_GAP)
     ladder:SetPoint("RIGHT")
 end

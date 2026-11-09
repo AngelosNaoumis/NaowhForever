@@ -149,6 +149,11 @@ function Sell.StepPrice(entry, up)
     return best ~= nil
 end
 
+function Sell.PriceAt(entry, i)
+    local row = Listings.rows[i]
+    priceSet[entry.key] = row.quantity > row.own and Floor(entry, row.price - Undercut(entry)) or row.price
+end
+
 function Sell.Quantity(entry)
     return math.min(quantitySet[entry.key] or entry.count, entry.count)
 end
