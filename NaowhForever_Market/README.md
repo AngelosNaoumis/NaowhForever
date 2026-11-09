@@ -130,7 +130,9 @@ NaowhForever_Market/
   `itemClassFilters`, alone or with a name. The WoW Token category is left out: it is bought another way.
   A list longer than the game's first page asks for the next one (`RequestMoreBrowseResults`) when
   scrolled within `MORE_ROWS` of its end, as Blizzard's list does, and the page arrives with
-  `AUCTION_HOUSE_BROWSE_RESULTS_ADDED`. The throttle freeing, another item's
+  `AUCTION_HOUSE_BROWSE_RESULTS_ADDED`. A result row's tooltip is the item from
+  `GetItemKeySampleLink`, or `SetItemKey` when there is no sample, as Blizzard's own auction house does
+  on Forever; Shopping List and Favourites rows show the plain item. The throttle freeing, another item's
   data arriving or an error while not buying redraw nothing: the page rebuilds Professions' whole
   shopping plan on each draw, and the throttle frees after every message, Blizzard's own included.
 - A commodity is bought in two presses, each a hardware event: the first asks the game for a price
@@ -318,3 +320,5 @@ Away from the auction house:
 38. Buy's category menu has the game's categories (Weapons, Armor, Containers, ...); picking one, or All
     inside one, lists what is for sale there without a name, and a name then searches only that category.
 39. A big category (Armor, Trade Goods) lists more as you scroll to its end.
+40. Hovering a Buy result, a Shopping List row or a Favourite shows the item's tooltip, with Shift comparing
+    gear to what you wear.

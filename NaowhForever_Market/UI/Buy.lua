@@ -105,12 +105,28 @@ local function Rows(list, count, pool, new, paint, height)
     list:SetHeight(math.max(1, y))
 end
 
+local function ItemTip(row)
+    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+    local key = row.itemKey
+    local link = key and C_AuctionHouse.GetItemKeySampleLink(key)
+    if link then
+        GameTooltip:SetHyperlink(link)
+    elseif key then
+        GameTooltip:SetItemKey(key.itemID, key.itemLevel, key.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(key))
+    else
+        GameTooltip:SetItemByID(row.item)
+    end
+    GameTooltip:Show()
+end
+
 local function RowEnter(row)
     row.hover:Show()
+    ItemTip(row)
 end
 
 local function RowLeave(row)
     row.hover:Hide()
+    GameTooltip:Hide()
 end
 
 local function NewListRow(parent, icon, onClick)
