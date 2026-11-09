@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Please test
+
+New and worth a try. Tell us on Discord how they work for you.
+- BiS List: the Leveling tab has your spec's best gear at levels 30, 40, 50 and 60 for your side.
+  Load one and it becomes your list for that spec. Pre-raid BiS and raid BiS lists are coming soon.
+- Fishing: One-Key Fishing (QoL > Loot & Items, off by default) casts and reels in with one key, and
+  can put on your best lure and fishing gear first. Louder Splash, beside it, makes the splash
+  easier to hear. New in The Market, Farm ranks the zones to fish by what you'd catch an hour and
+  puts the pools on the map.
+- The Market (Adventure, off by default; then /market opens it): Naowh's own auction house. At an
+  auctioneer it lists your bags most valuable first and posts each item a step under the cheapest
+  listing with Space. My Auctions shows what has been undercut, and Buy searches by name or
+  category.
+- The Market with Professions: Crafts prices what your characters' recipes make from your bags, and
+  Add to Queue puts a craft in the Craft Queue and what it still needs on your Shopping List, which
+  Buy then shops for. Farm finds zones for Herbalism, Mining, Skinning and Fishing with a loop to
+  follow by waypoint, and Last Run records what each run made. Prices come with every update, so
+  tooltips, Professions and The Market have them before you scan.
+- Group Finder (Utilities, off by default): Browse picks its dungeon from a menu, each group takes
+  two lines so more fit, Leader's Zone shows where each group's leader is, and the game's Group
+  Finder key (I) can open it.
+
 ## 1.2.18
 
 ### Added
