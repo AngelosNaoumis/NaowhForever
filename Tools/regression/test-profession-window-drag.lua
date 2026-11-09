@@ -1,7 +1,8 @@
 -- Run with Lua 5.1 from the repository root: the Professions window can be dragged. Until it
 -- has been, it opens on Blizzard's window as before; once it has, Blizzard's invisible window is
 -- moved to where it was left, never in combat, and this one sits on it. Blizzard's window is never
--- anchored to this one, which would make it protected.
+-- anchored to this one, which would make it protected. What hangs off its edges, the profession tabs
+-- on either side and the docked Shopping List, is brought back on screen.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -25,17 +26,21 @@ local function Frame(name)
     function f:IsShown() return self.shown end
     function f:GetLeft() return self.left end
     function f:GetTop() return self.top end
+    function f:GetBottom() return self.bottom end
+    function f:GetRight() return self.right end
     function f:GetEffectiveScale() return self.scale or 1 end
     return f
 end
 
-local settings, combat = {}, false
+local settings, combat, docked = {}, false, nil
 local pf, ui, win = Frame("pf"), Frame("UIParent"), Frame("win")
 local env = {
     S = { Get = function(k) return settings[k] end, Set = function(k, v) settings[k] = v end },
     InCombatLockdown = function() return combat end,
     ProfessionsFrame = pf,
     UIParent = ui,
+    EMPTY = {},
+    ns = { DockedShoppingList = function() return docked end },
 }
 env._G = env
 local fn = assert(loadstring(chunk))
@@ -143,5 +148,80 @@ check("combat start ends a drag on the protected window", ended == 1 and queued 
 protected = false
 OnEvent(nil, "PLAYER_REGEN_DISABLED")
 check("a drag on an unprotected window carries on into combat", ended == 1 and queued == 0)
+
+-- Fitting to the screen: the profession tabs (on either edge) and the docked Shopping List are kept on
+-- a 1920 by 1080 screen by moving the window, and Blizzard's with it, just enough.
+local fitEnd = assert(source:find("\nend\n", assert(source:find("function Drag.Fit()", first, true)), true))
+local fitFn = assert(loadstring("local win\n" .. source:sub(first, fitEnd + 4)
+    .. "return function(w) win = w end, Drag"))
+local function Box(left, bottom, w, h, scale)
+    local box = Frame("box")
+    box.left, box.top, box.scale = left, bottom + h, scale
+    function box:GetRight() return self.left + w end
+    function box:GetBottom() return self.top - h end
+    return box
+end
+function ui:GetWidth() return 1920 end
+function ui:GetHeight() return 1080 end
+setfenv(fitFn, getfenv(fn))
+local SetFitWin, FitDrag = fitFn()
+env.savedTabPoints = {}
+env.FIT_SLACK = tonumber(assert(source:match("local FIT_SLACK = (%d+)")))
+local function Fit(winLeft, winBottom, tabLeft, tabBottom, tabScale)
+    settings.windowPos = nil
+    local w = Box(winLeft, winBottom, 800, 600)
+    w.ClearAllPoints, w.SetPoint = pf.ClearAllPoints, pf.SetPoint
+    pf.ProfessionsOverviewTab = Box(tabLeft, tabBottom, 50, 50, tabScale)
+    pf.rightProfessionTabs = { Box(tabLeft, tabBottom - 50, 50, 50, tabScale) }
+    SetFitWin(w)
+    FitDrag.Fit()
+    return settings.windowPos
+end
+
+check("all on screen: nothing moves", Fit(500, 300, 1300, 750) == nil)
+local pos = Fit(1100, 300, 1900, 750)
+check("tabs on the right edge past the screen: moved left until they show", pos and pos.x == 1070 and pos.y == 900)
+check("and Blizzard's window moved with it", pf.points[#pf.points][4] == 1070)
+pos = Fit(20, 300, -30, 750)
+check("tabs on the left edge past the screen: moved right until they show", pos and pos.x == 50 and pos.y == 900)
+check("the window itself may stay part off screen while its tabs show", Fit(-600, 300, 150, 750) == nil)
+pos = Fit(500, -400, 1300, -60)
+check("dragged down: moved up until the lowest tab shows", pos and pos.x == 500 and pos.y == 310)
+docked = Box(2102, 300, 380, 600)
+pos = Fit(1300, 300, 1250, 750)
+check("the docked Shopping List past the right edge: moved left until it shows", pos and pos.x == 738)
+docked = Box(1302, 300, 900, 600)
+pos = Fit(500, 300, 10, 750)
+check("too wide for the screen: the left edge wins", pos and pos.x == 490)
+docked = nil
+pf.rightProfessionTabs = nil
+check("hidden tabs do not count", (function()
+    settings.windowPos = nil
+    local w = Box(500, 300, 800, 600)
+    w.ClearAllPoints, w.SetPoint = pf.ClearAllPoints, pf.SetPoint
+    local hiddenTab = Box(1900, 750, 50, 50)
+    hiddenTab.shown = false
+    pf.ProfessionsOverviewTab = hiddenTab
+    SetFitWin(w)
+    FitDrag.Fit()
+    return settings.windowPos == nil
+end)())
+pos = Fit(20, 300, -15, 375, 2)
+check("a tab at another scale is measured in the window's units", pos and pos.x == 50)
+ui.scale = 0.5
+pos = Fit(100, 300, 930, 400)
+check("and the screen in them too, at another UI scale", pos and pos.x == 80 and pos.y == 900)
+ui.scale = nil
+check("less than a pixel past the edge, from rounding, moves nothing", Fit(1100, 300, 1870.4, 750) == nil)
+env.savedTabPoints = nil
+check("tabs not yet docked on the window, while it is still opening: nothing moves",
+    Fit(1100, 300, 1900, 750) == nil)
+env.savedTabPoints = {}
+FitDrag.pending = true
+check("a move waiting for combat to end: nothing is saved from the spot it has not left yet",
+    Fit(1100, 300, 1900, 750) == nil)
+FitDrag.pending = nil
+check("after combat the queued move is made, then the window fit", source:find(
+    "if Drag.pending then\n            Drag.Follow()\n            Drag.Fit()\n        end", 1, true))
 
 print(("profession window drag: %d checks passed"):format(checks))

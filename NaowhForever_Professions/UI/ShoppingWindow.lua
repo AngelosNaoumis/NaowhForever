@@ -460,6 +460,7 @@ local function Dock()
     window:ClearAllPoints()
     window:SetPoint("TOPLEFT", profession, "TOPRIGHT", DOCK_GAP, 0)
     window:SetPoint("BOTTOMLEFT", profession, "BOTTOMRIGHT", DOCK_GAP, 0)
+    window:SetClampedToScreen(false)
     window:SetFrameStrata(profession:GetFrameStrata())
     grip:Hide()
     RefreshDetach()
@@ -475,6 +476,7 @@ local function Float(left, top, height)
         Parts.Place(window, window.positionKey)
     end
     window:SetHeight(height)
+    window:SetClampedToScreen(true)
     window:SetFrameStrata(FLOAT_STRATA)
     grip:Show()
     RefreshDetach()
@@ -482,7 +484,10 @@ end
 
 local function OnDetach()
     if not docked then
-        if ProfessionOpen() then Dock() end
+        if ProfessionOpen() then
+            Dock()
+            ns.ProfWindowFit()
+        end
         return
     end
     Remember(false)
@@ -627,6 +632,11 @@ function ns.OpenShoppingList()
     window:Show()
     window.backdrop:Paint(1)
     RefreshDetach()
+    if docked then ns.ProfWindowFit() end
+end
+
+function ns.DockedShoppingList()
+    if window and docked and window:IsShown() then return window end
 end
 
 function ns.ShoppingListDockTo(frame)

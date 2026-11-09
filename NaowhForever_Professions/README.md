@@ -230,8 +230,18 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   icon's mask is turned half a turn instead: a MaskTexture with flipped tex coords hides the icon,
   and the side tab mask is the same top and bottom, so turning it mirrors it. Clicking a tab
   re-anchors every icon to its right-side spot, so a SetPoint hook mirrors it again.
-- With the tabs on the left, the window moves right just enough to keep them on screen: the game opens
-  it at the screen's left edge.
+- What hangs off the window is kept on screen: the profession tabs, on either edge, and the docked
+  Shopping List. On opening, when it widens, on letting go of a drag and when the Shopping List docks,
+  the window (and Blizzard's under it) moves just enough to bring them back, the left edge first when
+  they cannot all fit. Otherwise it may still be dragged mostly off screen, as our windows may
+  (`ns.AllowOffscreen`); a docked Shopping List is as tall as the window, so with it the whole window
+  stays on screen. The game opens it at the screen's left edge, where tabs on the left would be off.
+- It is fit only with the tabs docked on it, so not while it is still opening (a docked Shopping List
+  reopens in its OnShow, before it is moved to its place), and not while a move waits for combat to
+  end, which would save the spot it has not left yet; after combat it is moved, then fit. Less than
+  `FIT_SLACK` (a pixel) past an edge, left over from converting scales, does not count.
+- Docked, the Shopping List is not clamped to the screen, so it stays beside the window and is measured
+  where it is: clamped, the screen held it back over the window.
 - Dock Shopping List (`shoppingListDock`) is off by default. Off, the Shopping List is a window of its
   own and the tabs stay on the right edge. It is read once,
   when the profession window and the Shopping List are first built, so changing it asks for a reload.

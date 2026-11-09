@@ -24,9 +24,9 @@ local function Frame()
     return frame
 end
 
-local account, opened, moved
+local account, opened, moved, fits
 local function Setup(off)
-    account, opened, moved = { windowSizes = { shoppingList = { 380, 400 } } }, 0, 0
+    account, opened, moved, fits = { windowSizes = { shoppingList = { 380, 400 } } }, 0, 0, 0
     local window = Frame()
     window.positionKey = "shoppingListWindow"
     window.left, window.top, window.height = 600, 700, 520
@@ -34,6 +34,7 @@ local function Setup(off)
     function window:SetPoint(...) self.points[#self.points + 1] = { ... } end
     function window:SetHeight(h) self.height = h end
     function window:SetFrameStrata(s) self.strata = s end
+    function window:SetClampedToScreen(on) self.clamped = on end
     function window:GetLeft() return self.left end
     function window:GetTop() return self.top end
     function window:GetHeight() return self.height end
@@ -58,6 +59,7 @@ local function Setup(off)
             SetButtonText = function(b, t) b.text = t end,
             Tooltip = function() end,
             OpenShoppingList = function() opened = opened + 1 end,
+            ProfWindowFit = function() fits = fits + 1 end,
         },
     }, { __index = _G })
     local fn = assert(loadstring(chunk))
@@ -82,6 +84,7 @@ check("docked on the profession window's right edge, top and bottom",
     and p[2][1] == "BOTTOMLEFT" and p[2][3] == "BOTTOMRIGHT")
 check("docked: the profession window's strata, no size grip, the button says Detach",
     t.window.strata == "DIALOG" and not t.grip.shown and t.detach.shown and t.detach.text == "Detach")
+check("docked, it follows the profession window instead of the screen's clamp", t.window.clamped == false)
 t.OnDragStart(t.window)
 check("a docked panel does not drag", moved == 0)
 
@@ -92,12 +95,15 @@ check("Detach floats it where it was", not t.Docked() and #p == 1 and p[1][4] ==
 check("Detach saves that place", account.shoppingListWindow[3] == 600 and account.shoppingListWindow[4] == 700)
 check("floating: high strata, the size grip, the button says Dock",
     t.window.strata == "HIGH" and t.grip.shown and t.detach.text == "Dock")
+check("floating, it is clamped to the screen again", t.window.clamped == true)
 check("a detached panel does not come back with the profession window", account.shoppingListPanel == nil)
 t.OnDragStart(t.window)
 check("a floating window drags", moved == 1)
 
+fits = 0
 t.OnDetach()
 check("Dock puts it back beside the profession window", t.Docked() and t.window.points[1][2] == t.profession)
+check("and keeps the profession window and what hangs off it on screen", fits == 1)
 
 t.OnProfessionHide()
 check("closing the profession window hides the docked panel and remembers it",
@@ -145,6 +151,8 @@ local add = Read("NaowhForever_Professions/UI/ShoppingAdd.lua")
 check("off: the profession window is not hooked", add:find("if dock then ns.ShoppingListDockTo(win) end", 1, true))
 check("on or off: the Shopping List button takes its place on the title bar",
     add:find("TitleButtons.Add(opener, OPEN_ORDER)", 1, true))
+check("opening it docked keeps the profession window and what hangs off it on screen",
+    source:match("function ns%.OpenShoppingList%(%)(.-)\nend\n"):find("if docked then ns.ProfWindowFit() end", 1, true))
 check("Dock Shopping List is off by default",
     Read("Core/Features.lua"):find("\n        shoppingListDock = false,\n", 1, true))
 
