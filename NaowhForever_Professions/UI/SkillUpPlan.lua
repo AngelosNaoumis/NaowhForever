@@ -39,6 +39,7 @@ local TEXT_UNKNOWN = "?"
 local TEXT_TOTAL = ns.L("%d skill-ups: about %d crafts, %s")
 local TEXT_TOTAL_UNPRICED = ns.L("%d skill-ups: about %d crafts")
 local TEXT_UNPRICED = ns.L("Some steps have no price yet; scan the auction house to plan by cost.")
+local TEXT_VENDOR = ns.L("Costs count what each craft sells to a vendor for, not its auction house price.")
 local TEXT_MORE = ns.L("+%d more steps")
 local TEXT_QUEUE = ns.L("Queue Plan")
 local TEXT_LIST = ns.L("Add Plan to List")
@@ -198,7 +199,8 @@ local function FillFooter(plan)
     else
         pane.total:SetText(TEXT_TOTAL_UNPRICED:format(points, plan.crafts))
     end
-    pane.note:SetShown(not empty and not plan.priced)
+    pane.note:SetShown(not empty)
+    pane.note:SetText(plan.priced and TEXT_VENDOR or TEXT_VENDOR .. "\n" .. TEXT_UNPRICED)
     local queue = QueueOn()
     local action = pane.action
     action:SetShown(not empty and (queue or S.Get("shoppingList")) and true or false)
@@ -234,7 +236,6 @@ local function Build(mid)
     pane.note:SetPoint("LEFT", pane, "LEFT", Style.PANE_EDGE, 0)
     pane.note:SetPoint("RIGHT", pane, "RIGHT", -EDGE, 0)
     pane.note:SetJustifyH("LEFT")
-    pane.note:SetText(TEXT_UNPRICED)
 end
 
 function View.Render()

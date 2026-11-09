@@ -167,7 +167,10 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   chance. It orders them by cost per skill-up: the reagents, at the cheaper of a merchant and the last
   price scan and leaving out the ones you marked as had, less what the result sells to a vendor for,
   divided by the chance. Vendoring is what a levelling craft is sure to fetch; the auction house price is
-  left out because a craft made to level is often not worth listing. A recipe with an unpriced reagent, or
+  left out because a craft made to level is often not worth listing. The Skill-up Plan, which uses the
+  same cost, says so under its steps, and a recipe's Crafting Profit tooltip shows the vendor sale under
+  the auction one: a craft that vendors for more than its materials but lists for less read as a gain in
+  the plan and a loss on the recipe, with nothing saying why. A recipe with an unpriced reagent, or
   a result whose sell price has not loaded yet, comes after the priced ones, by chance. The cost is cached
   per recipe with the profit, until the next full draw. The unlearned groups keep their own order.
 - Skill-up Plan is off by default; its title bar button and its pane are made the first time they are

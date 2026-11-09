@@ -26,6 +26,7 @@ local TIP_VENDOR, TIP_AH = ns.L("  (vendor)"), "  (AH)"
 local TIP_NO_PRICE = ns.L("no price")
 local TIP_TO_BUY, TIP_MATERIALS = ns.L("Materials to buy"), ns.L("Materials")
 local TIP_SELLS = ns.L("Sells for, less 5% cut")
+local TIP_VENDOR_SELLS = ns.L("Sells to a vendor for")
 local TIP_HELP = ns.L("Vendor prices are the ones last seen at a merchant; the rest are the "
     .. "lowest buyouts at your last auction house scan. Uncheck a reagent you already have "
     .. "to leave it out of the cost.")
@@ -123,6 +124,9 @@ local function OnProfitEnter(self)
         gold.r, gold.g, gold.b, 1, 1, 1)
     if v.sale then
         GameTooltip:AddDoubleLine(TIP_SELLS, Text.Money(v.sale), gold.r, gold.g, gold.b, 1, 1, 1)
+    end
+    if v.vendor and v.vendor > 0 then
+        GameTooltip:AddDoubleLine(TIP_VENDOR_SELLS, Text.Money(v.vendor), gold.r, gold.g, gold.b, 1, 1, 1)
     end
     GameTooltip:AddLine(" ")
     GameTooltip:AddLine(TIP_HELP, T.muted.r, T.muted.g, T.muted.b, true)

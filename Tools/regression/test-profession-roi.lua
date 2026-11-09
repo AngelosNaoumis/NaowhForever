@@ -1,11 +1,13 @@
--- Run with Lua 5.1 from the repository root: Professions crafting ROI and its colour thresholds.
+-- Run with Lua 5.1 from the repository root: Professions crafting ROI and its colour thresholds, and a craft's two sales.
 local checks = 0
 local function Check(label, value) assert(value, label); checks = checks + 1 end
 
 local settings = { craftProfit = true, craftROI = false, roiGreyBelow = 10, roiGreenFrom = 30 }
 local prices = { [10] = 100, [20] = 250 }
 local vendorPrices = {}
+local sellPrices = {}
 _G.wipe = function(t) for key in pairs(t) do t[key] = nil end return t end
+_G.C_Item = { GetItemInfo = function(item) return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, sellPrices[item] end }
 _G.NaowhForever = {
     L = function(text) return text end,
     AuctionScanTime = function() return 1 end,
@@ -15,6 +17,8 @@ _G.NaowhForever = {
         Recipes = {
             Owned = function() return {} end,
             Reagents = function() return { { itemID = 10, need = 2 } } end,
+            OutputItem = function() return 20, 1 end,
+            ItemName = function() end,
         },
         Vendors = { Price = function(item) return vendorPrices[item] end },
     },
@@ -52,5 +56,14 @@ Check("a reagent with neither price has none", price == nil and from == nil)
 vendorPrices[30] = 5
 price, from = Prices.BuyPrice(30)
 Check("a vendor price alone is used without a buyout", price == 5 and from == Prices.FROM_VENDOR)
+
+prices[20], sellPrices[20] = 190, 300
+local v = Prices.CraftValue(1, 20, 1, { parts = {} })
+Check("a craft's value has its auction sale after the cut and its vendor sale", v.cost == 200 and v.sale == 180
+    and v.vendor == 300)
+Check("so the plan, which counts the vendor sale, can gain where the auction sale loses",
+    Prices.NetCost(1) == -100 and v.sale - v.cost == -20)
+sellPrices[20] = nil
+Check("a vendor sale not loaded yet is left out", Prices.CraftValue(1, 20, 1, { parts = {} }).vendor == nil)
 
 print(("test-profession-roi: %d checks passed"):format(checks))

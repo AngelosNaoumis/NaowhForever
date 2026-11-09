@@ -35,6 +35,13 @@ local function AfterCut(each, made)
     return math.floor(each * made * (1 - AH_CUT))
 end
 
+local function SellValue(output, made)
+    if not output then return 0 end
+    local each = select(SELL_PRICE, C_Item.GetItemInfo(output))
+    if each then return each * made end
+    R.ItemName(output)
+end
+
 local function CraftValue(recipeID, output, made, v)
     v.cost, v.missing, v.owned, v.output, v.made = 0, 0, 0, output, made or 1
     local ok, reagents = pcall(R.Reagents, recipeID)
@@ -58,6 +65,7 @@ local function CraftValue(recipeID, output, made, v)
     local each = output and AuctionPrice(output)
     v.each = each
     v.sale = each and AfterCut(each, v.made)
+    v.vendor = SellValue(output, v.made)
     return v
 end
 
@@ -90,13 +98,6 @@ local function RecipeProfit(recipeID, output, made)
         profitCache[recipeID] = profit
     end
     return profit or nil
-end
-
-local function SellValue(output, made)
-    if not output then return 0 end
-    local each = select(SELL_PRICE, C_Item.GetItemInfo(output))
-    if each then return each * made end
-    R.ItemName(output)
 end
 
 local function NetCost(recipeID)
