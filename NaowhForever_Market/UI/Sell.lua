@@ -65,6 +65,7 @@ local TEXT_DONE = ns.L("Everything is posted.")
 local TEXT_DONE_SUB = ns.L("%s listed this visit.")
 local REASONS = {
     under = ns.L("%s under the cheapest listing, %s."),
+    match = ns.L("Matches the cheapest listing, %s."),
     yours = ns.L("Yours is already the cheapest, at %s, so this matches it."),
     scan = ns.L("Nobody is selling this right now. Priced at your last scan, %s."),
     vendor = ns.L("Nobody is selling this and your scans have no price for it. Check the price before you post."),

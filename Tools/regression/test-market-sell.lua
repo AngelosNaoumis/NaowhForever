@@ -102,6 +102,56 @@ t.results.commodity[2770] = { { unitPrice = 1500, quantity = 3, numOwnerItems = 
 t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
 Check("and the undercut is a silver", (M.Sell.Price(M.Sell.Focus())) == 1400)
 
+t = Setup({ bags = { [0] = { Stack(2770, 20), Stack(9999, 1) } }, status = { [2770] = COMMODITY, [9999] = ITEM },
+    vendor = { [2770] = 5, [9999] = 2000 } })
+M = t.M
+M.Sell.Read()
+M.Listings.Start()
+M.Sell.Pick(2770)
+t.results.commodity[2770] = { { unitPrice = 5000, quantity = 3, numOwnerItems = 0 },
+    { unitPrice = 5200, quantity = 10, numOwnerItems = 0 } }
+t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
+local ore = M.Sell.Focus()
+Check("Smallest Step is the default undercut", M.Settings.Get("undercut") == "step" and (M.Sell.Price(ore)) == 4999)
+M.Settings.Set("undercut", "match")
+price, why, ref = M.Sell.Price(ore)
+Check("Match the Cheapest prices a commodity at the cheapest listing", price == 5000 and why == "match" and ref == 5000)
+Check("Up steps to the next listing's price", M.Sell.StepPrice(ore, true) and M.Sell.Price(ore) == 5200)
+Check("Down steps back to the cheapest, and no lower", M.Sell.StepPrice(ore, false) and M.Sell.Price(ore) == 5000
+    and not M.Sell.StepPrice(ore, false))
+M.Sell.SetPrice(2770, 0)
+M.Settings.Set("undercut", "silver")
+price, why, ref = M.Sell.Price(ore)
+Check("One Silver puts a commodity a silver under", price == 4900 and why == "under" and ref == 5000)
+Check("and steps to a silver under each listing", M.Sell.StepPrice(ore, true) and M.Sell.Price(ore) == 5100)
+M.Sell.SetPrice(2770, 0)
+t.results.commodity[2770] = { { unitPrice = 60, quantity = 3, numOwnerItems = 0 } }
+t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
+Check("a silver under a cheaper listing stops at one step", (M.Sell.Price(ore)) == 1)
+t.results.commodity[2770][1].numOwnerItems = 3
+t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
+price, why = M.Sell.Price(ore)
+Check("your own cheapest listing is still matched, never undercut", price == 60 and why == "yours")
+
+M.Sell.Pick("item:9999")
+t.results.item[9999] = { { buyoutAmount = 3000, quantity = 1, containsOwnerItem = false },
+    { buyoutAmount = 4000, quantity = 1, containsOwnerItem = false } }
+t.Fire("ITEM_SEARCH_RESULTS_UPDATED", { itemID = 9999 })
+local piece = M.Sell.Focus()
+Check("an item's One Silver is a silver under", (M.Sell.Price(piece)) == 2900)
+M.Settings.Set("undercut", "step")
+Check("the same as its Smallest Step", (M.Sell.Price(piece)) == 2900)
+M.Settings.Set("undercut", "match")
+price, why, ref = M.Sell.Price(piece)
+Check("Match the Cheapest prices an item at the cheapest listing", price == 3000 and why == "match" and ref == 3000)
+Check("and Up steps to the next listing's price", M.Sell.StepPrice(piece, true) and M.Sell.Price(piece) == 4000)
+M.Sell.SetPrice("item:9999", 0)
+M.Settings.Set("undercut", "step")
+t.results.item[9999] = { { buyoutAmount = 100, quantity = 1, containsOwnerItem = false } }
+t.Fire("ITEM_SEARCH_RESULTS_UPDATED", { itemID = 9999 })
+price, why = M.Sell.Price(piece)
+Check("a step under the cheapest that would go under one step matches it instead", price == 100 and why == "match")
+
 t = Setup({ bags = { [0] = { Stack(2770, 20) } }, status = { [2770] = COMMODITY }, vendor = { [2770] = 7 } })
 M = t.M
 M.Sell.Read()

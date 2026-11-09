@@ -8,6 +8,8 @@ local Settings = ns.Shared.Settings
 local ORDER_SELLING, ORDER_BAGS = 10, 20
 local TEXT_OFF = ns.L("Turn on The Market")
 local DURATIONS = { Market.C.DURATION_LABELS, Market.C.DURATIONS }
+local UNDERCUTS = { { match = "Match the Cheapest", step = "Smallest Step", silver = "One Silver" },
+    { "match", "step", "silver" } }
 
 local function On()
     return Market.On()
@@ -32,6 +34,8 @@ page:Card({
           help = "Space posts the item in front of you, S skips it, Up and Down step its price." },
         { key = "duration", label = "Duration", choice = DURATIONS, needs = On, why = Why,
           help = "How long your auctions run." },
+        { key = "undercut", label = "Undercut", choice = UNDERCUTS, needs = On, why = Why,
+          help = "How far under the cheapest listing The Market prices your items." },
     },
 })
 

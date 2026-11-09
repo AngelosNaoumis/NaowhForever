@@ -49,6 +49,13 @@ local function Floor(entry, price)
     return math.max(step, math.floor(price / step) * step)
 end
 
+local function Undercut(entry)
+    local undercut = S.Get("undercut")
+    if undercut == "match" then return 0 end
+    if undercut == "silver" then return C.SILVER end
+    return Step(entry)
+end
+
 local function Default(entry)
     local price = entry.vendor * DEFAULT_MULTIPLIER
     return math.max(C.SILVER, math.ceil(price / C.SILVER) * C.SILVER)
@@ -109,7 +116,10 @@ end
 
 function Sell.Suggest(entry)
     local other, own = Listings.Cheapest()
-    if other and not (own and own <= other) then return Floor(entry, other - Step(entry)), "under", other end
+    if other and not (own and own <= other) then
+        local price = Floor(entry, other - Undercut(entry))
+        return price, price < other and "under" or "match", other
+    end
     if own then return own, "yours", own end
     if entry.scan then return Floor(entry, entry.scan), "scan", entry.scan end
     return Default(entry), "vendor", entry.vendor
@@ -126,11 +136,11 @@ function Sell.SetPrice(key, price)
 end
 
 function Sell.StepPrice(entry, up)
-    local price, step = Sell.Price(entry), Step(entry)
+    local price, undercut = Sell.Price(entry), Undercut(entry)
     local best
     for i = 1, Listings.count do
         local row = Listings.rows[i]
-        local rung = Floor(entry, row.price - step)
+        local rung = Floor(entry, row.price - undercut)
         if row.quantity > row.own and (up and rung > price or not up and rung < price) then
             if not best or (up and rung < best) or (not up and rung > best) then best = rung end
         end

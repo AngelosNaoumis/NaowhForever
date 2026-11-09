@@ -112,6 +112,11 @@ NaowhForever_Market/
   which undercut by a copper, got "Internal auction error" while the same items posted from Blizzard's
   sell frame, which prices in silver ("AH prices must be in silver increments"). So an item that is not
   a commodity steps a silver and its price box has no copper.
+- Selling's Undercut sets how far under the cheapest listing that is not yours the price goes: a step
+  (Smallest Step, the default, as before), a silver (One Silver: 100 copper on a commodity, the same as a
+  step on an item) or nothing (Match the Cheapest). Up and Down step to the same distance under each
+  listing. A price that lands on the cheapest listing, chosen or because a step under it would go under
+  one step, says it matches.
 - With no listings and no scan price, an item is priced as Blizzard's sell frame prices it: its
   vendor price times `DEFAULT_AUCTION_PRICE_MULTIPLIER`, rounded up to a silver.
 - An item is the vendor's when a vendor pays at least what it makes on the auction house after the 5%
@@ -343,3 +348,6 @@ Away from the auction house:
 42. Typing in Reagents' search finds any reagent by name, carried or not.
 43. A piece of gear on Sell, with someone else's listed, is priced a whole silver under theirs and its
     price box has no copper; it posts without "Internal auction error". A commodity still steps a copper.
+44. Set Selling's Undercut to Match the Cheapest: Sell prices at the cheapest listing that is not yours and
+    says it matches it; Up and Down step between the listings' prices. One Silver puts a commodity a silver
+    under, and gear a silver under as before.
