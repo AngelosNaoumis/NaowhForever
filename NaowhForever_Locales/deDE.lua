@@ -7727,3 +7727,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = "Gerahmt"
 L["Framed Grouped"] = "Gerahmt, gruppiert"
 L["The bar's look on the Forever skin."] = "Das Aussehen der Leiste mit dem Forever-Skin."
+L["Forever"] = "Forever"
+L["Pin Style"] = "Pin-Stil"
+L["The pin's look on the Forever skin."] = "Das Aussehen des Pins mit dem Forever-Skin."

@@ -7723,3 +7723,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = "В рамке"
 L["Framed Grouped"] = "В рамках по группам"
 L["The bar's look on the Forever skin."] = "Вид панели в оформлении Forever."
+L["Forever"] = "Forever"
+L["Pin Style"] = "Стиль метки"
+L["The pin's look on the Forever skin."] = "Вид метки в оформлении Forever."

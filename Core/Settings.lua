@@ -302,7 +302,7 @@ local S = UI.ModuleSettings("qol", {
     aimTrainer = F.aimTrainer, aimMode = "hexakill", aimPulse = true, aimSound = true,
     aimSoundKey = "game:click", aimShare = true,
     dailyWord = F.dailyWord,
-    waypoints = F.waypoints, waypointShape = "hex", waypointScale = 1, waypointCard = true,
+    waypoints = F.waypoints, waypointShape = "hex", waypointStyle = "classic", waypointScale = 1, waypointCard = true,
     waypointCardAlpha = 0.85, waypointTime = true, waypointBeam = true, waypointFadeNear = 40, waypointArrive = 5,
     waypointEdge = true, waypointNav = true, waypointSound = "none", waypointHideGame = true,
     waypointRestedXP = F.waypointRestedXP, waypointPolestar = F.waypointPolestar,

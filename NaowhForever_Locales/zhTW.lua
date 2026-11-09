@@ -7727,3 +7727,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = "邊框"
 L["Framed Grouped"] = "分組邊框"
 L["The bar's look on the Forever skin."] = "Forever 外觀主題下頂部列的外觀。"
+L["Forever"] = "Forever"
+L["Pin Style"] = "標記樣式"
+L["The pin's look on the Forever skin."] = "Forever 外觀主題下標記的外觀。"

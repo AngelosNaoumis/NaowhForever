@@ -7946,3 +7946,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = true
 L["Framed Grouped"] = true
 L["The bar's look on the Forever skin."] = true
+L["Forever"] = true
+L["Pin Style"] = true
+L["The pin's look on the Forever skin."] = true

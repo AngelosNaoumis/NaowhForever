@@ -7723,3 +7723,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = "Enmarcada"
 L["Framed Grouped"] = "Enmarcada por grupos"
 L["The bar's look on the Forever skin."] = "La apariencia de la barra con el aspecto Forever."
+L["Forever"] = "Forever"
+L["Pin Style"] = "Estilo del marcador"
+L["The pin's look on the Forever skin."] = "La apariencia del marcador con el aspecto Forever."

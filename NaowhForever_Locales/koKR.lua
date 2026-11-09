@@ -7723,3 +7723,6 @@ L["Other players' zones in the Group Finder, and in chat if you turn that on."] 
 L["Framed"] = "테두리"
 L["Framed Grouped"] = "그룹별 테두리"
 L["The bar's look on the Forever skin."] = "Forever 스킨에서 바의 모양입니다."
+L["Forever"] = "Forever"
+L["Pin Style"] = "핀 스타일"
+L["The pin's look on the Forever skin."] = "Forever 스킨에서 핀의 모양입니다."

@@ -1305,6 +1305,16 @@ NaowhForever_QoL/
 - Nothing tracked means cleared or reached. A clear can leave the navigation frame up with no NAVIGATION_FRAME_DESTROYED, which used to leave the navigator showing.
 - The game's own marker keeps setting its frame's alpha, so Hide the Game's Marker fades its parts (`GAME_PARTS`) instead.
 - With no waypoint, Unlock Mode still shows the navigator on a sample, to place it by.
+- Pin Style (Forever skin only, Classic by default) draws the game's own waypoint art by atlas name
+  (`GAME.ART`, `GAME.ARROW`): the map's waypoint pin for Diamond, the tracked quest blob for Dot,
+  and `Navigation-Tracked-Arrow` for every arrow. None has a `-c60` twin, so plain `SetAtlas`
+  works, and they stay out of `FOREVER_ART_FILES`, which is pinned to one build. The game has no
+  hex marker, so Hex is drawn like Forever's frames instead: a dark rim, a bronze bevel lit from
+  above, a near-black body and a gold gem (the body turns gold on arrival). The art keeps its own
+  proportions and is never tinted (a vertex color would muddy its gold). The game's arrow points
+  up and our chevron right, so it turns a quarter less (`GAME.QUARTER`). Each piece is its own
+  texture, made the first time Forever is used, so Classic builds none of it and switching back
+  leaves no atlas on a drawn texture. A client without the arrow atlas keeps the drawn pin.
 
 ### Player History
 - `ns.PlayerHistory.Of(guid)` is nil or `{ name, classFile, firstSeen, lastSeen, groups, dungeons, raids, sessions = { { at, seconds, kind, place, instance } }, chats = { { at, mine, channel, text } } }`, lists newest first; `Note(guid)` is nil or `{ text, tag, at, name }`; also `On()`, `Forget(guid)`, `SetNote(guid, text, tag, name)` and `TAGS`. What they return is the saved data itself: read it, never change it. The Naowh Inspect panel reads it.

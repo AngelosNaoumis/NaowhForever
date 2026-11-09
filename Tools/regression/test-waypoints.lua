@@ -772,4 +772,170 @@ Check(polestarDismisses == 2 and dismissedDetails == polestarDetails,
 routeInfo, ns.JourneyDetails = nil, nil
 S.Set("waypoints", false)
 
+-- Pin Style on the Forever skin: the game's own waypoint art, set by atlas name, never tinted, in
+-- every state. Classic (the default) is today's pin and makes none of it.
+function Frame:SetAtlas(name) self.atlas = name end
+function Frame:SetVertexColor(r, g, b, a) self.tint = { r, g, b, a or 1 } end
+function Frame:SetSize(w, h) self.w, self.h = w, h end
+function Frame:SetGradient(orientation, from, to) self.gradient = { orientation, from, to } end
+env.CreateColor = function(r, g, b, a) return { r = r, g = g, b = b, a = a } end
+local GOLD = ns.Shared.Style.FOREVER_GOLD_RGB
+local GAME_ATLASES = { ["Navigation-Tracked-Arrow"] = true, ["Waypoint-MapPin-Tracked"] = true,
+    ["ui-questpoi-questnumber-supertracked"] = true }
+local function LoadPin(skin, atlases)
+    local values, S2 = {}, {}
+    function S2.Get(k)
+        if values[k] ~= nil then return values[k] end
+        if k == "waypointStyle" then return "classic" end
+        return defaults[k]
+    end
+    function S2.Set(k, v) values[k] = v end
+    local spec
+    local shared = setmetatable({ Settings = { Page = function()
+        return { Card = function(_, card) spec = card end }
+    end, Group = function(title) return { group = title } end } }, { __index = ns.Shared })
+    local ns2 = setmetatable({ foreverSkin = skin, QoLSettings = S2, Shared = shared }, { __index = ns })
+    local env2 = setmetatable({ NaowhForever = ns2,
+        C_Texture = { GetAtlasInfo = function(name) return atlases[name] and {} or nil end } }, { __index = env })
+    env2._G = env2
+    local from = #made + 1
+    local chunk2 = assert(loadstring(source, "NaowhForever_QoL/Interface/Waypoints.lua"))
+    setfenv(chunk2, env2)
+    chunk2()
+    return { S = S2, values = values, spec = spec, from = from }
+end
+local function RowAfter(spec, key)
+    for i, row in ipairs(spec.rows) do
+        if row.key == key then return spec.rows[i + 1] end
+    end
+end
+local function Near(a, b) return math.abs(a - b) < 1e-6 end
+
+local naowh = LoadPin(nil, GAME_ATLASES)
+Check(RowAfter(naowh.spec, "waypointShape").key == "waypointScale", "Naowh skin: no Pin Style row")
+local naowhPreview = naowh.spec.studio.new(NewFrame("Frame", UIParent))
+naowh.values.waypointStyle, naowh.values.waypointShape, naowh.values.waypointDownArrows = "forever", "diamond", true
+naowh.spec.studio.paint(naowhPreview, "world")
+Check(naowhPreview.pin.fill.shown and naowhPreview.pin.game == nil and naowhPreview.pin.downArt == nil
+    and naowhPreview.pin.down[1].shown, "and a saved Forever style draws today's pin and chevrons there")
+local settingsFile = assert(io.open("Core/Settings.lua", "rb"))
+Check(settingsFile:read("*a"):find('waypointStyle = "classic"', 1, true) ~= nil, "Classic is the shipped default")
+settingsFile:close()
+
+local fv = LoadPin(true, GAME_ATLASES)
+local style = RowAfter(fv.spec, "waypointShape")
+Check(style.key == "waypointStyle" and style.label == "Pin Style"
+    and table.concat(style.choice[2], ",") == "classic,forever" and style.choice[1].classic == "Classic",
+    "Forever skin: Pin Style right after Pin Shape, Classic then Forever")
+local stage = NewFrame("Frame", UIParent)
+local preview = fv.spec.studio.new(stage)
+local sample = preview.pin
+local function Paint(state) fv.spec.studio.paint(preview, state) end
+Paint("world")
+Check(sample.fill.shown and sample.ring.shown and sample.game == nil and fv.S.Get("waypointStyle") == "classic",
+    "Classic by default, today's drawn pin, and none of the game's art made")
+
+fv.values.waypointStyle, fv.values.waypointShape = "forever", "diamond"
+Paint("world")
+local game = sample.game
+Check(game and game.art.shown and game.art.atlas == "Waypoint-MapPin-Tracked" and game.art.w == 36
+    and game.art.h == 36 and game.art.tint == nil, "Diamond: the map's waypoint pin, square, untinted")
+Check(not sample.fill.shown and not sample.ring.shown and not sample.mark.shown and not game.rim.shown,
+    "the drawn shape and its centre dot stand down for the game's art")
+fv.values.waypointShape = "dot"
+Paint("world")
+Check(game.art.shown and game.art.atlas == "ui-questpoi-questnumber-supertracked" and game.art.w == 36
+    and game.art.h == 36, "Dot: the tracked quest blob")
+fv.values.waypointShape = "hex"
+Paint("world")
+Check(not game.art.shown and not sample.fill.shown and not sample.ring.shown and game.rim.shown
+    and game.rim.tint[1] < 0.1 and game.rim.w == 40, "Hex: the game has none, so ours, inside a dark rim")
+Check(game.bevel.shown and game.bevel.w == 36 and game.bevel.gradient[1] == "VERTICAL"
+    and game.bevel.gradient[3].r > game.bevel.gradient[2].r,
+    "a bronze bevel the pin's size, lit from above")
+Check(game.body.shown and Near(game.body.w, 36 * 0.72) and game.body.tint[1] < 0.15,
+    "a near-black body inside it")
+Check(game.gem.shown and Near(game.gem.w, 36 * 0.34) and game.gem.gradient[3].r == 1 and not sample.mark.shown,
+    "and a gold gem in the middle, in place of the centre dot")
+
+fv.values.waypointShape = "diamond"
+Paint("edge")
+Check(game.arrow.shown and game.arrow.atlas == "Navigation-Tracked-Arrow" and not sample.arrow.shown
+    and not game.art.shown and not sample.fill.shown, "Off Screen: the game's arrow alone")
+Check(Near(game.arrow.w, 28) and Near(game.arrow.h, 28 * 18 / 22) and Near(game.arrow.rotation, -math.pi / 2),
+    "at its own 22 by 18 shape, turned a quarter so it points the way the chevron did")
+fv.values.waypointShape = "hex"
+Paint("edge")
+Check(game.arrow.shown and not sample.fill.shown and not game.rim.shown and not game.bevel.shown
+    and not game.body.shown and not game.gem.shown, "the same for Hex")
+
+fv.values.waypointShape = "diamond"
+Paint("arrived")
+Check(game.art.shown and sample.check.shown and sample.check.tint[1] == GOLD.r,
+    "Arrived on Diamond: the pin with a gold check over its dark centre")
+fv.values.waypointShape = "dot"
+Paint("arrived")
+Check(game.art.shown and sample.check.shown and sample.check.tint[1] < 0.1, "on Dot, a dark check over the gold")
+fv.values.waypointShape = "hex"
+Paint("arrived")
+Check(game.body.tint[1] == GOLD.r and game.bevel.shown and not game.gem.shown and sample.check.shown
+    and sample.check.tint[1] < 0.1, "on Hex, the body goes gold under a dark check, as the fill does today")
+
+fv.values.waypointShape, fv.values.waypointDownArrows = "diamond", true
+Paint("world")
+Check(sample.downArt and #sample.downArt == 3 and sample.downArt[1].shown and sample.down == nil
+    and sample.downArt[1].atlas == "Navigation-Tracked-Arrow" and Near(sample.downArt[1].rotation, -math.pi)
+    and Near(sample.downArt[1].w, 14) and Near(sample.downArt[1].h, 14 * 18 / 22),
+    "Downward Arrows: the game's arrow, turned to point down, at its own shape")
+
+fv.values.waypointStyle = "classic"
+Paint("world")
+Check(sample.down and sample.down[1].shown and not sample.downArt[1].shown and not game.art.shown
+    and sample.fill.shown and sample.mark.shown, "back to Classic: the drawn pin and chevrons again")
+fv.values.waypointShape = "hex"
+Paint("world")
+Check(sample.fill.shown and not game.bevel.shown and not game.gem.shown and not game.rim.shown,
+    "and Classic's hex, none of Forever's pieces left showing")
+fv.values.waypointShape = "diamond"
+Paint("edge")
+Check(sample.arrow.shown and not game.arrow.shown, "and the drawn edge arrow")
+
+local plain = LoadPin(true, {})
+local plainPreview = plain.spec.studio.new(NewFrame("Frame", UIParent))
+plain.values.waypointStyle, plain.values.waypointShape = "forever", "diamond"
+plain.spec.studio.paint(plainPreview, "world")
+Check(plainPreview.pin.fill.shown and plainPreview.pin.game == nil, "a client without the art keeps the drawn pin")
+
+-- Live, on the Forever skin: the navigator bar's shape and turn arrow, and the behind-you cue.
+fv.values.waypointStyle, fv.values.waypointShape, fv.values.waypointDownArrows = "forever", "diamond", nil
+nav.frame, nav.valid, nav.clamped, nav.distance, nav.x, nav.y = navFrame, true, false, 312, 1100, 700
+tracking = 1
+ns.placedWaypoint = { title = "Mage Trainer", map = 88, x = 46.2, y = 49.8 }
+userWaypoint = { uiMapID = 88, position = { x = 0.462, y = 0.498 } }
+local function After(from, pred)
+    for i = from, #made do
+        if pred(made[i]) then return made[i] end
+    end
+end
+local boot2 = After(fv.from, function(fr) return fr.events.PLAYER_LOGIN end)
+boot2.scripts.OnEvent(boot2, "PLAYER_LOGIN")
+fv.S.Set("waypoints", true)
+local navBar2 = After(fv.from, function(fr) return fr.mover end)
+local cue2 = After(fv.from, function(fr) return fr.text == "Behind you" end).parent
+local driver2 = After(fv.from, function(fr) return fr.scripts.OnUpdate end)
+driver2.scripts.OnUpdate(driver2, 0)
+local navGame = navBar2.game
+Check(navGame and navGame.art.shown and navGame.art.atlas == "Waypoint-MapPin-Tracked" and navGame.art.w == 20
+    and not navBar2.fill.shown, "Navigator Bar: the game's pin in place of the shape")
+Check(navGame.arrow.shown and not navBar2.arrow.shown and Near(navGame.arrow.w, 14)
+    and Near(navGame.arrow.rotation, math.atan2(700 - 540, 1100 - 960) - math.pi / 2),
+    "its turn arrow the game's, turned a quarter from the way the spot lies")
+nav.x = 900
+driver2.scripts.OnUpdate(driver2, 0)
+Check(Near(navGame.arrow.rotation, math.atan2(700 - 540, 900 - 960) - math.pi / 2),
+    "and it keeps turning between repaints")
+Check(cue2.game and cue2.game.shown and not cue2.arrow.shown and Near(cue2.game.rotation, -math.pi)
+    and cue2.game.atlas == "Navigation-Tracked-Arrow", "the behind-you cue points down with the game's arrow")
+fv.S.Set("waypoints", false)
+
 print(("test-waypoints: %d checks passed"):format(checks))
