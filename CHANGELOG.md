@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.2.21
+
+### Added
+- The Market: a Key Binding card on its settings page, for a key that opens and closes its window.
+
+### Fixed
+- Professions: the blue outline on the docked profession tabs follows the tabs' shape instead of
+  sitting off them.
+- Professions: the profession tabs on the window's edge, and the docked Shopping List, can no longer
+  end up off screen; the window moves back until they show.
 
 ## 1.2.20
 
