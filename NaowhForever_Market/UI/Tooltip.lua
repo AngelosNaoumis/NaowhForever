@@ -115,7 +115,8 @@ local function OnItem(tooltip, data)
     if not On() then return end
     local id = data and data.id
     if not id or (issecretvalue and issecretvalue(id)) then return end
-    local _, link = tooltip:GetItem()
+    -- Comparison tooltips have no GetItem: it is GameTooltipDataMixin's, not TooltipDataHandlerMixin's.
+    local _, link = TooltipUtil.GetDisplayedItem(tooltip)
     if not link then return end
     Collect(tooltip, id, link)
     if count == 0 then return end

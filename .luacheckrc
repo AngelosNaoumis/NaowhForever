@@ -136,7 +136,7 @@ read_globals = {
     "StatusTrackingBarManager", "strlower", "strsplit", "strsub", "strtrim", "strupper",
     "SubZoneTextFrame", "TaxiGetNodeSlot", "TaxiNodeGetType", "TaxiNodeName", "TaxiNodeOnButtonEnter", "TaxiRequestEarlyLanding",
     "TextToSpeech_GetSelectedVoice", "time", "ToggleCalendar", "TomTom",
-    "TooltipDataProcessor", "TRADE_ENCHANT_SLOT", "TRADE_SKILLS", "TradeFrame", "TradeRecipientItem7ItemButton", "TSM_API", "UIErrorsFrame", "UiMapPoint",
+    "TooltipDataProcessor", "TooltipUtil", "TRADE_ENCHANT_SLOT", "TRADE_SKILLS", "TradeFrame", "TradeRecipientItem7ItemButton", "TSM_API", "UIErrorsFrame", "UiMapPoint",
     "TimerTracker", "UIParent", "UIWidgetTopCenterContainerFrame", "UNKNOWNOBJECT", "UnitAffectingCombat", "UnitAttackSpeed", "UnitCanAttack",
     "SpellIsTargeting", "SpellStopTargeting", "UnitCastingDuration", "UnitCastingInfo", "UnitChannelDuration", "UnitChannelInfo",
     "UnitClass", "UnitCreatureFamily", "UnitDetailedThreatSituation", "UnitExists", "UnitFactionGroup",

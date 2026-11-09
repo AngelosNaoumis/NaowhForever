@@ -194,8 +194,7 @@ local function PaintAction(row, data)
         ns.Tooltip(button, TEXT_BUY, TEXT_BUY_TIP:format(short, C_Item.GetItemNameByID(part) or ""))
     end
     button:SetShown(button.mode ~= nil or queued[data.recipe] == true)
-    button:SetEnabled(button.mode ~= nil)
-    button:SetAlpha(button.mode and 1 or St.DISABLED_ALPHA)
+    St.Enable(button, button.mode ~= nil)
 end
 
 local function PaintRow(row, data, i)

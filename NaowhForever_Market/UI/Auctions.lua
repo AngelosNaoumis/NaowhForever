@@ -186,8 +186,7 @@ function Page.Draw()
     header.sub:SetText(TEXT_SUB:format(#Auctions.list, undercut, Parts.Coins(listed, true))
         .. (sold > 0 and TEXT_SOLD:format(Parts.Coins(sold, true), C.SALES_WINDOW_DAYS) or ""))
     ns.SetButtonText(nextButton, TEXT_NEXT:format(undercut))
-    nextButton:SetEnabled(undercut > 0)
-    nextButton:SetAlpha(undercut > 0 and 1 or St.DISABLED_ALPHA)
+    St.Enable(nextButton, undercut > 0)
     DrawList()
 end
 

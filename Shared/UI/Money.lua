@@ -4,7 +4,7 @@ local Parts = ns.Shared.Parts
 
 local GOLD, SILVER = 10000, 100
 local BOX_H = 24
-local GOLD_W, SMALL_W = 64, 34
+local GOLD_W, SMALL_W = 64, 40
 local COIN, COIN_GAP, BOX_GAP = 12, 3, 8
 local COIN_DROP = 1
 local GOLD_LETTERS, SMALL_LETTERS = 6, 2

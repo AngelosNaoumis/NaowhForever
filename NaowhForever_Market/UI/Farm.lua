@@ -54,10 +54,7 @@ local function KindColor(kind)
     return kind == "herb" and St.HERB_RGB or St.ORE_RGB
 end
 
-local function Enable(button, on)
-    button:SetEnabled(on)
-    button:SetAlpha(on and 1 or St.DISABLED_ALPHA)
-end
+local Enable = St.Enable
 
 local function Panel(frame)
     ns.Solid(frame, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()
@@ -292,7 +289,10 @@ local function DrawMap()
     end
     canvas:SetShown(info ~= nil)
     mapHead:SetShown(picked.map ~= nil)
-    if not info then return end
+    if not info then
+        strip:Hide()
+        return
+    end
     DrawTiles(info, scale)
     local width, height = canvas:GetSize()
     DrawPins(width, height)

@@ -21,7 +21,7 @@ local LADDER_ROWS = Ladder.ROWS
 local REASON_H, INFO_SIZE, INFO_GAP = 20, 14, 6
 local FIELD_LABEL_H, FIELD_GAP, FORM_H = 16, 28, 42
 local QTY_BOX_W, QTY_LETTERS, OF_GAP = 60, 5, 6
-local DURATION_W = 240
+local DURATION_W = 270
 local POST_W, SKIP_W, POST_GAP = 260, 90, 8
 local BAR_H, PROGRESS_H, PROGRESS_GAP, HINT_W = 26, 4, 12, 300
 local QUEUE_HEAD_H, QUEUE_ROW_H, QUEUE_ICON, SECTION_H = 46, 42, 28, 24
@@ -100,10 +100,7 @@ local function QualityColor(entry)
     return Items.QualityColor(entry.itemID) or T.fg
 end
 
-local function Enable(button, on)
-    button:SetEnabled(on)
-    button:SetAlpha(on and 1 or St.DISABLED_ALPHA)
-end
+local Enable = St.Enable
 
 local function Panel(frame)
     ns.Solid(frame, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()

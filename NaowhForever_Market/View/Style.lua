@@ -17,3 +17,13 @@ ns.Market.Style = setmetatable({
     HERB_RGB = { r = 0.36, g = 0.78, b = 0.36 },
     ORE_RGB = { r = 0.87, g = 0.6, b = 0.34 },
 }, { __index = ns.Shared.Style })
+
+-- Faded, a primary button's dark label on its blue can't be read, so it turns light.
+function ns.Market.Style.Enable(button, on)
+    button:SetEnabled(on)
+    button:SetAlpha(on and 1 or ns.Market.Style.DISABLED_ALPHA)
+    if button._primary then
+        local c = on and ns.THEME.bg or ns.THEME.fg
+        button.label:SetTextColor(c.r, c.g, c.b, 1)
+    end
+end

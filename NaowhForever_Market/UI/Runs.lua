@@ -37,7 +37,7 @@ local TEXT_COUNT = "%s x%d"
 local TIME_FORMAT = "%H:%M"
 
 local page, head, title, sub, total, perHour, prev, nextButton, runText, chart, plot, cursor
-local scroll, list, empty, foot, footText, postButton
+local columns, scroll, list, empty, foot, footText, postButton
 local rows, haul, gridLines, gridLabels, xLabels, steps, dots = {}, {}, {}, {}, {}, {}, {}
 local at = 1
 local active = false
@@ -277,6 +277,7 @@ function Page.Draw()
     local run = runs[at]
     head:SetShown(run ~= nil)
     chart:SetShown(run ~= nil)
+    columns:SetShown(run ~= nil)
     scroll:SetShown(run ~= nil)
     foot:SetShown(run ~= nil)
     empty:SetShown(run == nil)
@@ -294,8 +295,7 @@ function Page.Draw()
     DrawChart(run)
     DrawHaul(run)
     local atAuction = Market.Window.AtAuction()
-    postButton:SetEnabled(atAuction)
-    postButton:SetAlpha(atAuction and 1 or St.DISABLED_ALPHA)
+    St.Enable(postButton, atAuction)
     ns.SetButtonText(postButton, atAuction and TEXT_POST or TEXT_POST_AWAY)
 end
 
@@ -380,7 +380,7 @@ local function BuildHaul()
     postButton = ns.Button(foot, TEXT_POST, POST_W, BUTTON_H, PostClicked)
     ns.PrimaryButton(postButton)
     postButton:SetPoint("RIGHT")
-    local columns = CreateFrame("Frame", nil, page)
+    columns = CreateFrame("Frame", nil, page)
     columns:SetPoint("TOPLEFT", chart, "BOTTOMLEFT", 0, -GAP)
     columns:SetPoint("TOPRIGHT", chart, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), -GAP)
     columns:SetHeight(COLUMNS_H)

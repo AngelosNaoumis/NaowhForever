@@ -4,7 +4,7 @@ Naowh's own auction house window. At an auctioneer it opens over Blizzard's: you
 valuable first, the item in front of you with the auction house's live listings, a price one step
 under the cheapest of someone else's, and a post line you work through with Space (post), S (skip)
 and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
-auctioneer. Away from it, `/market` or its key binding opens the same window on Farm: the zones
+auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens the same window on Farm: the zones
 where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
 loop through it you can follow by waypoint. Last Run records each herb and vein you gather and draws
 the run's gold over time with its haul; what you really gather prices Farm's nodes. Crafts shows what your characters' known recipes make
@@ -256,7 +256,7 @@ Away from the auction house:
 15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
 16. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
 17. A green or blue weapon or armour shows a Disenchant line with Professions loaded.
-18. `/market` opens The Market on Farm; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
+18. `/market` and `/nfmarket` open The Market on Farm; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
     and opens where you left it.
 19. After opening a profession, Crafts lists its recipes with prices; From My Bags shows what your bags
     make and the total it adds; All Recipes shows every priced one, by profit.

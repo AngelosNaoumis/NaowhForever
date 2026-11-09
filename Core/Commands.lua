@@ -174,8 +174,11 @@ end
 
 local function AddModuleCommand(mod)
     local key = SLASH_KEY .. mod.command:upper()
-    _G["SLASH_" .. key .. "1"] = COMMAND_PREFIX .. mod.command
-    if mod.alias then _G["SLASH_" .. key .. "2"] = COMMAND_PREFIX .. mod.alias end
+    local slashes = { COMMAND_PREFIX .. mod.command }
+    if mod.alias then slashes[#slashes + 1] = COMMAND_PREFIX .. mod.alias end
+    if mod.bare then slashes[#slashes + 1] = "/" .. mod.command end
+    -- The game reads SLASH_<key>1, 2, ... and stops at the first missing number.
+    for i, slash in ipairs(slashes) do _G["SLASH_" .. key .. i] = slash end
     SlashCmdList[key] = function(msg)
         local run = MODULE_ARGS[mod.command]
         msg = strtrim(msg or "")

@@ -74,10 +74,7 @@ local function KeyLook(itemKey)
     return info.itemName, ITEM_QUALITY_COLORS[info.quality] or T.fg, info.iconFileID
 end
 
-local function Enable(button, on)
-    button:SetEnabled(on)
-    button:SetAlpha(on and 1 or St.DISABLED_ALPHA)
-end
+local Enable = St.Enable
 
 local function Panel(frame)
     ns.Solid(frame, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()
