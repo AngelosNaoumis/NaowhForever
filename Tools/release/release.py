@@ -42,6 +42,11 @@ never move the next release's number. A beta's notes are "## Unreleased" as pend
 
 stamp: every TOC's "## Version" and ns.CODE_BUILD set to the version, nothing else (the beta
 commit, which is tagged but never pushed to main).
+
+prices: the next price release's version, "<newest release>-prices.<n>" (1.2.18 -> 1.2.18-prices.1,
+then 1.2.18-prices.2), or nothing while a beta of a later version is out. A price release is the
+newest release again with the auction prices of its hour, tagged on top of the release, not main; it moves no
+version number and adds no changelog line.
 """
 import argparse
 import json
@@ -68,6 +73,8 @@ PR_NUMBER = re.compile(r"\(#(\d+)\)$")
 NO_CHANGELOG = "no changelog"
 # The commits a release adds around itself; on their own they are nothing new to ship.
 RELEASE_CHORES = ("chore(release)", "chore: start the next changelog")
+# A price release's notes, in place of a changelog section.
+PRICES_NOTE = "- Auction house prices, from Blizzard's auction data of this hour."
 # A Discord embed's description holds 4096 characters; the purple of the release posts.
 DISCORD_LIMIT, DISCORD_COLOR = 4096, 10181046
 # A hard-wrapped list item's next line: indented, and not a new item.
@@ -293,6 +300,21 @@ def beta_version(root):
     return f"{base}-beta.{betas[-1][0] + 1 if betas else 1}"
 
 
+def prices_version(root):
+    """The next price release, "<newest release>-prices.<n>", or None while a beta of a later
+    version is out: CurseForge's beta channel takes the newest file, so it would go back."""
+    final = newest_tag(root, final=True)
+    if not final:
+        raise ReleaseError("no version tag yet")
+    tags = git(root, "tag", "--list").stdout.split()
+    if any("-beta." in tag and VERSION.fullmatch(tag) and version_key(tag)[:3] > version_key(final)[:3]
+           for tag in tags):
+        return None
+    pattern = re.compile(re.escape(final) + r"-prices\.(\d+)")
+    numbers = [int(match.group(1)) for tag in tags if (match := pattern.fullmatch(tag))]
+    return f"{final}-prices.{max(numbers, default=0) + 1}"
+
+
 def prepare(root, version=None, bump="patch", beta=None, fetch_body=pr_body):
     tag = newest_tag(root, final=True)
     if not version:
@@ -351,6 +373,8 @@ def notes(root, tag, fetch_body=pr_body):
     if not player and "-beta." in tag:
         # A nightly beta has no section of its own: everything since the last release.
         player = pending(root, fetch_body).splitlines()[1:]
+    if not player and "-prices." in tag:
+        player = [PRICES_NOTE]
     while player and not player[0].strip():
         player.pop(0)
     while player and not player[-1].strip():
@@ -491,6 +515,7 @@ def main(argv=None):
     commands.add_parser("add-unreleased")
     commands.add_parser("beta")
     commands.add_parser("stamp").add_argument("version")
+    commands.add_parser("prices")
     args = parser.parse_args(argv)
     try:
         if args.command == "prepare":
@@ -513,6 +538,8 @@ def main(argv=None):
             print(beta_version(".") or "")
         elif args.command == "stamp":
             stamp(".", args.version)
+        elif args.command == "prices":
+            print(prices_version(".") or "")
         else:
             start_next(".")
     except ReleaseError as error:

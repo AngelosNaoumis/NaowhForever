@@ -16,6 +16,7 @@ move-folders:
   NaowhForever/NaowhForever_QoL: NaowhForever_QoL
   NaowhForever/NaowhForever_JourneysData: NaowhForever_JourneysData
   NaowhForever/NaowhForever_SearchIndex: NaowhForever_SearchIndex
+  NaowhForever/NaowhForever_AuctionData: NaowhForever_AuctionData
 
 externals:
   Libs/LibDataBroker-1.1: https://github.com/tekkub/libdatabroker-1-1

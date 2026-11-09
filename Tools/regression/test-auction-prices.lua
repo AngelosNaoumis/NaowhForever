@@ -1,15 +1,17 @@
--- Run with Lua 5.1 from the repository root: shared replication results, settings lifecycle and crate prices.
+-- Run with Lua 5.1 from the repository root: shared replication results, settings lifecycle, crate prices and the
+-- release's prices.
 local Load = dofile("Tools/regression/load_files.lua")
 local checks = 0
 local function Check(label, value) assert(value, label); checks = checks + 1 end
 local function Noop() end
 
-local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn)
+local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn, feed, region)
     local values = { ahPrices = buttonOn, ahCapture = captureOn, ahCrates = cratesOn, ahTooltip = tooltipOn }
     local account, registered, timers, messages, posts = {}, {}, {}, {}, {}
     local now, requests, refreshes, total = 10000, 0, 0, 1001
     local allInfo = true
     local replicateHooks, reloads = 0, 0
+    local loads, skew, faction = 0, 0, "Alliance"
     local card, button
     local frame = {}
     function frame:RegisterEvent(event) registered[event] = true end
@@ -47,8 +49,22 @@ local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn)
         AuctionHouseFrame = withFrame and {} or nil,
         CreateFrame = function() return frame end,
         GetRealmName = function() return "Realm" end,
-        UnitFactionGroup = function() return "Alliance" end,
-        time = function() return now end,
+        GetCurrentRegion = function() return region or 1 end,
+        C_AddOns = { LoadAddOn = function(name)
+            if name == "NaowhForever_AuctionData" then
+                loads = loads + 1
+                ns.AuctionFeed = feed
+            end
+        end },
+        UnitFactionGroup = function() return faction end,
+        time = function() return now + skew end,
+        GetServerTime = function() return now end,
+        -- Lua 5.1's tonumber with a base stops at 2^32 - 1 on Windows, as strtoul does there.
+        tonumber = function(text, base)
+            local n = tonumber(text, base)
+            if base and n and n > 4294967295 then return 4294967295 end
+            return n
+        end,
         BreakUpLargeNumbers = tostring,
         C_CurrencyInfo = { GetCoinTextureString = function(amount) return amount .. "c" end },
         C_Timer = {
@@ -97,6 +113,10 @@ local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn)
     function t.Total(value) total = value end
     function t.Advance(seconds) now = now + seconds end
     function t.PostCalls() return #posts end
+    function t.Loads() return loads end
+    function t.Now() return now end
+    function t.Clock(seconds) skew = seconds end
+    function t.Faction(value) faction = value end
     function t.Profile(key, value) values[key] = value end
     function t.Priced(prices, ago)
         account.ahPrices = { ["Realm-Alliance"] = { prices = prices, time = now - ago } }
@@ -174,6 +194,7 @@ t.ExternalScan()
 Check("button alone ignores external scans", not t.Listening())
 t.Button().click()
 Check("manual scan requests and listens", t.Requests() == 2 and t.Listening())
+Check("and asks you to wait in chat", t.messages[#t.messages] == "Naowh AH: please wait while the auction house scan completes.")
 t.Run(60)
 Check("manual unanswered request reports timeout and keeps listening", t.messages[#t.messages]:find("no answer", 1, true) and t.Listening())
 t.Button().click()
@@ -196,7 +217,7 @@ t.Fire("REPLICATE_ITEM_LIST_UPDATE")
 t.Run(60)
 t.Flush()
 Check("timeout during a read neither stops it nor reports no answer", t.Refreshes() == 2
-    and #t.messages == printed + 1 and not t.messages[#t.messages]:find("no answer", 1, true))
+    and #t.messages == printed + 2 and not t.messages[#t.messages]:find("no answer", 1, true))
 
 t = Setup(false, false, true)
 t.Fire("AUCTION_HOUSE_SHOW")
@@ -238,7 +259,7 @@ local HERBS, PEACEBLOOM, SILVERLEAF, EARTHROOT = 248682, 2447, 765, 2449
 local function Headers(lines)
     local n = 0
     for _, line in ipairs(lines) do
-        if line.left == "Naowh AH" then n = n + 1 end
+        if line.left == "Market Price" then n = n + 1 end
     end
     return n
 end
@@ -284,5 +305,123 @@ t = Setup(true, false, true)
 t.Profile("ahTooltip", true)
 t.ns.Apply()
 Check("a profile with the item price on hooks it on apply", t.PostCalls() == 1)
+
+local function Base36(n)
+    local digits, text = "0123456789abcdefghijklmnopqrstuvwxyz", ""
+    repeat
+        local d = n % 36
+        text = digits:sub(d + 1, d + 1) .. text
+        n = (n - d) / 36
+    until n == 0
+    return text
+end
+
+local function Encode(each)
+    local ids, parts, last = {}, {}, 0
+    for id in pairs(each) do ids[#ids + 1] = id end
+    table.sort(ids)
+    for _, id in ipairs(ids) do
+        parts[#parts + 1] = Base36(id - last) .. ":" .. Base36(each[id])
+        last = id
+    end
+    return table.concat(parts, ",")
+end
+
+local FEED_TIME = 10000 - 3600
+local function Feed(houses)
+    local region = {}
+    for id, house in pairs(houses) do region[id] = { faction = house[1], prices = Encode(house[2]) } end
+    return { time = FEED_TIME, regions = { [1] = region } }
+end
+
+local WAILING = {}
+for i = 1, 25 do WAILING[1000 + i] = 100 + i end
+local OTHER = {}
+for i = 1, 25 do OTHER[1000 + i] = 500 + i end
+local houses = {
+    [110] = { "Alliance", { [10] = 40, [11] = 7, [1001] = 101 } },
+    [111] = { "Alliance", WAILING },
+    [113] = { "Horde", { [10] = 1, [11] = 1 } },
+    [119] = { "Alliance", { [10] = 60, [11] = 9 } },
+    [112] = { "Alliance", {} },
+}
+houses[111][2][10] = 50
+houses[111][2][11] = 8
+
+t = Setup(true, false, true, nil, nil, Feed(houses))
+Check("nothing loads the release's prices until a price is asked for", t.Loads() == 0)
+local price, at = t.ns.AuctionPrice(10)
+Check("with no scan of your own, an item's price is the middle of your faction's houses", t.Loads() == 1
+    and price == 50 and at == FEED_TIME)
+Check("the other faction's house and an empty house never count", t.ns.AuctionPrice(11) == 8)
+Check("the release's prices load once", t.Loads() == 1)
+Check("and are let go once read", t.ns.AuctionFeed == nil)
+Check("their time stands for the scan time, and the summary names them", t.ns.AuctionScanTime() == FEED_TIME
+    and t.ns.AuctionScanSummary() == "Prices from 1h ago: 27 items priced.")
+local list, listAt = t.ns.AuctionPriceList()
+Check("and the price list is theirs", list[10] == 50 and listAt == FEED_TIME)
+
+t = Setup(true, false, true, nil, nil, Feed(houses))
+t.Priced({ [10] = 999, [12] = 30 }, 7200)
+Check("a scan of your own that matches no house beats their middle, however old", t.ns.AuctionPrice(10) == 999
+    and t.ns.AuctionScanTime() == t.Now() - 7200 and t.ns.AuctionScanSummary() == "Last scan 2h ago: 2 items priced.")
+Check("which still prices what the scan does not list", t.ns.AuctionPrice(11) == 8)
+list, listAt = t.ns.AuctionPriceList()
+Check("and the price list holds both the same way", list[10] == 999 and list[11] == 8 and list[12] == 30
+    and listAt == FEED_TIME)
+Check("the same list comes back until a price changes", t.ns.AuctionPriceList() == list)
+t.Priced({ [10] = 999 }, 60)
+Check("a newer scan of your own wins", t.ns.AuctionPrice(10) == 999 and t.ns.AuctionScanTime() == t.Now() - 60)
+Check("and makes a new list", t.ns.AuctionPriceList() ~= list)
+
+local scan = {}
+for id, each in pairs(WAILING) do scan[id] = each end
+scan[10], scan[12] = 55, 30
+t = Setup(true, false, true, nil, nil, Feed(houses))
+t.Priced(scan, 7200)
+Check("a scan of your own finds your house among the faction's, whose newer prices win",
+    t.ns.AuctionPrice(10) == 50 and t.ns.AuctionPrice(1001) == 101 and t.ns.AuctionScanTime() == FEED_TIME)
+list = t.ns.AuctionPriceList()
+Check("and the price list keeps what only your scan has", list[10] == 50 and list[12] == 30)
+for id, each in pairs(OTHER) do scan[id] = each end
+houses[119][2] = OTHER
+houses[119][2][10] = 70
+t = Setup(true, false, true, nil, nil, Feed(houses))
+t.Priced(scan, 7200)
+Check("the house that matches the most of your prices is yours", t.ns.AuctionPrice(10) == 70)
+
+t = Setup(true, false, true, nil, true, Feed(houses))
+lines = t.Tooltip(1001)
+Check("the item price tooltip shows the release's price and its age", #lines == 1
+    and lines[1].right == "101c |cff808080each, 1h ago|r")
+
+t = Setup(true, false, true, nil, nil, Feed(houses), 3)
+Check("another region's prices are never used", t.ns.AuctionPrice(10) == nil and t.ns.AuctionScanTime() == nil)
+
+t = Setup(true, false, true, nil, nil, { time = 0, regions = {} })
+Check("the placeholder prices nothing", t.ns.AuctionPrice(10) == nil and t.Loads() == 1)
+
+t = Setup(true, false, true, nil, nil, Feed(houses))
+t.Faction(nil)
+Check("before your faction is known nothing loads", t.ns.AuctionPrice(10) == nil and t.Loads() == 0)
+t.Faction("Alliance")
+Check("and the release's prices load once it is", t.ns.AuctionPrice(10) == 50 and t.Loads() == 1)
+
+t = Setup(true, false, true, nil, nil, Feed({ [110] = { "Alliance", { [10] = 5000000000 } } }))
+Check("a price past 32 bits reads whole on Windows", t.ns.AuctionPrice(10) == 5000000000)
+
+t = Setup(true, false, true, true, nil, Feed({ [110] = { "Alliance", { [PEACEBLOOM] = 10, [SILVERLEAF] = 8 } } }))
+lines = t.Tooltip(HERBS)
+Check("crate prices alone from the release name them, not a scan", Headers(lines) == 1
+    and lines[1].right == "Prices from 1h ago")
+
+t = Setup(true, false, true)
+t.Clock(-3 * 3600)
+t.Fire("AUCTION_HOUSE_SHOW")
+t.Button().click()
+t.Fire("REPLICATE_ITEM_LIST_UPDATE")
+t.Flush()
+Check("a scan carries the realm's time, so a PC clock hours off still compares right with the release's",
+    t.ns.AuctionScanTime() == t.Now())
 
 print("auction prices: " .. checks .. " checks passed")

@@ -377,6 +377,7 @@ env = {
     wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
     GetTime = function() return now end,
     time = function() return now end,
+    GetServerTime = function() return now end,
     C_Timer = {
         After = function(d, fn)
             timerCount = timerCount + 1

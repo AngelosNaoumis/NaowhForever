@@ -306,6 +306,39 @@ class ReleaseTest(unittest.TestCase):
         self.assertIn("### Fixed\n- A fix.", text)
         self.assertIn("## Commits since 1.0.0", text)
 
+    def test_prices_count_up_from_the_newest_release(self):
+        self.tag("1.0.0")
+        self.assertEqual(release.prices_version(self.root), "1.0.0-prices.1")
+        self.beta_off_main("1.0.0-prices.1")
+        self.assertEqual(release.prices_version(self.root), "1.0.0-prices.2")
+        self.commit("fix: one (#1)")
+        self.tag("1.0.1")
+        self.assertEqual(release.prices_version(self.root), "1.0.1-prices.1")
+
+    def test_no_prices_over_a_newer_beta(self):
+        self.tag("1.0.0")
+        self.commit("fix: one (#1)")
+        self.beta_off_main("1.0.1-beta.1")
+        self.assertIsNone(release.prices_version(self.root))
+        self.tag("1.0.1")
+        self.assertEqual(release.prices_version(self.root), "1.0.1-prices.1")
+
+    def test_prices_move_no_version(self):
+        self.tag("1.0.0")
+        self.beta_off_main("1.0.0-prices.1")
+        self.commit("fix: one")
+        self.assertEqual(release.beta_version(self.root), "1.0.1-beta.1")
+        self.assertEqual(release.prepare(self.root, bump="patch", beta=False, fetch_body=self.fetch({})),
+                         "1.0.1")
+
+    def test_prices_notes(self):
+        self.commit("chore(release): 1.0.0")
+        self.tag("1.0.0")
+        self.beta_off_main("1.0.0-prices.1")
+        text = release.notes(self.root, "1.0.0-prices.1", self.fetch({}))
+        self.assertIn("## What's new\n\n" + release.PRICES_NOTE, text)
+        self.assertIn("## Commits since 1.0.0", text)
+
     def test_body_entries(self):
         self.assertIsNone(release.body_entries(None))
         self.assertIsNone(release.body_entries("## Checklist\n- [x] Fixed: x\n"))

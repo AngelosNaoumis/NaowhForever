@@ -335,7 +335,7 @@ local function Estimate(materials, unpriced, vendorMaterials)
     est, missing = est + vendorEst, missing + vendorMissing
     local at = ns.AuctionScanTime and ns.AuctionScanTime()
     return TEXT_ESTIMATE:format(Text.Short(est),
-        at and ns.AuctionAge and (", " .. ns.AuctionAge(time() - at) .. TEXT_AGO) or TEXT_NO_SCAN,
+        at and ns.AuctionAge and (", " .. ns.AuctionAge(GetServerTime() - at) .. TEXT_AGO) or TEXT_NO_SCAN,
         missing > 0 and TEXT_MISSING:format(missing, unpriced) or "")
 end
 

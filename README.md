@@ -221,9 +221,23 @@ already says: the PRs' lines are added by the workflow.
   notes are `## Unreleased` as `pending` prints it. Betas post nothing to Discord, and a night
   with nothing new on `main` since the last release or beta tags nothing.
 - **Run workflow** with **beta** ticked tags tonight's beta at once.
+- **At 20:30 UTC** a price release: the newest release again, tagged
+  `<release>-prices.<n>` (after `1.0.6`: `1.0.6-prices.1`, `1.0.6-prices.2`, ...) on an empty
+  commit of its own on top of the release, not `main`, so nothing merged since goes out with it. Every tagged
+  release builds the auction prices of its hour before packaging (`NaowhForever_AuctionData`,
+  from Blizzard's auction data with the repository's `BLIZZARD_CLIENT_ID` and
+  `BLIZZARD_CLIENT_SECRET`), so the release channel gets new prices at 15:30 and 20:30, and the
+  beta channel at 22:00. It runs only between the daily release and the beta: CurseForge's beta
+  channel takes whichever file is newest, so a price release after a beta would take beta players
+  back to the release, and none goes out while a beta of a later version is out (a daily release
+  that failed). A price release goes to CurseForge only: on GitHub it would become the latest
+  release, which the desktop app and naowh.gg install and show. It adds no changelog line, so it
+  posts nothing to Discord or the website. It tags nothing if Blizzard sends no prices; a daily
+  release or beta that gets none ships the newest release's, with a warning.
+- **Run workflow** with **prices** ticked makes a price release at once.
 
-Betas never move the release's number: the next release counts from the newest version
-without a suffix.
+Betas and price releases never move the release's number: the next release counts from the
+newest version without a suffix.
 
 ## License
 

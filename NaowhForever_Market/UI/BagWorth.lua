@@ -145,7 +145,7 @@ local function Draw()
     total:SetText(TEXT_TOTAL:format(Parts.Coins(Worth.total, true)))
     local at = ns.AuctionScanTime and ns.AuctionScanTime()
     local age = ns.AuctionAge
-    note:SetText(at and age and TEXT_SCANNED:format(age(time() - at)) or TEXT_NO_SCAN)
+    note:SetText(at and age and TEXT_SCANNED:format(age(GetServerTime() - at)) or TEXT_NO_SCAN)
     card:SetHeight(PAD + HEAD_H + shown * ROW_H + GAP + St.SMALL_SIZE + PAD)
     card:SetParent(host)
     card:SetFrameStrata(host:GetFrameStrata())

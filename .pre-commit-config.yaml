@@ -66,6 +66,13 @@ repos:
         entry: 'SEARCH_INDEX = \{\s*$'
         files: ^NaowhForever_SearchIndex/SearchIndex\.lua$
 
+      # And the auction prices, the same way.
+      - id: auction-data-placeholder
+        name: auction data stays the placeholder
+        language: pygrep
+        entry: 'AuctionFeed = \{\s*$'
+        files: ^NaowhForever_AuctionData/Prices\.lua$
+
       - id: toc-files
         name: TOC files exist
         language: python

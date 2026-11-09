@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: |cff0091edNaowh|r Forever: Auction Data
+## Notes: Every auction house's prices at release, loaded when Auction Prices first needs a price.
+## Author: Naowh
+## Version: 1.2.18
+## Dependencies: NaowhForever
+## LoadOnDemand: 1
+## Group: NaowhForever
+## IconTexture: Interface\AddOns\NaowhForever\Core\Media\LogoAddon.tga
+
+AuctionData.xml

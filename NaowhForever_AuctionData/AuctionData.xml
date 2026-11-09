@@ -1,0 +1,4 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- AuctionData.xml: every auction house's prices at release. -->
+    <Script file="Prices.lua"/>
+</Ui>
