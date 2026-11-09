@@ -33,6 +33,9 @@ NaowhForever_Market/
   Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
   Runs.lua           your gathering runs, and what each node yields on average (Market.Runs)
   Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
+  Data/
+    Skinning.lua     the creatures you can skin, their loot and their camps, packed, from Tools/build/market_gather.py
+    Fishing.lua      what each zone's water catches, and the fishing pools, from Tools/build/market_gather.py
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)

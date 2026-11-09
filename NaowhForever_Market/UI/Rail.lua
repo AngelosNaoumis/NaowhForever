@@ -16,6 +16,7 @@ local NAV_ICONS = "Interface\\AddOns\\NaowhForever\\Core\\Media\\Navigation\\"
 local SKILLS = {
     { kind = "herb", name = ns.L("Herbalism"), icon = "Interface\\Icons\\Trade_Herbalism" },
     { kind = "ore", name = ns.L("Mining"), icon = "Interface\\Icons\\Trade_Mining" },
+    { kind = "skin", name = ns.L("Skinning"), icon = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01" },
 }
 local TEXT_SKILLS = ns.L("Your gathering")
 local TEXT_AWAY = ns.L("At an auctioneer")

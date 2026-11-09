@@ -13,6 +13,8 @@
     <Script file="Worth.lua"/>
     <Script file="Crafts.lua"/>
     <Script file="Runs.lua"/>
+    <Script file="Data\Skinning.lua"/>
+    <Script file="Data\Fishing.lua"/>
     <Script file="Farm.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Ladder.lua"/>

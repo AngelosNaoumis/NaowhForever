@@ -82,4 +82,57 @@ t.playerMap = 5
 F.Zone(2)
 Check("away from the zone the loop starts at its first stop", #F.loop == 1 and F.loop[1].id == SILVERLEAF)
 
+local BOAR, WOLF, CAT = 113, 69, 2042
+local LEATHER, HIDE = 2318, 783
+t.M.SKIN_CREATURES = { [BOAR] = { 5, 7, 100, "Stonetusk Boar" }, [WOLF] = { 18, 20, 200, "Timber Wolf" },
+    [CAT] = { 14, 16, 100, "Nightsaber" } }
+t.M.SKIN_LOOT = { [100] = { LEATHER, 100, 1, 1 }, [200] = { LEATHER, 50, 1, 3, HIDE, 50, 1, 1 } }
+F.camps = { [1] = { BOAR, 300, 300, 4 }, [3] = { WOLF, 500, 500, 6, CAT, 100, 100, 2 } }
+t.scan[LEATHER], t.scan[HIDE] = 40, 200
+skill.herb, skill.ore, skill.skin = 50, 0, 0
+F.Changed()
+zones = F.Zones()
+Check("beasts are left out until you can skin them", #zones == 2 and zones[1].stops == 2)
+skill.skin = 59
+F.Changed()
+zones = F.Zones()
+local one = {}
+for _, zone in ipairs(zones) do one[zone.map] = zone end
+Check("a camp adds its beasts at what one skinning is worth", one[1].stops == 3
+    and one[1].value == 2 * 9 + 2 * 19 + 4 * 38)
+Check("skinning needs one point up to level 10, ten a level to 20, then five times the level",
+    one[3] == nil)
+skill.skin = 60
+F.Changed()
+zones = F.Zones()
+one = {}
+for _, zone in ipairs(zones) do one[zone.map] = zone end
+Check("so level 16 asks 60, and a zone of only camps is listed", one[3] and one[3].stops == 1
+    and one[3].value == 2 * 38 and one[3].perHour > 0)
+Check("a camp's most valuable drop stands for it", one[3].items[1].item == LEATHER)
+skill.skin = 100
+F.Changed()
+zones = F.Zones()
+one = {}
+for _, zone in ipairs(zones) do one[zone.map] = zone end
+local wolf = 0.5 * 38 * 2 + 0.5 * 190
+Check("chances and counts make a skinning's worth", one[3].stops == 2 and one[3].value == 2 * 38 + 6 * wolf
+    and one[3].items[1].item == HIDE)
+t.ns.MarketSettings.Set("farmSkins", false)
+zones = F.Zones()
+Check("turning Beasts to skin off leaves the camps out", #zones == 2)
+t.ns.MarketSettings.Set("farmSkins", true)
+
+F.Zone(3)
+Check("a camp is a spot on the map, with its beasts", #F.spots == 2 and F.spots[1].kind == "skin"
+    and F.spots[1].count == 6 and F.spots[1].x == 0.5 and F.spots[1].value == 6 * wolf)
+Check("both camps are on the loop", #F.loop == 2 and F.loopPerHour > 0)
+stops = F.Stops("Map 3 loop")
+Check("its waypoints are named for the beast", stops[1][1] == "Timber Wolf" or stops[1][1] == "Nightsaber")
+Check("and a camp gives its beasts' levels", select(2, F.CreatureLevels(WOLF)) == 20)
+skill.skin = 60
+F.Zone(3)
+Check("a camp you cannot skin yet is shown but kept off the loop", #F.spots == 2 and #F.loop == 1
+    and F.loop[1].id == CAT)
+
 print("market farm: " .. checks .. " checks passed")

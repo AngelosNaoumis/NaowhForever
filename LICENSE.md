@@ -661,13 +661,27 @@ SOFTWARE.
 
 **Path**: NaowhForever_DungeonJournal/Data/Quests.lua and QuestChains.lua (dungeon quests, their
 required levels, sharing and one quest giver), and NaowhForever_DiscoveryData/Quests.lua (the races
-that hand in some quests, by way of Tools/data/completo_fixes.json), from
-https://github.com/JIVESCORP/eg-link-output-wowf, reduced to those facts
+that hand in some quests, by way of Tools/data/completo_fixes.json), and NaowhForever_Market/Data/Skinning.lua
+and Fishing.lua (what players skinned and fished, and the names, levels and kill spots of the creatures
+Forever added), from https://github.com/JIVESCORP/eg-link-output-wowf, reduced to those facts
 
 ### License
 
 Data from [Efficient Games](https://efficient.games), licensed under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Changed: only the facts above are used.
+
+## CMaNGOS classic-db
+
+**Path**: NaowhForever_Market/Data/Skinning.lua and Fishing.lua (the creatures that can be skinned, their
+levels and skinning loot, each zone's fishing catches and the fishing pools), NaowhForever_QoL/Interface/ScoutData.lua
+(creatures' abilities, armor, resistances, immunities and tameable beasts) and NaowhForever_DiscoveryData/Quests.lua
+(the levels, races, classes and prerequisites of dungeon, class and battleground quests), from
+https://github.com/cmangos/classic-db, reduced to those facts
+
+### License
+
+Data from [CMaNGOS](https://github.com/cmangos/classic-db), licensed under
+[GPL-3.0](https://www.gnu.org/licenses/gpl-3.0.html). Changed: only the facts above are used.
 
 ## JetBrains Mono
 

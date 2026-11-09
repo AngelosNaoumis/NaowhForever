@@ -1,4 +1,4 @@
--- Farm.lua: the Farm page: zones ranked for your skills, the chosen zone's map with its herbs and veins priced, and its loop.
+-- Farm.lua: the Farm page: zones ranked for your skills, the chosen zone's map with its herbs, veins and skinning camps priced, and its loop.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -10,7 +10,7 @@ local Farm, Spark = Market.Farm, Market.Spark
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local ZONES_W, PANE_GAP, HEAD_H, ZONE_ROW_H, ZONE_ICON, ZONE_ICONS = 250, 12, 46, 52, 16, 5
-local FILTER_H, FILTERS_H, TICK = 20, 72, 12
+local FILTER_H, FILTERS_H, TICK = 20, 92, 12
 local MAP_HEAD_H, STRIP_H, STRIP_ICON, SPARK_W, SPARK_H = 44, 74, 40, 200, 40
 local ROW_IN, GAP, SUB_GAP, BAR_H, SCROLL_IN = 8, 6, 4, 3, 4
 local PIN_MIN, PIN_GROW, PIN_RING = 10, 12, 2
@@ -19,7 +19,7 @@ local LAYER = 1
 local OPEN_W, LOOP_W = 110, 120
 local KV_W = 150
 local TEXT_BEST = ns.L("Best for You")
-local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d")
+local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d, Skinning %d")
 local TEXT_HOUR = ns.L("about %s an hour")
 local TEXT_MADE = ns.L("you made %s an hour")
 local TEXT_SUB = ns.L("Loop of %d stops, about %d minutes, about %s an hour, estimated")
@@ -29,10 +29,14 @@ local TEXT_LOOP = ns.L("Start Loop")
 local TEXT_LOOP_TIP = ns.L("Waypoints through the loop, nearest stop first, each placed when you reach the last.")
 local TEXT_LOOP_TITLE = ns.L("%s loop")
 local TEXT_HERBS, TEXT_VEINS, TEXT_LOCKED = ns.L("Herbs"), ns.L("Veins"), ns.L("Nodes I can't gather yet")
+local TEXT_SKINS = ns.L("Beasts to skin")
 local TEXT_NOT_READY = ns.L("Farm needs Quality of Life (Glimmer's herb and vein map) and Professions turned on.")
-local TEXT_NO_ZONES = ns.L("No zone has herbs or veins for your skills. Learn Herbalism or Mining, or turn on Herbs and Veins.")
-local TEXT_NEEDS = { herb = ns.L("Herbalism %d"), ore = ns.L("Mining %d") }
-local TEXT_REQUIRES = { herb = ns.L("Requires Herbalism %d"), ore = ns.L("Requires Mining %d") }
+local TEXT_NO_ZONES = ns.L("No zone has anything for your skills. Learn Herbalism, Mining or Skinning, or turn on what you gather below.")
+local TEXT_NEEDS = { herb = ns.L("Herbalism %d"), ore = ns.L("Mining %d"), skin = ns.L("Skinning %d") }
+local TEXT_REQUIRES = { herb = ns.L("Requires Herbalism %d"), ore = ns.L("Requires Mining %d"),
+    skin = ns.L("Requires Skinning %d") }
+local TEXT_CAMP = ns.L("%d here, level %d to %d")
+local TEXT_A_CAMP = ns.L("A camp")
 local TEXT_NODE = ns.L("About %s a node")
 local TEXT_PICKED = ns.L("Gathered %s")
 local TEXT_SCAN_PRICE = ns.L("at your last scan")
@@ -50,8 +54,10 @@ local active = false
 local Page = {}
 Market.Pages.farm = Page
 
+local KIND_RGB = { herb = St.HERB_RGB, ore = St.ORE_RGB, skin = St.SKIN_RGB }
+
 local function KindColor(kind)
-    return kind == "herb" and St.HERB_RGB or St.ORE_RGB
+    return KIND_RGB[kind]
 end
 
 local Enable = St.Enable
@@ -123,7 +129,7 @@ local function DrawZones()
     zoneList:SetHeight(math.max(1, y))
     zoneNote:SetShown(#zones == 0)
     zoneNote:SetText(Farm.Ready() and TEXT_NO_ZONES or TEXT_NOT_READY)
-    skillsText:SetText(TEXT_SKILLS:format(Farm.Skill("herb"), Farm.Skill("ore")))
+    skillsText:SetText(TEXT_SKILLS:format(Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin")))
     return zones
 end
 
@@ -163,9 +169,13 @@ end
 local function PinEnter(pin)
     local spot = pin.spot
     local G = ns.Glimmer
-    local node = G and G.NODES[spot.id]
+    local node = spot.kind ~= "skin" and G and G.NODES[spot.id]
     GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
-    GameTooltip:SetText(node and ns.L(node[3]) or "", 1, 1, 1)
+    GameTooltip:SetText(node and ns.L(node[3]) or Farm.CreatureName(spot.id), 1, 1, 1)
+    if spot.count then
+        local low, high = Farm.CreatureLevels(spot.id)
+        GameTooltip:AddLine(TEXT_CAMP:format(spot.count, low, high), 1, 1, 1)
+    end
     local need = (spot.can and TEXT_NEEDS or TEXT_REQUIRES)[spot.kind]:format(spot.need)
     local c = spot.can and T.muted or St.RED_RGB
     GameTooltip:AddLine(need, c.r, c.g, c.b)
@@ -274,6 +284,7 @@ function Page.DrawStrip()
     strip.have:SetText(have)
     strip.worth:SetText(Parts.Coins(Market.AfterCut(scan or 0) * have, true))
     strip.node:SetText(Parts.Coins(value, true))
+    strip.node.key:SetText(spot and spot.kind == "skin" and TEXT_A_CAMP or TEXT_A_NODE)
     strip.spark:Paint(item)
     local atAuction = Market.Window.AtAuction()
     strip.sell:SetShown(atAuction and have > 0)
@@ -399,7 +410,8 @@ local function BuildZones()
     box:SetHeight(FILTERS_H)
     NewFilter(box, "farmHerbs", TEXT_HERBS, 1)
     NewFilter(box, "farmVeins", TEXT_VEINS, 2)
-    NewFilter(box, "farmLocked", TEXT_LOCKED, 3)
+    NewFilter(box, "farmSkins", TEXT_SKINS, 3)
+    NewFilter(box, "farmLocked", TEXT_LOCKED, 4)
     zoneScroll = ns.UI.SlimScroll(zonePane)
     zoneScroll:SetPoint("TOPLEFT", 0, -HEAD_H)
     zoneScroll:SetPoint("BOTTOMRIGHT", box, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
@@ -419,6 +431,7 @@ local function KV(parent, label, row)
     key:SetText(label)
     local value = ns.Font(parent, SMALL_SIZE, nil, T.fg)
     value:SetPoint("TOPRIGHT", 0, -(row - 1) * (SMALL_SIZE + SUB_GAP * 2))
+    value.key = key
     return value
 end
 
