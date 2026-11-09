@@ -8,7 +8,8 @@ auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens th
 where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
 loop through it you can follow by waypoint. Last Run records each herb and vein you gather and draws
 the run's gold over time with its haul; what you really gather prices Farm's nodes. Crafts shows what your characters' known recipes make
-from your bags, priced from your last scan. Bag Worth puts what your
+from your bags, priced from your last scan, and Reagents what each reagent in them goes into, in every
+profession, and whether crafting it beats selling it. Bag Worth puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it and what it crafts into.
 Built on [`Shared/`](../Shared/README.md).
@@ -48,6 +49,7 @@ NaowhForever_Market/
     Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
     Buy.lua          the Buy page: the Shopping List, the category and search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
+    Reagents.lua     the Reagents page: Professions' Reagents list under a search
     Takeover.lua     covering Blizzard's auction house, and the way back to it
     BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
     Tooltip.lua      The Market's lines on item tooltips
@@ -182,6 +184,9 @@ NaowhForever_Market/
 - Add to Queue goes to Professions' Craft Queue with `CraftQueue.AddWithShopping`, as its own Add does,
   only for your own recipes and while its Craft Queue is on. At an auctioneer, Buy opens the Buy page on
   the first material you are short of.
+- The Reagents page is Professions' own Reagents list (`P.ReagentList`), so both say the same; without
+  Professions loaded and on, it says to turn it on. It names an alt from The Market's list
+  (`marketCharacters`) when that alt is on this realm and faction.
 - Farm reads where herbs and veins grow from Glimmer's map (`ns.GlimmerSpots`, unpacked by
   `Glimmer.Spots.Load`, which waits out combat), its nodes (`Glimmer.NODES`) and the ones you gathered
   (`Glimmer.Spots.Gathered`); a node's item is Professions' (`GatherNodes`, by the node's English name,
@@ -322,3 +327,6 @@ Away from the auction house:
 39. A big category (Armor, Trade Goods) lists more as you scroll to its end.
 40. Hovering a Buy result, a Shopping List row or a Favourite shows the item's tooltip, with Shift comparing
     gear to what you wear.
+41. Reagents, away from an auctioneer too: each reagent in your bags, with Craft beside the ones worth crafting; a click
+    opens every recipe it goes into, and an unlearned one's click sets a waypoint to where you learn it.
+42. Typing in Reagents' search finds any reagent by name, carried or not.

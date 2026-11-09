@@ -184,6 +184,7 @@ ns.FEATURES = {
         shoppingListDock = false,
         craftQueue = false,
         shoppingVendor = false,
+        reagentUses = false,
         trainFavorites = false,
         searchFavoritesAH = false,
         manualPatternScan = false,

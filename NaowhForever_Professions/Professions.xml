@@ -3,6 +3,7 @@
     <Script file="Professions.lua"/>
     <Script file="Constants.lua"/>
     <Script file="Data\RecipeData.lua"/>
+    <Script file="Data\RecipeReagents.lua"/>
     <Script file="Data\VendorReagents.lua"/>
     <Script file="Data\VendorSellers.lua"/>
     <Script file="Data\VendorPrices.lua"/>
@@ -28,6 +29,7 @@
     <Script file="AuctionHouse.lua"/>
     <Script file="BagRoom.lua"/>
     <Script file="ShoppingPlan.lua"/>
+    <Script file="ReagentUses.lua"/>
     <Script file="Consumables.lua"/>
     <Script file="CraftQueue.lua"/>
     <Script file="Patterns.lua"/>
@@ -58,6 +60,8 @@
     <Script file="UI\ShoppingConsumables.lua"/>
     <Script file="UI\ShoppingVendor.lua"/>
     <Script file="UI\ShoppingList.lua"/>
+    <Script file="UI\ReagentList.lua"/>
+    <Script file="UI\ReagentsWindow.lua"/>
     <Script file="UI\CraftQueue.lua"/>
     <Script file="UI\TrainFavorites.lua"/>
     <Script file="UI\FavoriteMarks.lua"/>

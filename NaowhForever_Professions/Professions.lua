@@ -15,7 +15,7 @@ local S = ns.UI.ModuleSettings("professions", {
     craftTimerBgAlpha = 0.9,
     shoppingList = F.shoppingList, shoppingListDock = F.shoppingListDock,
     craftQueue = F.craftQueue,
-    shoppingVendor = F.shoppingVendor,
+    shoppingVendor = F.shoppingVendor, reagentUses = F.reagentUses,
     trainFavorites = F.trainFavorites, searchFavoritesAH = F.searchFavoritesAH,
     manualPatternScan = F.manualPatternScan, favoriteVendorMarks = F.favoriteVendorMarks,
     gatherReminder = F.gatherReminder, gatherInInstances = false, gatherIconSize = 40, gatherFish = false,

@@ -28,6 +28,7 @@
     <Script file="UI\Crafts.lua"/>
     <Script file="UI\Buy.lua"/>
     <Script file="UI\Auctions.lua"/>
+    <Script file="UI\Reagents.lua"/>
     <Script file="UI\Takeover.lua"/>
     <Script file="UI\BagWorth.lua"/>
     <Script file="UI\Tooltip.lua"/>

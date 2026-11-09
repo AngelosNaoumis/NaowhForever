@@ -141,16 +141,17 @@ local function Cost(r)
     return o and o[2] or r.cost
 end
 
-local function Status(r)
+local function Status(r, st)
+    st = st or state
     local need = Skill(r)
-    if state.skill >= need then return "ready" end
-    if state.max < need then return "rank" end
+    if st.skill >= need then return "ready" end
+    if st.max < need then return "rank" end
     return "later"
 end
 
-local function NextRank()
-    for _, rank in ipairs(state.data.ranks) do
-        if rank.cap > state.max then return rank end
+local function NextRank(st)
+    for _, rank in ipairs(st.data.ranks) do
+        if rank.cap > st.max then return rank end
     end
 end
 
@@ -234,18 +235,18 @@ local function RankName(rank)
     return name
 end
 
-local function DescribeRank(rank, out)
+local function DescribeRank(rank, out, st)
     if rank.item then
-        Para(out, TEXT_RANK_BOOK:format(state.max, ItemName(rank.item), rank.skill))
+        Para(out, TEXT_RANK_BOOK:format(st.max, ItemName(rank.item), rank.skill))
         for _, v in ipairs(Nearest(rank.vendors, 1)) do NpcLine(out, v, "  " .. Money(v[NPC_PRICE])) end
     elseif rank.quest then
         local title = QuestTitle(rank.quest[Faction()], rank.questName)
-        Para(out, TEXT_RANK_QUEST:format(state.max, Hex(T.accent), title,
+        Para(out, TEXT_RANK_QUEST:format(st.max, Hex(T.accent), title,
             rank.level and TEXT_LEVEL_PART:format(rank.level) or "", rank.skill))
         for _, v in ipairs(Nearest(rank.teachers, 1)) do NpcLine(out, v) end
     else
-        Para(out, TEXT_RANK_TRAIN:format(state.max, RankName(rank), Money(rank.cost), rank.skill))
-        for _, v in ipairs(Nearest(rank.t and Rows(rank.t) or state.data.trainers, 1)) do NpcLine(out, v) end
+        Para(out, TEXT_RANK_TRAIN:format(st.max, RankName(rank), Money(rank.cost), rank.skill))
+        for _, v in ipairs(Nearest(rank.t and Rows(rank.t, st.data) or st.data.trainers, 1)) do NpcLine(out, v) end
     end
 end
 
@@ -266,15 +267,15 @@ local function DescribeQuests(out, quests, recipe)
     end
 end
 
-local function DescribeTrainer(r, out)
+local function DescribeTrainer(r, out, st)
     Para(out, TEXT_TRAINER:format(Money(Cost(r)),
         r.quest and (TEXT_ALSO_QUEST .. Hex(T.accent) .. r.quest .. "|r.") or ""))
-    for _, v in ipairs(Nearest(r.t and Rows(r.t) or state.data.trainers, NEAREST)) do NpcLine(out, v) end
+    for _, v in ipairs(Nearest(r.t and Rows(r.t, st.data) or st.data.trainers, NEAREST)) do NpcLine(out, v) end
 end
 
-local function DescribeTeacher(out)
+local function DescribeTeacher(out, st)
     Para(out, TEXT_TEACHER)
-    for _, rank in ipairs(state.data.ranks) do
+    for _, rank in ipairs(st.data.ranks) do
         if rank.teachers then
             for _, v in ipairs(Nearest(rank.teachers, 1)) do NpcLine(out, v) end
         end
@@ -356,16 +357,17 @@ local function DescribeDrops(r, out)
     end
 end
 
-local function Describe(r)
+local function Describe(r, st)
+    st = st or state
     local out = {}
-    if Status(r) == "rank" then
-        local rank = NextRank()
-        if rank then DescribeRank(rank, out) end
+    if Status(r, st) == "rank" then
+        local rank = NextRank(st)
+        if rank then DescribeRank(rank, out, st) end
     end
     if r.source == "trainer" then
-        DescribeTrainer(r, out)
+        DescribeTrainer(r, out, st)
     elseif r.source == "teacher" then
-        DescribeTeacher(out)
+        DescribeTeacher(out, st)
     elseif r.source == "vendor" then
         DescribeVendor(r, out)
     elseif r.source == "drop" and r.bosses then
@@ -549,6 +551,7 @@ ns.RecipeFinder = {
     Unlearned = Unlearned,
     Color = RowColor,
     Status = Status,
+    Learned = Learned,
     Requirement = Requirement,
     Describe = Describe,
     SoldBy = SoldBy,

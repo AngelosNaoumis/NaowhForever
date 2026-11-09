@@ -17,7 +17,7 @@ local TitleButtons = P.TitleButtons
 local SetColor = Widgets.SetColor
 local EnableButton = Widgets.EnableButton
 
-local OPEN_W, OPEN_H, OPEN_ORDER = 100, 22, 4
+local OPEN_W, OPEN_H, OPEN_ORDER = 100, 22, 5
 local SUB_GAP = 4
 local HEAD_H = 58
 local ROW_H = Style.ROW_H

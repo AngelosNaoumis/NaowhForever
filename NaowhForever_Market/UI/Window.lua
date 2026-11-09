@@ -41,6 +41,7 @@ local PAGES = {
     { key = "buy", label = "Buy", icon = "search", tip = "Search by name or category, or pick from your Shopping List, and buy it.", auction = true },
     { key = "mine", label = "My Auctions", icon = "notes", tip = "Your auctions, and the ones someone is selling for less.",
       auction = true },
+    { key = "reagents", label = "Reagents", icon = "grid", tip = "What the reagents in your bags make, and whether to craft or sell them." },
 }
 local AUCTION_ONLY = {}
 for _, page in ipairs(PAGES) do AUCTION_ONLY[page.key] = page.auction == true end

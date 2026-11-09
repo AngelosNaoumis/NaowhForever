@@ -148,6 +148,7 @@ end
 
 P.Prices = {
     FROM_VENDOR = FROM_VENDOR,
+    AfterCut = AfterCut,
     BuyPrice = BuyPrice,
     ProfitShown = ProfitShown,
     CraftValue = CraftValue,
