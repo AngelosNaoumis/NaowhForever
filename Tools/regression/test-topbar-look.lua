@@ -196,4 +196,156 @@ check("Show Clock heads the Clock group, its settings wait on it", groupOf.showC
     and rows.use24h.needs == "showClock" and rows.clockFont.needs == "showClock"
     and rows.clockSize.needs == "showClock" and rows.clockOutline.needs == "showClock")
 
+-- The Forever skin: the bar's look, picked under Bar Style (Classic, today's bar, by default).
+do
+    local gold = { r = 1, g = 0.82, b = 0 }
+    local fns = { L = ns.L, Upper = string.upper, Lower = string.lower, UIFontPath = ns.UIFontPath,
+        ThemeTint = function() return { r = 0.1, g = 0.1, b = 0.1 } end, foreverSkin = true,
+        Hairline = function() end }
+    local fParts = setmetatable({}, { __index = Parts })
+    local boxes = {}
+    function fParts.ForeverContainer()
+        local box = { points = {}, SetPoint = function(self, ...) self.points[#self.points + 1] = { ... } end,
+            ClearAllPoints = function(self) self.points = {} end, SetShown = function(self, v) self.shown = v end,
+            SetAlpha = function(self, a) self.alpha = a end }
+        boxes[#boxes + 1] = box
+        return box
+    end
+    function fParts.ForeverMicroButton(b) b.micro = true return true end
+    function fParts.ShowForeverMicro(b, shown, size) b.microShown, b.microSize = shown, size end
+    fns.TopBar = { Settings = S }
+    fns.Shared = { Style = { FOREVER_MICRO = { tall = 82 / 64, pad = 5 } }, Parts = fParts }
+    fns.THEME = { accent = gold }
+    fns.UI = UI
+    local env = setmetatable({ NaowhForever = fns }, { __index = _G })
+    env._G = env
+    for _, path in ipairs({ "NaowhForever_QoL/TopBar/Constants.lua", "NaowhForever_QoL/TopBar/View/Style.lua",
+        "NaowhForever_QoL/TopBar/View/Look.lua" }) do
+        local fileChunk = assert(loadfile(path))
+        setfenv(fileChunk, env)
+        fileChunk()
+    end
+    local FLook = fns.TopBar.Look
+    local function Tex()
+        local t = { points = {}, alpha = 1 }
+        function t.SetPoint(self, ...) self.points[#self.points + 1] = { ... } end
+        function t.ClearAllPoints(self) self.points = {} end
+        function t.SetShown(self, v) self.shown = v and true or false end
+        function t.IsShown(self) return self.shown ~= false end
+        function t.SetColorTexture(self, r, g, b, a) self.color = { r, g, b, a } end
+        function t.SetAlpha(self, a) self.alpha = a end
+        return t
+    end
+    local bar = { CreateTexture = function() return Tex() end }
+    local pills = FLook.NewPills(bar)
+    local lbtn, rbtn = Button(), Button()
+    local function Anchored(w)
+        local t = Tex()
+        function t.GetStringWidth() return w end
+        return t
+    end
+    local fclock, fsys, readout = Anchored(40), Anchored(0), Text()
+    bar.sys = fsys
+    function readout.SetText(self, v) self.text = v end
+    function readout.GetStringWidth() return 90 end
+    local function PaintAll()
+        FLook.SystemFont(readout)
+        FLook.Row(group, { lbtn, rbtn }, 2)
+        FLook.PaintPills(bar, pills, {}, {}, fclock, 1, 1)
+    end
+    settings.look, settings.showClock = nil, true
+    PaintAll()
+    local classicH = FLook.BarHeight()
+    check("Forever: Classic by default, today's bar: no containers built, no micro buttons", FLook.Kind() == "classic"
+        and #boxes == 0 and not pills.whole and not pills[1].box and pills[1].alpha == 1 and not lbtn.micro)
+    check("Classic: the theme-tinted pills, the skin's accent line, a white hover", pills[1].color[1] == 0.1
+        and pills[1].line.color[1] == gold.r and select(3, FLook.Accent()) == gold.b
+        and select(3, FLook.HoverColor()) == 1)
+    settings.look = "framed"
+    PaintAll()
+    check("Framed: its buttons in the micro menu's buttons", FLook.Kind() == "framed"
+        and lbtn.micro and lbtn.microShown and lbtn.microSize == FLook.BtnSize())
+    check("Framed: one container round the whole bar, the dark pills stood down", pills.whole.shown
+        and not pills[1].box.shown and pills[1].alpha == 0 and pills[2].line.alpha == 0)
+    check("Framed: the container at Bar Opacity", pills.whole.alpha == S.Get("bgAlpha") / 100)
+    settings.bgAlpha = 0
+    PaintAll()
+    check("Bar Opacity at 0: the container gone too", pills.whole.alpha == 0 and pills[1].box.alpha == 0)
+    settings.bgAlpha = nil
+    check("the bar tall enough for the micro buttons, so nothing pokes off the top of the screen",
+        FLook.BarHeight() >= FLook.BtnSize() * 82 / 64 + 2 * 5 and FLook.BarHeight() > classicH and pills.whole.points[1][1] == "TOPLEFT"
+        and pills.whole.points[1][4] == nil)
+    local plainH = FLook.BarHeight()
+    settings.showSystem, settings.sysSize = true, 13
+    PaintAll()
+    check("with the clock on, the readout sits under it inside the bar, the clock lifted half its height",
+        FLook.PlaceClock(bar, fclock, fsys) and fsys.points[1][1] == "TOP" and fsys.points[1][2] == fclock
+        and fsys.points[1][3] == "BOTTOM" and fsys.points[1][4] == nil and fclock.points[1][5] == (13 + 3) / 2
+        and pills.whole.points[2][5] == 0)
+    check("the bar tall enough for the clock and the readout, the clock's hit stopping above the readout",
+        FLook.BarHeight() == math.max(plainH, S.Get("clockSize") + 6 + 13 + 3)
+        and FLook.ClockHitHeight(100) == 100 - (13 + 3))
+    check("the clock's column as wide as the readout, measured on its widest numbers",
+        readout.text:find("888", 1, true) and pills[2].points[1][1] == "LEFT" and pills[2].points[1][2] == fclock
+        and pills[2].points[1][3] == "CENTER" and pills[2].points[1][4] == -(90 / 2 + 6 + 4))
+    local function Side(w)
+        local t = Anchored(0)
+        function t.GetWidth() return w end
+        return t
+    end
+    local wide = { SetWidth = function(self, w) self.w = w end }
+    FLook.Fit(wide, Side(60), Side(60), fclock, 2, 2)
+    check("the buttons 20px from the clock's column, room for Grouped's boxes not to touch",
+        wide.w == 2 * (14 + 60 + 20) + 90 + 8)
+    settings.showSystem = nil
+    FLook.Fit(wide, Side(60), Side(60), fclock, 2, 2)
+    check("20px with the readout off too", wide.w == 2 * (14 + 60 + 20) + 40 + 8)
+    settings.showSystem = true
+    settings.showClock = nil
+    PaintAll()
+    check("with the clock off, the readout stays under the bar and the container reaches down round it",
+        not FLook.PlaceClock(bar, fclock, fsys) and fclock.points[1][5] == 0
+        and pills.whole.points[2][5] == -(2 + 13 + 3))
+    settings.showClock, settings.showSystem = true, nil
+    PaintAll()
+    check("and stops at the bar when the readout is off", pills.whole.points[2][5] == 0)
+    settings.look = "retired"
+    check("an unknown saved look falls back to Classic", FLook.Kind() == "classic")
+    settings.look = "grouped"
+    PaintAll()
+    check("Framed Grouped: a container per group and round the clock, none round the bar",
+        pills[1].box.shown and pills[2].box.shown and pills[3].box.shown and not pills.whole.shown
+        and pills[1].box.points[1][2] == pills[1])
+    settings.showSystem = true
+    PaintAll()
+    check("Grouped: the clock's container holds the readout inside the bar, the side ones hug their buttons",
+        pills[2].box.points[2][5] == 0 and pills[2].box.points[1][5] == 0
+        and pills[1].box.points[2][5] == -(FLook.BtnSize() * (82 / 64 - 1) / 2 + 5))
+    settings.showClock = nil
+    PaintAll()
+    check("Grouped, clock off: the clock's pill hides, its container wraps the readout under the bar",
+        pills[2].shown == false and pills[2].box.shown and pills[2].box.points[1][2] == fsys
+        and pills[2].box.points[2][2] == fsys and pills[2].box.points[2][5] == -5)
+    settings.showSystem = nil
+    PaintAll()
+    check("Grouped, clock and readout off: no container under the bar", not pills[2].box.shown)
+    settings.showSystem = true
+    settings.showClock = true
+    settings.showSystem = nil
+    settings.look = "classic"
+    PaintAll()
+    check("back to Classic: the pills back, no containers, the micro buttons hidden", pills[1].alpha == 1
+        and not pills[1].box.shown and not pills.whole.shown and lbtn.microShown == false
+        and FLook.BarHeight() == classicH)
+    settings.look, settings.showClock = nil, nil
+    local frows = assert(loadstring(code))(S, Parts, UI, fns, function(name) return { group = name } end,
+        function() end).ROWS
+    local at
+    for i, row in ipairs(frows) do if row.key == "look" then at = i end end
+    check("Forever: Bar Style under Background, right after Bar Opacity, its three looks",
+        at and frows[at - 1].key == "bgAlpha" and frows[at].label == "Bar Style" and frows[at].choice == FLook.LOOKS
+        and table.concat(FLook.LOOKS[2], ",") == "classic,framed,grouped" and FLook.LOOKS[1].classic == "Classic")
+    check("Naowh skin: no Bar Style row", not rows.look)
+end
+
 print("PASS top bar look: " .. checks .. " checks")

@@ -7720,3 +7720,6 @@ L["Open With the Group Finder Key"] = "Открывать клавишей по�
 L["The key that opens the game's Group Finder opens this one instead."] = "Клавиша, открывающая поиск группы игры, открывает вместо него этот."
 L["Zones in Chat"] = "Зоны в сообщениях чата"
 L["Other players' zones in the Group Finder, and in chat if you turn that on."] = "Зоны других игроков в поиске группы, а если включить, то и в чате."
+L["Framed"] = "В рамке"
+L["Framed Grouped"] = "В рамках по группам"
+L["The bar's look on the Forever skin."] = "Вид панели в оформлении Forever."

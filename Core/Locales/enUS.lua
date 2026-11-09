@@ -7943,3 +7943,6 @@ L["Open With the Group Finder Key"] = true
 L["The key that opens the game's Group Finder opens this one instead."] = true
 L["Zones in Chat"] = true
 L["Other players' zones in the Group Finder, and in chat if you turn that on."] = true
+L["Framed"] = true
+L["Framed Grouped"] = true
+L["The bar's look on the Forever skin."] = true

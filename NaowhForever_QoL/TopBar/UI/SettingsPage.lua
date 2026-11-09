@@ -80,6 +80,16 @@ local ROWS = {
           .. "are invisible." },
 }
 
+local function AddLook()
+    local look = { key = "look", label = "Bar Style", choice = ns.TopBar.Look.LOOKS,
+        help = "The bar's look on the Forever skin." }
+    for i, row in ipairs(ROWS) do
+        if row.key == "bgAlpha" then return table.insert(ROWS, i + 1, look) end
+    end
+end
+
+if ns.foreverSkin then AddLook() end
+
 if C_AddOns.DoesAddOnExist(TB.OLD_ADDON) and C_AddOns.GetAddOnEnableState(TB.OLD_ADDON) > 0 then return end
 
 ns.Shared.Settings.Page("QoL/Interface", S):Card({

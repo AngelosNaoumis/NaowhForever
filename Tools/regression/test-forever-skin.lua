@@ -18,12 +18,16 @@ local ATLAS_W, ATLAS_H = 64, 32
 local present, missingFiles, atlasCalls, layouts
 local frames
 
+-- Only buttons have a highlight texture in the game; a plain Frame (the Top Bar preview's samples) has none.
+local LIT_KINDS = { Button = true, CheckButton = true }
+
 local function New(kind, parent)
     local o = { kind = kind, parent = parent, points = {}, scripts = {}, events = {}, children = {},
         shown = true, w = 0, h = 0 }
     if parent and rawget(parent, "children") then table.insert(parent.children, o) end
-    return setmetatable(o, { __index = function(_, k)
+    return setmetatable(o, { __index = function(t, k)
         if not k:match("^%u") then return nil end
+        if k == "GetHighlightTexture" and not LIT_KINDS[t.kind] then return nil end
         return function(self, ...)
             local args = { ... }
             if k == "SetScript" then self.scripts[args[1]] = args[2]
@@ -444,6 +448,33 @@ do
     local pick = Parts.ForeverRowPick(New("Frame"))
     check("a HUD list's current row on the Settings list's gold selection", pick and pick.atlas == St.FOREVER_ROW_PICK_ATLAS
         and pick.points[1][1] == "ALL" and not pick.shown)
+    local micro, files = St.FOREVER_MICRO, St.FOREVER_ART_FILES
+    local container = Parts.ForeverContainer(New("Frame"))
+    local boxFile = files[micro.container]
+    check("the micro menu's container, from its file, its dark middle filled, hidden until a look asks",
+        container and container.pieces[5] and container.pieces[5].texture == boxFile.file and container.pieces[1].w == micro.edge
+        and container.shown == false)
+    local mb = New("Button")
+    check("a micro menu button behind a Top Bar button", Parts.ForeverMicroButton(mb)
+        and mb.micro.texture == files[micro.up].file and mb.microHover.texture == files[micro.hover].file)
+    check("its hover inside the button's rim", mb.microHover.points[1][4] == micro.hoverIn
+        and mb.microHover.points[2][4] == -micro.hoverIn)
+    mb.scripts.OnMouseDown(mb)
+    check("pressed: the pressed button", mb.micro.coords[3] == files[micro.down].t)
+    mb.scripts.OnMouseUp(mb)
+    check("let go: the plain button", mb.micro.coords[3] == files[micro.up].t)
+    mb.highlight = New("Texture", mb)
+    Parts.ShowForeverMicro(mb, true, 30)
+    check("shown at the button's width and the art's height, the old highlight stood down", mb.micro.w == 30
+        and math.abs(mb.micro.h - 30 * micro.tall) < 1e-9 and mb.highlight.alpha == 0 and mb.micro.shown)
+    Parts.ShowForeverMicro(mb, false, 30)
+    check("hidden again, the old highlight back", not mb.micro.shown and not mb.microHover.shown
+        and mb.highlight.alpha == 1)
+    local sample = New("Frame")
+    Parts.ForeverMicroButton(sample)
+    Parts.ShowForeverMicro(sample, true, 30)
+    check("a plain Frame (the Top Bar preview's samples) has no highlight to stand down", sample.micro.shown
+        and sample.micro.w == 30)
     local headLine = Parts.ForeverHeadLine(New("Frame"))
     check("a HUD card's header line the game's faint divider", headLine
         and headLine.atlas == St.FOREVER_DIVIDER_ATLAS)

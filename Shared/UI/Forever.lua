@@ -390,7 +390,7 @@ function Parts.ForeverBox(frame, color)
     return Rim(frame, color or St.FOREVER_BAR_RIM_RGB)
 end
 
-local function NineSlice(holder, name, corner, size, out)
+local function NineSlice(holder, name, corner, size, out, filled)
     local info = ArtInfo(name)
     local l, r, t, b = info.leftTexCoord, info.rightTexCoord, info.topTexCoord, info.bottomTexCoord
     local cu, cv = (r - l) * corner / info.width, (b - t) * corner / info.height
@@ -398,7 +398,7 @@ local function NineSlice(holder, name, corner, size, out)
     local pieces = {}
     for row = 1, 3 do
         for col = 1, 3 do
-            if row ~= 2 or col ~= 2 then
+            if filled or row ~= 2 or col ~= 2 then
                 local piece = holder:CreateTexture(nil, "BORDER")
                 piece:SetTexture(info.file)
                 piece:SetTexCoord(us[col], us[col + 1], vs[row], vs[row + 1])
@@ -423,6 +423,10 @@ local function NineSlice(holder, name, corner, size, out)
     pieces[4]:SetPoint("BOTTOMRIGHT", bl, "TOPRIGHT")
     pieces[6]:SetPoint("TOPLEFT", tr, "BOTTOMLEFT")
     pieces[6]:SetPoint("BOTTOMRIGHT", br, "TOPRIGHT")
+    if pieces[5] then
+        pieces[5]:SetPoint("TOPLEFT", tl, "BOTTOMRIGHT")
+        pieces[5]:SetPoint("BOTTOMRIGHT", br, "TOPLEFT")
+    end
     return pieces
 end
 
@@ -452,6 +456,49 @@ function Parts.ForeverHover(frame)
     hover:SetAllPoints()
     hover:Hide()
     return hover
+end
+
+function Parts.ForeverContainer(frame)
+    local micro = St.FOREVER_MICRO
+    if not HasAtlas(micro.container) then return nil end
+    local holder = CreateFrame("Frame", nil, frame)
+    holder:SetFrameLevel(frame:GetFrameLevel())
+    holder.pieces = NineSlice(holder, micro.container, micro.corner, micro.edge, 0, true)
+    holder:Hide()
+    return holder
+end
+
+local function MicroDown(button)
+    Atlas(button.micro, St.FOREVER_MICRO.down)
+end
+
+local function MicroUp(button)
+    Atlas(button.micro, St.FOREVER_MICRO.up)
+end
+
+function Parts.ForeverMicroButton(button)
+    local micro = St.FOREVER_MICRO
+    if not (HasAtlas(micro.up) and HasAtlas(micro.down) and HasAtlas(micro.hover)) then return false end
+    button.micro = button:CreateTexture(nil, "BACKGROUND")
+    Atlas(button.micro, micro.up)
+    button.micro:SetPoint("CENTER")
+    button.microHover = button:CreateTexture(nil, "HIGHLIGHT")
+    Atlas(button.microHover, micro.hover)
+    button.microHover:SetBlendMode("ADD")
+    button.microHover:SetPoint("TOPLEFT", button.micro, "TOPLEFT", micro.hoverIn, -micro.hoverIn)
+    button.microHover:SetPoint("BOTTOMRIGHT", button.micro, "BOTTOMRIGHT", -micro.hoverIn, micro.hoverIn)
+    button:HookScript("OnMouseDown", MicroDown)
+    button:HookScript("OnMouseUp", MicroUp)
+    return true
+end
+
+function Parts.ShowForeverMicro(button, shown, size)
+    if not button.micro then return end
+    button.micro:SetShown(shown)
+    button.microHover:SetShown(shown)
+    if shown then button.micro:SetSize(size, size * St.FOREVER_MICRO.tall) end
+    local lit = button.GetHighlightTexture and button:GetHighlightTexture()
+    if lit and lit ~= button.microHover then lit:SetAlpha(shown and 0 or 1) end
 end
 
 function Parts.ForeverHeadLine(parent)

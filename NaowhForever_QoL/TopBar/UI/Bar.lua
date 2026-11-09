@@ -18,8 +18,8 @@ local CLOCK_START_SIZE, CLOCK_BTN_W = 20, 80
 local REST_X, REST_Y, REST_MIN, REST_SCALE = 5, 2, 12, 0.55
 local REST_FRAMES, REST_COLS, REST_V, REST_FRAME_TIME = 8, 16, 0.5, 0.25
 local TEXT_GAMEPAD = ns.L("The calendar cannot be opened from the Top Bar with a gamepad.")
-local SYS_DROP, SYS_H_PAD, SYS_MIN_W, SYS_TEXT_PAD = C.SYS_DROP, 3, 40, 10
-local SYS_TIP_EVERY = 1
+local SYS_DROP, SYS_H_PAD, SYS_MIN_W, SYS_TEXT_PAD = C.SYS_DROP, C.SYS_H_PAD, 40, 10
+local SYS_TIP_EVERY, SYS_RAISE = 1, 2
 local TICK, BADGE_TICKS, ROSTER_EVERY = 1, 10, 15
 local ROUND = C.ROUND
 local HOME_LATENCY = 3
@@ -77,6 +77,10 @@ local function UpdateResting()
 end
 
 local function AnchorSystem()
+    if bar:IsShown() and Look.PlaceClock(bar, clockText, bar.sys) then
+        bar.sys:SetFrameLevel(bar:GetFrameLevel() + SYS_RAISE)
+        return
+    end
     bar.sys:ClearAllPoints()
     if bar:IsShown() then
         bar.sys:SetPoint("TOP", bar, "BOTTOM", 0, -SYS_DROP)
@@ -291,7 +295,7 @@ end
 local function Size()
     local h = Look.BarHeight()
     bar:SetHeight(h)
-    bar.clockBtn:SetSize(CLOCK_BTN_W, h)
+    bar.clockBtn:SetSize(CLOCK_BTN_W, Look.ClockHitHeight(h))
     bar.clockBtn:SetShown(S.Get("showClock"))
     clockText:SetShown(S.Get("showClock"))
     local rest = math.max(REST_MIN, math.floor(h * REST_SCALE + ROUND))

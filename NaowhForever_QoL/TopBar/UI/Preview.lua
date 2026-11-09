@@ -436,8 +436,10 @@ local function PaintSystem(preview)
     local sys = preview.sys
     Look.SystemFont(sys)
     Look.SystemText(sys, SAMPLE_FPS, SAMPLE_MS)
-    sys:ClearAllPoints()
-    sys:SetPoint("TOP", preview, "BOTTOM", 0, -SYS_DROP)
+    if not Look.PlaceClock(preview, preview.clock, sys) then
+        sys:ClearAllPoints()
+        sys:SetPoint("TOP", preview, "BOTTOM", 0, -SYS_DROP)
+    end
     sys:SetShown(S.Get("showSystem"))
     preview.sysHit:SetShown(S.Get("showSystem"))
 end
@@ -481,8 +483,8 @@ local function PaintPreview(preview, state)
         PlaceSample(preview, side, key, texture, glyph, coords)
     end)
     for i = used + 1, #preview.pool do preview.pool[i]:Hide() end
-    PaintBar(preview)
     PaintSystem(preview)
+    PaintBar(preview)
     local alpha = StateAlpha(preview, state)
     local editable = alpha > 0
     preview:SetAlpha(alpha)
