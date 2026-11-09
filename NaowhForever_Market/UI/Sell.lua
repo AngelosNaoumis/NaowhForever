@@ -175,6 +175,7 @@ local function DrawLadder(entry, price, count)
 end
 
 local function DrawForm(entry, price)
+    money:ShowCopper(Sell.Copper(entry))
     if not money:HasFocus() then money:SetAmount(price) end
     if not quantity:HasFocus() then quantity:SetText(Sell.Quantity(entry)) end
     quantityOf:SetText(TEXT_OF:format(entry.count))
@@ -631,7 +632,6 @@ function Page.Show()
         Listings.onChange = Page.Draw
         Post.Start()
         for _, event in ipairs(EVENTS) do events:RegisterEvent(event) end
-        money:ShowCopper(C_AuctionHouse.SupportsCopperValues())
         loading = Sell.Read()
         Sell.Resume()
     end

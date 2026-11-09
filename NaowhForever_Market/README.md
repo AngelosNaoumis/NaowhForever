@@ -104,6 +104,10 @@ NaowhForever_Market/
   prices and order.
 - The price steps a copper, or a silver where `C_AuctionHouse.SupportsCopperValues()` is false, and is
   never under one step. Your own cheapest listing is matched, never undercut.
+- Only commodities take copper. Forever's `SupportsCopperValues()` is true, but posts from The Market,
+  which undercut by a copper, got "Internal auction error" while the same items posted from Blizzard's
+  sell frame, which prices in silver ("AH prices must be in silver increments"). So an item that is not
+  a commodity steps a silver and its price box has no copper.
 - With no listings and no scan price, an item is priced as Blizzard's sell frame prices it: its
   vendor price times `DEFAULT_AUCTION_PRICE_MULTIPLIER`, rounded up to a silver.
 - An item is the vendor's when a vendor pays at least what it makes on the auction house after the 5%
@@ -333,3 +337,5 @@ Away from the auction house:
 41. Reagents, away from an auctioneer too: each reagent in your bags, with Craft beside the ones worth crafting; a click
     opens every recipe it goes into, and an unlearned one's click sets a waypoint to where you learn it.
 42. Typing in Reagents' search finds any reagent by name, carried or not.
+43. A piece of gear on Sell, with someone else's listed, is priced a whole silver under theirs and its
+    price box has no copper; it posts without "Internal auction error". A commodity still steps a copper.

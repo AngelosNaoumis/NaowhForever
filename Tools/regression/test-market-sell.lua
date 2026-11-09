@@ -83,6 +83,12 @@ Check("same buyouts are one rung and bids without a buyout are left out", M.List
     and M.Listings.rows[1].quantity == 2 and M.Listings.rows[1].own == 1 and M.Listings.rows[2].price == 4000)
 price, why = M.Sell.Price(M.Sell.Focus())
 Check("tied with your own auction, it matches rather than undercuts you", price == 3000 and why == "yours")
+t.results.item[9999][2].containsOwnerItem = false
+t.Fire("ITEM_SEARCH_RESULTS_UPDATED", { itemID = 9999 })
+price, why = M.Sell.Price(M.Sell.Focus())
+Check("only commodities take copper: an item undercuts by a silver", price == 2900 and why == "under"
+    and not M.Sell.Copper(M.Sell.Focus()) and M.Sell.Copper(M.Bags.Get(2770)))
+Check("and steps in silver", M.Sell.StepPrice(M.Sell.Focus(), true) and M.Sell.Price(M.Sell.Focus()) == 3900)
 
 t = Setup({ bags = { [0] = { Stack(2770, 20) } }, status = { [2770] = COMMODITY }, scan = { [2770] = 1234 },
     vendor = { [2770] = 5 }, copper = false })

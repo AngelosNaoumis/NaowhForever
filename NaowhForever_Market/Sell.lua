@@ -40,18 +40,22 @@ local function Value(entry)
     return each and each * entry.count or 0
 end
 
-local function Step()
-    return C_AuctionHouse.SupportsCopperValues() and 1 or C.SILVER
+local function Step(entry)
+    return Sell.Copper(entry) and 1 or C.SILVER
 end
 
-local function Floor(price)
-    local step = Step()
+local function Floor(entry, price)
+    local step = Step(entry)
     return math.max(step, math.floor(price / step) * step)
 end
 
 local function Default(entry)
     local price = entry.vendor * DEFAULT_MULTIPLIER
     return math.max(C.SILVER, math.ceil(price / C.SILVER) * C.SILVER)
+end
+
+function Sell.Copper(entry)
+    return entry.commodity and C_AuctionHouse.SupportsCopperValues()
 end
 
 function Sell.Read()
@@ -105,9 +109,9 @@ end
 
 function Sell.Suggest(entry)
     local other, own = Listings.Cheapest()
-    if other and not (own and own <= other) then return Floor(other - Step()), "under", other end
+    if other and not (own and own <= other) then return Floor(entry, other - Step(entry)), "under", other end
     if own then return own, "yours", own end
-    if entry.scan then return Floor(entry.scan), "scan", entry.scan end
+    if entry.scan then return Floor(entry, entry.scan), "scan", entry.scan end
     return Default(entry), "vendor", entry.vendor
 end
 
@@ -122,11 +126,11 @@ function Sell.SetPrice(key, price)
 end
 
 function Sell.StepPrice(entry, up)
-    local price, step = Sell.Price(entry), Step()
+    local price, step = Sell.Price(entry), Step(entry)
     local best
     for i = 1, Listings.count do
         local row = Listings.rows[i]
-        local rung = Floor(row.price - step)
+        local rung = Floor(entry, row.price - step)
         if row.quantity > row.own and (up and rung > price or not up and rung < price) then
             if not best or (up and rung < best) or (not up and rung > best) then best = rung end
         end
