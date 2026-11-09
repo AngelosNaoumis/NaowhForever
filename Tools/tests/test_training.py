@@ -113,6 +113,17 @@ class CaughtUp(unittest.TestCase):
         rows = tr.caught_up([row(20928, "Holy Shield", "Rank 3", 60, [tr.TRAINER], 2300)], {}, game)
         self.assertEqual([r["id"] for r in rows], [20928])
 
+    def test_a_spell_without_a_rank_before_needs_the_kept_spell_it_replaces(self):
+        # Dire Bear Form replaces Bear Form; Claw's first rank replaces a spell no list has.
+        game = {5487: {"name": "Bear Form", "rank": "Shapeshift", "level": 10, "replaces": 0},
+                9634: {"name": "Dire Bear Form", "rank": "Shapeshift", "level": 40, "replaces": 5487},
+                1082: {"name": "Claw", "rank": "Rank 1", "level": 20, "replaces": 1263850}}
+        rows = tr.caught_up([row(5487, "Bear Form", "Shapeshift", 10, [tr.QUEST]),
+                             row(9634, "Dire Bear Form", "Shapeshift", 40, [tr.TRAINER], 10000),
+                             row(1082, "Claw", "Rank 1", 20, [tr.TRAINER], 2000)], {}, game)
+        kept = {e["spell"]: e["needs"] for e in tr.entries(rows, {}, set(game))}
+        self.assertEqual(kept, {5487: None, 9634: 5487, 1082: None})
+
 
 class GameSpells(unittest.TestCase):
     # Shank as the game's tables have it: no BaseLevel, its level in SpellLevel, no rank text.

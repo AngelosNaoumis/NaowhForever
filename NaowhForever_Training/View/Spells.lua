@@ -247,7 +247,9 @@ local function DrawRows(plan, state, y, why)
 end
 
 local function RankWhy(entry)
-    return TEXT_LEARN_FIRST:format(C_Spell.GetSpellSubtext(entry.needs) or TEXT_RANK_BEFORE)
+    local name = C_Spell.GetSpellName(entry.needs)
+    if name == C_Spell.GetSpellName(entry[SPELL]) then name = C_Spell.GetSpellSubtext(entry.needs) end
+    return TEXT_LEARN_FIRST:format(name or TEXT_RANK_BEFORE)
 end
 
 local function LevelWhy(entry)

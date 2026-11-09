@@ -152,9 +152,11 @@ local function SpellEnter(self)
     local up = Training.Upgrade(self.entry)
     if up then
         local before = self.entry.needs or self.entry.talent
+        local name = C_Spell.GetSpellName(before)
+        if name == C_Spell.GetSpellName(self.entry[SPELL]) then name = C_Spell.GetSpellSubtext(before) end
         local c = Style.UP_RGB
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine(TEXT_OVER:format(C_Spell.GetSpellSubtext(before) or TEXT_RANK_BEFORE,
+        GameTooltip:AddLine(TEXT_OVER:format(name or TEXT_RANK_BEFORE,
             up.what, up.from, up.to, up.pct), c.r, c.g, c.b, true)
     end
     local reason = Reason(self.entry, self.state)

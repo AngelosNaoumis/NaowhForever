@@ -83,7 +83,9 @@ view files and the window share.
 - A talent's spell shows its full rank's text, so its tooltip reads the text of its rank and the next from
   the node's trait entry (GetTraitEntry), as the game's talent frame does. Another class's nodes are not in
   your talent config, so their tooltip shows the spell.
-- A rank counts as learned once a later rank is: some ranks replace the one before. A level 60 book's
+- A rank counts as learned once a later rank is: some ranks replace the one before. Dire Bear Form
+  replaces Bear Form in the spellbook the same way, so it needs Bear Form (the game's SupercedesSpell),
+  and the planner names Bear Form where it would name the rank before. A level 60 book's
   rank replaces a trainer's rank too, but no trainer sells it, so it is not in the data and the rank it
   replaces names it (`replacedBy`). A rank before that no trainer sells (granted at level 1) is not in
   the data, so the game is asked. PLAYER_LEVEL_UP says the new level before UnitLevel does, so the

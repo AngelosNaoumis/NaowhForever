@@ -167,13 +167,15 @@ def game_row(spell, game):
 
 
 def caught_up(rows, talents, game):
-    """Wowhead's rows as the build has them: each spell's rank and level from the game, and the rank
-    before a listed one that Wowhead lacks, unless that rank is the talent or has no level."""
+    """Wowhead's rows as the build has them: each spell's rank, level and the spell it replaces (before)
+    from the game, and the rank before a listed one that Wowhead lacks, unless that rank is the talent or
+    has no level."""
     listed = {row["id"] for row in rows}
     out = []
     for row in rows:
         spell = game.get(row["id"])
-        out.append(dict(row, rank=spell["rank"], level=spell["level"] or row.get("level")) if spell else row)
+        out.append(dict(row, rank=spell["rank"], level=spell["level"] or row.get("level"),
+                        before=spell["replaces"] or None) if spell else row)
     # out grows as ranks are added, so an added rank's own rank before is looked at too.
     for row in out:
         before = game.get(row["id"], {}).get("replaces")
@@ -182,7 +184,7 @@ def caught_up(rows, talents, game):
             continue
         listed.add(before)
         added = dict(row, id=before, name=spell["name"], rank=spell["rank"], level=spell["level"],
-                     source=[TRAINER], added=True)
+                     source=[TRAINER], added=True, before=spell["replaces"] or None)
         added.pop("trainingcost", None)
         out.append(added)
     return out
@@ -233,7 +235,8 @@ def races(mask):
 
 def entries(rows, talents, learnable, prices=None):
     """The class's kept spells in level order, each {spell, level, name, rank, cost, quest,
-    talent, races, needs}: needs is the rank before it, which the trainer asks for first. Only the
+    talent, races, needs}: needs is the rank before it, which the trainer asks for first: the rank
+    numbered one less, else the kept spell it replaces (Dire Bear Form's Bear Form). Only the
     spells in learnable (the build's skill lines) are kept. prices, when the class's trainer prices
     were read, replace Wowhead's; a trainer spell they lack, other than TRAINER_TAUGHT's,
     raises ValueError."""
@@ -276,7 +279,8 @@ def entries(rows, talents, learnable, prices=None):
             ranks.setdefault(key, row["id"])
     for e in kept:
         number = rank_number(e["rank"])
-        e["needs"] = number and ranks.get((e["name"], tuple(e["races"]), number - 1)) or e["before"]
+        e["needs"] = (number and ranks.get((e["name"], tuple(e["races"]), number - 1))
+                      or (e["before"] if e["before"] in sold else None))
         # The talent is the first rank: Wowhead's "Rank 1" of Penance and Mutilate is a hidden half of
         # the spell, which the game never reports as known.
         if e["talent"] and e["needs"] not in sold:
