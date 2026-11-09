@@ -1,4 +1,4 @@
--- Gains.lua: what your BiS gets you over what you wear: Naowh Score and stats (B.Gains).
+-- Gains.lua: what your BiS gets you over what you wear: Gear Score and stats (B.Gains).
 local ns = _G.NaowhForever
 
 local GetItemInfo = C_Item.GetItemInfo

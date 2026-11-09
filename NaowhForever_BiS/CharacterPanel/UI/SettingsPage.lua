@@ -12,9 +12,9 @@ local MARK_KEYS = { "characterPanelLevels", "characterPanelMarks", "characterPan
 local MARKS_OFF = ns.L("Turn on Slot Marks or the Naowh Character Panel")
 local TEXT_THEIRS_IN_USE = ns.L("EllesmereUI's panel is in use: switch this off and on for this one")
 local TEXT_TAKES_OVER = ns.L("Takes over from EllesmereUI's panel, after a reload")
-local TEXT_BADGE_AND_SCORE = ns.L("With your badge and Naowh Score")
+local TEXT_BADGE_AND_SCORE = ns.L("With your badge and Gear Score")
 local TEXT_BADGE = ns.L("With your badge")
-local TEXT_SCORE = ns.L("With your Naowh Score")
+local TEXT_SCORE = ns.L("With your Gear Score")
 local TEXT_PLAIN = ns.L("The slots and stats only")
 local TEXT_ON_PANEL = ns.L("On the Naowh Character Panel")
 local TEXT_MARKS = ns.L("%d of %d marks")
@@ -46,8 +46,8 @@ local function MarksSummary(store)
 end
 
 local panelRows = {
-    { key = "characterPanelScore", label = "Naowh Score", toggle = true,
-      help = "Your Naowh Score, big under your level: hover it for your score with your BiS and the best "
+    { key = "characterPanelScore", label = "Gear Score", toggle = true,
+      help = "Your Gear Score, big under your level: hover it for your score with your BiS and the best "
           .. "in the game, click it for the BiS List." },
     { key = "characterPanelStats", label = "Stats Shown", choice = STATS_SHOWN,
       help = "Your spec's stats with what each is worth, or all of the game's stats." },
@@ -63,7 +63,7 @@ page:Card({
     id = "characterPanel", name = "Character Panel", order = 10, switch = "characterPanel", store = S,
     switchWhy = ns.GamepadWhy,
     help = "Your character panel (C) in the BiS List's look: each slot with its marks, your stats for your "
-        .. "spec, and your Naowh Score under your level. The game keeps the panel and everything it does. With "
+        .. "spec, and your Gear Score under your level. The game keeps the panel and everything it does. With "
         .. "EllesmereUI, turning this on turns its character panel off, and off turns it back on, after a reload.",
     summary = PanelSummary,
     rows = panelRows,

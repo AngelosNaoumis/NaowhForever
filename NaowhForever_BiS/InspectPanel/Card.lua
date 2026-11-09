@@ -1,4 +1,4 @@
--- Card.lua: their Naowh Score card and supporter badge plate on the inspect panel.
+-- Card.lua: their Gear Score card and supporter badge plate on the inspect panel.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -10,7 +10,7 @@ local YOU = ns.L("You ")
 local PLATE_LEVEL = 10
 local BADGES_LIVE = ns.BADGES_LIVE
 local TITLE_RGB = CP.C.TITLE_RGB
-local TIP_TITLE = "Naowh Score"
+local TIP_TITLE = "Gear Score"
 local TIP_THEM, TIP_YOU = ns.L("Them"), ns.L("You")
 local TIP_GOAL = ns.L("Level %d goal")
 local TIP_BEST = ns.L("Best in the game")

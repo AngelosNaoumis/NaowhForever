@@ -39,7 +39,7 @@ page:Window({
     text = "Open Group Finder",
     open = function() ns.OpenGroupFinder() end,
     headline = "Forever's groups, with their leaders' cards",
-    detail = "Search, and see the Naowh Score of every leader who runs Naowh Forever.",
+    detail = "Search, and see the Gear Score of every leader who runs Naowh Forever.",
 })
 
 page:Card({
@@ -47,8 +47,8 @@ page:Card({
     help = "What Naowh Forever players see about you when you list or apply.",
     summary = Summary,
     rows = {
-        { key = "shareScore", label = "Naowh Score", toggle = true, needs = On, why = OFF,
-          help = "Shows your Naowh Score on your card." },
+        { key = "shareScore", label = "Gear Score", toggle = true, needs = On, why = OFF,
+          help = "Shows your Gear Score on your card." },
         { key = "shareKills", label = "Boss Kills", toggle = true, needs = On, why = OFF,
           help = "Shows how often you have killed each boss of the dungeon." },
         { key = "shareQuests", label = "Dungeon Quests", toggle = true, needs = On, why = OFF,

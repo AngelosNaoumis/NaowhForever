@@ -18,7 +18,7 @@ this was what turned it off, either way with a reload offered; while EllesmereUI
 
 ```
 +------------------------------------------+----------------------+
-| Name                                  x  | NAOWH SCORE          |
+| Name                                  x  | GEAR SCORE           |
 |        Level 60 Fury Warrior             | 41.2                 |
 |             [Talents]                    | [=========-------]   |
 | [] badge plate                       []  | You 26.4    Best 55.7|
@@ -35,7 +35,7 @@ this was what turned it off, either way with a reload offered; while EllesmereUI
   that has none. Their BiS star shows only when their own Naowh Forever answers with their list
   (`TheirBiS.lua`); your BiS star and your enchant advice are about your gear, so they are not
   shown on theirs.
-- **Score card:** their Naowh Score as your panel's card, yours under it to compare. Read from
+- **Score card:** their Gear Score as your panel's card, yours under it to compare. Read from
   their gear while the game's inspect data is theirs, "..." while their items load.
 - **Badge plate:** their supporter badge in the model's corner, as yours on your panel.
 - **Player tab:** talents (points per tree, their lead tree and its role, and one of Naowh's

@@ -1,4 +1,4 @@
-"""Fits the Naowh Score's constants (NaowhForever_BiS/NaowhScore/Data/Formula.lua) to a WoW Forever build's own
+"""Fits the Gear Score's constants (NaowhForever_BiS/NaowhScore/Data/Formula.lua) to a WoW Forever build's own
 item table, read through wago.tools. Run by .github/workflows/daily-watch.yml when the watch
 moves to a new build (and on manual runs, as a report), so the score follows the game.
 
@@ -423,7 +423,7 @@ def worth(constants, quality, level):
 
 
 def score(constants, gear):
-    """The Naowh Score of gear {slot: (level, quality, two-handed)}, as Score.Of works it out."""
+    """The Gear Score of gear {slot: (level, quality, two-handed)}, as Score.Of works it out."""
     slots = constants["SLOTS"]
     total = sum(slots[s] for s in SLOT_ORDER)
     result, two = 0.0, False
@@ -557,7 +557,7 @@ def render(constants, build, fit, carry=None):
     qualities = sorted(constants["SCALE"])
     source = f"{build}'s item table and {carry}'s hotfixes" if carry else f"{build}'s own item table"
     lines = [
-        f"-- Formula.lua: Naowh Score constants from build {source} ({fit['n']:,} items).",
+        f"-- Formula.lua: Gear Score constants from build {source} ({fit['n']:,} items).",
         "local ns = _G.NaowhForever",
         "",
         "local Score = {}",
@@ -629,8 +629,8 @@ def quality_line(constants, quality):
 
 
 def report(build, result, old, changed, wrote, note=None):
-    """The "Naowh Score" section of the watch's report, as Markdown lines."""
-    lines = ["### Naowh Score", ""]
+    """The "Gear Score" section of the watch's report, as Markdown lines."""
+    lines = ["### Gear Score", ""]
     if result is None:
         return lines + [f"> **Not refitted:** {note}. The constants stay as they are.", ""]
     new, raw, fit, intervals = result["constants"], result["raw"], result["fit"], result["intervals"]

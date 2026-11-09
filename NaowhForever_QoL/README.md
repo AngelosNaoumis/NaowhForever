@@ -1107,7 +1107,7 @@ NaowhForever_QoL/
   the countdown reads but `TransportTimes.Latest` (what is sent and answered) skips, and your own
   next ride of that ship clears the mark.
 - Share Timings (`transportShare`) is on by default under the timers, as Share My Score is under the
-  Naowh Score. Off, nothing is sent or answered, and the `NaowhShips` prefix and its events are not
+  Gear Score. Off, nothing is sent or answered, and the `NaowhShips` prefix and its events are not
   registered, so others' timings are not received either: hearing them needs the prefix.
 - The message carries the sender's GUID, checked with `ns.SenderIs` (Core/Senders.lua) as Naowh
   Score does. Forever is one world: the ships stand at the same place on every shard, so a timing

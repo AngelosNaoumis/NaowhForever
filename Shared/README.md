@@ -17,7 +17,7 @@ Shared/
     Forever.lua      what is new in WoW Forever, by ID (Shared.ForeverNew), from Tools/build/forever_new.py
     ItemFacts.lua    each dungeon item's class, subclass, item level, required level and quality before the
                      client loads it (Shared.ItemFacts), from Tools/build/journal.py: the Journal's loot,
-                     the BiS List's levels and the Naowh Score's best read it
+                     the BiS List's levels and the Gear Score's best read it
     FactionItems.lua the same for the factions' rewards, added to it, from Tools/build/factions.py
     SameMaps.lua     the maps the game has under two IDs, each to the one whose data it reads
                      (Shared.SameMaps), from Tools/build/same_maps.py
@@ -40,7 +40,7 @@ Shared/
                    Food & Drink Bar, the Macros' Smart Macros, Aura Buffs' reminders and the Consumable Bar
   Game/ActionKeys.lua the keys on action buttons: the game's bars, LibActionButton bars and EllesmereUI's
                    (Shared.ActionKeys): the Consumable Bar's and the Food & Drink Bar's Show Keybinds
-  Game/Roster.lua  our part of a player's tooltip in the Guild & Communities and Friends lists (Badges, Naowh Score)
+  Game/Roster.lua  our part of a player's tooltip in the Guild & Communities and Friends lists (Badges, Gear Score)
   Game/Places.lua  zones by name, the map whose data a map reads (Places.SameMap), and showing one on the
                    world map
   Game/Layers.lua  the layer an NPC is on, from its GUID (Shared.LayerOf): QoL's Layer Tracker and
@@ -433,7 +433,7 @@ What a comment in the code used to say, in short. The house rules behind it are 
   game's own, once each. A GUID is used only when it is a readable string, never a secret value.
 - Under Forever's Gamepad interface style (`ns.GamepadStandDown()`) the game's bags and the Friends
   and Guild lists are left alone: `Bags.OnGameUpdate` hooks no bag frame and `Roster.AddTooltip`
-  hooks no list, so Bag Marks, Junk Marker, the badges and Naowh Score add nothing there.
+  hooks no list, so Bag Marks, Junk Marker, the badges and Gear Score add nothing there.
   EllesmereUI's and Baganator's bags still get their marks. That style navigates these windows
   from secure code, which our hooks and tooltip lines would taint.
 - `Places.ShowMap` opens the world map only out of combat, where addon code may open it. While

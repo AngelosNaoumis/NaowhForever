@@ -1,5 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
-    <!-- NaowhScore.xml: the Naowh Score's files, in load order. -->
+    <!-- NaowhScore.xml: the Gear Score's files, in load order. -->
     <Script file="Data\Formula.lua"/>
     <Script file="NaowhScore.lua"/>
     <Script file="Inspect.lua"/>

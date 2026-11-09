@@ -53,7 +53,7 @@ Setup.ITEMS = {
     threatMeter = { addon = "NaowhForever_ThreatMeter", db = "threatMeter", key = "enabled",
         blurb = ns.L("Your group's threat on your target.") },
     groupInspect = { addon = "NaowhForever_GroupInspect", db = "qol", key = "groupInspect",
-        blurb = ns.L("Your group's gear, talents and Naowh Score.") },
+        blurb = ns.L("Your group's gear, talents and Gear Score.") },
     groupFinder = { addon = "NaowhForever_GroupFinder", db = "groupFinder", key = "enabled",
         blurb = ns.L("Your card, shared with Naowh Forever groups.") },
     pvp = { addon = "NaowhForever_PvP", db = "pvp", key = "enabled",

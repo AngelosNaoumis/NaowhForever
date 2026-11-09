@@ -35,7 +35,7 @@ local NARROW = { w = St.PARTY_W, slot = St.SLOT, slotGap = St.SLOT_GAP, cellGap 
 local WIDE = { w = St.PARTY_WIDE_W, slot = St.WIDE_SLOT, slotGap = St.WIDE_SLOT_GAP, cellGap = WIDE_CELL_GAP, long = true }
 
 local SCORE_SHARED, SCORE_READ, SCORE_YOURS = ns.L("Shared by their Naowh Forever"), ns.L("Read from their gear"), ns.L("Yours")
-local TEXT_SCORE = "Naowh Score"
+local TEXT_SCORE = "Gear Score"
 
 local function Measure(l)
     l.inner = l.w - 2 * PAD

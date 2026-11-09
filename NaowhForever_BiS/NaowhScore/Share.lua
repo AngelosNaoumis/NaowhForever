@@ -1,4 +1,4 @@
--- Share.lua: your Naowh Score sent to your group and guild as it changes, and theirs kept.
+-- Share.lua: your Gear Score sent to your group and guild as it changes, and theirs kept.
 local ns = _G.NaowhForever
 
 local Score = ns.NaowhScore

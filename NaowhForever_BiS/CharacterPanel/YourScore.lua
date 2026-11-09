@@ -1,4 +1,4 @@
--- YourScore.lua: your Naowh Score card under your level on the character panel: hover for the score with your BiS, click for the BiS List.
+-- YourScore.lua: your Gear Score card under your level on the character panel: hover for the score with your BiS, click for the BiS List.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -11,7 +11,7 @@ local GAP = 10
 local PANE_DROP = 68
 local BADGE_LIFT = 20
 local GOAL_RGB, TITLE_RGB = C.GOLD_RGB, C.TITLE_RGB
-local TIP_TITLE = "Naowh Score"
+local TIP_TITLE = "Gear Score"
 local TIP_NOW, TIP_WITH_BIS = ns.L("Now"), ns.L("With your BiS")
 local TIP_GOAL = ns.L("Level %d goal")
 local TIP_BEST = ns.L("Best in the game")

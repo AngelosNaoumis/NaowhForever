@@ -1,4 +1,4 @@
--- SettingsPage.lua: the Naowh Score's card on BiS List > Character.
+-- SettingsPage.lua: the Gear Score's card on BiS List > Character.
 local ns = _G.NaowhForever
 
 local Score = ns.NaowhScore
@@ -18,7 +18,7 @@ local function Summary()
 end
 
 Settings.Page("BiS List/Character", S):Card({
-    id = "naowhScore", name = "Naowh Score", order = ORDER_SCORE, switch = "naowhScore", store = S,
+    id = "naowhScore", name = "Gear Score", order = ORDER_SCORE, switch = "naowhScore", store = S,
     help = "One number for a character's gear, on the item level scale: 26.4 means gear worth a set of level "
         .. "26 epics. Your own is always on the BiS List's paperdoll.",
     summary = Summary,

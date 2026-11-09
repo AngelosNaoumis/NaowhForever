@@ -37,7 +37,7 @@ and a lot of quality of life, all in one window.
 | **Action Bars** | Your action bars saved by name and put back whenever you want them. |
 | **Buffs & Reminders** | Buff, consumable and campfire reminders, and a low health warning. |
 | **Threat Meter** | Threat on your target for the whole group, and a warning before you pull. |
-| **Group Inspect** | Everyone in your party or raid in one window: their Naowh Score, item level, gear, talents and stats, and who runs Naowh Forever. Also on a party or raid member's right-click menu. |
+| **Group Inspect** | Everyone in your party or raid in one window: their Gear Score, item level, gear, talents and stats, and who runs Naowh Forever. Also on a party or raid member's right-click menu. |
 | **PvP** | What your target is doing in a fight: their short buffs and the crowd control on them, and battleground displays. |
 | **Swing Timer** | Your swings from the game's own timer, with marks for timing around them. |
 | **Druid Mana** | A druid's mana while shapeshifted, with the five second rule, the cost of shifting back and how many shifts you have left. |

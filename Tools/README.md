@@ -293,11 +293,11 @@ are not included. Classic baseline values remain unverified for Forever.
 | `enchants.py` | Builds `NaowhForever_BiS/BiS/Data/Enchants.lua`: every Enchanting recipe, what it gives and goes on, from the game's tables (wago.tools), and the skill it needs and who teaches it, from Wowhead (cached in `data/enchant_recipes.json`). | The BiS List's best enchant for what you wear. |
 | `bis_quests.py` | Builds `NaowhForever_DungeonJournal/Data/BiSQuests.lua`: every quest that rewards a ranked BiS item, from ForeverChanges' quest list (`data/foreverchanges_quests.json`: what it rewards, its levels, side, class and quest giver), and Wowhead's quest pages for whether it can be shared and where it starts when ForeverChanges has no giver (cached in `data/bis_quest_pages.json`; `--offline` reads none). Its races are the ones Wowhead's item pages gave it, as `data/bis_quests.json` kept them (those pages are no longer read), else `data/quest_entity_catalog.json`'s. Run `foreverchanges_quests.py` before it and `quest_chains.py` after it. | The BiS List's Quests page. |
 
-## build/: Naowh Score
+## build/: Gear Score
 
 | Tool | What it does | Why |
 | --- | --- | --- |
-| `fit_naowh_score.py` | Fits the Naowh Score's constants (`NaowhForever_BiS/NaowhScore/Data/Formula.lua`: slot weights, each quality's worth in epic item levels) to a Forever build's own item table through wago.tools: ItemSparse's stats (`StatModifier_bonusStat_N` and `StatPercentEditor_N`, with `ItemLevel`, `OverallQualityID`, `InventoryType`), RandPropPoints' budgets and ItemDamageOneHand's DPS. Prints a report (`--report`); `--write` rewrites `Formula.lua` only when the fit passes its quality gates and a slot moves 0.02 or a quality's worth at item level 60 moves 0.5. `--build`, `--cache DIR`, `--bootstrap N` (the report's intervals, seeded). The method is in its docstring and `NaowhForever_BiS/NaowhScore/README.md`. | So the score follows the game's own numbers, build after build, with nothing read from Wowhead. |
+| `fit_naowh_score.py` | Fits the Gear Score's constants (`NaowhForever_BiS/NaowhScore/Data/Formula.lua`: slot weights, each quality's worth in epic item levels) to a Forever build's own item table through wago.tools: ItemSparse's stats (`StatModifier_bonusStat_N` and `StatPercentEditor_N`, with `ItemLevel`, `OverallQualityID`, `InventoryType`), RandPropPoints' budgets and ItemDamageOneHand's DPS. Prints a report (`--report`); `--write` rewrites `Formula.lua` only when the fit passes its quality gates and a slot moves 0.02 or a quality's worth at item level 60 moves 0.5. `--build`, `--cache DIR`, `--bootstrap N` (the report's intervals, seeded). The method is in its docstring and `NaowhForever_BiS/NaowhScore/README.md`. | So the score follows the game's own numbers, build after build, with nothing read from Wowhead. |
 
 ## build/: Training Planner
 
@@ -420,9 +420,9 @@ are not included. Classic baseline values remain unverified for Forever.
   - `watch`: `release/watch_build.py`. Only reads the game's tables through wago.tools. If
     there's a new build, the change moves our faction data to it, with a report of what
     changed (new gear the Journal doesn't list yet, new dungeon floor maps in the game's map
-    table). The same change refits the Naowh Score (`build/fit_naowh_score.py --write`):
+    table). The same change refits the Gear Score (`build/fit_naowh_score.py --write`):
     `Formula.lua` changes when the constants move enough, with a changelog line (every
-    player's score moves), and the report gets a "Naowh Score" section (old against new, the
+    player's score moves), and the report gets a "Gear Score" section (old against new, the
     fit's quality, its gates). A manual run reports it too; a failed fit only says so.
   - `quests`: `build/foreverchanges_quests.py --report`. If ForeverChanges' quest list gained,
     lost or changed a quest, it rebuilds the Quest List with `build/completo_quests.py --offline`,

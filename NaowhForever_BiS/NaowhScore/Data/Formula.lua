@@ -1,4 +1,4 @@
--- Formula.lua: Naowh Score constants from build 1.60.1.70790's own item table (7,255 items).
+-- Formula.lua: Gear Score constants from build 1.60.1.70790's own item table (7,255 items).
 local ns = _G.NaowhForever
 
 local Score = {}

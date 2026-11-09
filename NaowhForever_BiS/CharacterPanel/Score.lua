@@ -1,4 +1,4 @@
--- Score.lua: the Naowh Score card: the score big, a bar to its share of the best, and the best under it (CP.ScoreCard).
+-- Score.lua: the Gear Score card: the score big, a bar to its share of the best, and the best under it (CP.ScoreCard).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -21,7 +21,7 @@ local NO_LEVEL = 0
 local TENTHS = 10
 local WAITING = "..."
 local LEVEL_COMPARE, BOTH_COMPARE = ns.NaowhScore.COMPARE.LEVEL, ns.NaowhScore.COMPARE.BOTH
-local TEXT_KICKER = ns.L("NAOWH SCORE")
+local TEXT_KICKER = ns.L("GEAR SCORE")
 local TEXT_LEVEL_BEST, TEXT_BEST = ns.L("Level %d best %%.1f"), ns.L("Best %.1f")
 
 local legends = {}

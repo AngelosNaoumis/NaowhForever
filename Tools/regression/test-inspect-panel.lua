@@ -466,7 +466,7 @@ local card = IP.card
 check("the score card waits while their items load, never another's score", card.value.text == "...")
 SCORE.target, COMPLETE.target = 41.2, true
 IP.Refresh()
-check("their Naowh Score once loaded, in its color, kept for their tooltip",
+check("their Gear Score once loaded, in its color, kept for their tooltip",
     card.value.text == "|cff1eff0041.2|r" and remembered[GUID_A] == 41.2)
 check("yours under the bar to compare", card.you.text == "You |cff1eff0026.4|r")
 card.scripts.OnEnter(card)
@@ -872,11 +872,11 @@ local function Card(flag)
 end
 local offCard, offStore = Card(0)
 check("flag 0: no badge row, the score row first", offCard.rows[1].key == "inspectPanelScore"
-    and #offCard.rows == 2 and offCard.summary(offStore) == "With their Naowh Score")
+    and #offCard.rows == 2 and offCard.summary(offStore) == "With their Gear Score")
 local onCard, onStore = Card(1)
 check("flag 1: the badge row first; Share Your BiS works with the card off", onCard.rows[1].key == "inspectPanelBadge"
     and onCard.rows[3].key == "inspectPanelShareBis" and onCard.rows[3].always == true
-    and onCard.summary(onStore) == "With their badge and Naowh Score" and onCard.switch == "inspectPanel")
+    and onCard.summary(onStore) == "With their badge and Gear Score" and onCard.switch == "inspectPanel")
 for _, row in ipairs(onCard.rows) do
     check(row.label .. "'s help is one short sentence", #row.help < 100 and not row.help:find("%. "))
 end

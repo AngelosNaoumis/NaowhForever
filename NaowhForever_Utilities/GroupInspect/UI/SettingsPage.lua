@@ -18,7 +18,7 @@ local STATES = {
 local NOT_GROUPED = ns.L("Not in a group")
 local PARTY, RAID = UI.MODE_WORDS.party, UI.MODE_WORDS.raid
 local RUNS_ONE, RUNS = ns.L("1 runs Naowh Forever"), ns.L("%d run Naowh Forever")
-local GROUPED_DETAIL = ns.L("Everyone's Naowh Score, gear, talents and stats, side by side.")
+local GROUPED_DETAIL = ns.L("Everyone's Gear Score, gear, talents and stats, side by side.")
 local SOLO_DETAIL = ns.L("Join a party or raid to use it; the preview below shows how it looks.")
 
 local function Hidden(preview)

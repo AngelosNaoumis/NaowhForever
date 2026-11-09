@@ -31,7 +31,7 @@ CharacterPanel/
   Frame.lua            the frame both panels wear: our backdrop, title rule, logo and close cross,
                        the model's panel and the split (CP.Chrome, CP.ModelPanel, CP.Split)
   Slots.lua            a slot's look over one of the game's slot buttons (CP.SlotOver)
-  Score.lua            the Naowh Score card: the score big, a bar to its share of the best
+  Score.lua            the Gear Score card: the score big, a bar to its share of the best
                        (CP.ScoreCard)
   Badge.lua            the supporter badge plate and its hover card (CP.BadgePlate)
   StatRows.lua         the stats' heading and rows: each with a bar for its worth against the
@@ -40,7 +40,7 @@ CharacterPanel/
   StatsLook.lua        the game's stats rows restyled as its list makes them (CP.StatsLook)
   YourSlots.lua        your slots: edge in the quality's colour, item level, Forever's mark,
                        your BiS's star, the enchant dot
-  YourScore.lua        your Naowh Score card under your level; hover for the score with your
+  YourScore.lua        your Gear Score card under your level; hover for the score with your
                        BiS, click for the BiS List
   YourBadge.lua        your supporter badge in the left pane's top corner
   SpecStats.lua        the stats: your spec's first (the stats it weighs, in a fixed order), or

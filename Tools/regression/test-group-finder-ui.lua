@@ -480,11 +480,11 @@ local radios = {}
 menus[#menus].fill(nil, { CreateTitle = NOTHING, CreateRadio = function(_, label, _, set, key)
     radios[#radios + 1] = { label = label, set = set, key = key }
 end })
-check("its menu: Newest, Naowh Score and Level", menus[#menus].owner == bar.sort and #radios == 3
-    and radios[1].label == "Newest" and radios[2].label == "Naowh Score" and radios[3].label == "Level")
+check("its menu: Newest, Gear Score and Level", menus[#menus].owner == bar.sort and #radios == 3
+    and radios[1].label == "Newest" and radios[2].label == "Gear Score" and radios[3].label == "Level")
 radios[2].set(radios[2].key)
 Flush()
-check("picking one saves it, says so and sorts by it", values.sort == "score" and bar.sort.text.text == "Sort: Naowh Score"
+check("picking one saves it, says so and sorts by it", values.sort == "score" and bar.sort.text.text == "Sort: Gear Score"
     and GF.sortedBy == "score")
 values.sort = nil
 view:Redraw()

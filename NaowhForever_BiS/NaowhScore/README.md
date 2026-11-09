@@ -1,4 +1,4 @@
-# Naowh Score
+# Gear Score
 
 One number for a character's gear, on the item level scale: 26.4 means the gear is worth a
 set of level 26 epics. Ours, worked out from the gear itself, so it reads the same for every
@@ -31,7 +31,7 @@ fit's typical error against the true epic level was about 1 level, with no class
 the BiS lists' sets.
 
 The daily watch (`.github/workflows/daily-watch.yml`) refits them for every new Forever build,
-in the same pull request that moves the data to it, with a "Naowh Score" section in its
+in the same pull request that moves the data to it, with a "Gear Score" section in its
 report: old against new, the fit's quality and its gates. `Formula.lua` is rewritten only when
 the fit passes its gates (a full epic set of level L scores L, R^2 at least 0.90, slots in a
 sensible order, grey < white < green < blue < epic) and something moves enough: a slot by
@@ -51,7 +51,7 @@ A score takes an item quality's colour by its share of the best there is (`Score
 under 25%, white, green from 45%, blue from 65%, purple from 80%, orange from 95%. The best is
 worked out from the gear the addon knows (Shared's ItemFacts: dungeon loot and faction rewards):
 each slot's best item, two different rings and trinkets, a two-hander or a main and off hand.
-Grade Against (BiS List > Character > Naowh Score) picks the best in the game (anyone levelling is grey or
+Grade Against (BiS List > Character > Gear Score) picks the best in the game (anyone levelling is grey or
 white) or the best the player's level can wear (who is well geared for where they are), the
 default: graded against the whole game, a levelling character's well-chosen greens read as a
 near-empty bar and looked broken to players. New
@@ -60,7 +60,7 @@ loot in the data raises the best with no number to keep.
 ## Where it shows
 
 - The BiS List's paperdoll: yours now, then with your BiS, and the gain (`BiS/Gains.lua`).
-- Player tooltips (BiS List > Character > Naowh Score, on by default): yours from what you wear; a Naowh
+- Player tooltips (BiS List > Character > Gear Score, on by default): yours from what you wear; a Naowh
   Forever user's as they share it; anyone else's from their gear, inspected as the game's own
   Inspect does. Scan Your Group reads your group's in the background, so theirs are ready.
 
@@ -115,7 +115,7 @@ UI/SettingsPage.lua  its card on BiS List > Character
 - The tooltip hook goes in a frame after Apply, once every module's Apply has run: tooltip post-calls
   run in the order they were added, so the badge line (Badges) comes first and the score under it,
   as one Naowh block. The label is in Naowh's blue without the logo, which stays with the badge line.
-- Sharing: only while the Naowh Score and Share My Score are on; others' scores are kept either way.
+- Sharing: only while the Gear Score and Share My Score are on; others' scores are kept either way.
   A score is sent in tenths, `S <GUID> <tenths> <level>`; a gear swap's burst sends once,
   `SEND_DELAY` after it; a request (`R`) goes to your group when you join it and to your guild once a
   session; each answer waits up to `ANSWER_SPREAD` tenths of a second at random so a raid's or a

@@ -35,7 +35,7 @@ BiS/
     Enchants.lua      every enchant, what it gives and goes on, the skill it needs (Tools/build/enchants.py)
   Rankings.lua        rankings, a level's picks, dungeon drops, sources, Run Next (B.Rankings)
   Lists.lua           your lists, their old formats, loading a level's, and the ns calls that change them (B.Lists)
-  Gains.lua           what your BiS gets you: Naowh Score and stats over what you wear (B.Gains)
+  Gains.lua           what your BiS gets you: Gear Score and stats over what you wear (B.Gains)
   Upgrades.lua        how much stronger each BiS makes you, in percent, by your spec's weights (B.Upgrades)
   Enchants.lua        the best enchant for what you wear, for your spec and the item's level (B.Enchants)
   Sharing.lua         export and import strings (ns.ExportBisList, ns.ImportBisList)
@@ -53,7 +53,7 @@ BiS/
     PickRow.lua       a pick in the picker, and the hover, clicks and move buttons a backup shares
     BackupRow.lua     a backup pick under its slot's row, joined by a tree line
     PlaceRow.lua      a place to run next
-    ScoreCard.lua     the Naowh Score card under the paperdoll
+    ScoreCard.lua     the Gear Score card under the paperdoll
     Paperdoll.lua     your model in your BiS, turned and zoomed, the slots as the game lays them out
     Toast.lua         Drop Alert's alert on screen, drawn by your settings, live and in its preview (B.Toast)
     RollBadge.lua     your star and rank over the game's roll frame (B.RollBadge)
@@ -67,7 +67,7 @@ BiS/
     AlertTest.lua     Play Test: Drop Alert with your first BiS (B.Alerts.Test)
     AlertPreview.lua  Drop Alert's live preview on its settings card (B.AlertStudio)
     SettingsPage.lua  its settings page (BiS List/Settings); Stat Weights, the Character Panel and the
-                      Naowh Score add their cards
+                      Gear Score add their cards
 ```
 
 Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the loot feed),

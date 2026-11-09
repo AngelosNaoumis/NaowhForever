@@ -12,7 +12,7 @@ local INSET = St.CONTENT_INSET
 local SOLO_GAP, SOLO_LIFT = 8, 30
 local SOLO_TITLE_GROW = 1
 local SOLO_TITLE = ns.L("You are not in a group")
-local SOLO_LINE = ns.L("Join a party or raid to see everyone's Naowh Score, gear, talents and stats.")
+local SOLO_LINE = ns.L("Join a party or raid to see everyone's Gear Score, gear, talents and stats.")
 local SOLO_LINK = ns.L("See a preview on its settings page")
 
 local function OpenPage()

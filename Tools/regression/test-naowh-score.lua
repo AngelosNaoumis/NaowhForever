@@ -1,4 +1,4 @@
--- Run with Lua 5.1 from the repository root: the Naowh Score. Its formula on sets of known
+-- Run with Lua 5.1 from the repository root: the Gear Score. Its formula on sets of known
 -- gear (a full epic set of a level scores that level; quality, slots, a two-hander, empty
 -- slots, an item not loaded yet); player tooltips (off until turned on, one inspect at a time,
 -- kept by GUID, filled in when the gear comes, never in combat or while the game's Inspect
@@ -595,7 +595,7 @@ do
     state.gear.player = Set(24, 4)
     state.Fire("PLAYER_EQUIPMENT_CHANGED", 1)
     state.RunTimers()
-    check("the Naowh Score off: nothing more goes", #state.sent == 4)
+    check("the Gear Score off: nothing more goes", #state.sent == 4)
     S.Set("naowhScore", true)
     S.Set("enabled", false)
     state.RunTimers()

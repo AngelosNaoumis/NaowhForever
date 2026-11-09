@@ -1,4 +1,4 @@
--- Inspect.lua: other players' Naowh Scores: kept, inspected one at a time, on their tooltips.
+-- Inspect.lua: other players' Gear Scores: kept, inspected one at a time, on their tooltips.
 local ns = _G.NaowhForever
 
 local Score = ns.NaowhScore
@@ -20,7 +20,7 @@ local INSPECT_DISTANCE = 1
 local RAID_SIZE, PARTY_SIZE = 40, 4
 local STALE = 0
 local VALUE_RGB = { r = 1, g = 1, b = 1 }
-local LABEL = "Naowh Score"
+local LABEL = "Gear Score"
 local WAITING = "..."
 local ASKED, WAIT, FAR = "asked", "wait", "far"
 local TOOLTIP_RIGHT = "GameTooltipTextRight"

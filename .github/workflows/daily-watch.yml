@@ -13,9 +13,9 @@ name: daily-watch
 # newest build and its report; it is closed once a pull request for the build is open.
 # Only the game's own tables are read, through wago.tools. Run workflow does the same on
 # demand, for a build of your choice or as a report only.
-# With the move, the Naowh Score's constants are refitted to the build's item table
+# With the move, the Gear Score's constants are refitted to the build's item table
 # (Tools/build/fit_naowh_score.py): NaowhForever_BiS/NaowhScore/Data/Formula.lua changes in the same pull request
-# when they move enough and pass its quality gates, and the report gets a "Naowh Score"
+# when they move enough and pass its quality gates, and the report gets a "Gear Score"
 # section either way (a manual run reports it too). A fit that fails only says so. A refit
 # that changes Formula.lua gets its own changelog line: every player's score moves.
 # The loot job: whether wowsrc.com's Forever loot pages list something the Journal was not
@@ -148,10 +148,10 @@ jobs:
           python Tools/release/watch_build.py "${args[@]}"
           cat "$RUNNER_TEMP/watch.md" >> "$GITHUB_STEP_SUMMARY"
 
-      # The Naowh Score's constants, refitted to the build moved to: Formula.lua is rewritten
+      # The Gear Score's constants, refitted to the build moved to: Formula.lua is rewritten
       # only on a move (when they move enough and pass the gates), and a manual run only
       # reports. Its section goes in the build's report, so in the pull request. Never fails.
-      - name: Refit the Naowh Score
+      - name: Refit the Gear Score
         if: steps.watch.outcome == 'success' && (steps.watch.outputs.made == 'true' || github.event_name == 'workflow_dispatch')
         env:
           BUILD: ${{ steps.watch.outputs.build }}
@@ -160,9 +160,9 @@ jobs:
           args=(--build "$BUILD" --report "$RUNNER_TEMP/score.md")
           if [ "$WRITE" = "true" ]; then args+=(--write); fi
           if ! python Tools/build/fit_naowh_score.py "${args[@]}"; then
-            echo "::warning::The Naowh Score refit failed: its constants stay as they are."
+            echo "::warning::The Gear Score refit failed: its constants stay as they are."
             {
-              echo "### Naowh Score"
+              echo "### Gear Score"
               echo
               echo "> **Not refitted:** the fit failed (see the run log). The constants stay as they are."
             } > "$RUNNER_TEMP/score.md"
@@ -171,7 +171,7 @@ jobs:
           cat "$RUNNER_TEMP/score.md" >> "$GITHUB_STEP_SUMMARY"
 
       # The script made the change, and says what to call it (a new build, or the build's own
-      # hotfixes coming in) and its changelog line, if any. A refitted Naowh Score adds one.
+      # hotfixes coming in) and its changelog line, if any. A refitted Gear Score adds one.
       - name: Add the build
         if: steps.watch.outcome == 'success' && steps.watch.outputs.made == 'true'
         env:
@@ -180,7 +180,7 @@ jobs:
         run: |
           nl=$'\n'
           if ! git diff --quiet -- NaowhForever_BiS/NaowhScore/Data/Formula.lua; then
-            CHANGELOG="${CHANGELOG:+$CHANGELOG$nl}Changed: Naowh Score: refitted to the latest Forever items."
+            CHANGELOG="${CHANGELOG:+$CHANGELOG$nl}Changed: Gear Score: refitted to the latest Forever items."
           fi
           $PR add watch "${TITLE#chore(data): }" "$RUNNER_TEMP/watch.md" "$CHANGELOG" \
             Tools/sources/wago.py NaowhForever_DungeonJournal/Data NaowhForever_BiS/NaowhScore/Data Shared/Data

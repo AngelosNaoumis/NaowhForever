@@ -4,7 +4,7 @@ A Looking For Group layer for Naowh Forever players, on top of WoW Forever's own
 (`Blizzard_GroupFinder_VanillaStyle`, a listing board with no applications). Forever does the listing,
 searching and inviting; Naowh Forever players see each other's cards and can apply to a group, by
 addon whispers between the two players. A module of `NaowhForever_Utilities` (Utilities > Group Finder
-in the options window), needing `NaowhForever_BiS` for the Naowh Score and the BiS list; the Dungeon
+in the options window), needing `NaowhForever_BiS` for the Gear Score and the BiS list; the Dungeon
 Journal is optional and read for kills, quests and dungeon keys when it is loaded.
 
 Off by default (`groupFinder.enabled`; its switch under Settings > Modules). Its window (`/nflfg`, its
@@ -36,7 +36,7 @@ Key Binding, off to start), the game's Group Finder key, I to start, opens it in
   then the dungeon, the leader's kills and quests there, and how long ago it was listed.
 - The filter box keeps the listings whose dungeon, leader or note has what you type; the count says
   how many of them show.
-- Your own listing first, then by the sort: newest first (to start), the leader's Naowh Score best first,
+- Your own listing first, then by the sort: newest first (to start), the leader's Gear Score best first,
   or the dungeon's level lowest first, newest first within each. The sort is kept. A delisted listing
   stays, faded.
 - A group's spots are its tanks, healers and damage, then empty spots up to the activity's size; a solo
@@ -62,7 +62,7 @@ Key Binding, off to start), the game's Group Finder key, I to start, opens it in
 | [H][D] 25                                                          |  the roles they apply as
 ```
 
-- The applicants, best Naowh Score first, their note on hover. Invite invites them by name, and the
+- The applicants, best Gear Score first, their note on hover. Invite invites them by name, and the
   row then says Invited; Decline tells them, and they leave the list.
 - Without a listing it says so, and points to Create. Only your group's leader sees Delist and the
   applicants.
@@ -134,13 +134,13 @@ The card is nine fields, `-` for one not shared or not known:
 ```
 
 - roles: `T`, `H`, `D` in that order (the game's saved LFG roles, or the ones you apply as).
-- spec: the BiS list's spec key. score: the Naowh Score in tenths. BiS: have/total.
+- spec: the BiS list's spec key. score: the Gear Score in tenths. BiS: have/total.
 - kills: each boss the game counts, in the Journal's order, capped at 99. A screen showing them per
   boss checks the count against its own list of the dungeon's bosses first; the total is always good.
 - quests: the quests in your log, a slash, then those you still need, by quest ID (the reader names
   them in its own language).
 - the note: printable ASCII, no `|` escapes, 60 bytes at most, always last.
-- `L`'s minimum: the Naowh Score in tenths. needs: three digits, the tanks, healers and damage you want.
+- `L`'s minimum: the Gear Score in tenths. needs: three digits, the tanks, healers and damage you want.
 
 Sizes: Q 15 bytes, C 86, L with a note 129, A with a note 106; the biggest real application (Dire
 Maul's 19 bosses, a full note) 248. When a card would not fit, its quest lists are cut first, then its
@@ -177,7 +177,7 @@ kills.
 - Custom chat channels are split per realm on Forever, so there is no channel network: a player's
   own search in Forever's finder is the discovery, and only the players they look at or apply to are
   whispered.
-- Its own prefix: the BiS List's inspect whisper and the Naowh Score's share answer a unit you
+- Its own prefix: the BiS List's inspect whisper and the Gear Score's share answer a unit you
   inspect or your group, while a card goes to a stranger from a listing and carries dungeon kills and
   quests they do not.
 - Listings are read here rather than through Chat Zones or Group Finder Roles: those are Quality of
@@ -275,7 +275,7 @@ kills.
 | Key | Default | What it is |
 | --- | --- | --- |
 | `enabled` | `false` | the module |
-| `shareScore` | `true` | your Naowh Score on your card |
+| `shareScore` | `true` | your Gear Score on your card |
 | `shareKills` | `true` | your boss kills for the dungeon |
 | `shareQuests` | `true` | the dungeon's quests you have or need |
 | `shareBis` | `true` | how many of your BiS items you have |

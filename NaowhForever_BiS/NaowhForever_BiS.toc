@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: |cff0091edNaowh|r Forever: BiS List
-## Notes: Best-in-slot lists, stat weights, Naowh Score, the character panel and the inspect window.
+## Notes: Best-in-slot lists, stat weights, Gear Score, the character panel and the inspect window.
 ## Author: Naowh
 ## Version: 1.2.18
 ## Dependencies: NaowhForever

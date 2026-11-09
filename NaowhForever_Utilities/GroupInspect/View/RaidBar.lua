@@ -15,7 +15,7 @@ local VIEWS = {
     { key = "talents", label = "Talents", tip = "Everyone's talent points per tree." },
     { key = "stats", label = "Stats", tip = "Everyone's key stats." },
 }
-local SORTS_LIST = { { "score", "Naowh Score" }, { "ilvl", "Item Level" }, { "name", "Name" },
+local SORTS_LIST = { { "score", "Gear Score" }, { "ilvl", "Item Level" }, { "name", "Name" },
     { "class", "Class" }, { "role", "Role" } }
 local TEXT_SORT = ns.L("Sort: %s")
 local SORT_LABELS = {}

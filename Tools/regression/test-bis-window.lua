@@ -402,7 +402,7 @@ view.rowTops[18] = 4000
 view:ScrollTo(18)
 check("a row out of sight is scrolled to", (view:GetParent().scrolled or 0) > 0)
 local doll = head:GetParent()
--- One item worn, at 20; every BiS at 25: the Naowh Score of each (its own test has the formula).
+-- One item worn, at 20; every BiS at 25: the Gear Score of each (its own test has the formula).
 local gains = doll.gainsBlock
 local function Number(text) return tonumber((text or ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""):match("[%d%.]+")) end
 local nowScore = ns.NaowhScore.Unit("player")

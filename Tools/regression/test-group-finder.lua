@@ -411,7 +411,7 @@ do
     check("your card: class and level", mine.class == 1 and mine.level == 20)
     check("your card: the game's saved roles", mine.roles == Card.TANK + Card.DAMAGE)
     check("your card: the BiS list's spec", mine.spec == "fury-warrior")
-    check("your card: the Naowh Score in tenths", mine.score == 189)
+    check("your card: the Gear Score in tenths", mine.score == 189)
     check("your card: BiS have and total", mine.bisHave == 8 and mine.bisTotal == 14)
     check("your card: kills of each counted boss, in order, capped",
         mine.hasKills and mine.nKills == 8 and table.concat(mine.kills, ",") == "3,2,0,0,99,1,0,0")

@@ -145,7 +145,7 @@ local MODULES = {
       needs = { "NaowhForever_BiS" },
       open = "ToggleGroupInspect",
       command = "group", short = "Group", icon = "Interface\\Icons\\INV_Misc_Spyglass_02",
-      subtitle = "Everyone in your party or raid: their Naowh Score, gear, talents and stats.",
+      subtitle = "Everyone in your party or raid: their Gear Score, gear, talents and stats.",
       tabs = {
           { name = "Settings", reuse = true },
       } },

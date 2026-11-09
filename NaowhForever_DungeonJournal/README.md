@@ -202,7 +202,7 @@ The rules, in plain words:
   (`Tools/data/items_in_game.json`, see below). The rest are still listed, as `NotYet` in
   `Data/Items.lua`: name, quality, levels and icon from Classic Era's tables, drawn without
   asking the server, tagged "Not in Forever yet", with a tooltip of our own. They are never
-  your BiS, an upgrade or a look to collect, and nothing outside the Journal (the Naowh Score,
+  your BiS, an upgrade or a look to collect, and nothing outside the Journal (the Gear Score,
   the BiS List's sources and picker) sees them. A build that has them makes them ordinary.
 - **What the game sends.** wago.tools records the items Blizzard adds by hotfix late, and not
   always all of them (Ravager loads in game with no row there). `python Tools/sources/items_in_game.py`

@@ -17,7 +17,7 @@ Why. The TOC lists only `BiS.xml`, which loads them in this order:
 NaowhForever_BiS/
   NaowhForever_BiS.toc   its metadata, and one file line: BiS.xml
   BiS.xml                each module's XML, in load order
-  NaowhScore/            the Naowh Score, with its own README
+  NaowhScore/            the Gear Score, with its own README
   StatWeights/           Stat Weights, with its own README
   BiS/                   the BiS List, with its own README
   CharacterPanel/        the Character Panel, with its own README
@@ -29,7 +29,7 @@ NaowhForever_BiS/
 
 - Under Forever's Gamepad interface style (`ns.GamepadStandDown()`) the Roll Frame Badge stays off:
   the game's roll frames are not hooked, as EllesmereUI's loot roll skin stands down there too.
-- The order is layering: the Naowh Score and Stat Weights are read by the BiS List's paperdoll,
+- The order is layering: the Gear Score and Stat Weights are read by the BiS List's paperdoll,
   upgrades and enchants; the Character Panel shows the BiS List's stars, upgrades and enchant dots;
   the Inspect Panel reuses the Character Panel's parts.
 - A module's on/off default is read from `ns.FEATURES` (`Core/Features.lua`): Stat Weights'

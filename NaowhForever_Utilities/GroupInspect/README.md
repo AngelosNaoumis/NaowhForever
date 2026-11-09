@@ -1,8 +1,8 @@
 # Group Inspect
 
 One window with everyone in your party or raid: their class, whether they run Naowh Forever, their
-Naowh Score, item level, gear, talents and stats. A module of `NaowhForever_Utilities` (Utilities >
-Group Inspect in the options window), needing `NaowhForever_BiS`, whose Naowh Score, inspect queue,
+Gear Score, item level, gear, talents and stats. A module of `NaowhForever_Utilities` (Utilities >
+Group Inspect in the options window), needing `NaowhForever_BiS`, whose Gear Score, inspect queue,
 inspect panel and character panel parts it reuses: turning BiS off turns this off too, and turning
 this on brings BiS. Open it with:
 
@@ -31,7 +31,7 @@ Party (2 to 5): a card each, side by side, 256 wide for four or fewer, 203 for f
 | [class] Name Surname [b]  [NF] |  [b] their supporter badge, as in chat
 |         Level 25 Paladin  [ro] |  role icon only when known
 |--------------------------------|
-| NAOWH SCORE         ITEM LEVEL |
+| GEAR SCORE          ITEM LEVEL |
 | 16.9                        24 |
 | [=========ramp=====----------] |
 | GEAR            9/11 enchanted |
@@ -53,11 +53,11 @@ Raid (6 to 40): a row each; the toolbar picks the view, the sort and the filters
 - **NF pill:** on members whose Naowh Forever answered; hover for its version. Supporter and staff
   badges are separate: their own badge after the name, as in chat (with the chat badge setting).
 - **Names:** a long name gets smaller, down to a minimum, and shows whole on hover.
-- **Score:** the Naowh Score in its grade's color; on a card, the score card's ramp bar too.
+- **Score:** the Gear Score in its grade's color; on a card, the score card's ramp bar too.
 - **Stats:** exact when their Naowh Forever shared them, else added up from their gear (no base
   stats), and labelled so: "From their Naowh Forever", "From gear", or "Yours" on your own card;
   white or grey in a raid row.
-- **Raid toolbar:** Gear, Talents or Stats; sort by Naowh Score, item level, name, class or role;
+- **Raid toolbar:** Gear, Talents or Stats; sort by Gear Score, item level, name, class or role;
   filter by class, role, armor, who runs Naowh Forever and who is missing an enchant (filters last
   for the session). Each row has its state (queued, inspecting, out of range, offline) and a button
   to inspect that member again; the title bar's Refresh inspects everyone again.
@@ -130,7 +130,7 @@ Answering needs Group Inspect on, Share Your Stats (`groupInspectShare`) and a g
   is none: nothing is made, listened to or hooked (`NaowhForever_Utilities/README.md`). Its files stay
   loaded while it is switched off, so Share Your Stats answers and listens only while it is on.
 - The scan runs only while the window is open (`GI.Open`, `GI.Close`): one request at a time
-  through Naowh Score's shared queue (`ns.NaowhScore.InspectQueue`), at least its gap apart, out
+  through Gear Score's shared queue (`ns.NaowhScore.InspectQueue`), at least its gap apart, out
   of combat, in range, yielding to your own inspect. Players running Naowh Forever are inspected
   after the rest, since they share their stats anyway and only their gear is wanted. Out of range
   is tried again later, and the walk stops once everyone is known; a read goes stale after

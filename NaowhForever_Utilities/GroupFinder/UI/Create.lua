@@ -1,4 +1,4 @@
--- Create.lua: the Create page: a dungeon, the roles you still need, a minimum Naowh Score, a playstyle and a note, listed in Forever's group finder (ns.GroupFinder.UI.Create).
+-- Create.lua: the Create page: a dungeon, the roles you still need, a minimum Gear Score, a playstyle and a note, listed in Forever's group finder (ns.GroupFinder.UI.Create).
 local ns = _G.NaowhForever
 local T = ns.THEME
 

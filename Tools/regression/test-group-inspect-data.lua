@@ -1,5 +1,5 @@
 -- Run with Lua 5.1 from the repository root: Group Inspect's data (Records, Inspect, PreviewGroup) on the
--- real Naowh Score files and the Inspect Panel's talent reading, against stubs. Off or closed it
+-- real Gear Score files and the Inspect Panel's talent reading, against stubs. Off or closed it
 -- does nothing; open, the roster (party, raid of 40, a recycled unit token), the walk's pacing
 -- through the shared inspect queue (one at a time, 2 s apart, never in combat, after your own
 -- inspect, out of range retried, Naowh Forever users last, stopped once known), a stale

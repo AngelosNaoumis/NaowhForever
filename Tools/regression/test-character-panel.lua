@@ -396,7 +396,7 @@ CP.StatsLook.Style(nil, statRow)
 check("a game stat's long name (German Bewegungsgeschwindigkeit) stops short of its number, on one line",
     statLabel.points.LEFT == statRow and statLabel.points.RIGHT == statRow.Value and statLabel.wrap == false)
 local badge = CP.badge
-check("your Naowh Score big under your level, shown", badge and badge.parent == statsList
+check("your Gear Score big under your level, shown", badge and badge.parent == statsList
     and badge.shown ~= false and badge.points.TOP == levelText)
 check("on the game's stats list, its fade for your spec's stats not its own", badge.ignoreParentAlpha == true)
 badge.scripts.OnShow(badge)
@@ -466,7 +466,7 @@ CP.ApplyScore()
 check("a repaint while the gear sets are picked shows nothing over them", not OnScreen(badge))
 SetSidebar(statsList)
 S.Set("characterPanelScore", false)
-check("Naowh Score off: no score in the corner", badge.shown == false and not OnScreen(badge))
+check("Gear Score off: no score in the corner", badge.shown == false and not OnScreen(badge))
 
 -- Your supporter badge, in the left pane's top corner: only ever a badge of your own. A player
 -- without one sees nothing there, and nothing asks them for one.
@@ -908,16 +908,16 @@ local offCard, offCP, offListeners, offHooked, offStore = PanelCard(0)
 check("flag 0: the team's badge still listens and hooks", offHooked == 1 and offListeners == 1
     and offCP.supportBadge == nil)
 check("flag 0: the BiS link keeps its place", offCP.BADGE_MID == CP.BADGE_MID)
-check("flag 0: no badge row at all, the Naowh Score row first", #offCard.rows == 2
+check("flag 0: no badge row at all, the Gear Score row first", #offCard.rows == 2
     and offCard.rows[1].key == "characterPanelScore")
 check("then Stats Shown, the same Your Spec / All Stats as the panel's switch",
     offCard.rows[2].key == "characterPanelStats" and offCard.rows[2].choice[2][1] == "spec"
     and offCard.rows[2].choice[2][2] == "all")
-check("flag 0: the summary leaves the badge out", offCard.summary(offStore) == "With your Naowh Score")
+check("flag 0: the summary leaves the badge out", offCard.summary(offStore) == "With your Gear Score")
 local onCard, _, onListeners, onHooked, onStore = PanelCard(1)
 check("flag 1: the badge listens and hooks as before", onListeners == 1 and onHooked == 1)
-check("flag 1: the Supporter Badge row first, then Naowh Score", #onCard.rows == 3
+check("flag 1: the Supporter Badge row first, then Gear Score", #onCard.rows == 3
     and onCard.rows[1].label == "Supporter Badge" and onCard.rows[2].key == "characterPanelScore")
-check("flag 1: the summary names the badge", onCard.summary(onStore) == "With your badge and Naowh Score")
+check("flag 1: the summary names the badge", onCard.summary(onStore) == "With your badge and Gear Score")
 
 print(("test-character-panel: %d checks passed"):format(checks))

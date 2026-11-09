@@ -1,4 +1,4 @@
--- NaowhScore.lua: the Naowh Score (ns.NaowhScore): one number for a character's gear, and its grade.
+-- NaowhScore.lua: the Gear Score (ns.NaowhScore): one number for a character's gear, and its grade.
 local ns = _G.NaowhForever
 
 local GetItemInfo = C_Item.GetItemInfo
