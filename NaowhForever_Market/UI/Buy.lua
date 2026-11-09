@@ -56,7 +56,7 @@ local page, shopPane, shopScroll, shopList, shopNote, main, search, resultsScrol
 local detail, nameText, ladder, quantity, buyButton, statusText, star, spark, sorter
 local favPane, favScroll, favList, favNote, itemEvents
 local shopRows, resultRows, rungs, favRows, favourites, results = {}, {}, {}, {}, {}, {}
-local active = false
+local active, watching = false, false
 
 local Page = {}
 Market.Pages.buy = Page
@@ -334,6 +334,10 @@ local function ItemLoaded(_, _, itemID)
     if Buy.IsFavourite(itemID) then DrawFavourites() end
 end
 
+local function ShoppingChanged()
+    if active then DrawShopping() end
+end
+
 local function BuyClicked()
     if Buy.Purchase(Buy.picked.commodity and Quantity() or 1) then Page.Draw() end
 end
@@ -497,6 +501,7 @@ function Page.Show()
             itemEvents:SetScript("OnEvent", ItemLoaded)
         end
         itemEvents:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+        if not watching then watching = Buy.WatchShopping(ShoppingChanged) end
         DrawFavourites()
     end
     Page.Draw()

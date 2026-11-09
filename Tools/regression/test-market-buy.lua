@@ -10,10 +10,11 @@ end
 
 local t = World.Setup({ keyInfo = { [2589] = { isCommodity = true }, [9999] = { isCommodity = false } } })
 local B, L = t.M.Buy, t.M.Listings
-local bought = {}
+local bought, watchers = {}, {}
 t.ns.Professions = { Shopping = {
     Materials = function() return { { item = 2589, qty = 30, name = "Linen Cloth" } } end,
     Bought = function(item, qty) bought[#bought + 1] = { item = item, qty = qty } end,
+    OnChange = function(fn) watchers[#watchers + 1] = fn end,
 } }
 B.Open()
 L.Start()
@@ -35,6 +36,11 @@ t.Fire("AUCTION_HOUSE_SHOW_ERROR", 0)
 Check("events with nothing to do redraw nothing", redraws == 0)
 B.onChange = nil
 Check("the Shopping List comes from Professions", B.ShoppingList()[1].qty == 30)
+Check("the Buy page is told when the Shopping List changes", B.WatchShopping(print) and watchers[1] == print)
+local professions = t.ns.Professions
+t.ns.Professions = nil
+Check("and watches nothing without Professions", not B.WatchShopping(print))
+t.ns.Professions = professions
 
 B.Pick(B.results[1].itemKey)
 Check("picking a commodity asks for its listings", t.searches[1].key.itemID == 2589 and B.picked.commodity)

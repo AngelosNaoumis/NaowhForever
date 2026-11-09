@@ -136,6 +136,9 @@ NaowhForever_Market/
   does, and answers with `AUCTION_HOUSE_PURCHASE_COMPLETED` for that auction or `AUCTION_HOUSE_SHOW_ERROR`.
 - The Shopping List is Professions' (`ns.Professions.Shopping`), read only when Professions is loaded.
   A commodity bought here is taken off it with its own `Shopping.Bought`, as its Buy button does.
+  Buy listens to `Shopping.OnChange` from its first show and redraws the list only while it is
+  shown, since a listener cannot be removed; without it, a craft added at the auctioneer stayed off
+  the list until the tab was opened again.
 - An owned auction's item key info (`GetItemKeyInfo`) can be missing until
   `ITEM_KEY_ITEM_INFO_RECEIVED`; until then it shows as Checking and is checked when it arrives.
 - Price history keeps each item's lowest price per day from QoL's scans (`ns.AuctionPriceList`), for
@@ -304,3 +307,5 @@ Away from the auction house:
 36. Fish from a school (Oily Blackmouth, Firefin Snapper, Floating Wreckage): a pool pin appears where
     you stood. Unverified: that a pool's catch names the pool as its loot source (`GetLootSourceInfo`).
     If it names the bobber instead, no pool is ever recorded.
+37. With Buy open at an auctioneer, add a craft to Professions' Shopping List: its materials show under
+    Shopping List at once.

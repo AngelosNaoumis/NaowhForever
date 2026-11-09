@@ -185,6 +185,13 @@ function Buy.ShoppingList()
     return (shopping.Materials())
 end
 
+function Buy.WatchShopping(fn)
+    local shopping = Shopping()
+    if not shopping then return false end
+    shopping.OnChange(fn)
+    return true
+end
+
 function Buy.Purchase(quantity)
     if not picked.itemID or picked.waiting then return false end
     if picked.commodity then
