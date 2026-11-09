@@ -532,7 +532,7 @@ local function BuildForm()
     quantityOf:SetPoint("LEFT", quantity, "RIGHT", OF_GAP, 0)
     local items = {}
     for i, duration in ipairs(C.DURATIONS) do items[i] = { key = duration, label = C.DURATION_LABELS[duration] } end
-    durations = Parts.Tabs(form, DURATION_W, items, DurationPicked)
+    durations = Parts.Tabs(form, DURATION_W, items, DurationPicked, nil, nil, true)
     durations:SetPoint("BOTTOMRIGHT")
     local label = ns.Font(form, SMALL_SIZE, nil, T.muted)
     label:SetPoint("TOPLEFT", durations, "TOPLEFT", 0, FIELD_LABEL_H)

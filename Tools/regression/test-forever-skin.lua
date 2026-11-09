@@ -260,9 +260,12 @@ do
     ns.Shared.Parts.TitleBar(window, "Title", "Sub")
     local btn = ns.Button(New("Frame"), "Go", 80, 20)
     local tabs = ns.Shared.Parts.Tabs(New("Frame"), 300, { { key = "a", label = "A" } }, function() end)
+    local choice = ns.Shared.Parts.Tabs(New("Frame"), 300, { { key = "a", label = "A" } }, function() end, nil, nil, true)
     local c = Controls(ns)
     check("Naowh: no Forever frame, button, tab or check", window.forever == nil and not btn._forever
         and tabs.buttons[1].idleArt == nil and tabs.buttons[1].idleFill == nil and c.toggle.w == 40)
+    check("Naowh: a strip asButtons is the same segments", not choice.asButtons and choice.buttons[1].mark
+        and choice.buttons[1].redArt == nil)
     check("Naowh: the game's art is never asked for", #atlasCalls == 0 and #layouts == 0 and window.backdrop.pattern == nil)
 end
 
@@ -517,6 +520,23 @@ do
     Parts.SetTabs(cut, { { key = "a", label = "A" } })
     check("and gives a tab back its full width once the row has room", cut.buttons[1].w == cut.buttons[1].want
         and not cut.buttons[1].cut and cut.buttons[1].text.w == 0)
+    local choice = Parts.Tabs(New("Frame"), 300, three, function() end, nil, nil, true)
+    Parts.PaintTabs(choice, "b")
+    local first, chosen, last = choice.buttons[1], choice.buttons[2], choice.buttons[3]
+    check("a strip asButtons is red buttons with no rail, not tabs", choice.rail == nil and first.idleArt == nil
+        and RedPieces(first, "") and first.highlightAtlas == St.FOREVER_RED_BUTTON_ATLAS.highlight)
+    check("the picked one a picked red button: pressed in and lit, gold text, no tab fill",
+        RedPieces(chosen, "-Pressed") and chosen.lockedLit and not first.lockedLit and not chosen.fill.shown
+        and not chosen.line.shown and chosen.text.color[2] == St.FOREVER_GOLD_RGB.g)
+    check("its buttons fill the strip, a tab gap apart", first.w > first.want and chosen.points[1][2] == first.w
+        + St.FOREVER_TAB_GAP and last.points[1][2] + last.w == 300)
+    first.scripts.OnMouseDown(first)
+    check("pressed: the pressed art", RedPieces(first, "-Pressed"))
+    first.scripts.OnMouseUp(first)
+    check("let go: the plain art again", RedPieces(first, ""))
+    Parts.PaintTabs(choice, "a")
+    check("picking another lets the first back out", RedPieces(chosen, "") and chosen.lockedLit == false
+        and RedPieces(first, "-Pressed") and first.lockedLit)
 
     local search = Parts.SearchBox(New("Frame"), "Search", function() end)
     check("its left end inside the box, never over the window's border", search.foreverArt

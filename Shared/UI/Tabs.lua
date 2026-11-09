@@ -64,7 +64,7 @@ local function NewTab(bar)
         button.fill:Hide()
         button.line:Hide()
     end
-    if ns.foreverSkin then Parts.ForeverTab(button) end
+    if ns.foreverSkin then Parts.ForeverTab(button, bar.asButtons) end
     button:SetScript("OnClick", TabClicked)
     button:SetScript("OnEnter", TabEnter)
     button:SetScript("OnLeave", TabLeave)
@@ -164,7 +164,13 @@ local function FitForeverTabs(bar, count, width)
         button.text:SetWidth(0)
         total = total + button.want
     end
-    if total <= room then return end
+    if total <= room then
+        if bar.asButtons then
+            local spare = (room - total) / count
+            for i = 1, count do bar.buttons[i].fit = math.floor(bar.buttons[i].fit + spare) end
+        end
+        return
+    end
     local trim = math.ceil((total - room) / count)
     total = 0
     for i = 1, count do
@@ -202,7 +208,7 @@ function Parts.SetTabs(bar, items)
     for i = 1, #items do
         local button = bar.buttons[i]
         local w = button.fit
-        if not ns.foreverSkin and i == #items then w = math.max(1, width - x) end
+        if (not ns.foreverSkin or bar.asButtons) and i == #items then w = math.max(1, width - x) end
         button:SetSize(w, TAB_H)
         button:SetPoint("LEFT", x, 0)
         if not ns.foreverSkin then
@@ -224,14 +230,15 @@ function Parts.FitTabs(bar, items, margin, maxW)
     Parts.SetTabs(bar, items)
 end
 
-function Parts.Tabs(parent, width, items, onPick, noRail, plain)
+function Parts.Tabs(parent, width, items, onPick, noRail, plain, asButtons)
     local bar = CreateFrame("Frame", nil, parent)
     bar:SetSize(width, TAB_H)
     bar.plain = plain and not ns.foreverSkin
+    bar.asButtons = asButtons and ns.foreverSkin
     if not ns.foreverSkin then
         ns.Solid(bar, "BACKGROUND", T.panel, 1):SetAllPoints()
         ns.Border(bar, BORDER_RGB)
-    elseif ns.foreverSkin and not noRail then
+    elseif ns.foreverSkin and not noRail and not asButtons then
         bar.rail = Parts.ForeverRail(bar)
     end
     bar.buttons, bar.splits, bar.onPick = {}, {}, onPick

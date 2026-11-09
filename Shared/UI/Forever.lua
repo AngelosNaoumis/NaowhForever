@@ -765,7 +765,19 @@ local function ShowPieces(pieces, shown)
     for i = 1, #pieces do pieces[i]:SetShown(shown) end
 end
 
-function Parts.ForeverTab(button)
+function Parts.ForeverTab(button, red)
+    if red then
+        if Parts.ForeverButtonArt(button) then
+            button:SetHighlightAtlas(St.FOREVER_RED_BUTTON_ATLAS.highlight, "ADD")
+            button:HookScript("OnSizeChanged", FitRed)
+        end
+        button.redTab = true
+        button.capRoom = 2 * St.FOREVER_TAB_PAD
+        button:SetScript("OnMouseDown", ButtonDown)
+        button:SetScript("OnMouseUp", ButtonUp)
+        button:HookScript("OnHide", ButtonUp)
+        return
+    end
     if HasAtlases(TAB_ATLASES) then
         button.idleArt = TabPieces(button, St.FOREVER_TAB_ATLAS)
         button.activeArt = TabPieces(button, St.FOREVER_ACTIVE_TAB_ATLAS)
@@ -789,6 +801,15 @@ function Parts.ForeverTab(button)
 end
 
 function Parts.PaintForeverTab(button, on)
+    if button.redTab then
+        button.fill:Hide()
+        button.line:Hide()
+        button._picked = on or nil
+        PaintRed(button)
+        if on then button:LockHighlight() else button:UnlockHighlight() end
+        button.text:SetTextColor(GOLD.r, GOLD.g, GOLD.b)
+        return
+    end
     if button.idleArt then
         ShowPieces(button.idleArt, not on)
         ShowPieces(button.activeArt, on)

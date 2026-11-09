@@ -652,6 +652,8 @@ What a comment in the code used to say, in short. The house rules behind it are 
   holds that room, so picking one never resizes the strip.
   `Parts.Tabs` keeps its sixth `plain` input for callers; all Naowh strips use the same segments,
   including preview states and module windows. The Forever skin keeps its own art and fitting.
+  Its seventh, `asButtons`, is for a choice of value rather than of page (The Market's durations):
+  Naowh draws it as the same segments, the Forever skin as red buttons.
 - Tab labels shorten only when their strip has no room, and show the full label on hover.
   Changing the tab list repaints reused buttons so a previous selection cannot stay lit.
 - `Settings.Reset` and `Settings.ResetRow` retain one session-only undo, exposed through
@@ -745,6 +747,9 @@ What a comment in the code used to say, in short. The house rules behind it are 
   gives up padding
   down to `FOREVER_TAB_TIGHT` a side, so every label stays whole where it can, then the widest are cut to one width with their label shortened, as the
   game's `PanelTemplates_ResizeTabsToFit` does; a cut tab shows its full label on hover.
+- A strip made `asButtons` is the red button instead of tab art: tabs read as pages, and a choice
+  of value drawn as tabs sat on its rail like a second row of pages. Its buttons fill the strip,
+  `FOREVER_TAB_GAP` apart, and the picked one is a picked red button.
 - A settings card is only its list bar, the Friends list's category header ("Favorites 0/2"):
   `SocialUIScrollableHeaderTemplate` (`Blizzard_SocialUIShared/SocialUISharedTemplates.xml`) on
   `ListHeaderVisualTemplate` (`Blizzard_SharedXML/ListTemplates.xml`), whose bar is
