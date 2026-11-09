@@ -309,6 +309,11 @@ NaowhForever_Market/
   when The Market is loaded, and it answers no until The Market's post-call is in, so Auction Prices
   alone works as before. The Market keeps the choice since its lines are the ones that change, and the
   settings stay on one card.
+- The Prices & Deals card gathers the auction house settings that live elsewhere: QoL's Auction Prices
+  rows and Professions' Disenchant Deals rows, each bound to its own module's store (`store =`), so
+  a change here is the same change there and both pages keep them. Its rows are built when the page
+  opens (`rows = PriceRows`): The Market loads before QoL and Professions, and a card's rows cannot
+  be shared, since each row keeps its card. Professions' rows show only while it is loaded.
 - Best Way to Sell weighs what each way puts in your bags, per item (`Worth.Best`): the auction price
   after the 5% cut, the vendor price, and disenchanting's materials after the cut. A vendor wins a tie
   with the auction house, as in Bag Worth, and the auction house a tie with disenchanting: the surer
@@ -423,3 +428,5 @@ Away from the auction house:
     and by how much. A green reads Best: Disenchant on an enchanter who can disenchant it when its
     materials fetch more, never on a character without Enchanting; an item with no scan price reads
     Better: and names only what it beat.
+51. The Market's settings page has Prices & Deals: QoL's four Auction Prices rows and Professions'
+    Disenchant Deals rows (with Professions on). Turning one on there turns it on in QoL or Professions too.
