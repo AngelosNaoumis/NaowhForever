@@ -1,6 +1,7 @@
 -- Run with Lua 5.1 from the repository root: the profession window's docked Blizzard parts stay readable:
--- the Unlearn button shows a red cross even where its atlas is missing, and every tab gets one outline
--- on the right edge. With Dock Shopping List on the tabs move to the left edge, mirrored, with no outline.
+-- the Unlearn button shows a red cross even where its atlas is missing, and every tab gets one outline in
+-- the tab's own shape on the right edge. With Dock Shopping List on the tabs move to the left edge,
+-- mirrored, with no outline.
 local f = assert(io.open(arg[1] or "NaowhForever_Professions/UI/Takeover.lua", "rb"))
 local source = f:read("*a"):gsub("\r\n", "\n"); f:close()
 local function Slice(a, b)
@@ -9,11 +10,15 @@ local function Slice(a, b)
 end
 
 local ATLAS, FALLBACK = "Profession-button-red-crossmark", "Interface/RAIDFRAME/ReadyCheck-NotReady"
+local OUTLINE_ATLAS, OUTLINE_SUBLEVEL = "common-sidetab-hover", 7
 local WIN = {}
+local textures = 0
 local function Env(atlasKnown, tabsLeft, frame)
-    local made, hooks = 0, 0
+    local hooks = 0
+    textures = 0
     local env = {
         UNLEARN_ATLAS = ATLAS, UNLEARN_FALLBACK = FALLBACK, UNLEARN_SIZE = 20, outlines = {},
+        TAB_OUTLINE_ATLAS = OUTLINE_ATLAS, TAB_OUTLINE_SUBLEVEL = OUTLINE_SUBLEVEL,
         TABS_DROP = -60, EMPTY = {}, win = WIN, tabsLeft = tabsLeft, mirrored = {}, flippedArt = {},
         hookedArt = {}, placing = false, ProfessionsFrame = frame,
         FLIP = { LEFT = "RIGHT", RIGHT = "LEFT", TOPLEFT = "TOPRIGHT", TOPRIGHT = "TOPLEFT",
@@ -21,20 +26,29 @@ local function Env(atlasKnown, tabsLeft, frame)
         hooksecurefunc = function() hooks = hooks + 1 end,
         wipe = function(t) for k in pairs(t) do t[k] = nil end end,
         C_Texture = { GetAtlasInfo = function(name) return atlasKnown and name == ATLAS and {} or nil end },
-        ns = { THEME = { accent = { r = 0, g = 0.57, b = 0.93 } },
-            Border = function()
-                made = made + 1
-                local outline = { shown = true }
-                outline.SetShown = function(self, on) self.shown = on end
-                return { _frame = outline }
-            end },
+        ns = { THEME = { accent = { r = 0, g = 0.57, b = 0.93 } } },
     }
     setmetatable(env, { __index = _G })
     local code = Slice("local function OutlineTab(", "\nlocal function Place(")
         .. "\nreturn OutlineTab, ShowUnlearn, DockTabs"
     local chunk = assert(loadstring(code)); setfenv(chunk, env)
     local Outline, Show, Dock = chunk()
-    return env, Outline, Show, function() return made end, Dock, function() return hooks end
+    return env, Outline, Show, function() return textures end, Dock, function() return hooks end
+end
+local function Texture(layer, sublevel)
+    textures = textures + 1
+    local t = { layer = layer, sublevel = sublevel, shown = true }
+    function t:SetAtlas(atlas, useSize) self.atlas, self.atlasSize = atlas, useSize end
+    function t:SetPoint(point) self.point = point end
+    function t:SetDesaturated(on) self.desaturated = on end
+    function t:SetVertexColor(r, g, b) self.color = { r, g, b } end
+    function t:SetShown(on) self.shown = on end
+    return t
+end
+local function Outlinable(tab)
+    tab = tab or {}
+    function tab:CreateTexture(_, layer, _, sublevel) return Texture(layer, sublevel) end
+    return tab
 end
 local function Icon()
     return { SetTexture = function(self, t) self.texture = t end,
@@ -50,7 +64,7 @@ local function Anchored(points)
     return region
 end
 local function Tab()
-    local tab = Anchored({ { "TOPLEFT", "parent", "TOPRIGHT", 0, 0 } })
+    local tab = Outlinable(Anchored({ { "TOPLEFT", "parent", "TOPRIGHT", 0, 0 } }))
     local art = Anchored({ { "LEFT", tab, "LEFT", 3, 0 } })
     art.coords = { 0, 0, 0, 1, 1, 0, 1, 1 }
     function art:GetObjectType() return "Texture" end
@@ -86,17 +100,26 @@ Case("a button with no icon is left alone", function()
 end)
 Case("a tab is outlined once, hidden when undocked and shown again when docked", function()
     local env, Outline, _, made = Env(true)
-    local tab = {}
+    local tab = Outlinable()
     Outline(tab, true)
     Outline(tab, true)
-    assert(made() == 1 and env.outlines[tab]._frame.shown == true, "one outline, shown")
+    assert(made() == 1 and env.outlines[tab].shown == true, "one outline, shown")
     Outline(tab, false)
-    assert(env.outlines[tab]._frame.shown == false, "hidden when undocked")
+    assert(env.outlines[tab].shown == false, "hidden when undocked")
     Outline(tab, true)
-    assert(made() == 1 and env.outlines[tab]._frame.shown == true, "shown again, not made twice")
-    local never = {}
+    assert(made() == 1 and env.outlines[tab].shown == true, "shown again, not made twice")
+    local never = Outlinable()
     Outline(never, false)
     assert(made() == 1 and env.outlines[never] == nil, "an undocked tab never gets one")
+end)
+Case("the outline is the tab's own hover art in Naowh blue, under Blizzard's selected art", function()
+    local env, Outline = Env(true)
+    local tab = Outlinable()
+    Outline(tab, true)
+    local o, accent = env.outlines[tab], env.ns.THEME.accent
+    assert(o.atlas == OUTLINE_ATLAS and o.atlasSize == true and o.point == "CENTER", "the tab's shape, centred")
+    assert(o.layer == "ARTWORK" and o.sublevel == OUTLINE_SUBLEVEL, "over the icon, under the gold selected art")
+    assert(o.desaturated and o.color[1] == accent.r and o.color[2] == accent.g and o.color[3] == accent.b, "blue")
 end)
 Case("Dock Shopping List off: the tabs dock on the right edge, outlined, art untouched", function()
     local frame = Frame()
@@ -105,12 +128,12 @@ Case("Dock Shopping List off: the tabs dock on the right edge, outlined, art unt
     Dock(true)
     local p = head.points[1]
     assert(#head.points == 1 and p[1] == "TOPLEFT" and p[2] == WIN and p[3] == "TOPRIGHT", "right edge")
-    assert(made() == 2 and env.outlines[head]._frame.shown and env.outlines[tab]._frame.shown, "outlined")
+    assert(made() == 2 and env.outlines[head].shown and env.outlines[tab].shown, "outlined")
     assert(hooks() == 0 and #env.mirrored == 0 and tab.art.coords[1] == 0 and tab.art.points[1][1] == "LEFT",
         "nothing mirrored or hooked")
     assert(head.ignoring and tab.ignoring, "the tabs ignore their parent's alpha")
     Dock(false)
-    assert(head.points[1][2] == "parent" and not env.outlines[head]._frame.shown and not tab.ignoring, "put back")
+    assert(head.points[1][2] == "parent" and not env.outlines[head].shown and not tab.ignoring, "put back")
 end)
 Case("Dock Shopping List on: the tabs move to the left edge, mirrored, with no outline", function()
     local frame = Frame()

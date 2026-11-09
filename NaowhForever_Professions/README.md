@@ -268,9 +268,12 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   is not showing.
 - Blizzard only makes a tab for a profession you have learned, so an unlearned one has none. The docked
   tabs on the right edge get a Naowh-blue outline so they stand out on the dark window; mirrored onto
-  the left edge they read as part of it and have none. The Unlearn button beside a skill
-  bar is drawn from the atlas `Profession-button-red-crossmark` at 20px and full strength; where that
-  atlas is missing it falls back to the red cross of `ReadyCheck-NotReady`, or the button shows nothing.
+  the left edge they read as part of it and have none. The outline is the tab's own hover art
+  (`common-sidetab-hover`, which Forever swaps for its `-c60` art as it does for Blizzard's tab) tinted
+  blue, so it follows the bevelled corners; a square border round the tab frame sat off the art, which
+  is taller than the frame and has empty space on its outer side. It is drawn under Blizzard's gold
+  selected art so the open tab still shows. The Unlearn button beside a skill bar is drawn from the
+  atlas `Profession-button-red-crossmark` at 20px and full strength; where that atlas is missing it falls back to the red cross of `ReadyCheck-NotReady`, or the button shows nothing.
 - With the overview docked our window holds secure buttons and is protected, so closing it in combat
   makes it transparent instead of hiding it. Resizing waits for combat to end for the same reason.
   It cannot be dragged in combat either, and a drag still going when combat starts ends there:

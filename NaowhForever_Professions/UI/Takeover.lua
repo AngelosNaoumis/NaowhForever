@@ -17,6 +17,7 @@ local UNLEARN_GAP = 6
 local UNLEARN_ATLAS = "Profession-button-red-crossmark"
 local UNLEARN_FALLBACK = "Interface/RAIDFRAME/ReadyCheck-NotReady"
 local UNLEARN_SIZE = 20
+local TAB_OUTLINE_ATLAS, TAB_OUTLINE_SUBLEVEL = "common-sidetab-hover", 7
 local CARD_LEVEL, UNLEARN_LEVEL = 3, 10
 local RANK_INSET = 2
 local BURST = 0.1
@@ -64,8 +65,17 @@ local function NextStrata(strata)
 end
 
 local function OutlineTab(tab, on)
-    if on and not outlines[tab] then outlines[tab] = ns.Border(tab, ns.THEME.accent) end
-    if outlines[tab] then outlines[tab]._frame:SetShown(on) end
+    local outline = outlines[tab]
+    if on and not outline then
+        local accent = ns.THEME.accent
+        outline = tab:CreateTexture(nil, "ARTWORK", nil, TAB_OUTLINE_SUBLEVEL)
+        outline:SetAtlas(TAB_OUTLINE_ATLAS, true)
+        outline:SetPoint("CENTER")
+        outline:SetDesaturated(true)
+        outline:SetVertexColor(accent.r, accent.g, accent.b)
+        outlines[tab] = outline
+    end
+    if outline then outline:SetShown(on) end
 end
 
 local function ShowUnlearn(button)
