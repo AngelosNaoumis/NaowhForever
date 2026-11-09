@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("RazorfenKraul", {
     name = "Razorfen Kraul",
-    zone = "The Barrens", territory = "Horde",
+    instance = 47,
+    zone = "The Barrens", area = 17, territory = "Horde",
     entrance = { map = 1413, x = 42.2, y = 89.8 },
     wings = {
         { bosses = {

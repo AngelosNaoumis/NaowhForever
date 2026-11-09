@@ -3,9 +3,10 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("Kroldok", {
     name = "Krol'dok Stronghold",
+    instance = 3039,
     new = true,
     closed = true,
-    zone = "Riverglades", territory = "Contested",
+    zone = "Riverglades", area = 16591, territory = "Contested",
     wings = {
     },
 })

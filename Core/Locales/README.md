@@ -23,6 +23,8 @@ NaowhForever_Locales/        load on demand, one addon for every language
 2. Translate the values on the right and keep every key exactly.
 3. List `<code>.lua` in `NaowhForever_Locales.toc`, and add the code and its name to `LANGUAGES`
    and `LANGUAGE_NAMES` in `Core/Core.lua`.
+4. Add the code, with Wowhead's code for it, to `LANGUAGES` in `Tools/build/game_names.py`, run it,
+   and list the `Data\Names\<code>.lua` it writes in `NaowhForever_DungeonJournal/DungeonJournal.xml`.
 
 ## Why
 

@@ -145,7 +145,8 @@ local NO_PROFESSIONS = {}
 -- Where you stand, as C_Map.GetPlayerMapPosition answers.
 local STANDING_AT = { GetXY = function() return 0.42, 0.61 end }
 
-local function fixture(settings, noBis)
+-- language: none for English, else { code, L, instances, areas }: its catalog and the game's names.
+local function fixture(settings, noBis, language)
     local state = {
         level = 20, instance = nil, combat = false, bisList = true,
         hooks = {}, frames = 0, printed = {}, waypoints = {}, mapOpened = nil, requested = {},
@@ -188,7 +189,9 @@ local function fixture(settings, noBis)
     end
     function S.OnChange(fn) listeners[#listeners + 1] = fn end
 
-    local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
+    local ns = { LOCALE = language and language.code or "enUS",
+        L = language and language.L or dofile("Tools/regression/locale_stub.lua").L,
+        Upper = string.upper, Lower = string.lower,
         MEDIA = dofile("Tools/regression/core_media.lua"),
         THEME = setmetatable({}, { __index = function() return WHITE end }),
         UI = { ModuleSettings = function(_, defaults) state.defaults = defaults; return S end,
@@ -317,6 +320,11 @@ local function fixture(settings, noBis)
             local i = state.instance or {}
             return i.name, nil, nil, nil, nil, nil, nil, i.id
         end,
+        -- Only a language other than English asks; English has none to answer with.
+        GetRealZoneText = function(id) return language.instances[id] or ("Mapa " .. id) end,
+        C_CreatureInfo = { GetCreatureTypeInfo = function(id)
+            return { name = id == 7 and (language and "Humanoide" or "Humanoid") or "Type " .. id }
+        end },
         InCombatLockdown = function() return state.combat end,
         GetCursorPosition = function() return 0, 0 end,
         GetQuestLink = function(id) return "|Hquest:" .. id .. "|h[Quest " .. id .. "]|h" end,
@@ -466,6 +474,7 @@ local function fixture(settings, noBis)
                 return state.mapInfo and state.mapInfo[map] or map == 52 and { name = "Westfall" } or nil
             end,
             GetBestMapForUnit = function() return state.standingOn end,
+            GetAreaInfo = function(area) return language.areas[area] or ("Zona " .. area) end,
             GetPlayerMapPosition = function() return state.standingOn and STANDING_AT end },
         GetMerchantNumItems = function() return #(state.merchant or NO_PROFESSIONS) end,
         GetMerchantItemID = function(i) return state.merchant[i] end,
@@ -802,6 +811,94 @@ do
     J.ShowEntrance(deadmines)
     check("in combat the waypoint still goes on", #state.waypoints == 2)
     check("but the map stays shut", state.mapOpened == nil)
+end
+
+-------------------------------------------------------------------------------
+--  Names in the player's language
+-------------------------------------------------------------------------------
+do
+    local env = { NaowhForever = { LOCALE = "esES" } }
+    local chunk = assert(loadfile("NaowhForever_Locales/esES.lua"))
+    setfenv(chunk, env)
+    chunk()
+    local catalog = env.NaowhForeverTranslation
+    local spanish = {
+        code = "esES",
+        L = function(text, ...)
+            local shown = catalog[text] or text
+            if select("#", ...) > 0 then return shown:format(...) end
+            return shown
+        end,
+        instances = { [36] = "Minas de la Muerte", [189] = "Monasterio Escarlata", [229] = "Cumbre de Roca Negra" },
+        areas = { [40] = "Paramos de Poniente" },
+    }
+    local ns, state = fixture(nil, nil, spanish)
+    local J = ns.Journal
+    local deadmines = J.Get("Deadmines")
+    check("a Spanish client names a dungeon as the game does", deadmines.name == "Minas de la Muerte"
+        and deadmines.english == "The Deadmines")
+    check("and its zone", deadmines.zone == "Paramos de Poniente")
+    check("its quests still join by the English name", deadmines.quests ~= nil and deadmines.quests.name == "The Deadmines")
+    check("a Scarlet Monastery wing keeps its wing, from the catalog",
+        J.Get("ScarletMonasteryLibrary").name == "Monasterio Escarlata - Biblioteca"
+        and J.Get("ScarletMonasteryArmory").name == catalog["Scarlet Monastery - Armory"])
+    check("and so do the Blackrock Spires", J.Get("UpperBlackrockSpire").name == "Cumbre de Roca Negra Superior")
+    check("a raid the game has no instance for yet keeps its English name", J.Get("HyjalSummit").name == "Hyjal Summit")
+    for _, dungeon in ipairs(J.Dungeons()) do
+        check("every other dungeon takes the game's name: " .. dungeon.english,
+            not dungeon.instance or dungeon.name ~= dungeon.english)
+    end
+    state.instance = { id = 36, name = "Minas de la Muerte" }
+    check("its instance still finds it", J.Current()[1].key == "Deadmines")
+
+    local names = J.Names
+    local greenskin = J.Boss(647)
+    check("a boss takes its Spanish name by its NPC", names.npcs[647] and greenskin.name == names.npcs[647]
+        and greenskin.name ~= "Captain Greenskin" and greenskin.english == "Captain Greenskin")
+    local tribute
+    for _, wing in ipairs(J.Get("DireMaul").wings) do
+        for _, boss in ipairs(wing.bosses) do
+            if boss.chest == 179564 then tribute = boss end
+        end
+    end
+    check("a chest by its object", tribute.name == "Tributo a Gordok" and tribute.english == "Gordok Tribute")
+    local argent
+    for _, faction in ipairs(J.Factions("reputation")) do
+        if faction.key == "ArgentDawn" then argent = faction end
+    end
+    check("a faction by its ID", argent.name == names.factions[529] and argent.name ~= "Argent Dawn")
+    check("and its zone by the game's name for it", argent.zone == names.places["Eastern Plaguelands"])
+    check("a place the data names in English", J.PlaceName("Duskwood") == names.places.Duskwood
+        and J.PlaceName("The Deadmines") == "Minas de la Muerte" and J.PlaceName("Nowhere") == "Nowhere")
+    state.instance = { id = 189, name = "Monasterio Escarlata" }
+    state.subzone = "El Athenaeum"
+    check("Scarlet Monastery's wing by its Spanish subzone", J.Current()[1].key == "ScarletMonasteryLibrary")
+    state.instance, state.subzone = nil, nil
+    local vanCleef = J.Boss(639)
+    state.account.journalLoot = { [state.guid] = { { id = vanCleef.loot[1], link = "|Hitem:" .. vanCleef.loot[1] .. "|h",
+        at = 1, dungeon = "Deadmines", boss = "Edwin VanCleef" } } }
+    check("loot saved under the English name is still the boss's", #J.Looted.AllFrom(vanCleef, {}) == 1)
+    J.View.OpenBossLoot(J.Boss(644), J.Get("Deadmines"))
+    local about
+    for _, made in ipairs(state.made) do
+        local row = rawget(made, "about")
+        if row and (rawget(row, "text") or ""):find(names.titles[644], 1, true) then about = rawget(row, "text") end
+    end
+    check("a boss's title in Spanish, and its kind the game's", about and about:find("Humanoide", 1, true) ~= nil)
+
+    ns = fixture()
+    deadmines = ns.Journal.Get("Deadmines")
+    check("English keeps the data's names", deadmines.name == "The Deadmines" and deadmines.zone == "Westfall"
+        and ns.Journal.Get("Stockade").name == "The Stockade" and ns.Journal.Boss(647).name == "Captain Greenskin"
+        and ns.Journal.Names == nil and ns.Journal.PlaceName("Duskwood") == "Duskwood")
+
+    local core = assert(io.open("Core/Core.lua", "rb")):read("*a")
+    local xml = assert(io.open("NaowhForever_DungeonJournal/DungeonJournal.xml", "rb")):read("*a")
+    for code in core:match("local LANGUAGES = (%b{})"):gmatch('"(%a+)"') do
+        if code ~= "enUS" then
+            check("the Journal loads its names in " .. code, xml:find("Data\\Names\\" .. code .. ".lua", 1, true) ~= nil)
+        end
+    end
 end
 
 -------------------------------------------------------------------------------
@@ -1880,6 +1977,7 @@ do
     J.View.OpenBossLoot(pickRow.boss, ragefire)
     local stackedHeader = TitleRow("Bazzalan", false)
     check("the stacked page has its name on top", stackedHeader ~= nil)
+    check("its kind is the game's name for it", rawget(stackedHeader.about, "text"):find("Humanoid", 1, true) ~= nil)
     local stacked = stackedHeader:GetParent()
     local stackedAbility = PageRow(stacked, function(made) return rawget(made, "spell") == spells[1] end)
     check("its abilities written out whole", stackedAbility ~= nil
@@ -3740,6 +3838,7 @@ do
     local list = { slots = { [1] = 880001, [2] = 880002, [3] = 880003, [5] = 880004, [6] = 880005 } }
     local env = getfenv(J.Quests.List)
     ns.BiS = { View = {}, Lists = { List = function() return list end },
+        Rankings = { PlaceName = function(name) return J.PlaceName(name) end },
         Picks = function(l, slot, out)
             env.wipe(out)
             out[1] = l.slots[slot]

@@ -3,6 +3,16 @@
     <Script file="DungeonJournal.lua"/>
     <Script file="Constants.lua"/>
     <Script file="Data\Build.lua"/>
+    <Script file="Data\Names\deDE.lua"/>
+    <Script file="Data\Names\esES.lua"/>
+    <Script file="Data\Names\esMX.lua"/>
+    <Script file="Data\Names\frFR.lua"/>
+    <Script file="Data\Names\itIT.lua"/>
+    <Script file="Data\Names\koKR.lua"/>
+    <Script file="Data\Names\ptBR.lua"/>
+    <Script file="Data\Names\ruRU.lua"/>
+    <Script file="Data\Names\zhCN.lua"/>
+    <Script file="Data\Names\zhTW.lua"/>
     <Script file="Data\Items.lua"/>
     <Script file="Data\Quests.lua"/>
     <Script file="Data\QuestChains.lua"/>

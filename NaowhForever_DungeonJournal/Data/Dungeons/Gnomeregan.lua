@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("Gnomeregan", {
     name = "Gnomeregan",
-    zone = "Dun Morogh", territory = "Alliance",
+    instance = 90,
+    zone = "Dun Morogh", area = 1, territory = "Alliance",
     entrance = { map = 1426, x = 24.0, y = 40.0 },
     wings = {
         { bosses = {

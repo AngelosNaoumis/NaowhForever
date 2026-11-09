@@ -736,6 +736,25 @@ do
 end
 
 do
+    -- A Russian client: the Journal's names and the activities' are both Cyrillic.
+    local GRAVEYARD = "\208\156\208\190\208\189\208\176\209\129\209\130\209\139\209\128\209\140 \208\144\208\187\208\190\208\179\208\190 \208\190\209\128\208\180\208\181\208\189\208\176: \208\186\208\187\208\176\208\180\208\177\208\184\209\137\208\181"
+    local LIBRARY = "\208\156\208\190\208\189\208\176\209\129\209\130\209\139\209\128\209\140 \208\144\208\187\208\190\208\179\208\190 \208\190\209\128\208\180\208\181\208\189\208\176: \208\177\208\184\208\177\208\187\208\184\208\190\209\130\208\181\208\186\208\176"
+    local DEADMINES_RU = "\208\156\208\181\209\128\209\130\208\178\209\139\208\181 \208\186\208\190\208\191\208\184"
+    local graveyard, library = BY_KEY.ScarletMonasteryGraveyard, BY_KEY.ScarletMonasteryLibrary
+    local graveyardName, libraryName = graveyard.name, library.name
+    graveyard.name, library.name = GRAVEYARD, LIBRARY
+    ACTIVITIES[9] = { fullName = GRAVEYARD, mapID = 189 }
+    ACTIVITIES[10] = { fullName = LIBRARY, mapID = 189 }
+    ACTIVITIES[11] = { fullName = DEADMINES_RU, mapID = 999 }
+    local Listings = Fixture({ enabled = true }).GF.Listings
+    check("a Cyrillic wing by its name", Listings.DungeonOf(9) == "ScarletMonasteryGraveyard"
+        and Listings.DungeonOf(10) == "ScarletMonasteryLibrary")
+    check("a Cyrillic name the Journal lacks is none", Listings.DungeonOf(11) == nil)
+    graveyard.name, library.name = graveyardName, libraryName
+    ACTIVITIES[9], ACTIVITIES[10], ACTIVITIES[11] = nil, nil, nil
+end
+
+do
     local state = Fixture({ enabled = true })
     local Listings = state.GF.Listings
     local Card = state.GF.Card

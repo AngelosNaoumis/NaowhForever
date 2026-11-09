@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("Stockade", {
     name = "The Stockade",
-    zone = "Stormwind City", territory = "Alliance",
+    instance = 34,
+    zone = "Stormwind City", area = 1519, territory = "Alliance",
     entrance = { map = 1453, x = 51.0, y = 68.1 },
     wings = {
         { bosses = {

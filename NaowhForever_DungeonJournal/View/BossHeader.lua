@@ -16,10 +16,8 @@ local ABOUT_GAP = 10
 local ABOUT_RISE = 2
 local INFO_LOW, INFO_HIGH, INFO_KIND, INFO_TYPE, INFO_TITLE = 1, 2, 3, 4, 5
 local CLASSIFICATION = { [1] = ns.L("Elite"), [2] = ns.L("Rare Elite"), [3] = ns.L("Boss"), [4] = ns.L("Rare") }
-local CREATURE_TYPE = {
-    [1] = "Beast", [2] = "Dragonkin", [3] = "Demon", [4] = "Elemental", [5] = "Giant", [6] = "Undead",
-    [7] = "Humanoid", [8] = "Critter", [9] = "Mechanical", [11] = "Totem", [15] = "Aberration",
-}
+local SHOWN_TYPES = { [1] = true, [2] = true, [3] = true, [4] = true, [5] = true, [6] = true, [7] = true, [8] = true,
+    [9] = true, [11] = true, [15] = true }
 
 local TEXT_UNKNOWN_LEVEL = "??"
 local TEXT_LEVEL = ns.L("Level ")
@@ -29,6 +27,17 @@ local TEXT_OPTIONAL = ns.L("Optional")
 local TEXT_QUEST_BOSS = ns.L("Quest boss")
 
 local parts = {}
+local typeNames = {}
+
+local function CreatureType(id)
+    if not SHOWN_TYPES[id] then return nil end
+    local name = typeNames[id]
+    if not name then
+        name = C_CreatureInfo.GetCreatureTypeInfo(id).name
+        typeNames[id] = name
+    end
+    return name
+end
 
 local function LevelText(info)
     local low, high = info[INFO_LOW], info[INFO_HIGH]
@@ -48,9 +57,10 @@ local function AboutText(boss)
     local info = boss.npc and J.BossInfo[boss.npc]
     wipe(parts)
     if info then
-        if info[INFO_TITLE] then parts[#parts + 1] = ns.Color("fg", info[INFO_TITLE]) end
+        local title = info[INFO_TITLE] and (J.Names and J.Names.titles[boss.npc] or info[INFO_TITLE])
+        if title then parts[#parts + 1] = ns.Color("fg", title) end
         parts[#parts + 1] = LevelText(info)
-        local creature = CREATURE_TYPE[info[INFO_TYPE]]
+        local creature = CreatureType(info[INFO_TYPE])
         if creature then parts[#parts + 1] = creature end
     end
     local kind = BossKind(boss)

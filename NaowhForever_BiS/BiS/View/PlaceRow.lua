@@ -43,7 +43,7 @@ local function JournalDungeon(name)
     if not (J and ns.OpenJournalWindow) then return nil end
     if not dungeonsByName then
         dungeonsByName = {}
-        for _, dungeon in ipairs(J.Dungeons()) do dungeonsByName[dungeon.name] = dungeon end
+        for _, dungeon in ipairs(J.Dungeons()) do dungeonsByName[dungeon.english] = dungeon end
     end
     return dungeonsByName[name]
 end
@@ -156,7 +156,7 @@ local function Hint(row)
     if via then return B.Sources.Hint(via) end
     if row.dungeon then return TEXT_OPEN_HINT end
     if row.spot then return TEXT_WAYPOINT_HINT:format(row.spot.name) end
-    return row.map and TEXT_MAP_HINT:format(row.place.name)
+    return row.map and TEXT_MAP_HINT:format(R.PlaceName(row.place.name))
 end
 
 local function AddSlot(row, list, slot)
@@ -166,7 +166,7 @@ local function AddSlot(row, list, slot)
         SlotName(slot), TITLE_RGB.r, TITLE_RGB.g, TITLE_RGB.b, muted.r, muted.g, muted.b)
     local who, _, spot = Drop(list, slot)
     if who and not (row.dungeon or row.place.via) then
-        GameTooltip:AddLine(TEXT_HAS_IT:format(Has(who, spot), spot and Where(spot) or TEXT_IN .. row.place.name),
+        GameTooltip:AddLine(TEXT_HAS_IT:format(Has(who, spot), spot and Where(spot) or TEXT_IN .. R.PlaceName(row.place.name)),
             muted.r, muted.g, muted.b)
     end
 end
@@ -175,7 +175,7 @@ local function Enter(row)
     row.hover:Show()
     local list = row:GetParent().list
     if not Tip(row, "ANCHOR_RIGHT") then return end
-    GameTooltip:SetText(row.place.name, TITLE_RGB.r, TITLE_RGB.g, TITLE_RGB.b)
+    GameTooltip:SetText(R.PlaceName(row.place.name), TITLE_RGB.r, TITLE_RGB.g, TITLE_RGB.b)
     if row.dungeon and row.dungeon.new then GameTooltip:AddLine(Parts.ForeverLine()) end
     for _, slot in ipairs(row.place.slots) do AddSlot(row, list, slot) end
     local hint = Hint(row)
@@ -250,8 +250,8 @@ local function Set(row, place)
     Cells.PaintGain(row.gain, place.gain > 0 and place.gain or nil, view.mostPlaceGain)
     local dungeon = not place.via and JournalDungeon(place.name) or nil
     row.dungeon = dungeon
-    row.name:SetText(dungeon and dungeon.new and place.name .. Parts.ForeverInline(St.SMALL_SIZE, CARD_DROP)
-        or place.name)
+    local name = R.PlaceName(place.name)
+    row.name:SetText(dungeon and dungeon.new and name .. Parts.ForeverInline(St.SMALL_SIZE, CARD_DROP) or name)
     row.spotItem, row.spot = nil, nil
     local outdoors = not (dungeon or place.via)
     if outdoors then row.spotItem, row.spot = FirstSpot(place, view.list) end

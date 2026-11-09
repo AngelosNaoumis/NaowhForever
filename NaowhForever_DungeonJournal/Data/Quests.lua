@@ -159,7 +159,7 @@ J.QuestData = {
         { 3525, "Extinguishing the Idol", 32, "B", false, "Razorfen Downs, Murder Pens - Belnistrasz Make sure entire party has finished Scourge of the Downs first or they won't get credit!" },
         { 97196, "The Coldbringer's Eye", 34, "H", true, "TBD" },
     } },
-    { name = "The Drowned City", map = nil, levels = { 35, 40 }, quests = {
+    { name = "The Drowned City", map = 2970, levels = { 35, 40 }, quests = {
         { 95775, "The Drowned City", 30, "H", true, "TBD" },
         { 95776, "The Only Good Brinescale...", 30, "H", true, "TBD" },
         { 96774, "Ancient Gurubashi Idol", 30, "H", true, "Mulgore - Mazu'kon (32.4, 20.6)", 1412, 32.4, 20.6 },
@@ -186,7 +186,7 @@ J.QuestData = {
         { 2278, "The Platinum Discs", 40, "B", false, "Uldaman, room after Archaedas - an object", steps = { { 2279, 2280 } } },
         { 1956, "Power in Uldaman", 35, "B", "pre", "Mage only - Dustwallow Marsh, N. of Stonemaul Ruins - Tabetha Complete 3 quests, starting with Return to the Marsh (46.1, 57.1)", 1445, 46.1, 57.1, class = "MAGE" },
     } },
-    { name = "Krol'dok Stronghold", map = nil, levels = { 40, 45 }, quests = {
+    { name = "Krol'dok Stronghold", map = 3039, levels = { 40, 45 }, quests = {
         { 94982, "Eye of Mugg", 40, "A", true, "TBD; hand it in to Commander Brant" },
         { 94984, "Tome of Twilight", 39, "B", true, "TBD", alt = { 94972 } },
         { 96771, "Vengeance of the Highborne", 37, "A", true, "TBD" },

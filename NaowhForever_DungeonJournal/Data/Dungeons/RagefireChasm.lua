@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("RagefireChasm", {
     name = "Ragefire Chasm",
-    zone = "Orgrimmar", territory = "Horde",
+    instance = 389,
+    zone = "Orgrimmar", area = 1637, territory = "Horde",
     entrance = { map = 1454, x = 53.2, y = 48.7 },
     wings = {
         { bosses = {

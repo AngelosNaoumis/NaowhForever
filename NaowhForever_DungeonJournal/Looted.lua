@@ -40,7 +40,7 @@ local function Drops(boss, id)
 end
 
 local function From(item, boss)
-    return type(item) == "table" and item.boss == boss.name and Whole(item) and Drops(boss, item.id)
+    return type(item) == "table" and item.boss == boss.english and Whole(item) and Drops(boss, item.id)
 end
 
 local function YoursOf(drop, id)
@@ -137,7 +137,7 @@ function Looted.Add(dungeons, link, id)
     local mine = Mine(true)
     if not mine then return end
     if #mine >= KEEP then table.remove(mine, 1) end
-    mine[#mine + 1] = { id = id, link = link, at = time(), dungeon = dungeon.key, boss = boss and boss.name,
+    mine[#mine + 1] = { id = id, link = link, at = time(), dungeon = dungeon.key, boss = boss and boss.english,
         team = Team.Now(), rolls = RollsFor(id) }
 end
 

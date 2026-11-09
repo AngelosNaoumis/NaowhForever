@@ -49,7 +49,7 @@ local function Place(itemID)
     local place, detail = R.Place(ns.BiSSource(itemID) or TEXT_UNKNOWN)
     ownQuest = ownQuest or OWN_QUEST[UnitFactionGroup("player")] or false
     if place == ownQuest then place = TEXT_QUEST end
-    return ns.L(place), detail and ns.L(detail)
+    return R.PlaceName(place), detail and ns.L(detail)
 end
 
 local function LevelText(required, above, withLevel)

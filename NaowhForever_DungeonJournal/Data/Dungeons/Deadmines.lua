@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("Deadmines", {
     name = "The Deadmines",
-    zone = "Westfall", territory = "Alliance",
+    instance = 36,
+    zone = "Westfall", area = 40, territory = "Alliance",
     entrance = { map = 1436, x = 43.2, y = 72.4 },
     wings = {
         { bosses = {

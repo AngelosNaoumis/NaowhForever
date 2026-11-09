@@ -68,17 +68,20 @@ COLUMNS = {
                    "ItemLevel", "RequiredLevel", "InventoryType"),
 }
 
-tables = {}   # (table, build, hotfixes) -> its rows, read once per run
+tables = {}   # (table, build, hotfixes, locale) -> its rows, read once per run
 
 
-def table(name, build=BUILD, hotfixes=True):
+def table(name, build=BUILD, hotfixes=True, locale=None):
     """The table's rows for the build, each a dict of its columns (all strings), with the
-    build's hotfixes applied unless hotfixes is False."""
-    key = (name, build, hotfixes)
+    build's hotfixes applied unless hotfixes is False, and its text in the locale ("deDE") when
+    one is given, else English."""
+    key = (name, build, hotfixes, locale)
     if key not in tables:
         query = {"build": build}
         if hotfixes:
             query["useHotfixes"] = "1"
+        if locale:
+            query["locale"] = locale
         text = fetch(f"{SITE}/db2/{name}/csv?{urllib.parse.urlencode(query)}")
         tables[key] = list(csv.DictReader(io.StringIO(text)))
     return tables[key]

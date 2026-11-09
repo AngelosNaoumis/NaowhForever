@@ -79,7 +79,7 @@ end
 
 local function PinLine(boss, _, key)
     local spot = Map.Spot(copying, key)
-    if spot then lines[#lines + 1] = PIN_LINE:format(key, SpotText(spot), boss.name) end
+    if spot then lines[#lines + 1] = PIN_LINE:format(key, SpotText(spot), boss.english) end
 end
 
 local function FloorsOf(art)

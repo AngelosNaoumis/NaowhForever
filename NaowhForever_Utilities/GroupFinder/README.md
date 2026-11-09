@@ -207,7 +207,8 @@ kills.
   module off makes a pending sweep stale.
 - Activities are matched to Journal dungeons by name, then by instance map when only one dungeon has
   it, never guessing between Scarlet Monastery's wings or the Blackrock Spires. Activity names come in
-  the client's language, so outside English only the map match works for now.
+  the client's language, as the Journal's names do outside English, so both are compared without
+  spaces and ASCII punctuation only: the letters of other alphabets are kept.
 - Every table that grows with other players is bounded: the queue, pings, applications, applicants,
   kept cards, senders, askers, names whispered and leaders asked.
 - A search runs only from a click, the Search button's or the Dungeon menu's, as the game's own finder runs it, so

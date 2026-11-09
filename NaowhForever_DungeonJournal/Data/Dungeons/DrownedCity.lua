@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("DrownedCity", {
     name = "The Drowned City",
+    instance = 2970,
     new = true,
-    zone = "Stranglethorn Vale", territory = "Contested",
+    zone = "Stranglethorn Vale", area = 33, territory = "Contested",
     entrance = { map = 1434, x = 21.4, y = 27.9 },
     wings = {
         { bosses = {

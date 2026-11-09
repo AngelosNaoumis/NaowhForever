@@ -45,7 +45,7 @@ local function Detail()
     local have, total = R.Had(list)
     if total == 0 then return TEXT_NOTHING_PICKED end
     local place = R.RunNext(list)[1]
-    return TEXT_HAVE:format(have, total, place and TEXT_RUN_NEXT:format(place.name, place.bis) or "")
+    return TEXT_HAVE:format(have, total, place and TEXT_RUN_NEXT:format(R.PlaceName(place.name), place.bis) or "")
 end
 
 local ALERT_FOR = { { bis = "Your BiS only", top2 = "Your top two", all = "Every pick" }, { "bis", "top2", "all" } }

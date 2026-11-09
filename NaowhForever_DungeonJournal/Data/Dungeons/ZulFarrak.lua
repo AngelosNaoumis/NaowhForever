@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("ZulFarrak", {
     name = "Zul'Farrak",
+    instance = 209,
     closed = true,
-    zone = "Tanaris", territory = "Contested",
+    zone = "Tanaris", area = 440, territory = "Contested",
     entrance = { map = 1446, x = 39.6, y = 21.7 },
     wings = {
         { bosses = {

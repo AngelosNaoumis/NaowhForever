@@ -36,6 +36,7 @@ NaowhForever_DungeonJournal/
   ItemProbe.lua        /nf itemprobe: asks the server for every item listed, for Tools/sources/items_in_game.py
   Data/                data, no logic
     Build.lua          the game build the data is read from and its date, generated
+    Names/<code>.lua   one per language but English: its bosses, chests, factions, places and Scarlet Monastery's subzones, generated
     Items.lua          the loot not in Forever yet, generated (the rest is Shared's ItemFacts)
     Quests.lua         every dungeon quest, from Wowhead's Forever guide, with hand additions
     QuestChains.lua    each quest's chain, prerequisites and required level, generated
@@ -134,8 +135,9 @@ calls are on `ns`.
 | What a standing means, prices in short, the PvP rank | `Reputation.lua` |
 | The game build the faction data is read from | `BUILD` in `Tools/sources/wago.py`; the daily build watcher (`.github/workflows/daily-watch.yml`) opens a pull request when a newer one is out (or, where the organization does not let workflows open one, an issue with a one-click link to it). Items a new build lacks because wago.tools has not recorded its hotfixes yet are carried over from the build before (`CARRY_FROM`), and the pull request lists them |
 | A setting or its default | `DungeonJournal.lua` (`UI.ModuleSettings("journal", ...)`; an on/off switch's default is in `Core/Features.lua`, `ns.FEATURES.journal`) and its card in `UI/SettingsPage.lua` |
+| A boss's, chest's, faction's or place's name in other languages, after a new one | `python Tools/build/game_names.py`, after `journal.py`, `factions.py` or the BiS List's data |
 
-`Data/Dungeons/*.lua`, `Data/Factions/*.lua`, `Data/Items.lua`, Shared's `Data/ItemFacts.lua` and
+`Data/Dungeons/*.lua`, `Data/Factions/*.lua`, `Data/Names/*.lua`, `Data/Items.lua`, Shared's `Data/ItemFacts.lua` and
 `Data/FactionItems.lua`, `Data/Build.lua`, `Data/QuestChains.lua`, `Data/BiSQuests.lua`,
 `Data/Abilities.lua`, `Data/BossInfo.lua` and `Data/BossQuests.lua` are generated: change their
 source and rebuild rather than editing them, or the next build undoes the edit. Their builders
@@ -274,7 +276,8 @@ the game's own tables, and what they can't settle is listed in the pull request 
 
 - `Data/Quests.lua`, one entry per dungeon, matched to its Journal dungeon by name:
   `{ name, map, levels = { min, max }, quests = { ... } }`. `map` is the instance ID from the
-  game's Map table (build 1.60.1.69913, Blackmaw Hold's 1.60.1.70862); it is nil where the
+  game's Map table (build 1.60.1.69913; Blackmaw Hold's, The Drowned City's and Krol'dok
+  Stronghold's 1.60.1.70862); it is nil where the
   client's Map table does not have the instance yet (still encrypted in 1.60.1), and those are
   found by the instance name `GetInstanceInfo` reports, so the name must be the client's own.
 - Each quest record is `{ questID, name, level, side ("A", "H" or "B"), shareable (true, false,
@@ -609,6 +612,25 @@ the game's own tables, and what they can't settle is listed in the pull request 
   so only other spellings are tried.
 - The game ends a drag on any pin a click moved a little, so only placing keeps where it is.
   Copy writes one `images` line: a second `images =` in the table would replace the first.
+- In any language but English, a dungeon's name is the game's own, from its `instance`
+  (`GetRealZoneText`), and its zone's from its `area` (`C_Map.GetAreaInfo`). English keeps the
+  data's names: the game's differ for three (Deadmines, Stormwind Stockade, The Shaper's Terrace).
+- Scarlet Monastery's wings share one instance, and so do Lower and Upper Blackrock Spire, so
+  the game's instance name drops the wing. Their names are in the locale catalogs instead,
+  copied from the game's Group Finder activities; Italian's are English, as the game's are.
+- The game has no API for an NPC's, an object's or a faction's name by ID, and only the server
+  knows an NPC's, so bosses, chests and factions take theirs from `Data/Names/<code>.lua`, kept by
+  their IDs, and a boss its title. A boss with neither ID (a few of Forever's new ones) keeps its
+  English name. A boss's kind is the game's own (`C_CreatureInfo.GetCreatureTypeInfo`).
+- `J.PlaceName` names a place the data names in English (a faction's zone, the BiS List's places
+  and quest zones): a dungeon by its name here, else by `Data/Names/<code>.lua`'s `places`, the
+  game's own area names, since the data has no area ID for them.
+- Inside a building `GetSubZoneText` answers from the game's WMOAreaTable, which `C_Map.GetAreaInfo`
+  does not read, so `Data/Names/<code>.lua` maps Scarlet Monastery's subzones back to the English
+  names `SUBZONES` knows the wings by.
+- `english` keeps the data's name for what is matched by it: `Data/Quests.lua`'s entries, the BiS
+  List's places, and the boss each looted item is saved under, so loot saved in one language is
+  still found in another.
 
 ## Checking
 

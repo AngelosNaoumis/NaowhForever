@@ -3,9 +3,10 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("OnyxiasLair", {
     name = "Onyxia's Lair",
+    instance = 249,
     raid = 40,
     note = "Opens on Forever on 9 December 2026. Its loot shows in a later version of the addon, once it is known.",
-    zone = "Dustwallow Marsh", territory = "Contested",
+    zone = "Dustwallow Marsh", area = 15, territory = "Contested",
     entrance = { map = 1445, x = 52.9, y = 78.2 },
     wings = {
         { bosses = {

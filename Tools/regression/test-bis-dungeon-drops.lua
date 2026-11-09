@@ -28,10 +28,10 @@ local FACTS = {
 local function Dungeons()
     local dungeons = {}
     for id = 1, 14 do
-        dungeons[#dungeons + 1] = { name = "Place " .. id,
+        dungeons[#dungeons + 1] = { name = "Place " .. id, english = "Place " .. id,
             wings = { { bosses = { { name = "Boss " .. id, loot = { id }, chance = { 10 } } } } } }
     end
-    dungeons[#dungeons + 1] = { name = "Trash Place", wings = { { bosses = {
+    dungeons[#dungeons + 1] = { name = "Trash Place", english = "Trash Place", wings = { { bosses = {
         { name = "Trash", trash = true, loot = { 1 }, chance = { 50 } },
     } } } }
     return dungeons
@@ -150,6 +150,15 @@ Case("an item's source is the Journal's boss and dungeon, a boss before trash", 
     assert(m.ns.BiSSource(1) == "Boss 1" .. SEP .. "Place 1", m.ns.BiSSource(1))
 end)
 
+Case("in another language a drop's place stays the English one, and shows the Journal's name", function()
+    local m = Fixture("MAGE", 20)
+    m.ns.Journal.Dungeons()[1].name = "Lugar 1"
+    m.ns.Journal.PlaceName = function(english) return english == "Place 1" and "Lugar 1" or english end
+    assert(m.ns.BiSSource(1) == "Boss 1" .. SEP .. "Place 1", m.ns.BiSSource(1))
+    assert(m.R.PlaceName("Place 1") == "Lugar 1" and m.R.PlaceName("Crafted") == "Crafted")
+    assert(Fixture("MAGE", 20, nil, false).R.PlaceName("Place 1") == "Place 1")
+end)
+
 Case("the Journal's wording wins over wowsrc's; wowsrc's for what drops nowhere", function()
     local m = Fixture("MAGE", 20, { [2] = "Boss 2" .. SEP .. "Old Name", [99] = "Crafted" })
     assert(m.ns.BiSSource(2) == "Boss 2" .. SEP .. "Place 2" and m.ns.BiSSource(99) == "Crafted")
@@ -228,7 +237,10 @@ Case("every ranked item has a source, from the Journal's dungeons or wowsrc", fu
     local dungeons = {}
     local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = {}, Shared = {},
         BiSLeveling = { specs = {}, sources = {} }, Journal = {
-        AddDungeon = function(_, dungeon) dungeons[#dungeons + 1] = dungeon end,
+        AddDungeon = function(_, dungeon)
+            dungeon.english = dungeon.name
+            dungeons[#dungeons + 1] = dungeon
+        end,
         Dungeons = function() return dungeons end,
     } }
     local env = Env(ns, "MAGE", 60)

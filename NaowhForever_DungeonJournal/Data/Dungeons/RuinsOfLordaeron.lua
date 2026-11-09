@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("RuinsOfLordaeron", {
     name = "Ruins of Lordaeron",
+    instance = 2999,
     new = true,
-    zone = "Tirisfal Glades", territory = "Horde",
+    zone = "Tirisfal Glades", area = 85, territory = "Horde",
     entrance = { map = 1458, x = 71.6, y = 11.4 },
     wings = {
         { bosses = {

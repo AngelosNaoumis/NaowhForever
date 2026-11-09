@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("WailingCaverns", {
     name = "Wailing Caverns",
-    zone = "The Barrens", territory = "Horde",
+    instance = 43,
+    zone = "The Barrens", area = 17, territory = "Horde",
     entrance = { map = 1413, x = 46.0, y = 36.3 },
     wings = {
         { bosses = {

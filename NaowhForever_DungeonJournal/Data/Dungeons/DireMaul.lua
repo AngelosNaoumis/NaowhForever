@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("DireMaul", {
     name = "Dire Maul",
+    instance = 429,
     closed = true,
-    zone = "Feralas", territory = "Contested",
+    zone = "Feralas", area = 357, territory = "Contested",
     entrance = { map = 1444, x = 61.9, y = 31.6 },
     wings = {
         { name = "East", bosses = {

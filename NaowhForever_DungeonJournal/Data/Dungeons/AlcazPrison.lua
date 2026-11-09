@@ -3,9 +3,10 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("AlcazPrison", {
     name = "Alcaz Prison",
+    instance = 2994,
     new = true,
     closed = true,
-    zone = "Dustwallow Marsh", territory = "Contested",
+    zone = "Dustwallow Marsh", area = 15, territory = "Contested",
     wings = {
         { bosses = {
             { npc = nil, name = "Blazeroar" },

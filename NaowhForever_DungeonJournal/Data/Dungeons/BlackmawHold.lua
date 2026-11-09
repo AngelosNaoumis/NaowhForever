@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("BlackmawHold", {
     name = "Blackmaw Hold",
+    instance = 2974,
     new = true,
-    zone = "Azshara", territory = "Contested",
+    zone = "Azshara", area = 16, territory = "Contested",
     wings = {
     },
 })

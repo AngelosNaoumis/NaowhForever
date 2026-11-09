@@ -121,7 +121,7 @@ local function Dungeons(out, mapID)
         if entrance and ns.Shared.Places.SameMap(entrance.map) == ns.Shared.Places.SameMap(mapID) and not dungeon.closed then
             count = count + 1
             local levels = J.LevelRange and J.LevelRange(dungeon)
-            Add(out, "entry", ns.L(dungeon.name), levels and TEXT_DUNGEON_RANGE:format(levels) or nil,
+            Add(out, "entry", dungeon.name, levels and TEXT_DUNGEON_RANGE:format(levels) or nil,
                 entrance.map, entrance.x, entrance.y, dungeon)
         end
     end

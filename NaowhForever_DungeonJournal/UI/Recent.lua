@@ -51,18 +51,27 @@ local function KillLines(kill, muted)
         1, 1, 1, muted.r, muted.g, muted.b)
 end
 
-local function ItemLines(item, muted)
+local function BossName(dungeon, english)
+    for _, wing in ipairs(dungeon.wings) do
+        for _, boss in ipairs(wing.bosses) do
+            if boss.english == english then return boss.name end
+        end
+    end
+    return english
+end
+
+local function ItemLines(item, dungeon, muted)
     GameTooltip:SetHyperlink(item.link)
     GameTooltip:AddLine(TEXT_BLANK)
-    GameTooltip:AddDoubleLine(item.boss and TEXT_FROM .. item.boss or TEXT_LOOTED, date(KILL_DATE, item.at),
-        1, 1, 1, muted.r, muted.g, muted.b)
+    GameTooltip:AddDoubleLine(item.boss and TEXT_FROM .. BossName(dungeon, item.boss) or TEXT_LOOTED,
+        date(KILL_DATE, item.at), 1, 1, 1, muted.r, muted.g, muted.b)
 end
 
 local function RecentEnter(row)
     local muted = T.muted
     row.hover:Show()
     GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-    if row.kill then KillLines(row.kill, muted) else ItemLines(row.item, muted) end
+    if row.kill then KillLines(row.kill, muted) else ItemLines(row.item, row.dungeon, muted) end
     GameTooltip:AddLine(row.dungeon.name, T.accentSoft.r, T.accentSoft.g, T.accentSoft.b)
     GameTooltip:AddLine(TEXT_OPEN_HINT, muted.r, muted.g, muted.b)
     GameTooltip:Show()

@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("HallOfThanes", {
     name = "The Hall of Thanes",
+    instance = 3065,
     new = true,
-    zone = "Ironforge", territory = "Alliance",
+    zone = "Ironforge", area = 1537, territory = "Alliance",
     entrance = { map = 1455, x = 43.0, y = 51.0 },
     wings = {
         { bosses = {

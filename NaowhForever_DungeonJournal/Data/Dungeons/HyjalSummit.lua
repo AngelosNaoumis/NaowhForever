@@ -6,7 +6,7 @@ ns.Journal.AddDungeon("HyjalSummit", {
     new = true,
     raid = 20,
     note = "Opens on Forever on 9 December 2026. The boss order is the achievement's, not yet confirmed, and the loot shows in a later version of the addon, once it is known.",
-    zone = "Mount Hyjal", territory = "Contested",
+    zone = "Mount Hyjal", area = 616, territory = "Contested",
     entrance = { map = 2482, x = 85.3, y = 33.0 },
     wings = {
         { bosses = {

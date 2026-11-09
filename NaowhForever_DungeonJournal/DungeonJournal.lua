@@ -3,6 +3,7 @@ local ns = _G.NaowhForever
 
 local F = ns.FEATURES.journal
 
+local ENGLISH = "enUS"
 local INSTANCE_ID = 8
 local BYTE = 255
 local ZONE = Enum.UIMapType.Zone
@@ -88,13 +89,26 @@ J.TABS = FACTION_TABS
 J.NotYet = {}
 J.CharacterData = ns.Shared.CharacterData
 
-local ordered, byKey = {}, {}
+local ordered, byKey, byEnglish = {}, {}, {}
 local newBosses = {}
 local byNpc, dungeonOf
 local byMap, byName
 local factions = { reputation = {}, pvp = {} }
 local byZone, byBattleground
 local inFront = {}
+
+local function Localize(dungeon)
+    local name = ns.L(dungeon.name)
+    if name == dungeon.name and dungeon.instance then name = GetRealZoneText(dungeon.instance) end
+    dungeon.name = name
+    if dungeon.area then dungeon.zone = C_Map.GetAreaInfo(dungeon.area) end
+    local names = J.Names
+    for _, wing in ipairs(dungeon.wings) do
+        for _, boss in ipairs(wing.bosses) do
+            boss.name = boss.npc and names.npcs[boss.npc] or boss.chest and names.objects[boss.chest] or boss.name
+        end
+    end
+end
 
 local function SplitOpacity()
     local was = S.Raw("windowAlpha")
@@ -143,7 +157,7 @@ local function JoinQuests()
     local quests = {}
     for _, entry in ipairs(J.QuestData) do quests[entry.name] = entry end
     for _, dungeon in ipairs(ordered) do
-        local entry = quests[dungeon.name]
+        local entry = quests[dungeon.english]
         dungeon.quests = entry
         byName[dungeon.name] = { dungeon }
         if entry and entry.map then AddTo(byMap, entry.map, dungeon) end
@@ -217,8 +231,13 @@ end
 
 function J.AddDungeon(key, dungeon)
     dungeon.key = key
+    dungeon.english = dungeon.name
+    for _, wing in ipairs(dungeon.wings) do
+        for _, boss in ipairs(wing.bosses) do boss.english = boss.name end
+    end
+    if ns.LOCALE ~= ENGLISH then Localize(dungeon) end
     ordered[#ordered + 1] = dungeon
-    byKey[key] = dungeon
+    byKey[key], byEnglish[dungeon.english] = dungeon, dungeon
     if not dungeon.new then return end
     for _, wing in ipairs(dungeon.wings) do
         for _, boss in ipairs(wing.bosses) do newBosses[boss] = true end
@@ -232,6 +251,10 @@ end
 
 function J.AddFaction(key, faction)
     faction.key = key
+    if ns.LOCALE ~= ENGLISH then
+        faction.name = J.Names.factions[faction.id] or faction.name
+        faction.zone = J.PlaceName(faction.zone)
+    end
     for _, tier in ipairs(faction.tiers) do tier.faction = faction end
     local list = factions[faction.tab]
     list[#list + 1] = faction
@@ -245,6 +268,12 @@ end
 function J.Get(key)
     Joined()
     return byKey[key]
+end
+
+function J.PlaceName(english)
+    local dungeon = byEnglish[english]
+    if dungeon then return dungeon.name end
+    return J.Names and J.Names.places[english] or english
 end
 
 function J.Factions(tab)
@@ -269,7 +298,8 @@ function J.Current()
     local name, _, _, _, _, _, _, id = GetInstanceInfo()
     local list = byMap[id] or byName[name]
     if not list or not list[2] then return list end
-    local key = SUBZONES[GetSubZoneText()]
+    local subzone = GetSubZoneText()
+    local key = SUBZONES[J.Names and J.Names.subzones[subzone] or subzone]
     if not key or list[1].key == key then return list end
     return InFront(key, list)
 end

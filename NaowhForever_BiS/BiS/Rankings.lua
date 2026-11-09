@@ -57,7 +57,7 @@ local function ByGain(a, b)
 end
 
 local function AddBossLoot(dungeon, boss, best, notYet)
-    local who = (boss.trash and TEXT_TRASH or boss.name) .. SOURCE_SEP .. dungeon.name
+    local who = (boss.trash and TEXT_TRASH or boss.name) .. SOURCE_SEP .. dungeon.english
     for i, id in ipairs(boss.loot or EMPTY) do
         local chance = boss.trash and TRASH_CHANCE or boss.chance and boss.chance[i] or 0
         if not notYet[id] then
@@ -224,6 +224,11 @@ end
 function R.DropDungeon(itemID)
     Drops()
     return dropDungeon[itemID]
+end
+
+function R.PlaceName(name)
+    local J = ns.Journal
+    return ns.L(J and J.PlaceName and J.PlaceName(name) or name)
 end
 
 function R.ReqLevel(itemID)

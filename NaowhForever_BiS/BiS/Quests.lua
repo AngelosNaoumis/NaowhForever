@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local B = ns.BiS
+local R = B.Rankings
 local Items = ns.Shared.Items
 
 local QUEST_ID, QUEST_LEVEL, QUEST_MAP = 1, 3, 7
@@ -40,7 +41,8 @@ local function ZoneOf(J, quest)
     local zone = zoneOf[id]
     if not zone then
         local info = quest[QUEST_MAP] and C_Map.GetMapInfo(quest[QUEST_MAP])
-        zone = J.BiSQuestZones[id] or info and info.name or dungeonOf[id] or TEXT_ELSEWHERE
+        local named = J.BiSQuestZones[id] or not info and dungeonOf[id]
+        zone = named and R.PlaceName(named) or info and info.name or TEXT_ELSEWHERE
         zoneOf[id] = zone
     end
     return zone

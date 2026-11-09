@@ -29,7 +29,7 @@ local function Secret(v)
 end
 
 local function Plain(name)
-    return (gsub(gsub(lower(name), "^the ", ""), "[^%w]", ""))
+    return (gsub(gsub(lower(name), "^the ", ""), "[%s%p]", ""))
 end
 
 local function Index()

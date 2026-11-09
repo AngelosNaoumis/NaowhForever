@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("BlackrockDepths", {
     name = "Blackrock Depths",
+    instance = 230,
     closed = true,
-    zone = "Blackrock Mountain", territory = "Contested",
+    zone = "Blackrock Mountain", area = 25, territory = "Contested",
     entrance = { map = 1427, x = 27.6, y = 72.4 },
     wings = {
         { name = "Detention Block", bosses = {

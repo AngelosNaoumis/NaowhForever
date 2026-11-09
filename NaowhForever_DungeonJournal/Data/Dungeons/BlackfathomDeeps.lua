@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("BlackfathomDeeps", {
     name = "Blackfathom Deeps",
-    zone = "Ashenvale", territory = "Contested",
+    instance = 48,
+    zone = "Ashenvale", area = 331, territory = "Contested",
     entrance = { map = 1440, x = 13.9, y = 14.3 },
     wings = {
         { bosses = {

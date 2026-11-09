@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("ShadowfangKeep", {
     name = "Shadowfang Keep",
-    zone = "Silverpine Forest", territory = "Horde",
+    instance = 33,
+    zone = "Silverpine Forest", area = 130, territory = "Horde",
     entrance = { map = 1421, x = 45.5, y = 67.7 },
     wings = {
         { bosses = {

@@ -3,8 +3,9 @@ local ns = _G.NaowhForever
 
 ns.Journal.AddDungeon("Dalaran", {
     name = "City of Dalaran",
+    instance = 2959,
     new = true,
-    zone = "Alterac Mountains", territory = "Contested",
+    zone = "Alterac Mountains", area = 36, territory = "Contested",
     entrance = { map = 1416, x = 21.7, y = 68.3 },
     wings = {
         { bosses = {

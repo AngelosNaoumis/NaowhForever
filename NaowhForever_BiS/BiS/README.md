@@ -140,6 +140,10 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
   naming the boss sent players to farm it there. A trash card still names its dungeon: Spirewind
   Fetter is Uldaman's trash.
 - `SOURCE_SEP` is the middle dot wowsrc puts between a boss and its place; each source is split once.
+- A Journal drop's place is its dungeon's English name, as the list's own sources name it, so both
+  are one place in any language. `R.PlaceName` shows a place in the player's language through the
+  Journal's `J.PlaceName` (a dungeon by its name there, any other place by the game's), so without
+  the Journal places stay English.
 - The picker lists only ranked items the running client knows: an unknown ID never finishes loading.
   Dungeon drops "near your level" are within `NEAR_LEVELS` (10) of yours.
 - Run Next shows at most three places, the ones that make you strongest first (by the gains), then

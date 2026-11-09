@@ -6,7 +6,7 @@ ns.Journal.AddDungeon("BarrowDeeps", {
     new = true,
     raid = 10,
     note = "Opens on Forever on 9 December 2026. The boss order is the achievement's, not yet confirmed, and the loot shows in a later version of the addon, once it is known.",
-    zone = "Mount Hyjal", territory = "Contested",
+    zone = "Mount Hyjal", area = 616, territory = "Contested",
     entrance = { map = 2482, x = 70.1, y = 62.0 },
     wings = {
         { bosses = {
