@@ -655,4 +655,23 @@ check("The inside a name is preserved",
     At(DUSKWOOD, { Node("Ruins of The City", NEUTRAL, 50, false, 71) })
     == "Learn the Ruins of The City flight point")
 
+state.zoneAlerts, state.subzone = false, ""
+local function Nodes(list)
+    state.nodes = list
+    S.Set("flightPoint", false)
+end
+state.map, state.pos = DARKSHORE, { x = 0, y = 0 }
+Nodes({ Node("Auberdine, Darkshore", ALLIANCE, 30, true, AUBERDINE) })
+check("a flight point within reach is a flight master, with the reminder off", ns.AtFlightMaster() == true)
+state.pos = { x = -60, y = 0 }
+check("ninety yards off is not", ns.AtFlightMaster() == false)
+state.pos = { x = 0, y = 0 }
+Nodes({ Node("Quest Path 12", NEUTRAL, 10, true, 97) })
+check("a quest path node is not a flight master", ns.AtFlightMaster() == false)
+Nodes({})
+check("a map with no flight point is not", ns.AtFlightMaster() == false)
+Nodes({ Node("Auberdine, Darkshore", ALLIANCE, 30, true, AUBERDINE) })
+state.taxi = true
+check("not while flying", ns.AtFlightMaster() == false)
+state.taxi = false
 print(checks .. " flight point checks passed")

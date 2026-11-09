@@ -394,6 +394,25 @@ local function Apply()
     Update()
 end
 
+function ns.AtFlightMaster()
+    if UnitOnTaxi(PLAYER) then return false end
+    local here = C_Map.GetBestMapForUnit(PLAYER)
+    local zone = Up(SameMap(here), ZONE)
+    if not zone then return false end
+    local player, secret, continent = WorldOf(here, here and C_Map.GetPlayerMapPosition(here, PLAYER))
+    if secret or not player then return false end
+    local _, entries = NodesFor(zone)
+    if not entries then return false end
+    for _, entry in ipairs(entries) do
+        local name = entry.node.name
+        if entry.world and entry.continent == continent and name and not Retired(name)
+            and Yards(player, entry.world) <= MASTER_REACH then
+            return true
+        end
+    end
+    return false
+end
+
 function ns.FlightPointReminderForPin(map, npc)
     if not On() then return nil end
     local zone = Up(SameMap(map), ZONE)

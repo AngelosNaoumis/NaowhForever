@@ -15,6 +15,7 @@ local DOING = { { "questAccept", "accepts" }, { "questTurnIn", ns.L("turns in") 
 
 local GOSSIP_ICON_PATHS = { "VendorGossipIcon", "TrainerGossipIcon", "BankerGossipIcon",
     "AuctioneerGossipIcon", "StableMasterGossipIcon" }
+local TAXI_GOSSIP_ICON = "TaxiGossipIcon"
 local GOSSIP_ICON_DIR = "Interface\\GossipFrame\\"
 
 local TEXT_CLEARED = ns.L("Cleared the saved reward for %s.")
@@ -25,7 +26,7 @@ local TEXT_BY_HAND = ns.L("All by hand")
 local hooked = {}
 local sharedWithMe
 local gossipPicked
-local safeIcons
+local safeIcons, taxiIcon
 local events = CreateFrame("Frame")
 
 local function On(key)
@@ -204,6 +205,8 @@ local function SafeIcons()
             local id = GetFileIDFromPath(GOSSIP_ICON_DIR .. name)
             if id and id ~= 0 then safeIcons[id] = true end
         end
+        local id = GetFileIDFromPath(GOSSIP_ICON_DIR .. TAXI_GOSSIP_ICON)
+        taxiIcon = id ~= 0 and id or nil
     end
     return safeIcons
 end
@@ -217,7 +220,8 @@ local function AutoGossip()
     local options = C_GossipInfo.GetOptions()
     local option = options[1]
     if #options ~= 1 or (option.selectOptionWhenOnlyOption and not C_GossipInfo.ForceGossip())
-        or option.status ~= Enum.GossipOptionStatus.Available or not SafeIcons()[option.icon] then
+        or option.status ~= Enum.GossipOptionStatus.Available
+        or not (SafeIcons()[option.icon] or option.icon == taxiIcon and ns.AtFlightMaster()) then
         return
     end
     gossipPicked = true
@@ -349,7 +353,7 @@ page:Card({
 
 page:Card({
     id = "gossip", name = "NPC Gossip", order = 15, switch = "gossipAuto",
-    help = "Picks the only option of a vendor, trainer, banker, auctioneer or stable "
+    help = "Picks the only option of a vendor, trainer, banker, auctioneer, stable master or flight "
         .. "master; nothing that costs money or moves you.",
     rows = {
         { key = "gossipModifier", label = "Modifier", choice = MODIFIER,

@@ -1,5 +1,6 @@
 -- Run with Lua 5.1 from the repository root: the quest automation's Modifier skips or triggers
--- every quest step, and Auto Gossip picks a lone option only when its icon is on the safe list.
+-- every quest step, and Auto Gossip picks a lone option only when its icon is on the safe list, or is the
+-- taxi icon at a flight master.
 local settings = {
     enabled = true, questAccept = true, questTurnIn = true, questGossip = true, questShare = true,
     questRewardPicks = false, questSkipModifier = "ALT", questModifierMode = "SKIP",
@@ -7,7 +8,7 @@ local settings = {
 }
 local down = {}
 local calls
-local combat, forced = false, false
+local combat, forced, atMaster = false, false, false
 local ICON_IDS = { VendorGossipIcon = 101, TaxiGossipIcon = 102, TrainerGossipIcon = 103, BankerGossipIcon = 104,
     AuctioneerGossipIcon = 105, StableMasterGossipIcon = 0, BinderGossipIcon = 107, GossipGossipIcon = 108 }
 local VENDOR, BINDER, GENERIC, UNRESOLVED = 101, 107, 108, 0
@@ -26,7 +27,8 @@ end
 
 local S = { Get = function(key) return settings[key] end, DB = function() return {} end }
 local function Log(name) return function(...) calls[#calls + 1] = { name, ... } end end
-local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = S, Print = function() end, cards = {} }
+local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, QoLSettings = S, Print = function() end, cards = {},
+    AtFlightMaster = function() return atMaster end }
 ns.Shared = { Settings = { Page = function()
     return { Card = function(_, card) ns.cards[#ns.cards + 1] = card end }
 end } }
@@ -162,7 +164,14 @@ for _, name in ipairs({ "TrainerGossipIcon", "BankerGossipIcon", "AuctioneerGoss
 end
 Reset()
 options = { { orderIndex = 3, status = 0, icon = ICON_IDS.TaxiGossipIcon } }
-Gossip("a lone taxi option is left alone: some fly you straight off", false)
+Gossip("a lone taxi option away from a flight point is left alone: some fly you straight off", false)
+Reset()
+atMaster = true
+Gossip("a lone taxi option at a flight master opens the flight map", true)
+Reset()
+options = { { orderIndex = 3, status = 0, icon = ICON_IDS.BinderGossipIcon } }
+Gossip("at a flight master a lone binder option is still left alone", false)
+atMaster = false
 Reset()
 options = { { orderIndex = 3, status = 0, icon = UNRESOLVED } }
 Gossip("an icon that did not resolve is left alone", false)
