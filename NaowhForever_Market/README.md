@@ -430,3 +430,6 @@ Away from the auction house:
     Better: and names only what it beat.
 51. The Market's settings page has Prices & Deals: QoL's four Auction Prices rows and Professions'
     Disenchant Deals rows (with Professions on). Turning one on there turns it on in QoL or Professions too.
+52. The Market's settings page has Key Binding: set a key there and it shows the same in the game's Key
+    Bindings menu (Open The Market). Away from an auctioneer the key opens The Market and a second press
+    closes it; at an auctioneer the second press closes the auction house too, as the window's X does.

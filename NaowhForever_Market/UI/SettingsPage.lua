@@ -5,7 +5,7 @@ local Market = ns.Market
 local S = Market.Settings
 local Settings = ns.Shared.Settings
 
-local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES = 10, 20, 30
+local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_KEYS = 10, 20, 30, 80
 local TEXT_OFF = ns.L("Turn on The Market")
 local TEXT_PROFESSIONS_OFF = "Turn on Professions"
 local TEXT_NEEDS_TOOLTIP = ns.L("Needs Tooltip Lines")
@@ -130,4 +130,13 @@ page:Card({
     help = "Auction prices and Disenchant Deals, the same settings as in QoL and Professions.",
     search = "auction house scan prices tooltip waylaid crate capture disenchant deals enchanting",
     rows = PriceRows,
+})
+
+page:Card({
+    id = "keys", name = "Key Binding", order = ORDER_KEYS,
+    help = "The key that opens The Market.",
+    rows = {
+        { label = "Open The Market", binding = "NAOWHFOREVER_MARKET",
+          help = "Press this key to open The Market, and again to close it." },
+    },
 })
