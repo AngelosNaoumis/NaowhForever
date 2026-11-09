@@ -1,4 +1,4 @@
--- Crafts.lua: what your characters' known recipes make, priced from your last scan, and how many your bags can make (Market.Crafts).
+-- Crafts.lua: what your characters' known recipes make, priced from your last scan at their best outlet, and how many your bags can make (Market.Crafts).
 local ns = _G.NaowhForever
 
 local GetItemCount = C_Item.GetItemCount
@@ -8,9 +8,11 @@ local Market = ns.Market
 
 local ROSTER = "marketCharacters"
 local VENDOR_PRICE = 11
+local SELL, DISENCHANT, VENDOR = "sell", "disenchant", "vendor"
 
 local rows, spare, byOutput, byPart = {}, {}, {}, {}
 local stale = true
+local prices
 
 local Crafts = { rows = rows }
 Market.Crafts = Crafts
@@ -29,6 +31,16 @@ local function Raw(itemID)
     return math.max(Net(itemID) or 0, select(VENDOR_PRICE, GetItemInfo(itemID)) or 0)
 end
 
+local function Disenchant(itemID)
+    local P = ns.Professions
+    local values = P and P.DisenchantValues
+    if not (values and prices) then return end
+    local _, _, quality, level, _, _, _, _, equip, _, _, classID = GetItemInfo(itemID)
+    if not (quality and values.ItemTakes(itemID, classID, quality, equip)) then return end
+    local gross = values.Expected(classID, quality, level, prices)
+    return gross and values.AfterCut(gross)
+end
+
 local function Roster()
     local account = ns.AccountSettings()
     account[ROSTER] = account[ROSTER] or {}
@@ -41,13 +53,22 @@ function Crafts.NoteMe()
     Roster()[guid] = { name = UnitName("player"), class = select(2, UnitClass("player")), house = Market.HouseKey() }
 end
 
+function Crafts.Outlet(sell, disenchant, vendor)
+    local outlet, best
+    if vendor and vendor > 0 then outlet, best = VENDOR, vendor end
+    if sell and (not best or sell > best) then outlet, best = SELL, sell end
+    if disenchant and (not best or disenchant > best) then outlet, best = DISENCHANT, disenchant end
+    return outlet, best
+end
+
 local function AddRow(shop, guid, who, output, m)
-    local each = Net(output)
-    if not (each and type(m.need) == "table") then return end
+    local sell, disenchant = Net(output), Disenchant(output)
+    if not ((sell or disenchant) and type(m.need) == "table") then return end
+    local outlet, each = Crafts.Outlet(sell, disenchant, select(VENDOR_PRICE, GetItemInfo(output)))
     local row = table.remove(spare) or {}
     row.guid, row.who, row.output, row.recipe, row.prof, row.need = guid, who, output, m.recipe, m.prof, m.need
     row.made = math.max(1, m.made or 1)
-    row.sale = each * row.made
+    row.outlet, row.sale = outlet, each * row.made
     local cost, raw, can, fromBags = 0, 0, math.huge, false
     for part, per in pairs(m.need) do
         local buy = shop.BuyPrice(part)
@@ -87,6 +108,7 @@ function Crafts.Read()
     wipe(byOutput)
     wipe(byPart)
     stale = false
+    prices = ns.AuctionPriceList and ns.AuctionPriceList()
     local shop = Shop()
     if not (shop and shop.MakesOf) then return false end
     local me, seen = UnitGUID("player"), {}
@@ -112,10 +134,10 @@ local function MoreProfit(a, b)
     return a.output < b.output
 end
 
-function Crafts.View(fromBags, out)
+function Crafts.View(fromBags, out, outlet)
     wipe(out)
     for _, row in ipairs(rows) do
-        if not fromBags or row.can > 0 then out[#out + 1] = row end
+        if (not fromBags or row.can > 0) and (not outlet or row.outlet == outlet) then out[#out + 1] = row end
     end
     table.sort(out, fromBags and MoreFromBags or MoreProfit)
     return out

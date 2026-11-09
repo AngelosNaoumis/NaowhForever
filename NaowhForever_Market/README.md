@@ -8,8 +8,9 @@ auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens th
 where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
 loop through it you can follow by waypoint. Last Run records each herb and vein you gather and draws
 the run's gold over time with its haul; what you really gather prices Farm's nodes. Crafts shows what your characters' known recipes make
-from your bags, priced from your last scan, and Reagents what each reagent in them goes into, in every
-profession, and whether crafting it beats selling it. Bag Worth puts what your
+from your bags, priced from your last scan at whichever of selling, disenchanting or vendoring pays
+most, and Reagents what each reagent in them goes into, in every profession, and whether crafting it
+beats selling it. Bag Worth puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it and what it crafts into.
 Built on [`Shared/`](../Shared/README.md).
@@ -31,7 +32,7 @@ NaowhForever_Market/
   Buy.lua            the name and category search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
-  Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
+  Crafts.lua         your characters' known recipes priced at their best outlet, and what your bags make (Market.Crafts)
   Runs.lua           your gathering runs, what each node yields on average, and the pools you fish from (Market.Runs)
   Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
   Data/
@@ -188,11 +189,24 @@ NaowhForever_Market/
   opened on that character. Alts come from The Market's own list (`marketCharacters`), noted at login
   with The Market on, and only those on this realm and faction, who could be mailed the materials.
   A recipe two characters know is listed once, as yours.
-- A craft sells for its output's scan price after the cut, times what it makes. Its gain is that less
+- A craft sells for what its output fetches at its best outlet, times what it makes. Its gain is that less
   what its materials would fetch sold as they are (their auction price after the cut or their vendor
   price, whichever is more); its profit is that less what they cost to buy (`Shopping.BuyPrice`).
   Materials a vendor sells (`Shopping.VendorPrice`) count at their price and never limit how many your
-  bags make. Outputs with no scan price are left out.
+  bags make. Outputs with neither a scan price nor a disenchant value are left out.
+- An output has three outlets: the auction house (its scan price after the cut), disenchanting and a
+  vendor (its sell price). `Crafts.Outlet` takes the one that pays most. A vendor wins a tie with the
+  auction house, as on Sell; the auction house wins a tie with disenchanting, which is an average and
+  needs an enchanter.
+- Disenchanting is priced as the tooltip's Disenchant line is: Professions' `DisenchantValues` expected
+  value after the cut, for the equipment it takes, read only when Professions is loaded and a full price
+  list is there (`ns.AuctionPriceList`). It does not check anyone's Enchanting skill, as Disenchant
+  Deals' Profit does not by default.
+- A vendor price alone does not list a craft: every item has one, so every recipe would list before a
+  scan.
+- The Disenchant view lists the crafts best disenchanted, by profit, since a shuffle buys its
+  materials. The tooltip's Made by and Crafts into lines name the outlet when it is not the auction
+  house, so a profit from disenchanting is not read as a sale.
 - Each row's From Bags is what that recipe alone could make. The total on top shares your bags out:
   recipes are taken best gain a craft first, each using up the materials it makes from, so two
   recipes that need the same cloth never count it twice.
@@ -354,3 +368,7 @@ Away from the auction house:
     under, and gear a silver under as before.
 45. On Sell, hovering a listing other than your post lights it; clicking it moves your price to that
     listing's rung (where Up and Down would land) and your post onto the ladder beside it.
+46. With Professions on and a scan taken, each Crafts row shows Sell, Disenchant or Vendor under Sells
+    for. A green your characters craft that disenchants for more than it sells shows Disenchant, at its
+    tooltip's Disenchant line times what it makes, and sorts by that profit; the Disenchant tab lists
+    only those, and the green's tooltip reads "profit ... (Disenchant)".

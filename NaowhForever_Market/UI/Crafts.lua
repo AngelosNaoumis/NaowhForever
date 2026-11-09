@@ -10,7 +10,7 @@ local Crafts, Columns = Market.Crafts, Market.Columns
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local HEAD_H, SUMMARY_H, COLUMNS_H, ROW_H = 44, 30, 22, 40
 local SUB_GAP, ROW_IN, ICON, MAT_ICON, MAT_GAP, MAT_W, MATS_SHOWN = 4, 8, 28, 18, 2, 48, 4
-local VIEW_W, ACTION_W, SCROLL_IN = 260, 100, 4
+local VIEW_W, ACTION_W, SCROLL_IN = 390, 100, 4
 local NAME_W, WHO_W, MONEY_W, BAGS_W = 190, 104, 80, 92
 local WHO_LEFT = ROW_IN + NAME_W
 local MATS_LEFT = WHO_LEFT + WHO_W
@@ -21,6 +21,7 @@ local SALE_RIGHT = GAIN_RIGHT + MONEY_W
 local VIEWS = {
     { key = "bags", label = "From My Bags", tip = "Only what your bags hold the materials for." },
     { key = "all", label = "All Recipes", tip = "Every recipe your characters know that has a price." },
+    { key = "disenchant", label = "Disenchant", tip = "Only the recipes worth more disenchanted than sold or vendored." },
 }
 local TEXT_TITLE = ns.L("Crafts")
 local TEXT_SUB = ns.L("Recipes you and your characters know, from Professions, priced from your last scan")
@@ -29,9 +30,11 @@ local TEXT_NO_GAIN = ns.L("Nothing your bags hold makes more crafted than sold a
 local TEXT_NO_PROF = ns.L("Turn on Professions: Crafts reads the recipes it saves for each character.")
 local TEXT_NONE = ns.L("No priced recipes yet. Open each profession once so Professions saves its recipes, and scan prices at an auctioneer.")
 local TEXT_NONE_BAGS = ns.L("Nothing your bags can craft right now. All Recipes lists every one.")
+local TEXT_NONE_DISENCHANT = ns.L("No recipe is worth more disenchanted than sold or vendored.")
 local TEXT_RECIPE, TEXT_WHO, TEXT_MATS = ns.L("Recipe"), ns.L("Known by"), ns.L("Materials")
 local TEXT_SALE, TEXT_GAIN, TEXT_PROFIT, TEXT_BAGS = ns.L("Sells for"), ns.L("Over raw"), ns.L("Profit"), ns.L("From bags")
 local TEXT_YOU = ns.L("You")
+local OUTLETS = { sell = ns.L("Sell"), disenchant = ns.L("Disenchant"), vendor = ns.L("Vendor") }
 local TEXT_MADE = "%s |cff808080x%d|r"
 local TEXT_HAVE = "%d/%d"
 local TEXT_VENDOR = ns.L("vendor")
@@ -47,6 +50,7 @@ local TEXT_NEGATIVE = "-%s"
 local page, summary, scroll, list, empty, viewTabs, sorter
 local rowPool, view, queued = {}, {}, {}
 local fromBags = true
+local outlet
 local active = false
 local events
 
@@ -146,6 +150,10 @@ local function NewRow()
     row.mats = {}
     for i = 1, MATS_SHOWN do row.mats[i] = NewMat(row, i) end
     row.sale = Cell(row, MONEY_W, SALE_RIGHT)
+    row.sale:ClearAllPoints()
+    row.sale:SetPoint("BOTTOMRIGHT", row, "RIGHT", -SALE_RIGHT, 1)
+    row.outlet = ns.Font(row, SMALL_SIZE, nil, T.muted)
+    row.outlet:SetPoint("TOPRIGHT", row, "RIGHT", -SALE_RIGHT, -1)
     row.gain = Cell(row, MONEY_W, GAIN_RIGHT)
     row.bags = Cell(row, BAGS_W, BAGS_RIGHT)
     row.action = ns.Button(row, "", ACTION_W, BUTTON_H, ActionClicked)
@@ -210,6 +218,7 @@ local function PaintRow(row, data, i)
     row.prof:SetText(ProfessionName(data.prof))
     PaintMats(row, data)
     row.sale:SetText(Parts.Coins(data.sale, true))
+    row.outlet:SetText(OUTLETS[data.outlet])
     local gain = fromBags and data.gain or data.profit
     row.gain:SetText(gain and Money(gain) or "")
     Tint(row.gain, gain or 0)
@@ -232,7 +241,7 @@ end
 function Page.Draw()
     if not active then return end
     local read = Crafts.Fresh()
-    Columns.Sort(sorter, Crafts.View(fromBags, view))
+    Columns.Sort(sorter, Crafts.View(fromBags, view, outlet))
     local y = 0
     for i, data in ipairs(view) do
         local row = rowPool[i] or NewRow()
@@ -252,6 +261,8 @@ function Page.Draw()
         empty:SetText(TEXT_NO_PROF)
     elseif #Crafts.rows == 0 then
         empty:SetText(TEXT_NONE)
+    elseif outlet then
+        empty:SetText(TEXT_NONE_DISENCHANT)
     else
         empty:SetText(TEXT_NONE_BAGS)
     end
@@ -259,6 +270,7 @@ end
 
 local function ViewPicked(key)
     fromBags = key == "bags"
+    outlet = key == "disenchant" and key or nil
     Parts.PaintTabs(viewTabs, key)
     Columns.SetText(sorter, "gain", fromBags and TEXT_GAIN or TEXT_PROFIT)
     Columns.SetDefault(sorter, fromBags and "bags" or "gain")

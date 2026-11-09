@@ -24,6 +24,8 @@ local TEXT_PROFIT = ns.L("profit %s")
 local TEXT_LOSS = ns.L("loss %s")
 local TEXT_INTO = ns.L("Crafts into")
 local TEXT_OVER = ns.L("+%s a craft over selling it")
+local TEXT_VIA = "%s (%s)"
+local OUTLETS = { disenchant = TEXT_DISENCHANT, vendor = ns.L("Vendor") }
 local TEXT_SOLD = ns.L("You sold %d")
 local TEXT_SOLD_AT = ns.L("%s each, %s")
 
@@ -76,6 +78,12 @@ local function Who(row)
     return TEXT_WHO:format(row.who or TEXT_YOU, ProfessionName(row.prof))
 end
 
+local function Via(text, row)
+    local outlet = OUTLETS[row.outlet]
+    if not outlet then return text end
+    return TEXT_VIA:format(text, outlet)
+end
+
 local function CraftLines(itemID)
     local Crafts = Market.Crafts
     local made = Crafts.Made(itemID)
@@ -83,13 +91,14 @@ local function CraftLines(itemID)
         Add(TEXT_MADE_BY, Who(made))
         if made.profit then
             local up = made.profit >= 0
-            Add(TEXT_MATS:format(Coins(made.cost)), (up and TEXT_PROFIT or TEXT_LOSS):format(Coins(math.abs(made.profit))),
+            Add(TEXT_MATS:format(Coins(made.cost)),
+                Via((up and TEXT_PROFIT or TEXT_LOSS):format(Coins(math.abs(made.profit))), made),
                 up and St.HAVE_RGB or St.RED_RGB)
         end
     end
     local into = Crafts.Into(itemID)
     if into and into ~= made then
-        Add(TEXT_INTO, C_Item.GetItemNameByID(into.output) or "")
+        Add(TEXT_INTO, Via(C_Item.GetItemNameByID(into.output) or "", into))
         Add(Who(into), TEXT_OVER:format(Coins(into.gain)), St.HAVE_RGB)
     end
 end

@@ -20,7 +20,7 @@ local function Setup(opts)
         searches = {}, posts = {}, confirms = {}, loads = 0, timers = {}, hooks = {},
         owned = opts.owned or {}, keyInfo = opts.keyInfo or {}, queries = 0, cancels = {}, locked = {},
         browses = {}, browse = {}, more = 0, full = true, purchases = {}, bids = {}, money = opts.money or 1000000,
-        account = {}, char = {}, scanAt = opts.scanAt, counts = opts.counts or {} }
+        account = {}, char = {}, scanAt = opts.scanAt, counts = opts.counts or {}, info = opts.info or {} }
     local registry = {}
     local copper = opts.copper ~= false
     t.ready = true
@@ -98,7 +98,9 @@ local function Setup(opts)
             GetItemInfo = function(link)
                 local id = tonumber(tostring(link):match("(%d+)"))
                 if not id then return end
-                return "Item " .. id, link, 1, 1, 1, "", "", 1, "", 0, t.vendor[id] or 0
+                local info = t.info[id] or {}
+                return "Item " .. id, link, info.quality or 1, info.level or 1, 1, "", "", 1, info.equip or "", 0,
+                    t.vendor[id] or 0, info.class
             end,
             GetItemID = function(loc) local s = Slot(loc) return s and s.itemID end,
             GetItemLink = function(loc) local s = Slot(loc) return s and s.hyperlink end,

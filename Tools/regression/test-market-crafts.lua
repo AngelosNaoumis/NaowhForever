@@ -1,5 +1,6 @@
 -- Run with Lua 5.1 from the repository root: The Market's Crafts: your characters' recipes, priced, and what your bags make.
 local World = dofile("Tools/regression/market_world.lua")
+local Load = dofile("Tools/regression/load_files.lua")
 
 local checks = 0
 local function Check(label, value) assert(value, label); checks = checks + 1 end
@@ -95,5 +96,81 @@ Check("not while its Craft Queue is off", not Cr.Queue(bolt, 3) and #queued == 1
 Cr.NoteMe()
 Check("logging in notes this character for its alts", t.account.marketCharacters["Player-1"].name == "Me"
     and t.account.marketCharacters["Player-1"].house == "Realm-Horde")
+
+local Outlet = Cr.Outlet
+Check("a vendor wins a tie with the auction house, as on Sell", Outlet(95, nil, 95) == "vendor")
+Check("the auction house wins a tie with disenchanting", Outlet(95, 95, nil) == "sell")
+Check("a vendor wins a tie with disenchanting", Outlet(nil, 50, 50) == "vendor")
+local outlet, best = Outlet(12, 13, 11)
+Check("otherwise the outlet that pays most wins", outlet == "disenchant" and best == 13)
+outlet, best = Outlet(5, nil, 0)
+Check("a vendor price of nothing is no outlet", outlet == "sell" and best == 5 and Outlet(nil, nil, 0) == nil)
+
+-- Level 20 Uncommon armor: 75% 2-3 Strange Dust, 20% 1-2 Greater Magic Essence, 5% a Small Glimmering Shard.
+local DUST, ESSENCE, SHARD = 10940, 10939, 10978
+local GLOVES, CLOAK, GREEN_SHIRT, STEW = 7001, 7002, 7003, 7004
+local ARMOR, UNCOMMON, GREEN_LEVEL = 4, 2, 20
+local DISENCHANTED = 481
+local s = World.Setup({ scanAt = 1, counts = { [LINEN] = 12 }, vendor = { [GLOVES] = 30, [STEW] = 60 }, info = {
+    [GLOVES] = { quality = UNCOMMON, level = GREEN_LEVEL, class = ARMOR, equip = "INVTYPE_HAND" },
+    [CLOAK] = { quality = UNCOMMON, level = GREEN_LEVEL, class = ARMOR, equip = "INVTYPE_CLOAK" },
+    [GREEN_SHIRT] = { quality = UNCOMMON, level = GREEN_LEVEL, class = ARMOR, equip = "INVTYPE_BODY" },
+} })
+local shuffles = {
+    [BOLT] = { recipe = 2963, made = 1, need = { [LINEN] = 2 }, prof = 197 },
+    [GLOVES] = { recipe = 7101, made = 1, need = { [LINEN] = 4 }, prof = 197 },
+    [CLOAK] = { recipe = 7102, made = 1, need = { [LINEN] = 3 }, prof = 197 },
+    [GREEN_SHIRT] = { recipe = 7103, made = 1, need = { [LINEN] = 5 }, prof = 197 },
+    [STEW] = { recipe = 7104, made = 2, need = { [LINEN] = 1 }, prof = 185 },
+}
+s.ns.Professions = { Shopping = { Makes = function() return shuffles end, MakesOf = function() end,
+    BuyPrice = function(item) return buy[item] end, VendorPrice = function() end } }
+local professionsEnv = setmetatable({ NaowhForever = s.ns }, { __index = _G })
+professionsEnv._G = professionsEnv
+Load({ "NaowhForever_Professions/Data/DisenchantValues.lua" }, professionsEnv)
+s.scan = { [LINEN] = 20, [BOLT] = 100, [GLOVES] = 50, [GREEN_SHIRT] = 200, [STEW] = 40,
+    [DUST] = 100, [ESSENCE] = 1000, [SHARD] = 400 }
+local Sh = s.M.Crafts
+
+local function ReadShuffles()
+    Sh.Changed()
+    Sh.Read()
+    local by = {}
+    for _, row in ipairs(Sh.rows) do by[row.output] = row end
+    return by
+end
+
+local by = ReadShuffles()
+Check("a craft that sells best is sold", by[BOLT].outlet == "sell" and by[BOLT].sale == 95)
+Check("a green worth more disenchanted is disenchanted, at its value after the cut", by[GLOVES].outlet == "disenchant"
+    and by[GLOVES].sale == DISENCHANTED)
+Check("and its gain and profit come from disenchanting", by[GLOVES].gain == DISENCHANTED - 4 * 19
+    and by[GLOVES].profit == DISENCHANTED - 4 * 20)
+Check("a green with no auction price is listed by its disenchant value", by[CLOAK].outlet == "disenchant"
+    and by[CLOAK].profit == DISENCHANTED - 3 * 20)
+Check("a shirt never disenchants", by[GREEN_SHIRT].outlet == "sell" and by[GREEN_SHIRT].sale == 190)
+Check("a craft a vendor pays more for is vendored, times what it makes", by[STEW].outlet == "vendor"
+    and by[STEW].sale == 2 * 60 and by[STEW].profit == 120 - 20)
+
+view = Sh.View(false, {})
+Check("All Recipes sorts by the best outlet's profit", view[1].output == CLOAK and view[2].output == GLOVES
+    and view[3].output == STEW and view[5].output == BOLT)
+view = Sh.View(false, view, "disenchant")
+Check("Disenchant lists only the crafts best disenchanted, most profit first", #view == 2 and view[1].output == CLOAK
+    and view[2].output == GLOVES)
+total, n = Sh.Total()
+Check("crafting the bags shares them out by the best outlet's gain", total == (DISENCHANTED - 3 * 19) * 4 and n == 1)
+Check("a material's tooltip names the craft that gains most by its best outlet", Sh.Into(LINEN).output == CLOAK
+    and Sh.Made(GLOVES).outlet == "disenchant")
+
+local values = s.ns.Professions.DisenchantValues
+s.ns.Professions.DisenchantValues = nil
+by = ReadShuffles()
+Check("without Professions' disenchant values a green is only sold", by[GLOVES].outlet == "sell"
+    and by[GLOVES].sale == 47 and by[CLOAK] == nil)
+s.ns.Professions.DisenchantValues = values
+s.scanAt = nil
+by = ReadShuffles()
+Check("and without a full price list", by[GLOVES].outlet == "sell" and by[CLOAK] == nil)
 
 print("market crafts: " .. checks .. " checks passed")
