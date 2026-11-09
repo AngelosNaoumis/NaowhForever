@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+### Changed
+- Quest List: quests updated from the latest Forever quest lists.
+
 ## 1.2.19
 
 ### Please test

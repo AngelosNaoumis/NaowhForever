@@ -2425,14 +2425,16 @@
     "zone",
     15
    ],
-   "choices": [],
+   "choices": [
+    10702,
+    270086,
+    270087
+   ],
    "level": 43,
    "name": "Overlord Mok'Morokk's Concern",
    "reqclass": 0,
    "reqlevel": 38,
-   "rewards": [
-    10702
-   ],
+   "rewards": [],
    "side": 2
   },
   "1167": {
@@ -12414,7 +12416,8 @@
    ],
    "choices": [
     9533,
-    9534
+    9534,
+    270099
    ],
    "level": 47,
    "name": "Divino-matic Rod",
@@ -12792,14 +12795,16 @@
     "dungeon",
     978
    ],
-   "choices": [],
+   "choices": [
+    9531,
+    270098
+   ],
    "level": 46,
    "name": "Tiara of the Deep",
    "reqclass": 0,
    "reqlevel": 40,
    "rewards": [
-    9527,
-    9531
+    9527
    ],
    "side": 3
   },
@@ -14332,7 +14337,8 @@
    ],
    "choices": [
     9658,
-    9660
+    9660,
+    287073
    ],
    "level": 43,
    "name": "Gordunni Cobalt",
@@ -15894,14 +15900,16 @@
     "dungeon",
     722
    ],
-   "choices": [],
+   "choices": [
+    10824,
+    270081
+   ],
    "level": 42,
    "name": "Bring the End",
    "reqclass": 0,
    "reqlevel": 37,
    "rewards": [
-    10823,
-    10824
+    10823
    ],
    "side": 2
   },
@@ -23228,7 +23236,8 @@
    ],
    "choices": [
     3209,
-    6194
+    6194,
+    287067
    ],
    "level": 32,
    "name": "Defeat Nek'rosh",
@@ -25992,14 +26001,15 @@
     "zone",
     400
    ],
-   "choices": [],
+   "choices": [
+    15467,
+    287066
+   ],
    "level": 30,
    "name": "Hypercapacitor Gizmo",
    "reqclass": 0,
    "reqlevel": 24,
-   "rewards": [
-    15467
-   ],
+   "rewards": [],
    "side": 2
   },
   "5152": {
@@ -29178,14 +29188,15 @@
     "zone",
     267
    ],
-   "choices": [],
+   "choices": [
+    2805,
+    287069
+   ],
    "level": 34,
    "name": "Bartolo's Yeti Fur Cloak",
    "reqclass": 0,
    "reqlevel": 29,
-   "rewards": [
-    2805
-   ],
+   "rewards": [],
    "side": 1
   },
   "5650": {
@@ -30998,7 +31009,8 @@
    ],
    "choices": [
     5253,
-    4128
+    4128,
+    287071
    ],
    "level": 41,
    "name": "Venture Company Mining",
@@ -32506,7 +32518,8 @@
    "reqclass": 0,
    "reqlevel": 31,
    "rewards": [
-    4109
+    4109,
+    252452
    ],
    "side": 3
   },
@@ -34746,7 +34759,8 @@
    ],
    "choices": [
     4543,
-    4545
+    4545,
+    270073
    ],
    "level": 40,
    "name": "Foul Magics",
@@ -34985,9 +34999,7 @@
    "name": "Stromgarde Badges",
    "reqclass": 0,
    "reqlevel": 30,
-   "rewards": [
-    4741
-   ],
+   "rewards": [],
    "side": 1
   },
   "6821": {
@@ -40672,8 +40684,7 @@
    "reqclass": 8,
    "reqlevel": 1,
    "rewards": [
-    277210,
-    203994
+    277210
    ],
    "side": 3
   },
@@ -41771,6 +41782,21 @@
    ],
    "side": 2
   },
+  "79096": {
+   "category": [
+    "sort",
+    284
+   ],
+   "choices": [],
+   "level": 20,
+   "name": "Ataeric: On Arcane Curiosities",
+   "reqclass": 0,
+   "reqlevel": 1,
+   "rewards": [
+    211779
+   ],
+   "side": 2
+  },
   "79097": {
    "category": [
     "sort",
@@ -42334,6 +42360,19 @@
    "rewards": [
     213443
    ],
+   "side": 3
+  },
+  "79677": {
+   "category": [
+    "zone",
+    45
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "A Quick Grocery Run",
+   "reqclass": 0,
+   "reqlevel": 26,
+   "rewards": [],
    "side": 3
   },
   "79731": {
@@ -43915,6 +43954,22 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 1
+  },
+  "81570": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 35,
+   "name": "Jarl Needs a Blade",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [
+    9622,
+    5016
+   ],
+   "side": 3
   },
   "816": {
    "category": [
@@ -48865,14 +48920,15 @@
     "zone",
     33
    ],
-   "choices": [],
+   "choices": [
+    11469,
+    270100
+   ],
    "level": 47,
    "name": "The Captain's Chest",
    "reqclass": 0,
    "reqlevel": 35,
-   "rewards": [
-    11469
-   ],
+   "rewards": [],
    "side": 3
   },
   "8552": {
@@ -50564,6 +50620,19 @@
    ],
    "side": 2
   },
+  "86577": {
+   "category": [
+    "zone",
+    361
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "A Sampling of Putrescence",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 3
+  },
   "8658": {
    "category": [
     "raid",
@@ -50655,6 +50724,32 @@
    ],
    "side": 3
   },
+  "86611": {
+   "category": [
+    "zone",
+    361
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Stag Lord's Bauble",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "86612": {
+   "category": [
+    "zone",
+    361
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Stag Lord's Bauble",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
   "86613": {
    "category": [
     "zone",
@@ -50683,6 +50778,32 @@
    ],
    "side": 1
   },
+  "86615": {
+   "category": [
+    "zone",
+    47
+   ],
+   "choices": [],
+   "level": 51,
+   "name": "Treaty Obligations",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "86616": {
+   "category": [
+    "zone",
+    47
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Repurposed Totems",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
   "8662": {
    "category": [
     "raid",
@@ -50696,6 +50817,19 @@
    "rewards": [
     21337
    ],
+   "side": 3
+  },
+  "86620": {
+   "category": [
+    "zone",
+    47
+   ],
+   "choices": [],
+   "level": 51,
+   "name": "Fledgling Rescue",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
    "side": 3
   },
   "8663": {
@@ -50902,6 +51036,19 @@
    "rewards": [
     21100
    ],
+   "side": 3
+  },
+  "86746": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Legashi Threat",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
    "side": 3
   },
   "8675": {
@@ -51887,6 +52034,19 @@
    "rewards": [],
    "side": 3
   },
+  "87295": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Deflective Surface",
+   "reqclass": 0,
+   "reqlevel": 46,
+   "rewards": [],
+   "side": 3
+  },
   "873": {
    "category": [
     "zone",
@@ -52172,6 +52332,22 @@
    "rewards": [],
    "side": 3
   },
+  "87451": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [
+    281259,
+    281260
+   ],
+   "level": 55,
+   "name": "Memories of Rockard",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
   "8746": {
    "category": [
     "sort",
@@ -52244,6 +52420,35 @@
    "reqlevel": 27,
    "rewards": [],
    "side": 1
+  },
+  "87492": {
+   "category": [
+    "zone",
+    490
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Uncanny Crystal",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [],
+   "side": 3
+  },
+  "87494": {
+   "category": [
+    "zone",
+    490
+   ],
+   "choices": [
+    281261,
+    281262
+   ],
+   "level": 55,
+   "name": "Microcrystal Contamination",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
   },
   "875": {
    "category": [
@@ -54419,6 +54624,32 @@
    ],
    "side": 3
   },
+  "88807": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Slay the Spitelash",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "88809": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Preserving Eldarath",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
   "8881": {
    "category": [
     "sort",
@@ -54434,6 +54665,35 @@
     21640
    ],
    "side": 3
+  },
+  "88812": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Reclaiming Ravencrest",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
+  },
+  "88813": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [
+    260208,
+    260209
+   ],
+   "level": 55,
+   "name": "The Head of the Serpent",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
   },
   "8882": {
    "category": [
@@ -54451,6 +54711,19 @@
    ],
    "side": 3
   },
+  "88821": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 51,
+   "name": "Making Contact",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
+  },
   "8883": {
    "category": [
     "sort",
@@ -54464,6 +54737,32 @@
    "rewards": [],
    "side": 3
   },
+  "88857": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Saving a Sentinel",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "88884": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Highborne Tablets",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
+  },
   "889": {
    "category": [
     "zone",
@@ -54476,6 +54775,19 @@
    "reqlevel": 14,
    "rewards": [],
    "side": 2
+  },
+  "88917": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Slithering Looters",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
   },
   "8893": {
    "category": [
@@ -54574,6 +54886,19 @@
    "rewards": [],
    "side": 2
   },
+  "89001": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Home on the Range",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
   "8901": {
    "category": [
     "sort",
@@ -54586,6 +54911,23 @@
    "reqlevel": 1,
    "rewards": [],
    "side": 2
+  },
+  "89013": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Gettin' Buzzed",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [
+    259891,
+    250999,
+    250955
+   ],
+   "side": 1
   },
   "8902": {
    "category": [
@@ -54610,6 +54952,36 @@
    "name": "Dangerous Love",
    "reqclass": 0,
    "reqlevel": 1,
+   "rewards": [],
+   "side": 1
+  },
+  "89037": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [
+    260180,
+    260181,
+    260182
+   ],
+   "level": 52,
+   "name": "Murloc Thieves",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
+  },
+  "89038": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "A Monumental Task",
+   "reqclass": 0,
+   "reqlevel": 47,
    "rewards": [],
    "side": 1
   },
@@ -54639,6 +55011,23 @@
    "rewards": [
     22108
    ],
+   "side": 1
+  },
+  "89053": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [
+    260201,
+    260205,
+    260207
+   ],
+   "level": 55,
+   "name": "Your Final Reward",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
    "side": 1
   },
   "8906": {
@@ -54920,6 +55309,19 @@
    "name": "A Supernatural Device",
    "reqclass": 0,
    "reqlevel": 58,
+   "rewards": [],
+   "side": 1
+  },
+  "89228": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Winter Frontier Fishery",
+   "reqclass": 0,
+   "reqlevel": 45,
    "rewards": [],
    "side": 1
   },
@@ -55326,6 +55728,19 @@
    "reqlevel": 58,
    "rewards": [],
    "side": 3
+  },
+  "89470": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Ill Tidings",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 1
   },
   "8948": {
    "category": [
@@ -56873,6 +57288,19 @@
    ],
    "side": 3
   },
+  "90487": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Ancient Allies",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9049": {
    "category": [
     "raid",
@@ -57110,6 +57538,19 @@
    "rewards": [],
    "side": 3
   },
+  "90647": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "The Staff of the Mountain",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9068": {
    "category": [
     "raid",
@@ -57331,6 +57772,21 @@
    ],
    "side": 3
   },
+  "90813": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Pay Dirt!",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [
+    243299
+   ],
+   "side": 1
+  },
   "9082": {
    "category": [
     "raid",
@@ -57405,6 +57861,19 @@
    "rewards": [
     22488
    ],
+   "side": 3
+  },
+  "90865": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Eyes of the Watchers",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
    "side": 3
   },
   "9087": {
@@ -58341,6 +58810,32 @@
    ],
    "side": 3
   },
+  "91488": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Home on the Range",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
+  "91497": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Seals of the Sin'dorei",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
   "915": {
    "category": [
     "sort",
@@ -58351,6 +58846,19 @@
    "name": "You Scream, I Scream...",
    "reqclass": 0,
    "reqlevel": 10,
+   "rewards": [],
+   "side": 2
+  },
+  "91500": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "An Explosive Gambit",
+   "reqclass": 0,
+   "reqlevel": 44,
    "rewards": [],
    "side": 2
   },
@@ -58370,6 +58878,36 @@
    "rewards": [],
    "side": 3
   },
+  "91531": {
+   "category": [
+    "zone",
+    1637
+   ],
+   "choices": [
+    10709,
+    11120,
+    287075
+   ],
+   "level": 55,
+   "name": "Revenge Exacted",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
+  "91538": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Sin'dorei Tome of Summoning",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
   "9154": {
    "category": [
     "sort",
@@ -58382,6 +58920,62 @@
    "reqlevel": 50,
    "rewards": [],
    "side": 3
+  },
+  "91547": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Sin'dorei Tome of Summoning",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
+  "91548": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [
+    260186,
+    260195,
+    260196
+   ],
+   "level": 55,
+   "name": "Vek'zol",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
+  "91568": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 51,
+   "name": "Long Walks on the Beach",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
+  "91569": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Blue Gold",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
   },
   "916": {
    "category": [
@@ -58401,6 +58995,70 @@
    "rewards": [],
    "side": 1
   },
+  "91607": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Pay Dirt!",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [
+    243299
+   ],
+   "side": 2
+  },
+  "91608": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Gettin' Buzzed",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [
+    290333,
+    250999,
+    250955
+   ],
+   "side": 2
+  },
+  "91610": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 48,
+   "name": "Winter Frontier Fishery",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [
+    259890
+   ],
+   "side": 2
+  },
+  "91611": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [
+    260210,
+    260211,
+    260212
+   ],
+   "level": 56,
+   "name": "Deadliest Catch",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [],
+   "side": 2
+  },
   "9165": {
    "category": [
     "zone",
@@ -58414,6 +59072,49 @@
    "name": "Writ of Safe Passage",
    "reqclass": 0,
    "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "91685": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [
+    260172,
+    260178,
+    260179
+   ],
+   "level": 54,
+   "name": "Ley of the Land",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
+  "91688": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "To the Summit of Eternity",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
+  "91697": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Meet the Elders",
+   "reqclass": 0,
+   "reqlevel": 54,
    "rewards": [],
    "side": 3
   },
@@ -58499,6 +59200,32 @@
    "rewards": [],
    "side": 1
   },
+  "91734": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Remote Contact",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
+  "91735": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Remote Contact",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
+  },
   "91736": {
    "category": [
     "zone",
@@ -58513,6 +59240,19 @@
     247824
    ],
    "side": 1
+  },
+  "91737": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 52,
+   "name": "Remote Contact",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [],
+   "side": 2
   },
   "91738": {
    "category": [
@@ -58635,6 +59375,32 @@
    "rewards": [],
    "side": 1
   },
+  "91754": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Rub Some Dirt In It",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "91755": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Leaves to Ligatures",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "91758": {
    "category": [
     "zone",
@@ -58647,6 +59413,21 @@
    "reqlevel": 1,
    "rewards": [],
    "side": 1
+  },
+  "91770": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Bark Bite",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    14530
+   ],
+   "side": 3
   },
   "91772": {
    "category": [
@@ -58726,6 +59507,22 @@
    "reqlevel": 55,
    "rewards": [],
    "side": 3
+  },
+  "91794": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275742,
+    287077
+   ],
+   "level": 59,
+   "name": "Flags of Our Forebears",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
   },
   "918": {
    "category": [
@@ -58919,6 +59716,19 @@
    "rewards": [],
    "side": 3
   },
+  "91877": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Demon Hunter's Hunter",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
   "9188": {
    "category": [
     "zone",
@@ -58930,6 +59740,45 @@
    ],
    "level": 60,
    "name": "Craftsman's Writ - Brightcloth Pants",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "91881": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "The Western Post",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
+  "91882": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "The Grand Alliance",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "91883": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Spear of the Skylord",
    "reqclass": 0,
    "reqlevel": 55,
    "rewards": [],
@@ -59072,6 +59921,23 @@
    "rewards": [],
    "side": 2
   },
+  "91923": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    274265,
+    274270,
+    274271
+   ],
+   "level": 57,
+   "name": "Celastrus the Bitter",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9194": {
    "category": [
     "zone",
@@ -59099,6 +59965,19 @@
    ],
    "level": 60,
    "name": "Craftsman's Writ - Goblin Sapper Charge",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "91952": {
+   "category": [
+    "zone",
+    361
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "The Source of the Corruption",
    "reqclass": 0,
    "reqlevel": 55,
    "rewards": [],
@@ -59197,6 +60076,32 @@
    "rewards": [],
    "side": 3
   },
+  "92008": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Premiere Parts",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "92009": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Crate Expectations",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9201": {
    "category": [
     "zone",
@@ -59213,6 +60118,47 @@
    "rewards": [],
    "side": 3
   },
+  "92011": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Rubble Rummage",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275688
+   ],
+   "side": 3
+  },
+  "92016": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Rootwork",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "92017": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Cleansing Winds",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
   "9202": {
    "category": [
     "zone",
@@ -59224,6 +60170,19 @@
    ],
    "level": 60,
    "name": "Craftsman's Writ - Major Healing Potion",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "92020": {
+   "category": [
+    "zone",
+    490
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Hol'anyee's Big Book of Big Lizards",
    "reqclass": 0,
    "reqlevel": 55,
    "rewards": [],
@@ -59293,6 +60252,52 @@
    "rewards": [],
    "side": 3
   },
+  "92064": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Tree Free",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
+  "92066": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [
+    279891,
+    279892
+   ],
+   "level": 55,
+   "name": "The Twin Bears",
+   "reqclass": 0,
+   "reqlevel": 47,
+   "rewards": [],
+   "side": 3
+  },
+  "92069": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [
+    260213,
+    260214,
+    260215
+   ],
+   "level": 58,
+   "name": "Claws That Rend, Tusks that Gore",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
   "9208": {
    "category": [
     "raid",
@@ -59351,14 +60356,39 @@
    ],
    "side": 3
   },
+  "92100": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Anywhere But Here",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "92101": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Lifted by Legacy",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "92109": {
    "category": [
     "zone",
     40
    ],
    "choices": [
-    118,
-    249905
+    118
    ],
    "level": 10,
    "name": "My First Alchemy Set",
@@ -59398,6 +60428,19 @@
    ],
    "side": 1
   },
+  "92111": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Of Friend and Fur",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "92124": {
    "category": [
     "zone",
@@ -59424,6 +60467,45 @@
    "rewards": [
     22638
    ],
+   "side": 3
+  },
+  "92147": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Highfeather Helper",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
+  "92169": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Paying Back the Pact",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "92171": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Taking to New Heights",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
    "side": 3
   },
   "922": {
@@ -59642,6 +60724,19 @@
    ],
    "side": 3
   },
+  "92317": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Stolen Life",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9232": {
    "category": [
     "raid",
@@ -59660,6 +60755,36 @@
    "rewards": [],
    "side": 3
   },
+  "92328": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Siegecraft",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "92329": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275701,
+    275700,
+    275698
+   ],
+   "level": 60,
+   "name": "Drum Up Trouble",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9233": {
    "category": [
     "raid",
@@ -59670,6 +60795,19 @@
    "name": "Omarion's Handbook",
    "reqclass": 0,
    "reqlevel": 60,
+   "rewards": [],
+   "side": 3
+  },
+  "92335": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Ashes of the Legion Ascent",
+   "reqclass": 0,
+   "reqlevel": 54,
    "rewards": [],
    "side": 3
   },
@@ -59687,6 +60825,58 @@
     22670
    ],
    "side": 3
+  },
+  "92343": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Get to the Roots of It",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
+  "92344": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Get to the Roots of It",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "92345": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Beneath Nordrassil",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "92346": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Beneath Nordrassil",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
   },
   "9235": {
    "category": [
@@ -59939,6 +61129,38 @@
     22665
    ],
    "side": 3
+  },
+  "92446": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    281586,
+    281587,
+    281588
+   ],
+   "level": 60,
+   "name": "Head Scratcher",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
+  },
+  "92449": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Blight No More",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275438
+   ],
+   "side": 1
   },
   "9245": {
    "category": [
@@ -60434,6 +61656,19 @@
    "rewards": [],
    "side": 3
   },
+  "92500": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "A Bit of the Sky",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9251": {
    "category": [
     "sort",
@@ -60518,6 +61753,19 @@
    "rewards": [],
    "side": 2
   },
+  "92521": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 0,
+   "name": "The Demon Tower",
+   "reqclass": 0,
+   "reqlevel": 0,
+   "rewards": [],
+   "side": 3
+  },
   "92528": {
    "category": [
     "zone",
@@ -60558,6 +61806,23 @@
    "name": "The Warrior's Path",
    "reqclass": 1,
    "reqlevel": 2,
+   "rewards": [],
+   "side": 3
+  },
+  "92533": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275645,
+    275647,
+    275648
+   ],
+   "level": 60,
+   "name": "Twisted Tools",
+   "reqclass": 0,
+   "reqlevel": 56,
    "rewards": [],
    "side": 3
   },
@@ -60675,6 +61940,62 @@
    "rewards": [],
    "side": 3
   },
+  "92591": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Final Death",
+   "reqclass": 0,
+   "reqlevel": 57,
+   "rewards": [
+    275347
+   ],
+   "side": 1
+  },
+  "92592": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Final Death",
+   "reqclass": 0,
+   "reqlevel": 57,
+   "rewards": [
+    275347
+   ],
+   "side": 2
+  },
+  "92593": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Avalanche of Corruption",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
+  "92594": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Kindling, Kinda",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "92595": {
    "category": [
     "zone",
@@ -60755,6 +62076,21 @@
    "rewards": [],
    "side": 1
   },
+  "92609": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Feathers in Flight",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275441
+   ],
+   "side": 2
+  },
   "9261": {
    "category": [
     "sort",
@@ -60765,6 +62101,19 @@
    "name": "Investigate the Scourge of Ironforge",
    "reqclass": 0,
    "reqlevel": 1,
+   "rewards": [],
+   "side": 3
+  },
+  "92612": {
+   "category": [
+    "zone",
+    493
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Aid from Moonglade",
+   "reqclass": 0,
+   "reqlevel": 54,
    "rewards": [],
    "side": 3
   },
@@ -61139,6 +62488,19 @@
    "name": "To Valanaar",
    "reqclass": 0,
    "reqlevel": 6,
+   "rewards": [],
+   "side": 1
+  },
+  "92702": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Branch Out",
+   "reqclass": 0,
+   "reqlevel": 54,
    "rewards": [],
    "side": 1
   },
@@ -61554,6 +62916,19 @@
    "rewards": [],
    "side": 1
   },
+  "92833": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Ve'han's Fall",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "92834": {
    "category": [
     "zone",
@@ -61597,6 +62972,19 @@
    "name": "Valley of Bones",
    "reqclass": 0,
    "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "92842": {
+   "category": [
+    "zone",
+    28
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "A Cousin Abroad",
+   "reqclass": 0,
+   "reqlevel": 55,
    "rewards": [],
    "side": 3
   },
@@ -61664,6 +63052,36 @@
    "reqlevel": 4,
    "rewards": [],
    "side": 1
+  },
+  "92858": {
+   "category": [
+    "zone",
+    357
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "WANTED: Ohk'zi",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [
+    277253
+   ],
+   "side": 1
+  },
+  "92859": {
+   "category": [
+    "zone",
+    618
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Shroud of the Winter Wilds",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [
+    281234
+   ],
+   "side": 3
   },
   "92860": {
    "category": [
@@ -61736,6 +63154,23 @@
    "reqlevel": 35,
    "rewards": [],
    "side": 3
+  },
+  "92878": {
+   "category": [
+    "zone",
+    357
+   ],
+   "choices": [
+    277220,
+    277216,
+    277221
+   ],
+   "level": 43,
+   "name": "Lost for Words",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
   },
   "92880": {
    "category": [
@@ -61848,6 +63283,19 @@
    ],
    "side": 1
   },
+  "92914": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Strange Pylons",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "9292": {
    "category": [
     "sort",
@@ -61887,6 +63335,34 @@
    "name": "Letter from the Front",
    "reqclass": 0,
    "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
+  "92959": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "The Dying Ancients",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [
+    276754
+   ],
+   "side": 3
+  },
+  "92960": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Siphoned Ephemeral Essence",
+   "reqclass": 0,
+   "reqlevel": 54,
    "rewards": [],
    "side": 3
   },
@@ -61957,6 +63433,19 @@
    "rewards": [],
    "side": 3
   },
+  "93016": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "A Brief History Lesson",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "9302": {
    "category": [
     "sort",
@@ -61969,6 +63458,19 @@
    "reqlevel": 45,
    "rewards": [],
    "side": 3
+  },
+  "93030": {
+   "category": [
+    "zone",
+    85
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "The Knight of Mourning",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [],
+   "side": 2
   },
   "93034": {
    "category": [
@@ -62224,6 +63726,22 @@
    "rewards": [],
    "side": 3
   },
+  "93127": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275666,
+    275668
+   ],
+   "level": 60,
+   "name": "Summit Sentries",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "93128": {
    "category": [
     "zone",
@@ -62280,6 +63798,34 @@
    "rewards": [],
    "side": 3
   },
+  "93161": {
+   "category": [
+    "zone",
+    16593
+   ],
+   "choices": [],
+   "level": 0,
+   "name": "The Ancient Hilt",
+   "reqclass": 0,
+   "reqlevel": 1,
+   "rewards": [
+    282315
+   ],
+   "side": 3
+  },
+  "93163": {
+   "category": [
+    "zone",
+    51
+   ],
+   "choices": [],
+   "level": 50,
+   "name": "Heart of the Obliterator",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
+  },
   "93165": {
    "category": [
     "zone",
@@ -62324,6 +63870,19 @@
    ],
    "level": 13,
    "name": "Free the Hollows",
+   "reqclass": 0,
+   "reqlevel": 8,
+   "rewards": [],
+   "side": 3
+  },
+  "93174": {
+   "category": [
+    "zone",
+    16593
+   ],
+   "choices": [],
+   "level": 13,
+   "name": "The Malfunctioning Construct",
    "reqclass": 0,
    "reqlevel": 8,
    "rewards": [],
@@ -62400,6 +63959,19 @@
    "name": "Khan Jehn",
    "reqclass": 0,
    "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93197": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Mending Communications",
+   "reqclass": 0,
+   "reqlevel": 56,
    "rewards": [],
    "side": 3
   },
@@ -62742,6 +64314,19 @@
    ],
    "side": 2
   },
+  "93341": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Forlorn Gardens",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "9335": {
    "category": [
     "sort",
@@ -62772,6 +64357,19 @@
    ],
    "side": 2
   },
+  "93362": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "What They've Done to My Peonies",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "9337": {
    "category": [
     "sort",
@@ -62800,6 +64398,23 @@
    "rewards": [],
    "side": 3
   },
+  "93383": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275715,
+    275721,
+    275729
+   ],
+   "level": 57,
+   "name": "Contents Under Pressure",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
   "9339": {
    "category": [
     "sort",
@@ -62815,6 +64430,19 @@
    ],
    "side": 2
   },
+  "93394": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Meeting the Magister",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "934": {
    "category": [
     "zone",
@@ -62827,6 +64455,48 @@
    "reqlevel": 1,
    "rewards": [],
    "side": 1
+  },
+  "93404": {
+   "category": [
+    "dungeon",
+    2100
+   ],
+   "choices": [
+    272186,
+    272187
+   ],
+   "level": 49,
+   "name": "Rot and Regret",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93406": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Unfrozen Deliveries",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "93407": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Thorn in the Paw",
+   "reqclass": 0,
+   "reqlevel": 57,
+   "rewards": [],
+   "side": 3
   },
   "9341": {
    "category": [
@@ -62842,6 +64512,19 @@
     22999
    ],
    "side": 1
+  },
+  "93422": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Blackthorne Blackout",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
   },
   "93429": {
    "category": [
@@ -62881,6 +64564,48 @@
    "name": "Taking the Bait Back",
    "reqclass": 0,
    "reqlevel": 30,
+   "rewards": [],
+   "side": 3
+  },
+  "93443": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "Lost Shipping Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "93444": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275708,
+    275711
+   ],
+   "level": 60,
+   "name": "Bait the Beast",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "93450": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Phantasmal Problems",
+   "reqclass": 0,
+   "reqlevel": 35,
    "rewards": [],
    "side": 3
   },
@@ -62952,6 +64677,19 @@
    "rewards": [],
    "side": 1
   },
+  "93510": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Wake Memories",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "9353": {
    "category": null,
    "choices": [],
@@ -62961,6 +64699,34 @@
    "reqlevel": 1,
    "rewards": [
     23224
+   ],
+   "side": 3
+  },
+  "93546": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Spectral Iron Ore",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93547": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Thorny Solution",
+   "reqclass": 0,
+   "reqlevel": 57,
+   "rewards": [
+    275649
    ],
    "side": 3
   },
@@ -62983,6 +64749,64 @@
    ],
    "side": 3
   },
+  "93568": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Partially Digested Collar",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93572": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "To Serve The Draenei",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [
+    10752
+   ],
+   "side": 3
+  },
+  "93574": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [
+    271810,
+    271811,
+    271812
+   ],
+   "level": 45,
+   "name": "Corpsefeeder's Carapace",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93584": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Cult Closure",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
   "93585": {
    "category": [
     "zone",
@@ -62996,6 +64820,19 @@
    "rewards": [],
    "side": 1
   },
+  "93594": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Word of the Woods",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "936": {
    "category": [
     "zone",
@@ -63008,6 +64845,79 @@
    "reqlevel": 47,
    "rewards": [],
    "side": 2
+  },
+  "93601": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Passing the Blame",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93604": {
+   "category": [
+    "dungeon",
+    722
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Agamaggan's Blood",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93606": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Not on Squealing Terms",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [
+    260247,
+    271618
+   ],
+   "side": 3
+  },
+  "93609": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [
+    272184,
+    272185
+   ],
+   "level": 45,
+   "name": "Forlorn Necklace",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "93615": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Kits and Cats",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    276338
+   ],
+   "side": 3
   },
   "9362": {
    "category": [
@@ -63032,6 +64942,19 @@
    "name": "Fragmented Magic",
    "reqclass": 128,
    "reqlevel": 60,
+   "rewards": [],
+   "side": 3
+  },
+  "93644": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Tattered Journal",
+   "reqclass": 0,
+   "reqlevel": 35,
    "rewards": [],
    "side": 3
   },
@@ -63079,6 +65002,32 @@
    ],
    "side": 1
   },
+  "93678": {
+   "category": [
+    "zone",
+    405
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Abridged Notes on Draenethyst",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [],
+   "side": 3
+  },
+  "93679": {
+   "category": [
+    "zone",
+    8
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Visions of Another",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
   "9368": {
    "category": [
     "sort",
@@ -63107,6 +65056,45 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 2
+  },
+  "93684": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "The Found One",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
+  "93685": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "To Serve Kum'isha",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
+  "93689": {
+   "category": [
+    "zone",
+    36
+   ],
+   "choices": [],
+   "level": 33,
+   "name": "Friend of the Kirin Tor",
+   "reqclass": 0,
+   "reqlevel": 24,
+   "rewards": [],
+   "side": 3
   },
   "937": {
    "category": [
@@ -63220,6 +65208,86 @@
    ],
    "side": 2
   },
+  "93747": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Violence Into Verdure",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "93759": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "The Bounty of Nature",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    262433
+   ],
+   "side": 3
+  },
+  "93773": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "The Pact",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "93786": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "A Message in Blood",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 2
+  },
+  "93787": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "Food for the Taking",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "93788": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Borrowed Blades",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
   "93791": {
    "category": [
     "sort",
@@ -63265,6 +65333,60 @@
    "reqlevel": 7,
    "rewards": [],
    "side": 1
+  },
+  "93825": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Barkbound Blessings",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "93826": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Deal Dread to Deadwood",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "93827": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Windswept Wards",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "93831": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Sweetpaw Jam",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    267341
+   ],
+   "side": 3
   },
   "93835": {
    "category": [
@@ -63449,6 +65571,19 @@
    "rewards": [],
    "side": 3
   },
+  "93952": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Balance Through Strength",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "93958": {
    "category": [
     "zone",
@@ -63476,6 +65611,35 @@
     286427
    ],
    "side": 1
+  },
+  "93971": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    275040,
+    275041
+   ],
+   "level": 45,
+   "name": "Farholde Scouting Report",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "93976": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "The Goblin Trader",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
   },
   "94": {
    "category": [
@@ -64196,7 +66360,9 @@
    "name": "Craftsman's Writ: Lesser Wizard's Robe",
    "reqclass": 0,
    "reqlevel": 1,
-   "rewards": [],
+   "rewards": [
+    284584
+   ],
    "side": 2
   },
   "94248": {
@@ -66011,6 +68177,58 @@
    ],
    "side": 1
   },
+  "94479": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "One Person's Trash",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "94480": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "A Gift From Our Enemies",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94481": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "A Serving of Strength",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94483": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Show Them How It's Done",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
   "94484": {
    "category": [
     "zone",
@@ -66247,6 +68465,19 @@
    "rewards": [],
    "side": 1
   },
+  "94504": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Barkskin Beginnings",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "94505": {
    "category": [
     "sort",
@@ -66262,6 +68493,66 @@
    ],
    "side": 1
   },
+  "94532": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Gnoll Infestation",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94533": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274942,
+    274943,
+    274944,
+    274946
+   ],
+   "level": 40,
+   "name": "Snargl's Snout",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94535": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Bristle Hills Bandits",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94556": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274952,
+    274955
+   ],
+   "level": 42,
+   "name": "Jom-jom's Escape",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
   "94568": {
    "category": [
     "zone",
@@ -66274,6 +68565,45 @@
    "reqlevel": 6,
    "rewards": [],
    "side": 3
+  },
+  "94613": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "My Kingdom for a Horse",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94614": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Freshwater Fiends",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94615": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Foal Play",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
   },
   "94616": {
    "category": [
@@ -66290,6 +68620,32 @@
    ],
    "side": 1
   },
+  "94617": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Coyote Huntin'",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94618": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Wheeler's Fleeing Steeds",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "94638": {
    "category": [
     "sort",
@@ -66302,6 +68658,102 @@
    "reqlevel": 10,
    "rewards": [],
    "side": 3
+  },
+  "94668": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94669": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Pay to Play",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94670": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94672": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Encroaching Twilight",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94678": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Gnoll Infestation",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94679": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274938,
+    274939,
+    274940,
+    274941
+   ],
+   "level": 40,
+   "name": "Snargl's Snout",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94680": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Twilight Missives",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
   },
   "947": {
    "category": [
@@ -66318,6 +68770,126 @@
     4605
    ],
    "side": 1
+  },
+  "94727": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Digging for Answers",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94733": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Our Ogre Friend",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94734": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "A Boar's Delight",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94737": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "A Treat for a Friend",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94739": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94744": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "The Wayward Warrior",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "94745": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Carving a Path",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "94748": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Break Their Chains",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "94768": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    275050,
+    275051
+   ],
+   "level": 46,
+   "name": "Bring Me His Head",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
   },
   "94773": {
    "category": [
@@ -66409,6 +68981,19 @@
    "reqlevel": 10,
    "rewards": [],
    "side": 1
+  },
+  "94782": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "The Western Post",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
   },
   "94789": {
    "category": [
@@ -66594,6 +69179,100 @@
    "rewards": [],
    "side": 1
   },
+  "94829": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "What We Lost",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94841": {
+   "category": [
+    "zone",
+    405
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Lost Shipping Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94842": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Unsavory Plant Food",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94843": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "From Seed to Sprout",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94857": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "If a Tree Falls, and No One Hears...",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94858": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "All That's Left",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94861": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274928,
+    274929
+   ],
+   "level": 39,
+   "name": "Helping Hands",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "94863": {
    "category": [
     "sort",
@@ -66645,6 +69324,209 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 3
+  },
+  "94877": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274919,
+    274920
+   ],
+   "level": 40,
+   "name": "Saving Sunnyglade",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94879": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Scraps of Knowledge",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94881": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Curious Trinkets",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94884": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "An Unsettling Discovery",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94885": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Field Marshal's Log",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94886": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "The Western Front",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94887": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Saving Marshal Ryan",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94888": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "No Soldier Left Behind",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94889": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Carving a Path",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94890": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    275046,
+    275049
+   ],
+   "level": 46,
+   "name": "Bring Me His Head",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94891": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 46,
+   "name": "News to Farholde",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    275042
+   ],
+   "side": 1
+  },
+  "94892": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Dying Wish",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94893": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Delivering Closure",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94894": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "The Twilight Threat",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94895": {
+   "category": [
+    "zone",
+    405
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Lost Shipping Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
   },
   "94896": {
    "category": [
@@ -66724,6 +69606,19 @@
    "rewards": [],
    "side": 3
   },
+  "94907": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "A Small Favor",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "94911": {
    "category": [
     "sort",
@@ -66776,6 +69671,129 @@
    "rewards": [],
    "side": 1
   },
+  "94923": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Hats Off",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94924": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Hunting the Hunters",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94925": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "A Fur Trade",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94926": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Drop the Hammer",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    275036
+   ],
+   "side": 1
+  },
+  "94927": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    275025,
+    275023,
+    275021
+   ],
+   "level": 44,
+   "name": "Dunston Checks Out",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94928": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "A Few Furs for Friz",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94929": {
+   "category": [
+    "zone",
+    8
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Deliver the Second Shipment",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94930": {
+   "category": [
+    "zone",
+    400
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Lost Shipping Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94931": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Stolen Saws",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "94946": {
    "category": [
     "zone",
@@ -66801,6 +69819,163 @@
    "reqlevel": 7,
    "rewards": [],
    "side": 1
+  },
+  "94961": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Biting the Hand",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "94962": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94963": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Biting the Hand",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "94964": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94965": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    3928,
+    13443
+   ],
+   "level": 44,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "94968": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [
+    279852,
+    279480,
+    279853
+   ],
+   "level": 45,
+   "name": "Eye of Mugg",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "94971": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "A Paladin's Steed",
+   "reqclass": 2,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "94972": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [
+    279859,
+    279860
+   ],
+   "level": 44,
+   "name": "Tome of Twilight",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [],
+   "side": 2
+  },
+  "94973": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Krol'dok Moulding",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "94974": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Key Ingredients",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    267089
+   ],
+   "side": 2
+  },
+  "94975": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "A Token of Vengeance",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    267090
+   ],
+   "side": 2
   },
   "94978": {
    "category": [
@@ -66828,6 +70003,134 @@
    "rewards": [],
    "side": 3
   },
+  "94980": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Krol'dok Moulding",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94981": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Key Ingredients",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    267089
+   ],
+   "side": 1
+  },
+  "94982": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [
+    279852,
+    279853,
+    279480
+   ],
+   "level": 45,
+   "name": "Eye of Mugg",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "94983": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Twilight Mementos",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94984": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [
+    279854,
+    279855
+   ],
+   "level": 44,
+   "name": "Tome of Twilight",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [],
+   "side": 1
+  },
+  "94992": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Rescue Roundup",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "94997": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Lingering Essence",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94998": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [
+    279850
+   ],
+   "level": 42,
+   "name": "Curios of Curiosity",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "94999": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "Eyes for the Watchman",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "95": {
    "category": [
     "zone",
@@ -66853,6 +70156,62 @@
    "reqlevel": 12,
    "rewards": [],
    "side": 1
+  },
+  "95006": {
+   "category": [
+    "zone",
+    493
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Stolen Power",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95026": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Blight No More",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    276341
+   ],
+   "side": 2
+  },
+  "95027": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Feathers in Flight",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275439
+   ],
+   "side": 1
+  },
+  "95033": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "On the Other Side",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
   },
   "95034": {
    "category": [
@@ -66908,6 +70267,65 @@
    ],
    "side": 2
   },
+  "95059": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "Frazzlespark's Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95062": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 36,
+   "name": "Frazzlespark's Crate",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95063": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    275043,
+    275044,
+    275045
+   ],
+   "level": 45,
+   "name": "Bloodmaster's Ring",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95064": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274959,
+    274961
+   ],
+   "level": 39,
+   "name": "Preventative Measures",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "95065": {
    "category": [
     "zone",
@@ -66922,6 +70340,21 @@
    "reqclass": 0,
    "reqlevel": 7,
    "rewards": [],
+   "side": 1
+  },
+  "95066": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "The Rog'mar Situation",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    275052
+   ],
    "side": 1
   },
   "951": {
@@ -66952,6 +70385,101 @@
    "reqlevel": 20,
    "rewards": [],
    "side": 2
+  },
+  "95118": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Saltwater Savages",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95119": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Unfriendly Competition",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95120": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "WANTED: Old Rot-Chum",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274963
+   ],
+   "side": 3
+  },
+  "95121": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "A Taste of the Sea",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274972
+   ],
+   "side": 3
+  },
+  "95122": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Unchecked Expansion",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95123": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "A Blast Ye Scurvy Dogs!",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95124": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Admiral Lamora",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
   },
   "95125": {
    "category": [
@@ -66996,6 +70524,84 @@
    ],
    "side": 2
   },
+  "95141": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Report to Rog'mar",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95143": {
+   "category": [
+    "zone",
+    45
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Finding Tan'jani",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95144": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Overseas Delivery",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95147": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 37,
+   "name": "The Lost Scout",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95148": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 37,
+   "name": "Southern Watch Gnoll Report",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95156": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 37,
+   "name": "Stuff 'Em and Stick 'Em",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "95161": {
    "category": [
     "zone",
@@ -67008,6 +70614,73 @@
    "name": "Remember That I Love You",
    "reqclass": 0,
    "reqlevel": 15,
+   "rewards": [],
+   "side": 1
+  },
+  "95162": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Paletusk Harvesting",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    274977
+   ],
+   "side": 2
+  },
+  "95163": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Drive Them Back",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "95165": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "See Ya, Scallywags!",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95183": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Step One: Rock",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "95184": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "The Sharpest of Blades",
+   "reqclass": 0,
+   "reqlevel": 36,
    "rewards": [],
    "side": 1
   },
@@ -67026,6 +70699,19 @@
    "rewards": [],
    "side": 1
   },
+  "95194": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Our Man in Theramore",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
   "95195": {
    "category": [
     "dungeon",
@@ -67039,6 +70725,32 @@
    "name": "Bloodied Insignia",
    "reqclass": 0,
    "reqlevel": 16,
+   "rewards": [],
+   "side": 1
+  },
+  "95196": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Watch Yer Back",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "95198": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Return of the King?",
+   "reqclass": 0,
+   "reqlevel": 48,
    "rewards": [],
    "side": 1
   },
@@ -67140,6 +70852,32 @@
    ],
    "side": 1
   },
+  "95219": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "From Port to Port",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "95248": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "To the Summit of Eternity",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
+  },
   "95250": {
    "category": [
     "dungeon",
@@ -67157,6 +70895,222 @@
    "rewards": [],
    "side": 1
   },
+  "95254": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "WANTED: Trapclaw",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    16766
+   ],
+   "side": 3
+  },
+  "95260": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Terrors From the Deep",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95261": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "It Takes Guts",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95262": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Secret Prison",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "95263": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Somber News",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "95264": {
+   "category": [
+    "zone",
+    1519
+   ],
+   "choices": [
+    279833,
+    279831,
+    279474
+   ],
+   "level": 53,
+   "name": "Shaw Needs To Know",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "95267": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "The Monster Surfaces",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    274948
+   ],
+   "side": 3
+  },
+  "95278": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "It Is Time, Brother...",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "95283": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Missing Kor'kron",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "95284": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Elite of the Elite",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "95285": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Right Place, Wrong Time",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "95288": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Smuggler's Paradise",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95293": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Smuggler's Special",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95294": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Smuggler's Bargain",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "95295": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "I Know a Guy",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95296": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Shipping and Handling",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
   "953": {
    "category": [
     "zone",
@@ -67169,6 +71123,32 @@
    "reqlevel": 9,
    "rewards": [],
    "side": 1
+  },
+  "95309": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "No Orc Left Behind",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "95312": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Coming to Collect",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
   },
   "95314": {
    "category": [
@@ -67183,6 +71163,154 @@
    "rewards": [],
    "side": 2
   },
+  "95315": {
+   "category": [
+    "zone",
+    45
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "The Riverglades Report",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95316": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    275832,
+    275833
+   ],
+   "level": 57,
+   "name": "The Experimental Method",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95317": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Notation, Notation, Notation",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95318": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Taste of Ash",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275836
+   ],
+   "side": 3
+  },
+  "95319": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Crystalline Collection",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95320": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "A Curious Question",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95321": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Tazzik's Dues",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95322": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Get the Goods",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95325": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "We've Been Robbed!",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95326": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "The Big Payback",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95327": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "All's Well That Ends Well",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
   "95328": {
    "category": [
     "zone",
@@ -67195,6 +71323,32 @@
    "reqlevel": 7,
    "rewards": [],
    "side": 2
+  },
+  "95329": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Out in the Field",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95330": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 37,
+   "name": "Love Thy Neighbor",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
   },
   "95349": {
    "category": [
@@ -67222,6 +71376,58 @@
    "rewards": [],
    "side": 2
   },
+  "95378": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "The Hydra's Head",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95379": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "A Revenge So Sweet",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95380": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "A Prolific Source",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95383": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Shipping and Handling",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
   "95384": {
    "category": [
     "zone",
@@ -67237,6 +71443,21 @@
    ],
    "side": 3
   },
+  "95385": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Torn Mystical Scroll",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [
+    277211
+   ],
+   "side": 3
+  },
   "954": {
    "category": [
     "zone",
@@ -67249,6 +71470,196 @@
    "reqlevel": 7,
    "rewards": [],
    "side": 1
+  },
+  "95417": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "The Purple Ones",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95418": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Spread the Word",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95420": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Land of Giants",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95424": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Might Makes Right",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95425": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Unworthy Champion",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95426": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Rog'mar Supplies",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95427": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Twilight No More!",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95428": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Clugfist's Decree",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95431": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Rumblings of Discontent",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
+  "95432": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Rise Up!",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95433": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 46,
+   "name": "Death to the Executioner",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    275011
+   ],
+   "side": 2
+  },
+  "95454": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Honor of the Kor'kron",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "95472": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Consolation Prize",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    270334
+   ],
+   "side": 3
+  },
+  "95483": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [
+    279831,
+    279833,
+    279474
+   ],
+   "level": 53,
+   "name": "Thrall Needs to Know",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
   },
   "95494": {
    "category": [
@@ -67319,6 +71730,24 @@
    "rewards": [],
    "side": 2
   },
+  "95511": {
+   "category": [
+    "zone",
+    1657
+   ],
+   "choices": [
+    8629,
+    8631,
+    8632,
+    274706
+   ],
+   "level": 40,
+   "name": "Your First Feline Friend",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
   "95534": {
    "category": [
     "zone",
@@ -67344,6 +71773,73 @@
    "rewards": [],
    "side": 3
   },
+  "95561": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Apple of My Eye",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    4539
+   ],
+   "side": 1
+  },
+  "95562": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Cut Off the Heads",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95568": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Seeds for a New Season",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95569": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Hope for Hatchlings",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "95599": {
+   "category": [
+    "zone",
+    357
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "The Old Key",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
   "956": {
    "category": [
     "zone",
@@ -67355,6 +71851,91 @@
    "reqclass": 0,
    "reqlevel": 7,
    "rewards": [],
+   "side": 1
+  },
+  "95601": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "The Purple Ones",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95602": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Sickening Lights",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95603": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Bats in the Belfry",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95611": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Rites of Respect",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    274035
+   ],
+   "side": 3
+  },
+  "95613": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Keeping the Light On",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95615": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274915,
+    274916
+   ],
+   "level": 38,
+   "name": "In Memoriam",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274918
+   ],
    "side": 1
   },
   "95621": {
@@ -67369,6 +71950,32 @@
    "reqlevel": 14,
    "rewards": [],
    "side": 2
+  },
+  "95642": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Abominable Magics",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95643": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Indiscriminate Purge",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
   },
   "95646": {
    "category": [
@@ -67506,6 +72113,19 @@
    "rewards": [],
    "side": 2
   },
+  "95753": {
+   "category": [
+    "sort",
+    82
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Challenge of the Desert Wolf",
+   "reqclass": 64,
+   "reqlevel": 37,
+   "rewards": [],
+   "side": 3
+  },
   "95770": {
    "category": [
     "zone",
@@ -67574,7 +72194,10 @@
    "side": 2
   },
   "95775": {
-   "category": null,
+   "category": [
+    "dungeon",
+    16550
+   ],
    "choices": [],
    "level": 40,
    "name": "The Drowned City",
@@ -67584,7 +72207,10 @@
    "side": 2
   },
   "95776": {
-   "category": null,
+   "category": [
+    "dungeon",
+    16550
+   ],
    "choices": [
     279888,
     279889
@@ -67595,6 +72221,103 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 2
+  },
+  "95786": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "An Acquaintance in Southshore",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [],
+   "side": 1
+  },
+  "95787": {
+   "category": [
+    "dungeon",
+    16550
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Take Two With Water",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [],
+   "side": 1
+  },
+  "95788": {
+   "category": [
+    "dungeon",
+    16550
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Magics of the Drowned City",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [],
+   "side": 1
+  },
+  "95789": {
+   "category": [
+    "dungeon",
+    16550
+   ],
+   "choices": [
+    279882,
+    279930
+   ],
+   "level": 40,
+   "name": "Shady Saltseers",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 3
+  },
+  "95791": {
+   "category": [
+    "dungeon",
+    16550
+   ],
+   "choices": [
+    279883,
+    279884
+   ],
+   "level": 40,
+   "name": "The Saltseer Captain",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 3
+  },
+  "95792": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Clear 'em Out",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95793": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Stemming the Demon Tide",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
   },
   "95795": {
    "category": [
@@ -67610,6 +72333,40 @@
    "reqclass": 0,
    "reqlevel": 24,
    "rewards": [],
+   "side": 1
+  },
+  "95798": {
+   "category": [
+    "zone",
+    36
+   ],
+   "choices": [
+    279879,
+    279878
+   ],
+   "level": 40,
+   "name": "The Web of Magic",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [],
+   "side": 1
+  },
+  "95799": {
+   "category": [
+    "zone",
+    1537
+   ],
+   "choices": [
+    279880,
+    279881
+   ],
+   "level": 40,
+   "name": "Findings for the Explorer's League",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [
+    272124
+   ],
    "side": 1
   },
   "958": {
@@ -67700,6 +72457,41 @@
    "rewards": [],
    "side": 3
   },
+  "95817": {
+   "category": [
+    "zone",
+    1537
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Rotgath Stonebeard",
+   "reqclass": 0,
+   "reqlevel": 1,
+   "rewards": [],
+   "side": 3
+  },
+  "95818": {
+   "category": [
+    "zone",
+    1537
+   ],
+   "choices": [
+    270877,
+    270878,
+    270880,
+    270881,
+    270882,
+    270883
+   ],
+   "level": 60,
+   "name": "A Quick Craft",
+   "reqclass": 0,
+   "reqlevel": 1,
+   "rewards": [
+    270868
+   ],
+   "side": 3
+  },
   "95819": {
    "category": [
     "zone",
@@ -67712,6 +72504,21 @@
    "reqlevel": 1,
    "rewards": [],
    "side": 3
+  },
+  "95882": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "WANTED: Scoutmaster Vargas",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    276105
+   ],
+   "side": 2
   },
   "95883": {
    "category": [
@@ -67767,6 +72574,221 @@
    "rewards": [],
    "side": 3
   },
+  "95912": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    276102,
+    287072
+   ],
+   "level": 42,
+   "name": "WANTED: Blademaster Kaijo",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "95913": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [
+    274931,
+    274932
+   ],
+   "level": 38,
+   "name": "Fit for a Princess",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95924": {
+   "category": [
+    "dungeon",
+    16985
+   ],
+   "choices": [
+    279903,
+    279905
+   ],
+   "level": 60,
+   "name": "Panic at the Digsite",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 1
+  },
+  "95925": {
+   "category": [
+    "dungeon",
+    16985
+   ],
+   "choices": [
+    279908,
+    279910,
+    279912
+   ],
+   "level": 60,
+   "name": "Mapping the Way Forward",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 1
+  },
+  "95926": {
+   "category": [
+    "dungeon",
+    16985
+   ],
+   "choices": [
+    279908,
+    279910,
+    279912
+   ],
+   "level": 60,
+   "name": "The Dark Crystal",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 2
+  },
+  "95928": {
+   "category": [
+    "dungeon",
+    16985
+   ],
+   "choices": [
+    279904,
+    279906
+   ],
+   "level": 60,
+   "name": "Crystalline Elements",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 2
+  },
+  "95934": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Proof of Profit",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95935": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Hail the Dragonslayer",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95936": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Hail the Dragonslayer",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95943": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Foreman's Plight",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95951": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Fetch 'n' Fletch",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95955": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Stick 'Em",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "95957": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Drink Up!",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95961": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Stepped Out",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95975": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Her World",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
   "95981": {
    "category": [
     "zone",
@@ -67779,6 +72801,103 @@
    "reqlevel": 10,
    "rewards": [
     281265
+   ],
+   "side": 2
+  },
+  "95982": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Not My Circus",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "95983": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "A Feast for Buzzards",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95984": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Song of the Strider",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95986": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "King of the Wild Plains",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "95988": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Goes Down Smooth",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274935
+   ],
+   "side": 1
+  },
+  "95991": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "WANTED: Ghostmaw",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    274962
+   ],
+   "side": 1
+  },
+  "95992": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "WANTED: Ghostmaw",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    274962
    ],
    "side": 2
   },
@@ -67842,6 +72961,64 @@
    ],
    "side": 3
   },
+  "96003": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Drawing Down the Malevolent",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    275630
+   ],
+   "side": 3
+  },
+  "96009": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "High Stakes",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274957
+   ],
+   "side": 1
+  },
+  "96010": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Fragments of the Pylons",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "96015": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "A Miner Problem",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    275028
+   ],
+   "side": 1
+  },
   "96016": {
    "category": [
     "sort",
@@ -67860,6 +73037,47 @@
     280696
    ],
    "side": 1
+  },
+  "96018": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Powering the Pylons",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "96020": {
+   "category": [
+    "sort",
+    61
+   ],
+   "choices": [],
+   "level": 35,
+   "name": "Playing with Fire",
+   "reqclass": 256,
+   "reqlevel": 29,
+   "rewards": [],
+   "side": 3
+  },
+  "96026": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "Step Two: More Rock",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [
+    251460
+   ],
+   "side": 2
   },
   "96031": {
    "category": [
@@ -68004,6 +73222,168 @@
    "rewards": [],
    "side": 1
   },
+  "96060": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [
+    272181,
+    272180,
+    272179
+   ],
+   "level": 42,
+   "name": "Tempered Expectations",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "96063": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Gaseous Gold",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274922
+   ],
+   "side": 3
+  },
+  "96067": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Rock 'em and Sock 'em",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 3
+  },
+  "96076": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "In Demand - Ancient Elven Curiosities",
+   "reqclass": 0,
+   "reqlevel": 60,
+   "rewards": [
+    271994
+   ],
+   "side": 3
+  },
+  "96077": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Belle's Ring",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [
+    273800
+   ],
+   "side": 1
+  },
+  "96078": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [
+    279885,
+    279886,
+    279887
+   ],
+   "level": 40,
+   "name": "A Tale Spun Around the Fire",
+   "reqclass": 0,
+   "reqlevel": 30,
+   "rewards": [
+    270312,
+    270313
+   ],
+   "side": 2
+  },
+  "96081": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Wound Dressings",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "96082": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Doctor's Orderly",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "96083": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Clerical Quarantine",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "96084": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Something's in the Water",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 1
+  },
+  "96085": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Upstream Contamination",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    3928
+   ],
+   "side": 1
+  },
   "961": {
    "category": [
     "zone",
@@ -68045,6 +73425,112 @@
    "rewards": [],
    "side": 2
   },
+  "96103": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "A Feast for Buzzards",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "96104": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 39,
+   "name": "Song of the Strider",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "96105": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "King of the Wild Plains",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "96107": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Feathers for Fletching",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "96108": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Poison Tips",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [],
+   "side": 2
+  },
+  "96109": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "A Hunter's Quiver",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    274926
+   ],
+   "side": 2
+  },
+  "96125": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "In Need of Relief",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "96126": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "An Ogre's Captive",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
   "96130": {
    "category": [
     "zone",
@@ -68059,6 +73545,19 @@
     281266
    ],
    "side": 2
+  },
+  "96131": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "An Oldstone But An Old Friend",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
   },
   "96135": {
    "category": [
@@ -68129,6 +73628,19 @@
    ],
    "side": 1
   },
+  "96145": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Past Wing and Claw",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
   "962": {
    "category": [
     "dungeon",
@@ -68158,6 +73670,19 @@
    "reqlevel": 18,
    "rewards": [],
    "side": 2
+  },
+  "96209": {
+   "category": [
+    "zone",
+    493
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "The Ancient, Orokai",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
   },
   "96222": {
    "category": [
@@ -68205,6 +73730,34 @@
    "rewards": [],
    "side": 1
   },
+  "96252": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Tarnished Treasures",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [
+    275831
+   ],
+   "side": 3
+  },
+  "96255": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Amalgamated Marrow",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "96259": {
    "category": [
     "zone",
@@ -68251,6 +73804,19 @@
    ],
    "side": 2
   },
+  "96262": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Prickly Pinecones",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
   "96264": {
    "category": [
     "sort",
@@ -68277,6 +73843,19 @@
    "rewards": [],
    "side": 2
   },
+  "96296": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Fetid Corruption",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
   "963": {
    "category": [
     "zone",
@@ -68292,6 +73871,91 @@
    ],
    "side": 1
   },
+  "96303": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Memory Mist",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "96321": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "The Dying God",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "96332": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [
+    279824,
+    279826,
+    279829
+   ],
+   "level": 53,
+   "name": "A Little Payback",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "96334": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [
+    279448,
+    279473
+   ],
+   "level": 53,
+   "name": "Blood Red Bandanas",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "96335": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Man in the Iron Chains",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 3
+  },
+  "96337": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "More Valuable Than Gold",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 3
+  },
   "96339": {
    "category": [
     "zone",
@@ -68306,6 +73970,49 @@
     276236
    ],
    "side": 3
+  },
+  "96369": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "Bad News for Folkar",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
+  "96377": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "State Secrets",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
+  },
+  "96381": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [
+    279825,
+    279826,
+    279829
+   ],
+   "level": 53,
+   "name": "A Bit of Wet Work",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 1
   },
   "96383": {
    "category": [
@@ -68452,6 +74159,45 @@
    "rewards": [],
    "side": 1
   },
+  "96438": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Battle at the Mannoroc Coven",
+   "reqclass": 2,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 1
+  },
+  "96449": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Aeonas's Secret Refuge",
+   "reqclass": 2,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 1
+  },
+  "96476": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "In Search of Aeonas",
+   "reqclass": 2,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
   "965": {
    "category": [
     "zone",
@@ -68465,6 +74211,19 @@
    "rewards": [],
    "side": 1
   },
+  "96559": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Supply Drop",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
   "966": {
    "category": [
     "zone",
@@ -68475,6 +74234,19 @@
    "name": "The Tower of Althalaxx",
    "reqclass": 0,
    "reqlevel": 13,
+   "rewards": [],
+   "side": 1
+  },
+  "96603": {
+   "category": [
+    "zone",
+    16560
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Unstable Magic",
+   "reqclass": 0,
+   "reqlevel": 48,
    "rewards": [],
    "side": 1
   },
@@ -68542,6 +74314,37 @@
    "reqlevel": 4,
    "rewards": [],
    "side": 1
+  },
+  "96609": {
+   "category": [
+    "zone",
+    16560
+   ],
+   "choices": [
+    276903,
+    276904
+   ],
+   "level": 52,
+   "name": "A Taste of Home",
+   "reqclass": 0,
+   "reqlevel": 44,
+   "rewards": [
+    276896
+   ],
+   "side": 1
+  },
+  "96616": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Herbs for the Bruised and Weary",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
   },
   "96626": {
    "category": [
@@ -68774,16 +74577,94 @@
    "rewards": [],
    "side": 3
   },
+  "96770": {
+   "category": [
+    "dungeon",
+    1176
+   ],
+   "choices": [],
+   "level": 46,
+   "name": "The Witch Doctor's Head",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [],
+   "side": 1
+  },
+  "96771": {
+   "category": [
+    "dungeon",
+    16842
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Vengeance of the Highborne",
+   "reqclass": 0,
+   "reqlevel": 37,
+   "rewards": [],
+   "side": 1
+  },
+  "96772": {
+   "category": [
+    "dungeon",
+    16620
+   ],
+   "choices": [],
+   "level": 53,
+   "name": "The Dragon's Journal",
+   "reqclass": 0,
+   "reqlevel": 46,
+   "rewards": [],
+   "side": 1
+  },
+  "96773": {
+   "category": [
+    "dungeon",
+    722
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "The Coldbringer's Eye",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 1
+  },
   "96774": {
    "category": [
-    "zone",
-    215
+    "dungeon",
+    16550
    ],
    "choices": [],
    "level": 40,
    "name": "Ancient Gurubashi Idol",
    "reqclass": 0,
    "reqlevel": 30,
+   "rewards": [],
+   "side": 2
+  },
+  "96775": {
+   "category": [
+    "dungeon",
+    1176
+   ],
+   "choices": [],
+   "level": 46,
+   "name": "Zum'rah's Head",
+   "reqclass": 0,
+   "reqlevel": 42,
+   "rewards": [],
+   "side": 2
+  },
+  "96776": {
+   "category": [
+    "dungeon",
+    2100
+   ],
+   "choices": [],
+   "level": 51,
+   "name": "An'she's Radiance",
+   "reqclass": 0,
+   "reqlevel": 43,
    "rewards": [],
    "side": 2
   },
@@ -68878,6 +74759,58 @@
    "rewards": [],
    "side": 3
   },
+  "96796": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 56,
+   "name": "Woods Workshop",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "96797": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 54,
+   "name": "The Orphan",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "96798": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 54,
+   "name": "Into the Darkness",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "96799": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 54,
+   "name": "A Heavy Responsibility",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
   "968": {
    "category": [
     "zone",
@@ -68904,6 +74837,36 @@
    "name": "Past Due",
    "reqclass": 0,
    "reqlevel": 30,
+   "rewards": [],
+   "side": 1
+  },
+  "96811": {
+   "category": [
+    "zone",
+    4
+   ],
+   "choices": [],
+   "level": 54,
+   "name": "Escaping the Shadows",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 1
+  },
+  "96812": {
+   "category": [
+    "zone",
+    16560
+   ],
+   "choices": [
+    276900,
+    276901,
+    276902
+   ],
+   "level": 54,
+   "name": "Thicker Than Water",
+   "reqclass": 0,
+   "reqlevel": 45,
    "rewards": [],
    "side": 1
   },
@@ -69093,6 +75056,91 @@
    "rewards": [],
    "side": 3
   },
+  "96912": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Field of Honor: Week 1",
+   "reqclass": 0,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 3
+  },
+  "96931": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Heading Up the Mountain",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 3
+  },
+  "96959": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Blademaster's Bonfires",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "96979": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Sacred Refreshment",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "96982": {
+   "category": [
+    "zone",
+    215
+   ],
+   "choices": [
+    275993,
+    15290,
+    15277
+   ],
+   "level": 40,
+   "name": "Your First Riding Kodo",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "96983": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    276335,
+    276336
+   ],
+   "level": 60,
+   "name": "Yashiro's Windwalk",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
   "96984": {
    "category": [
     "dungeon",
@@ -69158,6 +75206,118 @@
    "rewards": [],
    "side": 2
   },
+  "96989": {
+   "category": [
+    "zone",
+    14
+   ],
+   "choices": [
+    8588,
+    8591,
+    8592
+   ],
+   "level": 40,
+   "name": "Your First Riding Raptor",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "96992": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Resupply",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 1
+  },
+  "96994": {
+   "category": [
+    "zone",
+    1637
+   ],
+   "choices": [
+    5668,
+    5665,
+    1132,
+    1041
+   ],
+   "level": 40,
+   "name": "Your First Riding Wolf",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "96996": {
+   "category": [
+    "zone",
+    16593
+   ],
+   "choices": [
+    269681,
+    274930,
+    269683
+   ],
+   "level": 40,
+   "name": "Your First Riding Galestrider",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
+  },
+  "96997": {
+   "category": [
+    "zone",
+    85
+   ],
+   "choices": [
+    13332,
+    13331,
+    13333,
+    276063
+   ],
+   "level": 40,
+   "name": "A Steed in Death as They Were in Life",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "96998": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 58,
+   "name": "Tribal Colors",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
+  },
+  "96999": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    277215,
+    277222
+   ],
+   "level": 58,
+   "name": "Wrap Return",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
+  },
   "97": {
    "category": [
     "zone",
@@ -69183,6 +75343,19 @@
    "reqlevel": 13,
    "rewards": [],
    "side": 1
+  },
+  "97000": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Grain of Memory",
+   "reqclass": 0,
+   "reqlevel": 54,
+   "rewards": [],
+   "side": 2
   },
   "97003": {
    "category": [
@@ -69220,6 +75393,112 @@
    "rewards": [],
    "side": 1
   },
+  "97009": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Maerion's Misery",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
+  "97017": {
+   "category": [
+    "zone",
+    1
+   ],
+   "choices": [
+    5872,
+    5864,
+    5873
+   ],
+   "level": 40,
+   "name": "Your First Riding Ram",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97018": {
+   "category": [
+    "zone",
+    1
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97022": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Report to Danitha",
+   "reqclass": 2,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97029": {
+   "category": [
+    "zone",
+    16593
+   ],
+   "choices": [],
+   "level": 0,
+   "name": "Eluvi'ana",
+   "reqclass": 0,
+   "reqlevel": 1,
+   "rewards": [
+    276188
+   ],
+   "side": 3
+  },
+  "97045": {
+   "category": [
+    "zone",
+    12
+   ],
+   "choices": [
+    5656,
+    5655,
+    2414
+   ],
+   "level": 40,
+   "name": "Your First Horse",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97046": {
+   "category": [
+    "zone",
+    1
+   ],
+   "choices": [
+    8563,
+    8595,
+    13321,
+    13322
+   ],
+   "level": 40,
+   "name": "Your First Mechanostrider",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
   "97047": {
    "category": [
     "zone",
@@ -69249,6 +75528,22 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 3
+  },
+  "97049": {
+   "category": [
+    "dungeon",
+    16985
+   ],
+   "choices": [
+    279932,
+    279902
+   ],
+   "level": 60,
+   "name": "Essence of Seeping Slimes",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 2
   },
   "97065": {
    "category": [
@@ -69295,6 +75590,19 @@
    ],
    "side": 3
   },
+  "97074": {
+   "category": [
+    "zone",
+    1657
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
   "971": {
    "category": [
     "dungeon",
@@ -69310,6 +75618,193 @@
    ],
    "side": 1
   },
+  "97130": {
+   "category": [
+    "dungeon",
+    16550
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Ancient Gurubashi Secrets",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 1
+  },
+  "97168": {
+   "category": [
+    "sort",
+    82
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Material Assistance",
+   "reqclass": 64,
+   "reqlevel": 58,
+   "rewards": [],
+   "side": 1
+  },
+  "97170": {
+   "category": [
+    "zone",
+    12
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97171": {
+   "category": [
+    "zone",
+    11
+   ],
+   "choices": [
+    5656,
+    5655,
+    2414,
+    2411
+   ],
+   "level": 40,
+   "name": "Your First Horse",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97173": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Blackmaw Magic",
+   "reqclass": 0,
+   "reqlevel": 52,
+   "rewards": [],
+   "side": 1
+  },
+  "97174": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Worthy Endeavor",
+   "reqclass": 2,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 2
+  },
+  "97175": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Due Sacrifice",
+   "reqclass": 2,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 2
+  },
+  "97178": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Ott of Tarren Mill",
+   "reqclass": 2,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 3
+  },
+  "97179": {
+   "category": [
+    "sort",
+    141
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Collection of Goods",
+   "reqclass": 2,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 2
+  },
+  "97188": {
+   "category": [
+    "zone",
+    1
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "97194": {
+   "category": [
+    "zone",
+    1637
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97196": {
+   "category": [
+    "dungeon",
+    722
+   ],
+   "choices": [],
+   "level": 41,
+   "name": "The Coldbringer's Eye",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 2
+  },
+  "97197": {
+   "category": [
+    "dungeon",
+    1584
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "Fragment of the Firelands",
+   "reqclass": 0,
+   "reqlevel": 46,
+   "rewards": [],
+   "side": 2
+  },
+  "97198": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [],
+   "level": 59,
+   "name": "Blackmaw Magic",
+   "reqclass": 0,
+   "reqlevel": 52,
+   "rewards": [],
+   "side": 2
+  },
   "972": {
    "category": [
     "sort",
@@ -69324,6 +75819,58 @@
     6637
    ],
    "side": 2
+  },
+  "97200": {
+   "category": [
+    "zone",
+    1637
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97203": {
+   "category": [
+    "zone",
+    85
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97204": {
+   "category": [
+    "zone",
+    215
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97205": {
+   "category": [
+    "zone",
+    16593
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Learning to Ride",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
   },
   "97220": {
    "category": [
@@ -69580,6 +76127,19 @@
    "rewards": [],
    "side": 2
   },
+  "97270": {
+   "category": [
+    "zone",
+    357
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Brawl at the Maul",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
+  },
   "97275": {
    "category": [
     "zone",
@@ -69777,6 +76337,19 @@
    "rewards": [],
    "side": 1
   },
+  "97319": {
+   "category": [
+    "zone",
+    28
+   ],
+   "choices": [],
+   "level": 55,
+   "name": "A Cousin Abroad",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 2
+  },
   "97326": {
    "category": [
     "zone",
@@ -69795,6 +76368,19 @@
    "reqlevel": 5,
    "rewards": [],
    "side": 2
+  },
+  "97327": {
+   "category": [
+    "dungeon",
+    16554
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Blackmaw Pouches",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 3
   },
   "97328": {
    "category": [
@@ -69835,6 +76421,60 @@
    "rewards": [],
    "side": 3
   },
+  "97332": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [
+    278017,
+    278018,
+    278019
+   ],
+   "level": 41,
+   "name": "Twice Misplaced Trust",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    2595
+   ],
+   "side": 3
+  },
+  "97378": {
+   "category": [
+    "zone",
+    357
+   ],
+   "choices": [
+    281275,
+    281276,
+    281277,
+    281278
+   ],
+   "level": 50,
+   "name": "Mirrorscale",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
+  "97386": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [
+    277979,
+    277980,
+    277981
+   ],
+   "level": 44,
+   "name": "The Offense of Grom'gol",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 2
+  },
   "974": {
    "category": [
     "zone",
@@ -69848,6 +76488,40 @@
    "rewards": [],
    "side": 3
   },
+  "97405": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [
+    277979,
+    277980,
+    277981
+   ],
+   "level": 44,
+   "name": "Noise Complaints",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 1
+  },
+  "97411": {
+   "category": [
+    "zone",
+    1637
+   ],
+   "choices": [
+    226985,
+    226977,
+    226970
+   ],
+   "level": 60,
+   "name": "An Earnest Proposition",
+   "reqclass": 0,
+   "reqlevel": 58,
+   "rewards": [],
+   "side": 2
+  },
   "97420": {
    "category": [
     "zone",
@@ -69860,6 +76534,37 @@
    "reqlevel": 31,
    "rewards": [],
    "side": 1
+  },
+  "97446": {
+   "category": [
+    "zone",
+    406
+   ],
+   "choices": [
+    275993,
+    15290,
+    15277,
+    277960
+   ],
+   "level": 40,
+   "name": "Your First Riding Kodo",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97453": {
+   "category": [
+    "zone",
+    33
+   ],
+   "choices": [],
+   "level": 38,
+   "name": "Weed Whacked",
+   "reqclass": 0,
+   "reqlevel": 33,
+   "rewards": [],
+   "side": 2
   },
   "97485": {
    "category": [
@@ -69876,6 +76581,23 @@
    ],
    "side": 2
   },
+  "97490": {
+   "category": [
+    "zone",
+    616
+   ],
+   "choices": [
+    281279,
+    281280,
+    281281
+   ],
+   "level": 60,
+   "name": "Halt the Hail",
+   "reqclass": 0,
+   "reqlevel": 56,
+   "rewards": [],
+   "side": 3
+  },
   "975": {
    "category": [
     "zone",
@@ -69890,6 +76612,47 @@
     12384
    ],
    "side": 3
+  },
+  "97530": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Dunemaul Dues",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [
+    281282
+   ],
+   "side": 3
+  },
+  "97534": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Gritty Business",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
+  "97536": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 45,
+   "name": "Gnomish Garbage",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
   },
   "97538": {
    "category": [
@@ -69916,6 +76679,19 @@
    "reqlevel": 30,
    "rewards": [],
    "side": 2
+  },
+  "97540": {
+   "category": [
+    "zone",
+    440
+   ],
+   "choices": [],
+   "level": 50,
+   "name": "Oasis",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
   },
   "97558": {
    "category": [
@@ -69965,6 +76741,32 @@
    "rewards": [],
    "side": 1
   },
+  "97617": {
+   "category": [
+    "zone",
+    3
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Safety Checks",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 1
+  },
+  "97663": {
+   "category": [
+    "zone",
+    3
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Supplies and Studies",
+   "reqclass": 0,
+   "reqlevel": 34,
+   "rewards": [],
+   "side": 3
+  },
   "977": {
    "category": [
     "zone",
@@ -69990,6 +76792,36 @@
    "reqlevel": 52,
    "rewards": [],
    "side": 1
+  },
+  "97821": {
+   "category": [
+    "zone",
+    3
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Mirage Mirror",
+   "reqclass": 0,
+   "reqlevel": 37,
+   "rewards": [
+    277844
+   ],
+   "side": 3
+  },
+  "97884": {
+   "category": [
+    "zone",
+    16591
+   ],
+   "choices": [],
+   "level": 40,
+   "name": "Armory of Sunnyglade",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    280943
+   ],
+   "side": 2
   },
   "97891": {
    "category": [
@@ -70929,6 +77761,35 @@
    "rewards": [],
    "side": 2
   },
+  "97986": {
+   "category": [
+    "zone",
+    139
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Argent Arbiter",
+   "reqclass": 0,
+   "reqlevel": 53,
+   "rewards": [],
+   "side": 3
+  },
+  "97987": {
+   "category": [
+    "zone",
+    139
+   ],
+   "choices": [
+    281286,
+    281288
+   ],
+   "level": 57,
+   "name": "Stormwind's High Order",
+   "reqclass": 0,
+   "reqlevel": 53,
+   "rewards": [],
+   "side": 1
+  },
   "98": {
    "category": [
     "zone",
@@ -71209,6 +78070,19 @@
    "rewards": [],
    "side": 2
   },
+  "98096": {
+   "category": [
+    "zone",
+    16
+   ],
+   "choices": [],
+   "level": 47,
+   "name": "Sisters In Duty",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 3
+  },
   "981": {
    "category": [
     "zone",
@@ -71224,6 +78098,19 @@
    "reqlevel": 13,
    "rewards": [],
    "side": 1
+  },
+  "98109": {
+   "category": [
+    "zone",
+    139
+   ],
+   "choices": [],
+   "level": 57,
+   "name": "Bleeding Edge",
+   "reqclass": 0,
+   "reqlevel": 53,
+   "rewards": [],
+   "side": 3
   },
   "98155": {
    "category": [
@@ -71251,6 +78138,23 @@
    "rewards": [
     281295
    ],
+   "side": 1
+  },
+  "98166": {
+   "category": [
+    "zone",
+    11
+   ],
+   "choices": [
+    5656,
+    5655,
+    2414
+   ],
+   "level": 40,
+   "name": "Your First Horse",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
    "side": 1
   },
   "98189": {
@@ -71295,6 +78199,19 @@
    "rewards": [],
    "side": 1
   },
+  "98192": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Skin Careful, Skin Sharp",
+   "reqclass": 0,
+   "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
   "98197": {
    "category": [
     "zone",
@@ -71325,6 +78242,39 @@
    "rewards": [],
    "side": 1
   },
+  "98203": {
+   "category": [
+    "zone",
+    47
+   ],
+   "choices": [
+    281298,
+    281299,
+    281301
+   ],
+   "level": 49,
+   "name": "Witch Doctor Ti'ik",
+   "reqclass": 0,
+   "reqlevel": 45,
+   "rewards": [],
+   "side": 2
+  },
+  "98205": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [
+    281302,
+    281303
+   ],
+   "level": 44,
+   "name": "Whelps are the Worst!",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [],
+   "side": 3
+  },
   "98208": {
    "category": [
     "zone",
@@ -71350,6 +78300,19 @@
    "name": "Bloom of the Heavens",
    "reqclass": 0,
    "reqlevel": 22,
+   "rewards": [],
+   "side": 3
+  },
+  "98215": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Dragon Scales, Post Burnt Tails",
+   "reqclass": 0,
+   "reqlevel": 39,
    "rewards": [],
    "side": 3
   },
@@ -71422,6 +78385,34 @@
    "reqclass": 0,
    "reqlevel": 22,
    "rewards": [],
+   "side": 1
+  },
+  "98231": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 44,
+   "name": "Active Ingredient",
+   "reqclass": 0,
+   "reqlevel": 39,
+   "rewards": [],
+   "side": 3
+  },
+  "98233": {
+   "category": [
+    "zone",
+    15
+   ],
+   "choices": [],
+   "level": 42,
+   "name": "Sword in the Slime",
+   "reqclass": 0,
+   "reqlevel": 36,
+   "rewards": [
+    281308
+   ],
    "side": 1
   },
   "98240": {
@@ -71776,6 +78767,19 @@
    "reqlevel": 4,
    "rewards": [],
    "side": 1
+  },
+  "98325": {
+   "category": [
+    "dungeon",
+    1583
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Blood and Thunder",
+   "reqclass": 0,
+   "reqlevel": 55,
+   "rewards": [],
+   "side": 2
   },
   "98326": {
    "category": [
@@ -72215,6 +79219,19 @@
    "rewards": [],
    "side": 1
   },
+  "98477": {
+   "category": [
+    "zone",
+    215
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Unstable Magic",
+   "reqclass": 0,
+   "reqlevel": 48,
+   "rewards": [],
+   "side": 2
+  },
   "985": {
    "category": [
     "zone",
@@ -72578,6 +79595,32 @@
    "rewards": [],
    "side": 3
   },
+  "98904": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 49,
+   "name": "The Battle for Darkspear Islands!",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
+  },
+  "98905": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "The Battle for Darkspear Islands!",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [],
+   "side": 3
+  },
   "98906": {
    "category": [
     "zone",
@@ -72588,6 +79631,32 @@
    "name": "The Battle for Darkspear Islands!",
    "reqclass": 0,
    "reqlevel": 30,
+   "rewards": [],
+   "side": 3
+  },
+  "98907": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 49,
+   "name": "The Battle for Darkspear Islands!",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 3
+  },
+  "98908": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "The Battle for Darkspear Islands!",
+   "reqclass": 0,
+   "reqlevel": 50,
    "rewards": [],
    "side": 3
   },
@@ -72606,6 +79675,36 @@
    ],
    "side": 3
   },
+  "98911": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 49,
+   "name": "Darkspear's Standard Care Package",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [
+    285172
+   ],
+   "side": 3
+  },
+  "98912": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Darkspear's Advanced Care Package",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [
+    285173
+   ],
+   "side": 3
+  },
   "98913": {
    "category": [
     "zone",
@@ -72618,6 +79717,36 @@
    "reqlevel": 30,
    "rewards": [
     285168
+   ],
+   "side": 3
+  },
+  "98914": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 49,
+   "name": "Theramore Standard Care Package",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [
+    285169
+   ],
+   "side": 3
+  },
+  "98915": {
+   "category": [
+    "zone",
+    16606
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Theramore Advanced Care Package",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [
+    285170
    ],
    "side": 3
   },
@@ -73202,6 +80331,32 @@
    "rewards": [],
    "side": 1
   },
+  "99193": {
+   "category": [
+    "zone",
+    36
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Donation of Mageweave",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 1
+  },
+  "99194": {
+   "category": [
+    "zone",
+    36
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Donation of Runecloth",
+   "reqclass": 0,
+   "reqlevel": 50,
+   "rewards": [],
+   "side": 3
+  },
   "99196": {
    "category": [
     "zone",
@@ -73228,6 +80383,19 @@
    "rewards": [],
    "side": 2
   },
+  "99198": {
+   "category": [
+    "zone",
+    215
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "A Donation of Mageweave",
+   "reqclass": 0,
+   "reqlevel": 40,
+   "rewards": [],
+   "side": 2
+  },
   "992": {
    "category": [
     "zone",
@@ -73238,6 +80406,58 @@
    "name": "Gadgetzan Water Survey",
    "reqclass": 0,
    "reqlevel": 38,
+   "rewards": [],
+   "side": 3
+  },
+  "99205": {
+   "category": [
+    "zone",
+    1657
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Swift as the Wind",
+   "reqclass": 0,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 1
+  },
+  "99207": {
+   "category": [
+    "zone",
+    1
+   ],
+   "choices": [],
+   "level": 60,
+   "name": "Swift as the Wind",
+   "reqclass": 0,
+   "reqlevel": 60,
+   "rewards": [],
+   "side": 1
+  },
+  "99257": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "A Heart of Crystal",
+   "reqclass": 0,
+   "reqlevel": 35,
+   "rewards": [],
+   "side": 3
+  },
+  "99258": {
+   "category": [
+    "zone",
+    16651
+   ],
+   "choices": [],
+   "level": 43,
+   "name": "Mana Mania",
+   "reqclass": 0,
+   "reqlevel": 35,
    "rewards": [],
    "side": 3
   },
@@ -73276,6 +80496,23 @@
    "name": "A Lost Master",
    "reqclass": 0,
    "reqlevel": 10,
+   "rewards": [],
+   "side": 1
+  },
+  "99326": {
+   "category": [
+    "zone",
+    267
+   ],
+   "choices": [
+    5656,
+    5655,
+    2414
+   ],
+   "level": 40,
+   "name": "Your First Horse",
+   "reqclass": 0,
+   "reqlevel": 40,
    "rewards": [],
    "side": 1
   },
@@ -96032,6 +103269,14 @@
     "Owen Thadd"
    ]
   ],
+  "79096": [
+   [
+    1458,
+    73.6,
+    33,
+    "Owen Thadd"
+   ]
+  ],
   "79097": [
    [
     1453,
@@ -96347,6 +103592,14 @@
   "7961": [],
   "7962": [],
   "79637": [],
+  "79677": [
+   [
+    1417,
+    57.6,
+    74.5,
+    "Skonk"
+   ]
+  ],
   "79731": [],
   "7981": [
    [
@@ -97157,6 +104410,14 @@
   "8154": [],
   "8155": [],
   "8156": [],
+  "81570": [
+   [
+    1445,
+    55.4,
+    26.2,
+    "\"Swamp Eye\" Jarl"
+   ]
+  ],
   "816": [
    [
     1411,
@@ -101078,6 +108339,7 @@
     "Maggran Earthbinder"
    ]
   ],
+  "86577": [],
   "8658": [],
   "86585": [
    [
@@ -101098,6 +108360,8 @@
   ],
   "8660": [],
   "8661": [],
+  "86611": [],
+  "86612": [],
   "86613": [],
   "86614": [
    [
@@ -101107,7 +108371,10 @@
     "Discarded Fishing Toolbox"
    ]
   ],
+  "86615": [],
+  "86616": [],
   "8662": [],
+  "86620": [],
   "8663": [],
   "8664": [],
   "8665": [],
@@ -101171,6 +108438,7 @@
     "Elder Winterhoof"
    ]
   ],
+  "86746": [],
   "8675": [
    [
     1436,
@@ -101671,6 +108939,7 @@
     "Narain Soothfancy"
    ]
   ],
+  "87295": [],
   "873": [
    [
     1413,
@@ -101787,6 +109056,7 @@
     "Jonathan the Revelator"
    ]
   ],
+  "87451": [],
   "8746": [
    [
     1454,
@@ -101827,6 +109097,8 @@
     "Captive Fire Elemental"
    ]
   ],
+  "87492": [],
+  "87494": [],
   "875": [
    [
     1413,
@@ -103033,6 +110305,8 @@
     "Fariel Starsong"
    ]
   ],
+  "88807": [],
+  "88809": [],
   "8881": [
    [
     1450,
@@ -103041,6 +110315,8 @@
     "Fariel Starsong"
    ]
   ],
+  "88812": [],
+  "88813": [],
   "8882": [
    [
     1450,
@@ -103049,6 +110325,7 @@
     "Fariel Starsong"
    ]
   ],
+  "88821": [],
   "8883": [
    [
     1420,
@@ -103069,6 +110346,8 @@
     "Lunar Festival Harbinger"
    ]
   ],
+  "88857": [],
+  "88884": [],
   "889": [
    [
     1413,
@@ -103077,6 +110356,7 @@
     "Mangletooth"
    ]
   ],
+  "88917": [],
   "8893": [
    [
     1446,
@@ -103133,6 +110413,7 @@
     "Orok Deathbane"
    ]
   ],
+  "89001": [],
   "8901": [
    [
     1456,
@@ -103141,6 +110422,7 @@
     "Temma of the Wells"
    ]
   ],
+  "89013": [],
   "8902": [
    [
     1420,
@@ -103157,6 +110439,8 @@
     "Aristan Mottar"
    ]
   ],
+  "89037": [],
+  "89038": [],
   "8904": [
    [
     1458,
@@ -103173,6 +110457,7 @@
     "Deliana"
    ]
   ],
+  "89053": [],
   "8906": [
    [
     1426,
@@ -103325,6 +110610,7 @@
     "Deliana"
    ]
   ],
+  "89228": [],
   "8923": [
    [
     1454,
@@ -103534,6 +110820,7 @@
     "Anthion Harmon"
    ]
   ],
+  "89470": [],
   "8948": [
    [
     1423,
@@ -104347,6 +111634,7 @@
     "Commander Eligor Dawnbringer"
    ]
   ],
+  "90487": [],
   "9049": [
    [
     1423,
@@ -104523,6 +111811,7 @@
     "Loganaar"
    ]
   ],
+  "90647": [],
   "9068": [
    [
     1423,
@@ -104636,6 +111925,7 @@
     "Rohan the Assassin"
    ]
   ],
+  "90813": [],
   "9082": [
    [
     1423,
@@ -104676,6 +111966,7 @@
     "Rayne"
    ]
   ],
+  "90865": [],
   "9087": [
    [
     1423,
@@ -105157,7 +112448,10 @@
     "Dispatch Commander Metz"
    ]
   ],
+  "91488": [],
+  "91497": [],
   "915": [],
+  "91500": [],
   "9153": [
    [
     1423,
@@ -105166,6 +112460,8 @@
     "Commander Thomas Helleran"
    ]
   ],
+  "91531": [],
+  "91538": [],
   "9154": [
    [
     1426,
@@ -105204,6 +112500,10 @@
     "Argent Scout"
    ]
   ],
+  "91547": [],
+  "91548": [],
+  "91568": [],
+  "91569": [],
   "916": [
    [
     1438,
@@ -105212,7 +112512,14 @@
     "Gilshalan Windwalker"
    ]
   ],
+  "91607": [],
+  "91608": [],
+  "91610": [],
+  "91611": [],
   "9165": [],
+  "91685": [],
+  "91688": [],
+  "91697": [],
   "917": [
    [
     1438,
@@ -105261,6 +112568,8 @@
     "Ormin Pelford"
    ]
   ],
+  "91734": [],
+  "91735": [],
   "91736": [
    [
     1429,
@@ -105269,6 +112578,7 @@
     "Applejack Still"
    ]
   ],
+  "91737": [],
   "91738": [
    [
     1429,
@@ -105320,6 +112630,8 @@
     "Kitta Firewind"
    ]
   ],
+  "91754": [],
+  "91755": [],
   "91758": [
    [
     1429,
@@ -105328,6 +112640,7 @@
     "Marshal McBride"
    ]
   ],
+  "91770": [],
   "91772": [
    [
     1429,
@@ -105354,6 +112667,7 @@
   ],
   "9178": [],
   "9179": [],
+  "91794": [],
   "918": [
    [
     1438,
@@ -105409,7 +112723,11 @@
    ]
   ],
   "9187": [],
+  "91877": [],
   "9188": [],
+  "91881": [],
+  "91882": [],
+  "91883": [],
   "91899": [
    [
     1433,
@@ -105477,8 +112795,10 @@
     "Apothecary Renferrel"
    ]
   ],
+  "91923": [],
   "9194": [],
   "9195": [],
+  "91952": [],
   "9196": [],
   "9197": [],
   "9198": [],
@@ -105499,12 +112819,21 @@
    ]
   ],
   "9200": [],
+  "92008": [],
+  "92009": [],
   "9201": [],
+  "92011": [],
+  "92016": [],
+  "92017": [],
   "9202": [],
+  "92020": [],
   "9203": [],
   "9204": [],
   "9205": [],
   "9206": [],
+  "92064": [],
+  "92066": [],
+  "92069": [],
   "9208": [],
   "9209": [],
   "921": [
@@ -105516,6 +112845,8 @@
    ]
   ],
   "9210": [],
+  "92100": [],
+  "92101": [],
   "92109": [],
   "9211": [
    [
@@ -105526,6 +112857,7 @@
    ]
   ],
   "92110": [],
+  "92111": [],
   "92124": [
    [
     1429,
@@ -105542,6 +112874,9 @@
     "Mataus the Wrathcaster"
    ]
   ],
+  "92147": [],
+  "92169": [],
+  "92171": [],
   "922": [
    [
     1438,
@@ -105638,6 +112973,7 @@
     "Korfax, Champion of the Light"
    ]
   ],
+  "92317": [],
   "9232": [
    [
     1423,
@@ -105646,7 +112982,10 @@
     "Craftsman Wilhelm"
    ]
   ],
+  "92328": [],
+  "92329": [],
   "9233": [],
+  "92335": [],
   "9234": [
    [
     1423,
@@ -105655,6 +112994,10 @@
     "Craftsman Wilhelm"
    ]
   ],
+  "92343": [],
+  "92344": [],
+  "92345": [],
+  "92346": [],
   "9235": [
    [
     1423,
@@ -105784,6 +113127,8 @@
     "Craftsman Wilhelm"
    ]
   ],
+  "92446": [],
+  "92449": [],
   "9245": [
    [
     1423,
@@ -105993,6 +113338,7 @@
   "9249": [],
   "925": [],
   "9250": [],
+  "92500": [],
   "9251": [
    [
     1446,
@@ -106034,6 +113380,7 @@
    ]
   ],
   "92519": [],
+  "92521": [],
   "92528": [
    [
     2521,
@@ -106058,6 +113405,7 @@
     "Rorian the Dayseeker"
    ]
   ],
+  "92533": [],
   "92534": [],
   "92544": [
    [
@@ -106115,6 +113463,10 @@
     "Bloodsail Traitor"
    ]
   ],
+  "92591": [],
+  "92592": [],
+  "92593": [],
+  "92594": [],
   "92595": [
    [
     2521,
@@ -106169,6 +113521,7 @@
     "Lieutenant Orrin"
    ]
   ],
+  "92609": [],
   "9261": [
    [
     1426,
@@ -106177,6 +113530,7 @@
     "Lieutenant Nevell"
    ]
   ],
+  "92612": [],
   "9262": [
    [
     1457,
@@ -106378,6 +113732,7 @@
     "Constable Aonda"
    ]
   ],
+  "92702": [],
   "92703": [
    [
     2521,
@@ -106548,6 +113903,7 @@
     "Alba Fairmoon"
    ]
   ],
+  "92833": [],
   "92834": [
    [
     2521,
@@ -106565,6 +113921,7 @@
    ]
   ],
   "92841": [],
+  "92842": [],
   "92844": [],
   "92846": [],
   "92847": [],
@@ -106584,6 +113941,8 @@
     "Fillion Flamebreeze"
    ]
   ],
+  "92858": [],
+  "92859": [],
   "92860": [
    [
     2521,
@@ -106603,6 +113962,7 @@
   ],
   "92872": [],
   "92873": [],
+  "92878": [],
   "92880": [
    [
     2521,
@@ -106646,6 +114006,14 @@
     "Ozwin Ironsprocket"
    ]
   ],
+  "92914": [
+   [
+    2652,
+    43.8,
+    34.3,
+    "Shen'dralar Pylon"
+   ]
+  ],
   "9292": [],
   "92947": [
    [
@@ -106656,6 +114024,8 @@
    ]
   ],
   "9295": [],
+  "92959": [],
+  "92960": [],
   "9299": [],
   "93": [
    [
@@ -106675,7 +114045,9 @@
   ],
   "9300": [],
   "9301": [],
+  "93016": [],
   "9302": [],
+  "93030": [],
   "93034": [],
   "93035": [],
   "93036": [
@@ -106730,6 +114102,7 @@
   "9310": [],
   "93122": [],
   "93125": [],
+  "93127": [],
   "93128": [],
   "93129": [],
   "93159": [
@@ -106748,6 +114121,8 @@
     "Strange Hermit"
    ]
   ],
+  "93161": [],
+  "93163": [],
   "93165": [
    [
     2521,
@@ -106784,6 +114159,7 @@
     "Strange Hermit"
    ]
   ],
+  "93174": [],
   "93176": [
    [
     1435,
@@ -106834,6 +114210,7 @@
    ]
   ],
   "93196": [],
+  "93197": [],
   "932": [
    [
     1438,
@@ -107019,6 +114396,7 @@
     "Argent Outfitter"
    ]
   ],
+  "93341": [],
   "9335": [
    [
     1458,
@@ -107059,6 +114437,7 @@
     "Argent Outfitter"
    ]
   ],
+  "93362": [],
   "9337": [
    [
     1426,
@@ -107087,6 +114466,7 @@
     "Windcaller Kaldon"
    ]
   ],
+  "93383": [],
   "9339": [
    [
     1456,
@@ -107107,7 +114487,11 @@
     "Festival Talespinner"
    ]
   ],
+  "93394": [],
   "934": [],
+  "93404": [],
+  "93406": [],
+  "93407": [],
   "9341": [
    [
     1426,
@@ -107128,6 +114512,7 @@
     "Argent Quartermaster"
    ]
   ],
+  "93422": [],
   "93429": [],
   "9343": [
    [
@@ -107150,6 +114535,16 @@
    ]
   ],
   "93430": [],
+  "93443": [
+   [
+    1434,
+    38,
+    3,
+    "Lost Shipping Crate"
+   ]
+  ],
+  "93444": [],
+  "93450": [],
   "93459": [],
   "93461": [
    [
@@ -107169,7 +114564,10 @@
     "Corithras Moonrage"
    ]
   ],
+  "93510": [],
   "9353": [],
+  "93546": [],
+  "93547": [],
   "93552": [
    [
     2521,
@@ -107178,6 +114576,10 @@
     "Dalia the Collector"
    ]
   ],
+  "93568": [],
+  "93572": [],
+  "93574": [],
+  "93584": [],
   "93585": [
    [
     1435,
@@ -107186,6 +114588,7 @@
     "Father Tuttle"
    ]
   ],
+  "93594": [],
   "936": [
    [
     1454,
@@ -107194,6 +114597,11 @@
     "Innkeeper Gryshka"
    ]
   ],
+  "93601": [],
+  "93604": [],
+  "93606": [],
+  "93609": [],
+  "93615": [],
   "9362": [
    [
     1447,
@@ -107210,6 +114618,7 @@
     "Archmage Xylem"
    ]
   ],
+  "93644": [],
   "9365": [
    [
     1438,
@@ -107251,6 +114660,8 @@
     "Festival Loremaster"
    ]
   ],
+  "93678": [],
+  "93679": [],
   "9368": [
    [
     1456,
@@ -107279,6 +114690,9 @@
     "Magus Wordeen Voidglare"
    ]
   ],
+  "93684": [],
+  "93685": [],
+  "93689": [],
   "937": [
    [
     1438,
@@ -107343,6 +114757,33 @@
     "Ayessa Dawnsinger"
    ]
   ],
+  "93747": [],
+  "93759": [],
+  "93773": [],
+  "93786": [
+   [
+    2548,
+    59.4,
+    45.6,
+    "Krom'rosh"
+   ]
+  ],
+  "93787": [
+   [
+    2548,
+    59.4,
+    45.6,
+    "Krom'rosh"
+   ]
+  ],
+  "93788": [
+   [
+    2548,
+    59.8,
+    46,
+    "Kreza Darkthorn"
+   ]
+  ],
   "93791": [
    [
     2521,
@@ -107373,6 +114814,10 @@
     "Mist"
    ]
   ],
+  "93825": [],
+  "93826": [],
+  "93827": [],
+  "93831": [],
   "93835": [
    [
     2521,
@@ -107535,6 +114980,7 @@
     "Taleen Shimmerthread"
    ]
   ],
+  "93952": [],
   "93958": [
    [
     2521,
@@ -107551,6 +114997,8 @@
     "Highlord Bolvar Fordragon"
    ]
   ],
+  "93971": [],
+  "93976": [],
   "94": [
    [
     1429,
@@ -108013,6 +115461,10 @@
     "Braldir Ashmantle"
    ]
   ],
+  "94479": [],
+  "94480": [],
+  "94481": [],
+  "94483": [],
   "94484": [
    [
     2521,
@@ -108150,6 +115602,7 @@
     "Forgotten Shrine"
    ]
   ],
+  "94504": [],
   "94505": [
    [
     1421,
@@ -108158,12 +115611,40 @@
     "Minor Manifestation of Water"
    ]
   ],
+  "94532": [],
+  "94533": [],
+  "94535": [],
+  "94556": [],
   "94568": [
    [
     2521,
     66.2,
     76.6,
     "Talaanis Shadowsong"
+   ]
+  ],
+  "94613": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94614": [
+   [
+    2548,
+    54.9,
+    73.1,
+    "Benjy Wheeler"
+   ]
+  ],
+  "94615": [
+   [
+    2548,
+    54.9,
+    73.1,
+    "Benjy Wheeler"
    ]
   ],
   "94616": [
@@ -108174,6 +115655,22 @@
     "Norric Lochthane"
    ]
   ],
+  "94617": [
+   [
+    2548,
+    54.9,
+    73.1,
+    "Benjy Wheeler"
+   ]
+  ],
+  "94618": [
+   [
+    2548,
+    54.9,
+    73.1,
+    "Benjy Wheeler"
+   ]
+  ],
   "94638": [
    [
     2521,
@@ -108182,6 +115679,27 @@
     "Urs'endris"
    ]
   ],
+  "94668": [],
+  "94669": [],
+  "94670": [],
+  "94672": [],
+  "94678": [
+   [
+    2548,
+    39.5,
+    74.7,
+    "Cedric Dalton"
+   ]
+  ],
+  "94679": [
+   [
+    2548,
+    39.5,
+    74.7,
+    "Cedric Dalton"
+   ]
+  ],
+  "94680": [],
   "947": [
    [
     1439,
@@ -108190,6 +115708,15 @@
     "Barithras Moonshade"
    ]
   ],
+  "94727": [],
+  "94733": [],
+  "94734": [],
+  "94737": [],
+  "94739": [],
+  "94744": [],
+  "94745": [],
+  "94748": [],
+  "94768": [],
   "94773": [
    [
     1453,
@@ -108211,6 +115738,7 @@
   "94777": [],
   "94778": [],
   "94779": [],
+  "94782": [],
   "94789": [
    [
     1455,
@@ -108295,6 +115823,34 @@
   ],
   "94825": [],
   "94826": [],
+  "94829": [],
+  "94841": [
+   [
+    1443,
+    64.7,
+    10.3,
+    "Lost Shipping Crate"
+   ]
+  ],
+  "94842": [
+   [
+    2548,
+    41.1,
+    62.9,
+    "Halligan Turner"
+   ]
+  ],
+  "94843": [
+   [
+    2548,
+    41.1,
+    62.9,
+    "Halligan Turner"
+   ]
+  ],
+  "94857": [],
+  "94858": [],
+  "94861": [],
   "94863": [
    [
     1429,
@@ -108313,6 +115869,119 @@
   ],
   "94872": [],
   "94873": [],
+  "94877": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94879": [
+   [
+    2548,
+    66.7,
+    81,
+    "Ashe Amberhall"
+   ]
+  ],
+  "94881": [
+   [
+    2548,
+    66.7,
+    81,
+    "Ashe Amberhall"
+   ]
+  ],
+  "94884": [
+   [
+    2548,
+    47.6,
+    47.2,
+    "Apprentice Claire"
+   ]
+  ],
+  "94885": [],
+  "94886": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94887": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94888": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94889": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94890": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94891": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94892": [
+   [
+    2548,
+    26.2,
+    40.7,
+    "Marshal Ryan"
+   ]
+  ],
+  "94893": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94894": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "94895": [
+   [
+    1443,
+    23.4,
+    72.6,
+    "Lost Shipping Crate"
+   ]
+  ],
   "94896": [
    [
     2521,
@@ -108333,6 +116002,14 @@
   "949": [],
   "94901": [],
   "94902": [],
+  "94907": [
+   [
+    2548,
+    66.7,
+    81,
+    "Ashe Amberhall"
+   ]
+  ],
   "94911": [
    [
     1412,
@@ -108371,6 +116048,36 @@
     "Sheldras Moontree"
    ]
   ],
+  "94923": [],
+  "94924": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
+   ]
+  ],
+  "94925": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
+   ]
+  ],
+  "94926": [],
+  "94927": [],
+  "94928": [],
+  "94929": [],
+  "94930": [],
+  "94931": [
+   [
+    2548,
+    41.1,
+    62.9,
+    "Halligan Turner"
+   ]
+  ],
   "94946": [
    [
     2521,
@@ -108387,6 +116094,38 @@
     "Denaaris Stargale"
    ]
   ],
+  "94961": [
+   [
+    2548,
+    47.3,
+    51.3,
+    "Fuzzle"
+   ]
+  ],
+  "94962": [],
+  "94963": [
+   [
+    2548,
+    47.3,
+    51.3,
+    "Fuzzle"
+   ]
+  ],
+  "94964": [],
+  "94965": [],
+  "94968": [],
+  "94971": [
+   [
+    1420,
+    22,
+    44.6,
+    "Danitha Morr"
+   ]
+  ],
+  "94972": [],
+  "94973": [],
+  "94974": [],
+  "94975": [],
   "94978": [
    [
     2521,
@@ -108403,6 +116142,50 @@
     "Quel'ana Quickgale"
    ]
   ],
+  "94980": [],
+  "94981": [],
+  "94982": [],
+  "94983": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94984": [
+   [
+    2548,
+    66.7,
+    81,
+    "Ashe Amberhall"
+   ]
+  ],
+  "94992": [
+   [
+    2548,
+    53.4,
+    66.4,
+    "Lost Horse"
+   ]
+  ],
+  "94997": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
+  "94998": [
+   [
+    2548,
+    66.7,
+    81,
+    "Ashe Amberhall"
+   ]
+  ],
+  "94999": [],
   "95": [
    [
     1431,
@@ -108419,6 +116202,10 @@
     "Twilight Tome"
    ]
   ],
+  "95006": [],
+  "95026": [],
+  "95027": [],
+  "95033": [],
   "95034": [
    [
     1421,
@@ -108451,12 +116238,45 @@
     "Ulric Frostveil"
    ]
   ],
+  "95059": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95062": [
+   [
+    2548,
+    77,
+    52.8,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95063": [],
+  "95064": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
+   ]
+  ],
   "95065": [
    [
     1453,
     26.2,
     47,
     "Gilbert Gray"
+   ]
+  ],
+  "95066": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
    ]
   ],
   "951": [
@@ -108475,6 +116295,55 @@
     "Trevan Rol"
    ]
   ],
+  "95118": [
+   [
+    2548,
+    79.4,
+    52.7,
+    "Wharfmaster Whizzbuzz"
+   ]
+  ],
+  "95119": [
+   [
+    2548,
+    79.4,
+    52.7,
+    "Wharfmaster Whizzbuzz"
+   ]
+  ],
+  "95120": [
+   [
+    2548,
+    78.5,
+    53.9,
+    "WANTED!"
+   ]
+  ],
+  "95121": [
+   [
+    2548,
+    79,
+    54.1,
+    "Fimbo Greasemitz"
+   ]
+  ],
+  "95122": [
+   [
+    2548,
+    79.4,
+    52.7,
+    "Wharfmaster Whizzbuzz"
+   ]
+  ],
+  "95123": [
+   [
+    2548,
+    79.4,
+    52.7,
+    "Wharfmaster Whizzbuzz"
+   ]
+  ],
+  "95124": [],
   "95125": [
    [
     1424,
@@ -108499,6 +116368,54 @@
     "Lumina Windsinger"
    ]
   ],
+  "95141": [
+   [
+    1434,
+    32.1,
+    28.8,
+    "Commander Aggro'gosh"
+   ]
+  ],
+  "95143": [
+   [
+    1417,
+    74.6,
+    36.3,
+    "Tor'gan"
+   ]
+  ],
+  "95144": [
+   [
+    1446,
+    52.5,
+    28,
+    "Innkeeper Fizzgrimble"
+   ]
+  ],
+  "95147": [
+   [
+    2548,
+    23.7,
+    67.8,
+    "Scout Bolain"
+   ]
+  ],
+  "95148": [
+   [
+    2548,
+    39.5,
+    74.7,
+    "Cedric Dalton"
+   ]
+  ],
+  "95156": [
+   [
+    2548,
+    66.1,
+    79.6,
+    "Ember Bladewhisper"
+   ]
+  ],
   "95161": [
    [
     1453,
@@ -108507,8 +116424,23 @@
     "Orphan Matron Nightingale"
    ]
   ],
+  "95162": [],
+  "95163": [],
+  "95165": [],
+  "95183": [],
+  "95184": [
+   [
+    2548,
+    66.1,
+    79.6,
+    "Ember Bladewhisper"
+   ]
+  ],
   "95189": [],
+  "95194": [],
   "95195": [],
+  "95196": [],
+  "95198": [],
   "952": [
    [
     1457,
@@ -108551,7 +116483,95 @@
     "Frast Dokner"
    ]
   ],
+  "95219": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95248": [],
   "95250": [],
+  "95254": [
+   [
+    2548,
+    78.5,
+    53.9,
+    "WANTED!"
+   ]
+  ],
+  "95260": [
+   [
+    2548,
+    72.4,
+    61.9,
+    "Painted Hide"
+   ]
+  ],
+  "95261": [
+   [
+    2548,
+    79.9,
+    52.5,
+    "Argo Brinewhistle"
+   ]
+  ],
+  "95262": [],
+  "95263": [],
+  "95264": [],
+  "95267": [
+   [
+    2548,
+    79.9,
+    52.5,
+    "Argo Brinewhistle"
+   ]
+  ],
+  "95278": [],
+  "95283": [],
+  "95284": [],
+  "95285": [],
+  "95288": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95293": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95294": [
+   [
+    2548,
+    91.2,
+    39.7,
+    "Captain Haynes"
+   ]
+  ],
+  "95295": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
+  "95296": [
+   [
+    2548,
+    77.1,
+    52.9,
+    "Friz Frazzlespark"
+   ]
+  ],
   "953": [
    [
     1439,
@@ -108560,6 +116580,8 @@
     "Sentinel Tysha Moonblade"
    ]
   ],
+  "95309": [],
+  "95312": [],
   "95314": [
    [
     1420,
@@ -108568,7 +116590,41 @@
     "Carolai Anise"
    ]
   ],
+  "95315": [
+   [
+    1417,
+    45.8,
+    47.4,
+    "Captain Nials"
+   ]
+  ],
+  "95316": [],
+  "95317": [],
+  "95318": [],
+  "95319": [],
+  "95320": [],
+  "95321": [],
+  "95322": [],
+  "95325": [],
+  "95326": [],
+  "95327": [],
   "95328": [],
+  "95329": [
+   [
+    2548,
+    66.6,
+    81,
+    "Demar Brant"
+   ]
+  ],
+  "95330": [
+   [
+    2548,
+    64.7,
+    82.9,
+    "Cassandra Wheeler"
+   ]
+  ],
   "95349": [
    [
     2521,
@@ -108585,7 +116641,12 @@
     "Alaana Stormwalker"
    ]
   ],
+  "95378": [],
+  "95379": [],
+  "95380": [],
+  "95383": [],
   "95384": [],
+  "95385": [],
   "954": [
    [
     1439,
@@ -108594,6 +116655,27 @@
     "Thundris Windweaver"
    ]
   ],
+  "95417": [],
+  "95418": [],
+  "95420": [],
+  "95424": [],
+  "95425": [],
+  "95426": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
+   ]
+  ],
+  "95427": [],
+  "95428": [],
+  "95431": [],
+  "95432": [],
+  "95433": [],
+  "95454": [],
+  "95472": [],
+  "95483": [],
   "95494": [
    [
     1413,
@@ -108634,8 +116716,21 @@
     "Walton"
    ]
   ],
+  "95511": [],
   "95534": [],
   "9556": [],
+  "95561": [
+   [
+    2548,
+    63.9,
+    82.3,
+    "Tessa Dawnbright"
+   ]
+  ],
+  "95562": [],
+  "95568": [],
+  "95569": [],
+  "95599": [],
   "956": [
    [
     1439,
@@ -108644,12 +116739,55 @@
     "Asterion"
    ]
   ],
+  "95601": [],
+  "95602": [],
+  "95603": [
+   [
+    2548,
+    61.8,
+    83.3,
+    "Sister Rowland"
+   ]
+  ],
+  "95611": [],
+  "95613": [
+   [
+    2548,
+    61.8,
+    83.3,
+    "Sister Rowland"
+   ]
+  ],
+  "95615": [
+   [
+    2548,
+    61.8,
+    83.3,
+    "Sister Rowland"
+   ]
+  ],
   "95621": [
    [
     1413,
     42,
     11.4,
     "Walton"
+   ]
+  ],
+  "95642": [
+   [
+    2548,
+    47.6,
+    47.2,
+    "Apprentice Claire"
+   ]
+  ],
+  "95643": [
+   [
+    2548,
+    47.6,
+    47.2,
+    "Apprentice Claire"
    ]
   ],
   "95646": [
@@ -108710,6 +116848,7 @@
    ]
   ],
   "95748": [],
+  "95753": [],
   "95770": [],
   "95771": [],
   "95772": [
@@ -108731,7 +116870,37 @@
   ],
   "95775": [],
   "95776": [],
+  "95786": [],
+  "95787": [],
+  "95788": [],
+  "95789": [
+   [
+    1434,
+    27,
+    77.2,
+    "Krazek"
+   ]
+  ],
+  "95791": [
+   [
+    1434,
+    27,
+    77.2,
+    "Krazek"
+   ]
+  ],
+  "95792": [
+   [
+    2548,
+    30.2,
+    69.2,
+    "Gelinda Coppergleam"
+   ]
+  ],
+  "95793": [],
   "95795": [],
+  "95798": [],
+  "95799": [],
   "958": [
    [
     1439,
@@ -108759,7 +116928,17 @@
   "95809": [],
   "95810": [],
   "95816": [],
+  "95817": [],
+  "95818": [],
   "95819": [],
+  "95882": [
+   [
+    2548,
+    59.6,
+    46.9,
+    "Wanted"
+   ]
+  ],
   "95883": [
    [
     1421,
@@ -108785,12 +116964,118 @@
     "Crane Operator Bigglefuzz"
    ]
   ],
+  "95912": [
+   [
+    2548,
+    65.9,
+    81.1,
+    "Wanted"
+   ]
+  ],
+  "95913": [
+   [
+    2548,
+    63.8,
+    82.3,
+    "Tessa Dawnbright"
+   ]
+  ],
+  "95924": [],
+  "95925": [],
+  "95926": [],
+  "95928": [],
+  "95934": [
+   [
+    2548,
+    30.2,
+    69.2,
+    "Gelinda Coppergleam"
+   ]
+  ],
+  "95935": [],
+  "95936": [],
+  "95943": [
+   [
+    2548,
+    63.4,
+    80.6,
+    "Bertrand Ironbrow"
+   ]
+  ],
+  "95951": [
+   [
+    2548,
+    58.2,
+    45.2,
+    "Tan'jani"
+   ]
+  ],
+  "95955": [],
+  "95957": [],
+  "95961": [
+   [
+    2548,
+    63.8,
+    82.4,
+    "Tessa Dawnbright"
+   ]
+  ],
+  "95975": [],
   "95981": [
    [
     1421,
     44,
     41,
     "Shadow Priest Allister"
+   ]
+  ],
+  "95982": [
+   [
+    2548,
+    76,
+    52.6,
+    "Jasper Geartoggle"
+   ]
+  ],
+  "95983": [
+   [
+    2548,
+    61.7,
+    58.8,
+    "Picked Carcass"
+   ]
+  ],
+  "95984": [
+   [
+    2548,
+    59.5,
+    63.9,
+    "Watcher Cornelius"
+   ]
+  ],
+  "95986": [],
+  "95988": [
+   [
+    2548,
+    78.8,
+    54.1,
+    "Innkeeper Zizplink"
+   ]
+  ],
+  "95991": [
+   [
+    2548,
+    65.6,
+    80.8,
+    "WANTED!"
+   ]
+  ],
+  "95992": [
+   [
+    2548,
+    59.5,
+    47,
+    "WANTED!"
    ]
   ],
   "95998": [
@@ -108818,7 +117103,35 @@
     "Onu"
    ]
   ],
+  "96003": [],
+  "96009": [
+   [
+    2548,
+    63.4,
+    80.6,
+    "Bertrand Ironbrow"
+   ]
+  ],
+  "96010": [
+   [
+    2652,
+    35.1,
+    46.4,
+    "Mordent Evenshade"
+   ]
+  ],
+  "96015": [
+   [
+    2548,
+    30.6,
+    49.1,
+    "Sergeant Riftan"
+   ]
+  ],
   "96016": [],
+  "96018": [],
+  "96020": [],
+  "96026": [],
   "96031": [
    [
     1426,
@@ -108907,6 +117220,38 @@
     "Thonys Pillarstone"
    ]
   ],
+  "96060": [],
+  "96063": [
+   [
+    2548,
+    68.2,
+    48.7,
+    "Sleebo Fizzlespout"
+   ]
+  ],
+  "96067": [
+   [
+    2548,
+    68.2,
+    48.4,
+    "Sleebo Fizzlespout"
+   ]
+  ],
+  "96076": [],
+  "96077": [],
+  "96078": [
+   [
+    1434,
+    32.2,
+    27.8,
+    "Kin'weelay"
+   ]
+  ],
+  "96081": [],
+  "96082": [],
+  "96083": [],
+  "96084": [],
+  "96085": [],
   "961": [
    [
     1439,
@@ -108931,6 +117276,21 @@
     "Brakk"
    ]
   ],
+  "96103": [],
+  "96104": [],
+  "96105": [],
+  "96107": [
+   [
+    2548,
+    60.4,
+    47.8,
+    "Neza Bloodsnout"
+   ]
+  ],
+  "96108": [],
+  "96109": [],
+  "96125": [],
+  "96126": [],
   "96130": [
    [
     1412,
@@ -108939,6 +117299,7 @@
     "Yaw Sharpmane"
    ]
   ],
+  "96131": [],
   "96135": [
    [
     1417,
@@ -108958,6 +117319,7 @@
     "Sirra Von'Indi"
    ]
   ],
+  "96145": [],
   "962": [
    [
     1456,
@@ -108974,6 +117336,7 @@
     "Lumina Windsinger"
    ]
   ],
+  "96209": [],
   "96222": [
    [
     1443,
@@ -108998,6 +117361,8 @@
     "Ingrid Dunwald"
    ]
   ],
+  "96252": [],
+  "96255": [],
   "96259": [
    [
     1412,
@@ -109022,6 +117387,7 @@
     "Muln Earthfury"
    ]
   ],
+  "96262": [],
   "96264": [
    [
     1417,
@@ -109031,6 +117397,7 @@
    ]
   ],
   "96294": [],
+  "96296": [],
   "963": [
    [
     1439,
@@ -109039,7 +117406,16 @@
     "Cerellean Whiteclaw"
    ]
   ],
+  "96303": [],
+  "96321": [],
+  "96332": [],
+  "96334": [],
+  "96335": [],
+  "96337": [],
   "96339": [],
+  "96369": [],
+  "96377": [],
+  "96381": [],
   "96383": [],
   "96390": [
    [
@@ -109099,6 +117475,9 @@
     "Beldin Steelgrill"
    ]
   ],
+  "96438": [],
+  "96449": [],
+  "96476": [],
   "965": [
    [
     1439,
@@ -109107,6 +117486,7 @@
     "Sentinel Elissa Starbreeze"
    ]
   ],
+  "96559": [],
   "966": [
    [
     1439,
@@ -109115,6 +117495,7 @@
     "Balthule Shadowstrike"
    ]
   ],
+  "96603": [],
   "96604": [
    [
     1411,
@@ -109155,6 +117536,8 @@
     "Eric Brighthammer"
    ]
   ],
+  "96609": [],
+  "96616": [],
   "96626": [
    [
     1429,
@@ -109292,6 +117675,17 @@
    ]
   ],
   "96735": [],
+  "96770": [],
+  "96771": [],
+  "96772": [],
+  "96773": [
+   [
+    1416,
+    15.4,
+    73.8,
+    "Archmage Lan'dalock"
+   ]
+  ],
   "96774": [
    [
     1412,
@@ -109300,6 +117694,8 @@
     "Mazu'kon"
    ]
   ],
+  "96775": [],
+  "96776": [],
   "96779": [
    [
     1416,
@@ -109328,6 +117724,10 @@
   "96784": [],
   "96785": [],
   "96786": [],
+  "96796": [],
+  "96797": [],
+  "96798": [],
+  "96799": [],
   "968": [],
   "96800": [
    [
@@ -109337,6 +117737,8 @@
     "Magus Olvek"
    ]
   ],
+  "96811": [],
+  "96812": [],
   "96821": [
    [
     1411,
@@ -109435,6 +117837,12 @@
     "Witch Doctor Mau'ari"
    ]
   ],
+  "96912": [],
+  "96931": [],
+  "96959": [],
+  "96979": [],
+  "96982": [],
+  "96983": [],
   "96984": [
    [
     1421,
@@ -109460,6 +117868,13 @@
     "Doctor Martin Felben"
    ]
   ],
+  "96989": [],
+  "96992": [],
+  "96994": [],
+  "96996": [],
+  "96997": [],
+  "96998": [],
+  "96999": [],
   "97": [
    [
     1431,
@@ -109476,6 +117891,7 @@
     "Delgren the Purifier"
    ]
   ],
+  "97000": [],
   "97003": [
    [
     1413,
@@ -109492,11 +117908,20 @@
     "Bainham"
    ]
   ],
+  "97009": [],
+  "97017": [],
+  "97018": [],
+  "97022": [],
+  "97029": [],
+  "97045": [],
+  "97046": [],
   "97047": [],
   "97048": [],
+  "97049": [],
   "97065": [],
   "97066": [],
   "97067": [],
+  "97074": [],
   "971": [
    [
     1426,
@@ -109505,6 +117930,41 @@
     "Gerrig Bonegrip"
    ]
   ],
+  "97130": [
+   [
+    1416,
+    15.4,
+    74,
+    "Archmage Timear"
+   ]
+  ],
+  "97168": [],
+  "97170": [],
+  "97171": [],
+  "97173": [],
+  "97174": [],
+  "97175": [],
+  "97178": [],
+  "97179": [],
+  "97188": [
+   [
+    1426,
+    49.2,
+    48,
+    "Binjy Featherwhistle"
+   ]
+  ],
+  "97194": [],
+  "97196": [
+   [
+    1412,
+    34.4,
+    22.8,
+    "Sutara Plainstalker"
+   ]
+  ],
+  "97197": [],
+  "97198": [],
   "972": [
    [
     1413,
@@ -109513,6 +117973,10 @@
     "Islen Waterseer"
    ]
   ],
+  "97200": [],
+  "97203": [],
+  "97204": [],
+  "97205": [],
   "97220": [
    [
     1453,
@@ -109656,6 +118120,7 @@
     "Aka'rai"
    ]
   ],
+  "97270": [],
   "97275": [
    [
     1454,
@@ -109740,6 +118205,7 @@
     "Delgren the Purifier"
    ]
   ],
+  "97319": [],
   "97326": [
    [
     1454,
@@ -109748,9 +118214,27 @@
     "Thra"
    ]
   ],
+  "97327": [],
   "97328": [],
   "97329": [],
   "97331": [],
+  "97332": [
+   [
+    1434,
+    26.3,
+    73.5,
+    "Wharfmaster Lozgil"
+   ]
+  ],
+  "97378": [],
+  "97386": [
+   [
+    1434,
+    32.1,
+    28.8,
+    "Commander Aggro'gosh"
+   ]
+  ],
   "974": [
    [
     1449,
@@ -109759,7 +118243,18 @@
     "Krakle"
    ]
   ],
+  "97405": [],
+  "97411": [],
   "97420": [],
+  "97446": [],
+  "97453": [
+   [
+    1434,
+    32.8,
+    28.4,
+    "Gemmil"
+   ]
+  ],
   "97485": [
    [
     1456,
@@ -109768,6 +118263,7 @@
     "Eylah Sunhorn"
    ]
   ],
+  "97490": [],
   "975": [
    [
     1452,
@@ -109776,6 +118272,9 @@
     "Witch Doctor Mau'ari"
    ]
   ],
+  "97530": [],
+  "97534": [],
+  "97536": [],
   "97538": [
    [
     1456,
@@ -109792,6 +118291,7 @@
     "Doctor Gregory Victor"
    ]
   ],
+  "97540": [],
   "97558": [
    [
     1420,
@@ -109816,6 +118316,15 @@
     "Feero Ironhand"
    ]
   ],
+  "97617": [],
+  "97663": [
+   [
+    1418,
+    4.2,
+    46.2,
+    "Mus'hale"
+   ]
+  ],
   "977": [
    [
     1452,
@@ -109830,6 +118339,15 @@
     55.5,
     92,
     "Erelas Ambersky"
+   ]
+  ],
+  "97821": [],
+  "97884": [
+   [
+    1458,
+    61.3,
+    28.6,
+    "Mirelle Tremayne"
    ]
   ],
   "97891": [
@@ -110401,6 +118919,8 @@
     "Calder Gray"
    ]
   ],
+  "97986": [],
+  "97987": [],
   "98": [
    [
     1431,
@@ -110540,6 +119060,7 @@
    ]
   ],
   "98095": [],
+  "98096": [],
   "981": [
    [
     1439,
@@ -110548,6 +119069,7 @@
     "Balthule Shadowstrike"
    ]
   ],
+  "98109": [],
   "98155": [
    [
     1444,
@@ -110557,6 +119079,7 @@
    ]
   ],
   "98156": [],
+  "98166": [],
   "98189": [
    [
     1437,
@@ -110574,6 +119097,14 @@
    ]
   ],
   "98191": [],
+  "98192": [
+   [
+    1445,
+    36.4,
+    30.9,
+    "Krak"
+   ]
+  ],
   "98197": [
    [
     1437,
@@ -110590,6 +119121,8 @@
     "Gorbold Steelhand"
    ]
   ],
+  "98203": [],
+  "98205": [],
   "98208": [
    [
     1437,
@@ -110606,6 +119139,7 @@
     "Sylessa Duskwhisper"
    ]
   ],
+  "98215": [],
   "98216": [
    [
     1437,
@@ -110644,6 +119178,15 @@
     9.8,
     57.4,
     "Captain Stoutfist"
+   ]
+  ],
+  "98231": [],
+  "98233": [
+   [
+    1445,
+    65.6,
+    45.4,
+    "Guard Jameson"
    ]
   ],
   "98240": [],
@@ -110819,6 +119362,7 @@
     "Mountaineer Gretchen"
    ]
   ],
+  "98325": [],
   "98326": [
    [
     1426,
@@ -111055,6 +119599,7 @@
    ]
   ],
   "98471": [],
+  "98477": [],
   "985": [
    [
     1439,
@@ -111342,6 +119887,8 @@
     "Brelinda McFarry"
    ]
   ],
+  "98904": [],
+  "98905": [],
   "98906": [
    [
     1413,
@@ -111350,8 +119897,14 @@
     "Nizook Boof"
    ]
   ],
+  "98907": [],
+  "98908": [],
   "98910": [],
+  "98911": [],
+  "98912": [],
   "98913": [],
+  "98914": [],
+  "98915": [],
   "98977": [],
   "98983": [],
   "99": [
@@ -111653,6 +120206,8 @@
    ]
   ],
   "99192": [],
+  "99193": [],
+  "99194": [],
   "99196": [
    [
     1412,
@@ -111662,6 +120217,7 @@
    ]
   ],
   "99197": [],
+  "99198": [],
   "992": [
    [
     1446,
@@ -111670,6 +120226,10 @@
     "Senior Surveyor Fizzledowser"
    ]
   ],
+  "99205": [],
+  "99207": [],
+  "99257": [],
+  "99258": [],
   "99260": [
    [
     2521,
@@ -111694,6 +120254,7 @@
     "Terenthis"
    ]
   ],
+  "99326": [],
   "994": [
    [
     1439,
