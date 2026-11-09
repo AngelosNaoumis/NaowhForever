@@ -110,6 +110,7 @@ Check("closing the page stops listening", #B.results == 1)
 local function Category(name, flags, subs)
     local c = { name = name, filters = { { classID = #name } }, flags = flags, subCategories = subs }
     function c:HasFlag(flag) return self.flags ~= nil and self.flags[flag] == true end
+    for _, sub in ipairs(subs or {}) do sub.parent = c end
     return c
 end
 local plate = Category("Plate")
@@ -146,5 +147,38 @@ Check("and the next page is added to it", #CB.results == 3 and CB.results[3].ite
 c.full = true
 CB.More()
 Check("a full list asks for nothing", c.more == 1)
+
+local s = World.Setup({ categories = { armor, token } })
+local SB = s.M.Buy
+SB.Open()
+Check("nothing is saved at first", #SB.SavedSearches() == 0 and s.account.marketSearches == nil)
+Check("a search with no name and no category is not saved", not SB.SaveSearch("", nil)
+    and s.account.marketSearches == nil)
+SB.SaveSearch("helm", plate)
+SB.SaveSearch("linen", nil)
+local saved = SB.SavedSearches()
+Check("a search is saved account-wide, newest first, its category by its place in the game's list",
+    s.account.marketSearches == saved and #saved == 2 and saved[1].text == "linen" and saved[1].category == nil
+    and saved[2].text == "helm" and saved[2].category == "1.1")
+Check("a saved category is found again by its place", SB.SearchCategory(saved[2]) == plate
+    and SB.SearchCategory({ text = "", category = "9.1" }) == nil)
+SB.SaveSearch("helm", plate)
+SB.SaveSearch("Helm", plate)
+Check("saving the same name and category again keeps one", #saved == 2 and SB.SavedSearch("HELM", plate) == 2)
+SB.SaveSearch("helm", armor)
+Check("the same name in another category is another search", #saved == 3 and saved[1].category == "1")
+SB.RunSearch(3)
+Check("running one searches its name in its category", s.browses[#s.browses] == "helm"
+    and s.lastBrowse.itemClassFilters == plate.filters and SB.category == plate)
+SB.RunSearch(2)
+Check("and one with no category searches every category", s.browses[#s.browses] == "linen"
+    and #s.lastBrowse.itemClassFilters == 0 and SB.category == nil)
+SB.DeleteSearch(1)
+Check("deleting one forgets only it", #saved == 2 and not SB.SavedSearch("helm", armor)
+    and SB.SavedSearch("helm", plate) == 2)
+local keep = s.M.C.SEARCHES_KEEP
+for i = 1, keep do SB.SaveSearch("cloth " .. i, nil) end
+Check("past the cap the oldest goes", #saved == keep and saved[1].text == "cloth " .. keep
+    and not SB.SavedSearch("helm", plate) and not SB.SavedSearch("linen", nil))
 
 print("market buy: " .. checks .. " checks passed")

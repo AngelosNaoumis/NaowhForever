@@ -2,13 +2,17 @@
 local ns = _G.NaowhForever
 
 local Market = ns.Market
+local C = Market.C
 local Listings = Market.Listings
 
 local BROWSE_SORTS = { { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false },
     { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort = false } }
 local NO_FILTERS = {}
+local NO_SEARCHES = {}
 local QUOTE_SLACK = 1.05
 local FAVOURITES = "marketFavourites"
+local SEARCHES = "marketSearches"
+local PATH_JOIN = "."
 local TOKEN_FLAG = "WOW_TOKEN_FLAG"
 local EVENTS = { "AUCTION_HOUSE_BROWSE_RESULTS_UPDATED", "AUCTION_HOUSE_BROWSE_RESULTS_ADDED",
     "AUCTION_HOUSE_BROWSE_FAILURE", "ITEM_KEY_ITEM_INFO_RECEIVED",
@@ -178,6 +182,69 @@ function Buy.Favourites(out)
     for itemID in pairs(Favourites() or {}) do out[#out + 1] = itemID end
     table.sort(out, ByName)
     return out
+end
+
+local function Searches(create)
+    local account = ns.AccountSettings()
+    if create and not account[SEARCHES] then account[SEARCHES] = {} end
+    return account[SEARCHES]
+end
+
+local function IndexIn(list, c)
+    for i, other in ipairs(list) do
+        if other == c then return i end
+    end
+end
+
+local function PathOf(c)
+    if not c then return nil end
+    if not c.parent then return tostring(IndexIn(AuctionCategories, c)) end
+    return PathOf(c.parent) .. PATH_JOIN .. IndexIn(c.parent.subCategories, c)
+end
+
+local function CategoryAt(path)
+    if not path then return nil end
+    local c, list = nil, AuctionCategories
+    for index in path:gmatch("%d+") do
+        c = list and list[tonumber(index)]
+        list = c and c.subCategories
+    end
+    return c
+end
+
+function Buy.SavedSearches()
+    return Searches() or NO_SEARCHES
+end
+
+function Buy.SavedSearch(text, chosen)
+    local path, lower = PathOf(chosen), text:lower()
+    for i, saved in ipairs(Buy.SavedSearches()) do
+        if saved.category == path and saved.text:lower() == lower then return i end
+    end
+end
+
+function Buy.SaveSearch(text, chosen)
+    if text == "" and not chosen then return false end
+    if Buy.SavedSearch(text, chosen) then return true end
+    local saved = Searches(true)
+    table.insert(saved, 1, { text = text, category = PathOf(chosen) })
+    saved[C.SEARCHES_KEEP + 1] = nil
+    return true
+end
+
+function Buy.DeleteSearch(index)
+    table.remove(Searches(), index)
+end
+
+function Buy.SearchCategory(saved)
+    return CategoryAt(saved.category)
+end
+
+function Buy.RunSearch(index)
+    local saved = Searches()[index]
+    Buy.SetCategory(CategoryAt(saved.category))
+    Buy.Search(saved.text)
+    return saved
 end
 
 function Buy.PickItem(itemID, quantity)

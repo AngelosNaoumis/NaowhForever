@@ -20,6 +20,7 @@ local SCROLL_IN = 4
 local CATEGORY_W, MORE_ROWS = 200, 10
 local ALL = "all"
 local FAV_HEAD_H, FAV_ROW_H, FAV_ROWS, STAR, SPARK_W = 30, 30, 5, 18, 110
+local SAVED_ICON = 13
 local FAV_H = FAV_HEAD_H + FAV_ROWS * FAV_ROW_H
 local DETAIL_H = NAME_H + SECTION_GAP + Ladder.HEIGHT + SECTION_GAP + BUTTON_H
 local TEXT_SHOP = ns.L("Shopping List")
@@ -34,6 +35,7 @@ local TEXT_NOTHING = ns.L("Nothing found.")
 local TEXT_ALL_CATEGORIES = ns.L("All Categories")
 local TEXT_ALL = ns.L("All")
 local TEXT_PATH = ns.L("%s / %s")
+local TEXT_SAVED = "%s  %s"
 local TEXT_LADDER = ns.L("Listings now, cheapest first")
 local TEXT_LISTED = ns.L("%s listed")
 local TEXT_NONE = ns.L("Nobody is selling this")
@@ -57,11 +59,15 @@ local TEXT_FAVOURITES = ns.L("Favourites")
 local TEXT_FAV_EMPTY = ns.L("Star an item you buy often and it stays here.")
 local TEXT_STAR = ns.L("Favourite")
 local TEXT_STAR_TIP = ns.L("Keeps this item under Favourites, one click from its listings.")
+local TEXT_SAVE = ns.L("Save Search")
+local TEXT_SAVE_TIP = ns.L("Keeps this search and its category under Favourites, one click from running again.")
+local TEXT_REMOVE = ns.L("Remove")
 
 local page, shopPane, shopScroll, shopList, shopNote, main, search, resultsScroll, resultsList, resultsNote
 local detail, nameText, ladder, quantity, buyButton, statusText, star, spark, sorter
-local favPane, favScroll, favList, favNote, itemEvents, picker
+local favPane, favScroll, favList, favNote, itemEvents, picker, saveStar
 local shopRows, resultRows, rungs, favRows, favourites, results = {}, {}, {}, {}, {}, {}
+local searchRows, saved = {}, {}
 local categories, labels = {}, { [ALL] = TEXT_ALL_CATEGORIES }
 local active, watching = false, false
 
@@ -82,6 +88,11 @@ local function KeyLook(itemKey)
     return info.itemName, ITEM_QUALITY_COLORS[info.quality] or T.fg, info.iconFileID
 end
 
+local function CategoryLabel(c)
+    if not c.parent then return c.name end
+    return TEXT_PATH:format(c.parent.name, c.name)
+end
+
 local Enable = St.Enable
 
 local function Panel(frame)
@@ -89,8 +100,8 @@ local function Panel(frame)
     ns.Border(frame, St.BORDER_RGB)
 end
 
-local function Rows(list, count, pool, new, paint, height)
-    local y = 0
+local function Rows(list, count, pool, new, paint, height, top)
+    local y = top or 0
     for i = 1, count do
         local row = pool[i] or new()
         pool[i] = row
@@ -178,7 +189,7 @@ end
 local function PaintFavRow(row, i)
     local item = favourites[i]
     row.item = item
-    row.stripe:SetShown(i % 2 == 0)
+    row.stripe:SetShown((#saved + i) % 2 == 0)
     row.picked:SetShown(Buy.picked.itemID == item)
     row.icon.texture:SetTexture(C_Item.GetItemIconByID(item))
     local color = Items.QualityColor(item) or T.fg
@@ -186,6 +197,71 @@ local function PaintFavRow(row, i)
     row.name:SetText(Items.Name(item))
     local scan = ns.AuctionPrice and ns.AuctionPrice(item)
     row.price:SetText(scan and Parts.Coins(scan, true) or "")
+end
+
+local DrawFavourites
+
+local function SearchEnter(row)
+    row.hover:Show()
+end
+
+local function SearchLeave(row)
+    if row:IsMouseOver() then return end
+    row.hover:Hide()
+end
+
+local function RemoveLeave(button)
+    SearchLeave(button:GetParent())
+end
+
+local function SearchClicked(row)
+    local entry = Buy.RunSearch(row.index)
+    if Buy.category then labels[Buy.category] = CategoryLabel(Buy.category) end
+    picker._refreshLabel()
+    search:SetText(entry.text)
+    Page.Draw()
+end
+
+local function RemoveClicked(button)
+    Buy.DeleteSearch(button:GetParent().index)
+    DrawFavourites()
+    Page.Draw()
+end
+
+local function NewSearchRow()
+    local row = CreateFrame("Button", nil, favList)
+    row:SetHeight(FAV_ROW_H)
+    Parts.RowBands(row, 0)
+    local icon = row:CreateTexture(nil, "ARTWORK")
+    icon:SetTexture(St.SEARCH)
+    icon:SetSize(SAVED_ICON, SAVED_ICON)
+    icon:SetPoint("CENTER", row, "LEFT", ROW_IN + SHOP_ICON / 2, 0)
+    icon:SetVertexColor(T.muted.r, T.muted.g, T.muted.b, 1)
+    row.remove = Parts.IconButton(row, RemoveClicked, St.CROSS, 0, TEXT_REMOVE)
+    row.remove:SetPoint("RIGHT", -ROW_IN, 0)
+    row.remove:HookScript("OnLeave", RemoveLeave)
+    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
+    row.name:SetPoint("LEFT", ROW_IN + SHOP_ICON + ICON_GAP, 0)
+    row.name:SetPoint("RIGHT", row.remove, "LEFT", -ICON_GAP, 0)
+    row.name:SetJustifyH("LEFT")
+    row.name:SetWordWrap(false)
+    row:SetScript("OnClick", SearchClicked)
+    row:SetScript("OnEnter", SearchEnter)
+    row:SetScript("OnLeave", SearchLeave)
+    return row
+end
+
+local function PaintSearchRow(row, i)
+    local entry = saved[i]
+    local c = Buy.SearchCategory(entry)
+    local label = c and CategoryLabel(c)
+    row.index = i
+    row.stripe:SetShown(i % 2 == 0)
+    if entry.text == "" then
+        row.name:SetText(label or TEXT_ALL_CATEGORIES)
+    else
+        row.name:SetText(label and TEXT_SAVED:format(entry.text, ns.Color("muted", label)) or entry.text)
+    end
 end
 
 local function ResultClicked(row)
@@ -245,10 +321,12 @@ local function DrawShopping()
     shopNote:SetText(shopping and TEXT_SHOP_EMPTY or TEXT_SHOP_OFF)
 end
 
-local function DrawFavourites()
+function DrawFavourites()
+    saved = Buy.SavedSearches()
+    Rows(favList, #saved, searchRows, NewSearchRow, PaintSearchRow, FAV_ROW_H)
     Buy.Favourites(favourites)
-    Rows(favList, #favourites, favRows, NewFavRow, PaintFavRow, FAV_ROW_H)
-    favNote:SetShown(#favourites == 0)
+    Rows(favList, #favourites, favRows, NewFavRow, PaintFavRow, FAV_ROW_H, #saved * FAV_ROW_H)
+    favNote:SetShown(#saved + #favourites == 0)
 end
 
 local function DrawResults()
@@ -337,6 +415,13 @@ local function DrawDetail()
     Enable(buyButton, on)
 end
 
+local function DrawSaveStar()
+    local text = search:GetText() or ""
+    local tint = Buy.SavedSearch(text, Buy.category) and St.GOLD_RGB or T.muted
+    saveStar.icon:SetVertexColor(tint.r, tint.g, tint.b)
+    Enable(saveStar, text ~= "" or Buy.category ~= nil)
+end
+
 function Page.Draw()
     if not active then return end
     DrawShopping()
@@ -345,12 +430,29 @@ function Page.Draw()
     end
     DrawResults()
     DrawDetail()
+    DrawSaveStar()
 end
 
 local function StarClicked()
     Buy.ToggleFavourite(Buy.picked.itemKey)
     DrawFavourites()
     Page.Draw()
+end
+
+local function SaveClicked()
+    local text = search:GetText() or ""
+    local index = Buy.SavedSearch(text, Buy.category)
+    if index then
+        Buy.DeleteSearch(index)
+    else
+        Buy.SaveSearch(text, Buy.category)
+    end
+    DrawFavourites()
+    Page.Draw()
+end
+
+local function SearchTyped()
+    if active then DrawSaveStar() end
 end
 
 local function ItemLoaded(_, _, itemID)
@@ -382,11 +484,6 @@ end
 
 local function IsCategory(c)
     return ShownCategory() == c
-end
-
-local function CategoryLabel(c)
-    if not c.parent then return c.name end
-    return TEXT_PATH:format(c.parent.name, c.name)
 end
 
 local function PickCategory(c)
@@ -467,19 +564,24 @@ local function BuildShopping()
     shopNote:SetJustifyH("LEFT")
 end
 
+local function NewStar(parent, onClick, title, tip)
+    local button = CreateFrame("Button", nil, parent)
+    button:SetSize(STAR, STAR)
+    button.icon = button:CreateTexture(nil, "ARTWORK")
+    button.icon:SetAllPoints()
+    button.icon:SetTexture(St.STAR)
+    button:SetScript("OnClick", onClick)
+    ns.Tooltip(button, title, tip)
+    return button
+end
+
 local function BuildDetail()
     detail = CreateFrame("Frame", nil, main)
     detail:SetPoint("BOTTOMLEFT")
     detail:SetPoint("BOTTOMRIGHT")
     detail:SetHeight(DETAIL_H)
-    star = CreateFrame("Button", nil, detail)
-    star:SetSize(STAR, STAR)
+    star = NewStar(detail, StarClicked, TEXT_STAR, TEXT_STAR_TIP)
     star:SetPoint("TOPRIGHT")
-    star.icon = star:CreateTexture(nil, "ARTWORK")
-    star.icon:SetAllPoints()
-    star.icon:SetTexture(St.STAR)
-    star:SetScript("OnClick", StarClicked)
-    ns.Tooltip(star, TEXT_STAR, TEXT_STAR_TIP)
     spark = Spark.New(detail, SPARK_W, STAR, true)
     spark:SetPoint("RIGHT", star, "LEFT", -PANE_GAP, 0)
     nameText = ns.Font(detail, NAME_SIZE, nil, T.fg, true)
@@ -543,11 +645,13 @@ function Page.Build(parent)
     picker._menuFill = FillCategories
     picker:SetHeight(SEARCH_H)
     picker:SetPoint("TOPLEFT")
-    search = Parts.SearchBox(main, TEXT_SEARCH)
+    search = Parts.SearchBox(main, TEXT_SEARCH, SearchTyped)
     search:SetHeight(SEARCH_H)
     search:SetPoint("TOPLEFT", picker, "TOPRIGHT", GAP, 0)
-    search:SetPoint("TOPRIGHT")
+    search:SetPoint("TOPRIGHT", -(STAR + GAP), 0)
     search:HookScript("OnEnterPressed", SearchEntered)
+    saveStar = NewStar(main, SaveClicked, TEXT_SAVE, TEXT_SAVE_TIP)
+    saveStar:SetPoint("LEFT", search, "RIGHT", GAP, 0)
     BuildDetail()
     BuildResults()
 end

@@ -283,6 +283,12 @@ NaowhForever_Market/
   level and suffix, so a piece of gear is searched as the one you starred. They are listed by name and
   drawn when Buy opens, when one is starred, and when a favourite's item data arrives
   (`GET_ITEM_INFO_RECEIVED`). The detail's name runs to the star when there is no price line to draw.
+- Saved searches are account-wide too (`marketSearches`), newest first, listed above the starred items
+  under Favourites. The star beside the search box saves the name in the box with the picked category,
+  and lights when that search is saved. A category is kept as its place in `AuctionCategories` ("3.2"),
+  the indices Blizzard's own `FindDeepestCategory` reads, so a saved search works on every client
+  language. The same name in another letter case with the same category is the same search. At most
+  `SEARCHES_KEEP` (10) are kept: saving another drops the oldest.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -372,3 +378,6 @@ Away from the auction house:
     for. A green your characters craft that disenchants for more than it sells shows Disenchant, at its
     tooltip's Disenchant line times what it makes, and sorts by that profit; the Disenchant tab lists
     only those, and the green's tooltip reads "profit ... (Disenchant)".
+47. On Buy, type a name, pick a category and click the star beside the search box: the search shows at the
+    top of Favourites with its category, and the star lights. Clicking the row runs it again, name and
+    category included; its X, or the lit star, removes it. It is still there after /reload and on an alt.
