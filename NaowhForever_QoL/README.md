@@ -506,6 +506,9 @@ NaowhForever_QoL/
   line: its own price when it has one and Auction House Price is on, else the prices' age, with the bundles
   under it. The post-call goes on the first time either is on, at load, from a click or from a profile with
   one on (`ns.Apply`), and stays inert while both are off (TooltipDataProcessor has no removal).
+- Auction House Price leaves its line off while The Market's tooltip carries the item's price itself (its
+  Compact style, or Whole Stack on a stack), asked through `ns.Market.ShowsPrice` only when The Market is
+  loaded, so the price shows once. A crate then keeps its bundles, under the prices' age.
 - The GCD Tracker reads only the player's own casts, and those are never secret.
 - Forever has no dedicated global cooldown spell, so the GCD Tracker watches one baseline spell
   per class with no cooldown of its own (`GCD_SPELLS`): any cooldown it shows is the global

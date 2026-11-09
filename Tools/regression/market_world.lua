@@ -196,6 +196,7 @@ local function Setup(opts)
     env._G = env
     env.NaowhForever = ns
     Load(FILES, env)
+    t.env = env
     t.M = ns.Market
     t.M.FISH_CATCHES, t.M.FISH_POOLS = {}, {}
     return t

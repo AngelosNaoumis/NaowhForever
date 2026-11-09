@@ -1,4 +1,4 @@
--- Worth.lua: what everything in your bags would fetch at your last scan, and the most valuable of it (Market.Worth).
+-- Worth.lua: what everything in your bags would fetch at your last scan, the most valuable of it, and the best way to sell an item (Market.Worth).
 local ns = _G.NaowhForever
 
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
@@ -11,8 +11,10 @@ local C = Market.C
 local FIRST_BAG = 0
 local LAST_BAG = NUM_TOTAL_EQUIPPED_BAG_SLOTS or NUM_BAG_SLOTS
 local VENDOR_PRICE = 11
+local OUTLETS = { "vendor", "auction", "disenchant" }
 
 local items, byID, spare, ranks = {}, {}, {}, {}
+local offers = {}
 
 local Worth = { items = items, total = 0, auction = 0 }
 Market.Worth = Worth
@@ -81,4 +83,23 @@ end
 function Worth.First(itemID, bag, slot)
     local entry = byID[itemID]
     return entry ~= nil and entry.bag == bag and entry.slot == slot
+end
+
+function Worth.Best(vendor, auction, disenchant)
+    offers.vendor, offers.auction, offers.disenchant = vendor, auction, disenchant
+    local best, second, complete = nil, nil, true
+    for _, outlet in ipairs(OUTLETS) do
+        local value = offers[outlet]
+        if value == nil then
+            complete = false
+        elseif value and value > 0 then
+            if not best or value > offers[best] then
+                best, second = outlet, best
+            elseif not second or value > offers[second] then
+                second = outlet
+            end
+        end
+    end
+    if not second then return end
+    return best, offers[best] - offers[second], second, complete
 end

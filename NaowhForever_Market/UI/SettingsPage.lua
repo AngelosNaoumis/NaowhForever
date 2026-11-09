@@ -7,9 +7,12 @@ local Settings = ns.Shared.Settings
 
 local ORDER_SELLING, ORDER_BAGS = 10, 20
 local TEXT_OFF = ns.L("Turn on The Market")
+local TEXT_NEEDS_TOOLTIP = ns.L("Needs Tooltip Lines")
 local DURATIONS = { Market.C.DURATION_LABELS, Market.C.DURATIONS }
 local UNDERCUTS = { { match = "Match the Cheapest", step = "Smallest Step", silver = "One Silver" },
     { "match", "step", "silver" } }
+local STYLES = { { detailed = "Detailed", compact = "Compact" }, { "detailed", "compact" } }
+local STACKS = { { each = "Each Item", stack = "Whole Stack", both = "Both" }, { "each", "stack", "both" } }
 
 local function On()
     return Market.On()
@@ -17,6 +20,15 @@ end
 
 local function Why()
     return ns.GamepadWhy() or TEXT_OFF
+end
+
+local function TooltipOn()
+    return On() and S.Get("tooltip")
+end
+
+local function TooltipWhy()
+    if not On() then return Why() end
+    return TEXT_NEEDS_TOOLTIP
 end
 
 local function DurationSummary(store)
@@ -49,5 +61,11 @@ page:Card({
         { key = "tooltip", label = "Tooltip Lines", toggle = true, needs = On, why = Why,
           help = "Item tooltips show what your stack fetches, how its price moved over the past week, and "
               .. "what disenchanting it gives." },
+        { key = "tooltipStyle", label = "Tooltip Style", choice = STYLES, needs = TooltipOn, why = TooltipWhy,
+          help = "Compact keeps only the auction, vendor and disenchant prices, one line each." },
+        { key = "tooltipStack", label = "Stack Prices", choice = STACKS, needs = TooltipOn, why = TooltipWhy,
+          help = "On a stack in your bags, prices read for each item, the whole stack, or both." },
+        { key = "tooltipBest", label = "Best Way to Sell", toggle = true, needs = TooltipOn, why = TooltipWhy,
+          help = "Says whether the auction house, a vendor or disenchanting pays you the most." },
     },
 })

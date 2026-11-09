@@ -433,7 +433,8 @@ local function OnItemTooltip(tooltip, data)
     local at = ns.AuctionScanTime()
     if not at then return end
     local price, priceAt
-    if own then price, priceAt = ns.AuctionPrice(id) end
+    local market = ns.Market
+    if own and not (market and market.ShowsPrice(tooltip, id)) then price, priceAt = ns.AuctionPrice(id) end
     local bundles = crates and ns.WaylaidCrates[id]
     local cheapest = bundles and Cheapest(bundles)
     if not (price or cheapest) then return end

@@ -56,7 +56,8 @@ local env = setmetatable({
         GetItemInfo = function(itemID)
             local name, quality, level, equip, classID = Item(itemID)
             if not name then return end
-            return name, "item:" .. itemID, quality, level, 1, nil, nil, 1, equip, 10000 + itemID, 0, classID
+            return name, "item:" .. itemID, quality, level, 1, nil, nil, 1, equip, 10000 + itemID,
+                itemID == 100 and 7 or 0, classID
         end,
         GetItemInfoInstant = function(itemID)
             local _, _, _, equip, classID = Item(itemID)
@@ -101,6 +102,14 @@ Check("an item tooltip can calculate disenchant details without a deal-list job"
     tooltipEntry and tooltipEntry.gross == 62 and tooltipEntry.scanPrice == 50)
 Check("item tooltip calculations are cached for the current manual scan", Deals.TooltipEntry(100) == tooltipEntry)
 Check("no-disenchant equipment receives no detailed disenchant tooltip", Deals.TooltipEntry(11287) == nil)
+Check("a tooltip entry keeps the item's vendor price", tooltipEntry.vendor == 7)
+Check("disenchanting is worth it when it beats the vendor and the auction house after its cut",
+    tooltipEntry.value == 58 and Deals.WorthDisenchanting(tooltipEntry))
+Check("not when a vendor pays as much", not Deals.WorthDisenchanting({ value = 58, vendor = 58, scanPrice = 50 }))
+Check("not when the auction house pays more after its cut",
+    not Deals.WorthDisenchanting({ value = 58, vendor = 0, scanPrice = 62 }))
+Check("with no scan price only the vendor is weighed", Deals.WorthDisenchanting({ value = 58, vendor = 10 }))
+Check("an unpriced disenchant is never worth it", not Deals.WorthDisenchanting({ vendor = 0, scanPrice = 50 }))
 
 cached[11287] = false
 Deals.Start()
@@ -207,6 +216,9 @@ Check("detailed deal tooltips can be limited to the open auction house",
 Check("detailed deal tooltips use the shared item-tooltip processor instead of deal rows",
     dealsSource:find("TooltipDataProcessor.AddTooltipPostCall", 1, true) ~= nil
         and dealsSource:find("row.onTooltip = entry, entry.item, nil, nil", 1, true) ~= nil)
+Check("only-when-worth deal tooltips still show while Shift is held",
+    dealsSource:find('S.Get("disenchantDealsTooltipWorthOnly") and not IsShiftKeyDown() and not '
+        .. 'Deals.WorthDisenchanting(entry)', 1, true) ~= nil)
 Check("the Enchanting requirement uses green when met and red when unmet",
     dealsSource:find("Deals.MeetsSkill(entry.required) and Style.PROFIT_RGB or Style.RED_RGB", 1, true) ~= nil
         and dealsSource:find("requirementColor.r, requirementColor.g, requirementColor.b)", 1, true) ~= nil)
@@ -220,5 +232,9 @@ Check("the all-character tooltip opt-in depends on detailed deal tooltips",
 Check("the auction-only tooltip setting depends on detailed deal tooltips",
     settingsSource:find('key = "disenchantDealsTooltipAuctionOnly"') ~= nil
         and settingsSource:find('needs = DisenchantDealsTooltipOn') ~= nil)
+
+Check("Only When Worth Disenchanting is a deal tooltip setting",
+    settingsSource:find('key = "disenchantDealsTooltipWorthOnly", label = "Only When Worth Disenchanting"', 1, true)
+        ~= nil)
 
 print(("test-profession-disenchant-deals: %d checks passed"):format(checks))

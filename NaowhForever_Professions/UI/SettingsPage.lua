@@ -395,5 +395,8 @@ page:Card({
         { key = "disenchantDealsTooltipAuctionOnly", label = "Only At Auction House", toggle = true,
           needs = DisenchantDealsTooltipOn, why = "Needs Detailed Deal Tooltips",
           help = "Only shows detailed deal tooltips while the auction house is open." },
+        { key = "disenchantDealsTooltipWorthOnly", label = "Only When Worth Disenchanting", toggle = true,
+          needs = DisenchantDealsTooltipOn, why = "Needs Detailed Deal Tooltips",
+          help = "Only shows detailed deal tooltips when disenchanting beats selling; Shift shows them anyway." },
     },
 })

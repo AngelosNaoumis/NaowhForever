@@ -306,6 +306,18 @@ t.Profile("ahTooltip", true)
 t.ns.Apply()
 Check("a profile with the item price on hooks it on apply", t.PostCalls() == 1)
 
+t = Setup(true, false, true, true, true)
+t.Priced({ [HERBS] = 50, [PEACEBLOOM] = 10, [SILVERLEAF] = 8, [EARTHROOT] = 20 }, 300)
+local asked
+t.ns.Market = { ShowsPrice = function(_, id) asked = id; return true end }
+Check("the item price is left to The Market while its lines show it", #t.Tooltip(PEACEBLOOM) == 0
+    and asked == PEACEBLOOM)
+lines = t.Tooltip(HERBS)
+Check("a crate's bundles stay, headed by the prices' age", #lines == 4 and lines[1].right == "Last scan 5m ago")
+t.ns.Market.ShowsPrice = function() return false end
+lines = t.Tooltip(PEACEBLOOM)
+Check("otherwise the item price shows as before", #lines == 1 and lines[1].right == "10c |cff808080each, 5m ago|r")
+
 local function Base36(n)
     local digits, text = "0123456789abcdefghijklmnopqrstuvwxyz", ""
     repeat

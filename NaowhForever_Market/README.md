@@ -12,7 +12,8 @@ from your bags, priced from your last scan at whichever of selling, disenchantin
 most, and Reagents what each reagent in them goes into, in every profession, and whether crafting it
 beats selling it. Bag Worth puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
-price over the past week, disenchanting, who makes it and what it crafts into.
+price over the past week, disenchanting, who makes it, what it crafts into and, if you ask, the best way
+to sell it. A Compact style keeps only the auction, vendor and disenchant prices.
 Built on [`Shared/`](../Shared/README.md).
 
 ## Layout
@@ -31,7 +32,7 @@ NaowhForever_Market/
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
   Buy.lua            the name and category search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
-  Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
+  Worth.lua          what your bags would fetch, their most valuable items, and the best way to sell an item (Market.Worth)
   Crafts.lua         your characters' known recipes priced at their best outlet, and what your bags make (Market.Crafts)
   Runs.lua           your gathering runs, what each node yields on average, and the pools you fish from (Market.Runs)
   Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
@@ -293,12 +294,43 @@ NaowhForever_Market/
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
   is loaded.
+- Tooltip Style's Compact keeps one line each for Auction, Vendor and Disenchant (when the item takes it),
+  and the verdict when Best Way to Sell is on: the three prices are what deciding where an item goes
+  takes. The price change, sales and craft lines stay Detailed's, and so does the header: the labels
+  name themselves, so a header would be a fourth line over three. Compact leaves out the price's age;
+  the Scan Prices button and the Auction Prices card say it. Detailed with its defaults draws exactly
+  what it drew before these settings.
+- Stack Prices reads a stack in your bags for each item, the whole stack, or both; away from your bags an
+  item counts one. Both is the old split: Auction Prices' line per item, The Market's Stack of N under
+  it. Each Item drops Stack of N; Whole Stack keeps it and Auction Prices leaves its line off on that
+  stack. Compact puts the two on one line ("10s each, 2g for 20") and a single item plain.
+- A price shows once: whenever The Market's lines carry the auction price (Compact, or Whole Stack on a
+  stack), `Market.ShowsPrice` tells QoL's Auction Prices to leave its own line off. QoL reads it only
+  when The Market is loaded, and it answers no until The Market's post-call is in, so Auction Prices
+  alone works as before. The Market keeps the choice since its lines are the ones that change, and the
+  settings stay on one card.
+- Best Way to Sell weighs what each way puts in your bags, per item (`Worth.Best`): the auction price
+  after the 5% cut, the vendor price, and disenchanting's materials after the cut. A vendor wins a tie
+  with the auction house, as in Bag Worth, and the auction house a tie with disenchanting: the surer
+  gold first. Its line leads the block and says how much more the winner pays than the next way, for
+  the whole stack unless Stack Prices is Each Item.
+- Disenchanting counts only when Professions is loaded, the item takes it, and this character's
+  Enchanting can disenchant it now (`DisenchantDeals.MeetsSkill`): a way you cannot take is no advice, so
+  a character without Enchanting is told to sell even when the Disenchant line is higher. A bound item
+  (`isBound` on its bag slot) has no auction house.
+- A way that applies but has no price (no scan price for an item that can be auctioned, or a material
+  with none) makes the line read "Better:" and name only what it beat, never "Best:", as the unpriced
+  way could pay more. With fewer than two priced ways there is no line.
+- The Auction line shows the listing price, as the auction house and Auction Prices do; Disenchant and
+  the verdict count what you keep after the cut, so near a tie the verdict can pick a way whose line
+  reads a little lower than Auction's.
 
 ## Checking
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
 `test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
-history and Bag Worth, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
+history, Bag Worth and Best Way to Sell's verdict, `test-market-tooltip.lua` the tooltip lines,
+`test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
 `test-market-runs.lua` Last Run, `test-market-extras.lua` sales and favourites; all load the rules
 through
 `Tools/regression/market_world.lua`.
@@ -381,3 +413,13 @@ Away from the auction house:
 47. On Buy, type a name, pick a category and click the star beside the search box: the search shows at the
     top of Favourites with its category, and the star lights. Clicking the row runs it again, name and
     category included; its X, or the lit star, removes it. It is still there after /reload and on an alt.
+48. Tooltip Style on Compact: a stack of cloth in your bags shows Auction and Vendor, one line each, with
+    no The Market header and no Market Price line above them; a green adds Disenchant. Back on
+    Detailed, the tooltip is as it was.
+49. Stack Prices on the same stack: Each Item, Whole Stack and Both change Compact's Auction and Vendor
+    lines. On Detailed, Whole Stack shows Stack of N and no Market Price line, Each Item the Market Price
+    line and no Stack of N, and Both the two.
+50. Best Way to Sell on: the cloth reads Best: Auction (or Vendor, when a vendor pays more after the cut)
+    and by how much. A green reads Best: Disenchant on an enchanter who can disenchant it when its
+    materials fetch more, never on a character without Enchanting; an item with no scan price reads
+    Better: and names only what it beat.

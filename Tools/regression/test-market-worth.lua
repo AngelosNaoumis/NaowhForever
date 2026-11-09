@@ -70,4 +70,26 @@ items = W.Read()
 Check("reading again starts over", #items == 1 and items[1].count == 4 and W.Rank(2770) == nil
     and W.total == 12)
 
+local best, margin, second, complete = W.Best(10, 95, false)
+Check("the auction house after its cut beats a vendor", best == "auction" and margin == 85 and second == "vendor"
+    and complete)
+best, margin, second = W.Best(95, 95, false)
+Check("a vendor wins a tie with the auction house", best == "vendor" and margin == 0 and second == "auction")
+best, margin, second, complete = W.Best(20, 95, 120)
+Check("disenchanting wins when its materials fetch more", best == "disenchant" and margin == 25
+    and second == "auction" and complete)
+best = W.Best(0, 95, 95)
+Check("the auction house wins a tie with disenchanting", best == "auction")
+best, margin, second, complete = W.Best(20, false, 50)
+Check("a bound item weighs only a vendor and disenchanting, and says so in full", best == "disenchant"
+    and margin == 30 and second == "vendor" and complete)
+best, margin, second, complete = W.Best(20, nil, 50)
+Check("with no auction price the verdict is only what it beat", best == "disenchant" and margin == 30
+    and second == "vendor" and complete == false)
+best, margin, second, complete = W.Best(20, 95, nil)
+Check("an unpriced disenchant leaves the verdict partial", best == "auction" and margin == 75
+    and second == "vendor" and complete == false)
+Check("one priced way to sell is no verdict", W.Best(5, nil, false) == nil and W.Best(0, 95, false) == nil
+    and W.Best(nil, nil, nil) == nil)
+
 print("market worth: " .. checks .. " checks passed")

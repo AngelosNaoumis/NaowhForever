@@ -97,7 +97,7 @@ local function Add(job, entry)
 end
 
 local function Entry(itemID, price, prices, whichMode, itemLink)
-    local name, link, quality, baseLevel, _, _, _, _, equip, icon, _, classID = GetItemInfo(itemLink or itemID)
+    local name, link, quality, baseLevel, _, _, _, _, equip, icon, vendor, classID = GetItemInfo(itemLink or itemID)
     if not name or not Values.ItemTakes(itemID, classID, quality, equip) then return end
     local level = C_Item.GetDetailedItemLevelInfo(link) or baseLevel
     local required = Values.RequiredSkill(level, quality)
@@ -109,7 +109,7 @@ local function Entry(itemID, price, prices, whichMode, itemLink)
     local entry = {
         item = itemID, name = name, link = link, icon = icon, quality = quality, price = price, scanPrice = price,
         gross = gross, value = value, profit = profit, roi = profit and profit / price * PERCENT,
-        outcomes = outcomes, required = required, mode = whichMode, prices = prices,
+        outcomes = outcomes, required = required, mode = whichMode, prices = prices, vendor = vendor,
     }
     entry.guaranteed = price and Values.Guaranteed(outcomes, prices, price) or false
     return entry
@@ -435,6 +435,12 @@ function Deals.TooltipEntry(itemID, itemLink)
     entry = Entry(itemID, prices[itemID], prices, mode, itemLink)
     if entry then tooltipCache[key] = entry end
     return entry
+end
+
+function Deals.WorthDisenchanting(entry)
+    local value = entry.value
+    if not value or value <= (entry.vendor or 0) then return false end
+    return not entry.scanPrice or value > Values.AfterCut(entry.scanPrice)
 end
 
 function Deals.Skill()

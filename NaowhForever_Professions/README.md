@@ -628,6 +628,13 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   frame, event, hook or timer. Detailed outcome tooltips are another opt-in setting.
   Their Enchanting requirement line is green when the character meets it, and red when the
   character has no Enchanting profession or has less than the required skill.
+- Only When Worth Disenchanting shows the detailed tooltip only when the expected value after the cut
+  beats the item's vendor price and, when it has one, its scan price after the cut
+  (`Deals.WorthDisenchanting`): an item better sold gets no breakdown. With no scan price only the
+  vendor is weighed; an unpriced disenchant never shows. It is worked out from Professions' own entry,
+  not The Market's verdict, which Professions could read only while The Market is loaded. Holding Shift
+  shows it anyway; the game's bag buttons rebuild their tooltip while hovered (`UpdateTooltip`), so
+  pressing Shift there needs no new hover.
 
 ## Checking
 
@@ -659,3 +666,6 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
 - Learned Recipe Vendors: `test-professions-memory.lua` (a learned recipe's sellers, their waypoint, a
   new price, and no garbage per redraw).
 - Trade Enchants: `test-profession-trade-enchants.lua`; its recipe data is current: `Tools/tests/test_enchant_slots.py`.
+- Disenchant Deals and Only When Worth Disenchanting: `test-profession-disenchant-deals.lua`. In game, with
+  Detailed Deal Tooltips and Only When Worth Disenchanting on, a green whose scan price after the cut
+  beats its disenchant value shows no breakdown until Shift is held; one worth disenchanting shows it.

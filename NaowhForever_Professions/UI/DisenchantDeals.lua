@@ -192,7 +192,11 @@ local function OnItemTooltip(tooltip, data)
     local itemID = data and data.id
     if not itemID or issecretvalue and issecretvalue(itemID) then return end
     local entry = Deals.TooltipEntry(itemID, TooltipLink(tooltip))
-    if entry then AddTooltip(tooltip, entry) end
+    if not entry then return end
+    if S.Get("disenchantDealsTooltipWorthOnly") and not IsShiftKeyDown() and not Deals.WorthDisenchanting(entry) then
+        return
+    end
+    AddTooltip(tooltip, entry)
 end
 
 local function InstallTooltip()
