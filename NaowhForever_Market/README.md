@@ -82,7 +82,10 @@ NaowhForever_Market/
   Blizzard's sell frame does; equipment searches with `SendSellSearchQuery` and its item level and
   suffix cleared, so similar items compare.
 - Searches and posts wait for `IsThrottledMessageSystemReady`; a search that waited goes on
-  `AUCTION_HOUSE_THROTTLED_SYSTEM_READY`. A search with no answer in `SEARCH_TIMEOUT` seconds, or a
+  `AUCTION_HOUSE_THROTTLED_SYSTEM_READY`. The Post button follows the throttle as Blizzard's sell frame
+  does, checked again on that event and `AUCTION_HOUSE_THROTTLED_MESSAGE_SENT`: the listings can arrive
+  before the throttle frees, and nothing else redraws the page then.
+  A search with no answer in `SEARCH_TIMEOUT` seconds, or a
   post in `POST_TIMEOUT`, frees the page instead of holding it. A post of several items restarts
   `POST_TIMEOUT` with each auction the game makes, so a long one is not given up while it posts.
 - When a scan finishes, the Sell page reads your bags again (`Page.Refresh`), so Up Next takes the new

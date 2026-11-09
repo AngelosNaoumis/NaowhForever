@@ -75,7 +75,9 @@ local REASONS = {
     failed = ns.L("The auction house did not take that post."),
     vendorBetter = ns.L("A vendor pays %s each, more than this makes after the auction house cut."),
 }
-local EVENTS = { "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_MONEY" }
+local EVENTS = { "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_MONEY", "AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
+    "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT" }
+local THROTTLE_EVENTS = { AUCTION_HOUSE_THROTTLED_SYSTEM_READY = true, AUCTION_HOUSE_THROTTLED_MESSAGE_SENT = true }
 
 local page, pane, content, message, queuePane, scroll, list, bar
 local head, ladder, reason, money, quantity, quantityOf, durations, depositText, netText, skip, post
@@ -393,6 +395,11 @@ end
 
 local function OnEvent(_, event)
     if event == "PLAYER_MONEY" then return Page.Draw() end
+    if THROTTLE_EVENTS[event] then
+        local entry = Sell.Focus()
+        if entry then Enable(post, CanPost(entry)) end
+        return
+    end
     if event == "ITEM_DATA_LOAD_RESULT" and not loading then return end
     QueueReread()
 end
