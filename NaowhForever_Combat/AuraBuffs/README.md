@@ -4,7 +4,8 @@ Buff and consumable reminders, the Campfire and Low Health. Its settings page is
 AuraBuffs/Settings (`/nfbuffs`, its minimap and Top Bar button). Its on/off switches and their
 defaults come from `ns.FEATURES.auraBuffs`.
 
-- **Buffs & Consumables:** a row of icons for missing food, flask, elixir and scroll buffs,
+- **Buffs & Consumables:** a row of icons for missing food, flask, elixir and scroll buffs, the Dire Maul
+  drinks, Jujus, Zanza and Blasted Lands items you carry (Other Buffs Reminder, off by default),
   class buffs missing in your group, and your own class buff (armor, Inner
   Fire, Battle Shout, poisons, a weapon imbue, a hunter's aspect) when it is missing, and the Cozy Sleeping Bag
   out in the world when it is ready and Well-Rested is missing (Sleeping Bag Reminder, off by default), and the
@@ -249,10 +250,20 @@ NaowhForever_Combat/AuraBuffs/
   `PLAYER_ENTERING_WORLD`, not on every refresh. Weapon Enhancement Reminder works this way on `D.WEAPON_ITEMS`.
 - A scroll reminds only while you carry one, with Only If I Carry One on or off (`carried` on their
   `D.DEFAULT_GROUPS` entry): Robin expected a carried scroll to remind like food, but a reminder for scrolls you
-  do not have would nag everyone. Each stat is its own buff, so `ScrollGroup` offers the first carried
+  do not have would nag everyone. Each stat is its own buff, so `FamilyGroup` offers the first carried
   scroll whose stat is missing, not any scroll. A scroll does not stack with the class buff of its
   stat (`raid` on `D.SCROLLS`: Arcane Intellect, Power Word: Fortitude, Divine Spirit), so
   `D.SCROLL_AURAS` counts that buff as the scroll's.
+- Other Buffs Reminder (`otherBuffs`, off by default) is Robin's ask: Kreeg's Stout Beatdown, the stamina drinks
+  (Gordok Green Grog and the Rumsey Rums), Juju Power, Might and Guile, Zanza and the five Blasted Lands items
+  (`D.OTHER`). They stack with elixirs, so they are a kind of their own: in the elixir group, Kreeg's would have
+  hidden the Mageblood reminder. Like scrolls it reminds only while one is carried, one family at a time
+  (`FamilyGroup` over `D.OTHER_AURAS`), and follows the Consumables World, Dungeons and Raids switches. A family
+  is the buffs that replace each other: the stamina drinks, and Zanza (its tooltip says one at a time). Juju
+  Power counts Elixir of Giants as its buff and Juju Might Winterfall Firewater, which they do not stack with in
+  classic; Forever's stacking is unconfirmed. Juju Ember and Chill (ten minutes of resistance for one fight) and
+  the Permanent Zanzas (no known source) are left out. It is outside `CATEGORY_ORDER`, so it has no Only If I
+  Carry One pick and no Last Used icon: it always needs one carried, and its families mix.
 - Only If I Carry One is set per kind (`carriedPicks`: food, flask, scroll, battle, weapon): Drjay
   wanted buff food to remind him with none in his bags, without flasks and elixirs showing all the time too. A kind
   with no pick follows the old single switch (`onlyIfCarried`), so profiles from before keep what they did.

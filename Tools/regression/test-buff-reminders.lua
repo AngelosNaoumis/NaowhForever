@@ -115,6 +115,7 @@ local function Fixture(opts)
         raidBuffPicks = { intellect = true, stamina = true, spirit = true, wild = true, blessing = false },
         personalBuffs = true, personalBuffPicks = {}, weaponEnhancements = false, sleepingBag = false,
         elementalAttractor = true,
+        otherBuffs = false,
         leftClickMainHand = false,
         buffGlow = false, buffGlowType = "standard", buffGlowColor = { r = 1, g = 0.82, b = 0.2 },
         buffGlowLines = 8, buffGlowThickness = 2, buffGlowSpeed = 5,
@@ -724,6 +725,42 @@ do
         auras = { player = { { 12178, 1700, 1800 } } } })
     t.Login()
     Check("Stamina IV up, Spirit II offered over Spirit I", t.Shown(), "item:1712")
+end
+
+-- Other Buffs: off by default. While on, a carried Dire Maul drink, Juju, Zanza or Blasted Lands item reminds one
+-- family at a time, a buff a family does not stack with counts as its own, and it follows the consumables' places.
+do
+    local KREEG, GROG, BLACK_LABEL, JUJU_POWER, SPIRIT, SWIFTNESS = 18284, 18269, 21151, 12451, 20079, 20081
+    local t = Fixture({ settings = { personalBuffs = false }, instance = "raid", bags = { KREEG } })
+    t.Login()
+    Check("off by default", t.Shown(), "")
+    t.Set("otherBuffs", true)
+    Check("on: a carried Kreeg's reminds", t.Shown(), "item:" .. KREEG)
+    t.state.auras.player = { { 22790, 800, 900 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("its buff up: nothing", t.Shown(), "")
+    t.state.bags = { KREEG, JUJU_POWER }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("Kreeg's up, Juju Power still reminds", t.Shown(), "item:" .. JUJU_POWER)
+    t.state.auras.player = { { 22790, 800, 900 }, { 11405, 3000, 3600 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("Elixir of Giants counts for Juju Power", t.Shown(), "")
+    t.state.bags = { GROG, BLACK_LABEL }
+    t.state.auras.player = { { 25804, 800, 900 } }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("one stamina drink up covers the others", t.Shown(), "")
+    t.state.bags = { SPIRIT, SWIFTNESS }
+    t.state.auras.player = { { 24383, 7000, 7200 } }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("one Zanza at a time", t.Shown(), "")
+    t.state.auras.player = {}
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("no Zanza up: one reminder for the family", t.Shown(), "item:" .. SPIRIT)
+    local cell
+    for _, f in ipairs(t.frames) do if rawget(f, "items") and f.shown then cell = f end end
+    Check("its menu holds both Zanzas", table.concat(cell.items, " "), SPIRIT .. " " .. SWIFTNESS)
+    t.Set("consumablesRaid", false)
+    Check("follows the consumables' place switches", t.Shown(), "")
 end
 
 -- The built-in item offered is the highest level one you can use, with every carried one in its menu.

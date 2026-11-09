@@ -225,17 +225,17 @@ local function CarriedBuiltIn(category, builtIn)
     return { items = items, auras = builtIn.auras, wellFed = builtIn.wellFed }, items[1]
 end
 
-local function ScrollGroup(items, buffs)
-    local auras = D.SCROLL_AURAS[items[1]]
+local function FamilyGroup(items, buffs, byItem)
+    local auras = byItem[items[1]]
     for _, id in ipairs(items) do
-        if not Find(buffs, D.SCROLL_AURAS[id]) then
-            auras = D.SCROLL_AURAS[id]
+        if not Find(buffs, byItem[id]) then
+            auras = byItem[id]
             break
         end
     end
     local same, best, bestNeed = {}, 1, -1
     for _, id in ipairs(items) do
-        if D.SCROLL_AURAS[id] == auras then
+        if byItem[id] == auras then
             same[#same + 1] = id
             local need = select(REQUIRED_LEVEL, C_Item.GetItemInfo(id)) or 0
             if need > bestNeed then best, bestNeed = #same, need end
@@ -252,7 +252,7 @@ local function Consumables(list, buffs)
         local group, item
         if onlyCarried or builtIn.carried then
             group, item = CarriedBuiltIn(category, builtIn)
-            if item and category == "scroll" then group, item = ScrollGroup(group.items, buffs) end
+            if item and category == "scroll" then group, item = FamilyGroup(group.items, buffs, D.SCROLL_AURAS) end
         elseif category == "food" then
             group, item = CarriedBuiltIn(category, builtIn)
             group = group or builtIn
@@ -269,6 +269,15 @@ local function Consumables(list, buffs)
             if #list > before then list[#list].items, list[#list].key = group.items, category end
         end
     end
+end
+
+local function OtherBuffs(list, buffs)
+    local items = (carried or ScanBags()).other
+    if not items then return end
+    local group, item = FamilyGroup(items, buffs, D.OTHER_AURAS)
+    local before = #list
+    Consumable(list, buffs, group, item, nil, nil, true)
+    if #list > before then list[#list].items, list[#list].key = group.items, "other" end
 end
 
 local function Picked(family)
@@ -726,6 +735,7 @@ function Reminders.Collect()
     local _, zone = IsInInstance()
     if ShowsHere("consumables", zone) and not (S.Get("hideResting") and IsResting()) then
         Consumables(list, buffs)
+        if S.Get("otherBuffs") then OtherBuffs(list, buffs) end
         if S.Get("weaponEnhancements") then WeaponEnhancement(list, zone) end
     end
     if S.Get("sleepingBag") then SleepingBag(list, buffs, zone) end

@@ -109,6 +109,30 @@ end
 
 D.ATTRACTOR = { items = { 281371, 275730 }, auras = { 1297774 } }
 
+D.OTHER = {
+    { name = "Kreeg's Stout Beatdown", items = { 18284 }, auras = { 22790 } },
+    { name = "Stamina drinks", items = { 21151, 18269, 21114, 17048, 20709 },
+        auras = { 25804, 22789, 25722, 20875, 25037 } },
+    { name = "Juju Power", items = { 12451 }, auras = { 16323, 11405 } },
+    { name = "Juju Might", items = { 12460 }, auras = { 16329, 17038 } },
+    { name = "Juju Guile", items = { 12458 }, auras = { 16327 } },
+    { name = "Zanza", items = { 20079, 20081, 20080 }, auras = { 24382, 24383, 24417 } },
+    { name = "R.O.I.D.S.", items = { 8410 }, auras = { 10667 } },
+    { name = "Lung Juice Cocktail", items = { 8411 }, auras = { 10668 } },
+    { name = "Ground Scorpok Assay", items = { 8412 }, auras = { 10669 } },
+    { name = "Cerebral Cortex Compound", items = { 8423 }, auras = { 10692 } },
+    { name = "Gizzard Gum", items = { 8424 }, auras = { 10693 } },
+}
+
+D.DEFAULT_GROUPS.other = { items = {}, auras = {}, carried = true }
+D.OTHER_AURAS = {}
+for _, family in ipairs(D.OTHER) do
+    for _, id in ipairs(family.items) do
+        D.OTHER_AURAS[id] = family.auras
+        table.insert(D.DEFAULT_GROUPS.other.items, id)
+    end
+end
+
 D.POISON_ITEMS = {
     8928, 8927, 8926, 6950, 6949, 6947,
     20844, 8985, 8984, 2893, 2892,

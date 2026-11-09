@@ -200,6 +200,8 @@ local rows = {
       help = "A consumable or personal buff with less time than this left counts as missing." },
     { key = "weaponEnhancements", label = "Weapon Enhancement Reminder", toggle = true, needs = Enabled, why = OFF,
       help = "A reminder when a weapon has no sharpening stone, weightstone or oil on it." },
+    { key = "otherBuffs", label = "Other Buffs Reminder", toggle = true, needs = Enabled, why = OFF,
+      help = "Dire Maul drinks, Jujus, Zanza and Blasted Lands items you carry, when their buff is missing." },
     { key = "leftClickMainHand", label = "Left-Click Main Hand", toggle = true, needs = Enabled, why = OFF,
       help = "Left-click puts a poison, stone or oil on your main hand, right-click on your off hand." },
     { key = "sleepingBag", label = "Sleeping Bag Reminder", toggle = true, needs = Enabled, why = OFF,

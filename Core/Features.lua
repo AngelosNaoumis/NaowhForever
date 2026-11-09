@@ -237,6 +237,7 @@ ns.FEATURES = {
         leftClickMainHand = false,
         sleepingBag = false,
         elementalAttractor = true,
+        otherBuffs = false,
         campfire = true,
         campNearbyAlert = true,
         lowHealth = true,
