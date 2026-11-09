@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.19
 
 ### Please test
 
@@ -23,6 +23,100 @@ New and worth a try. Tell us on Discord how they work for you.
 - Group Finder (Utilities, off by default): Browse picks its dungeon from a menu, each group takes
   two lines so more fit, Leader's Zone shows where each group's leader is, and the game's Group
   Finder key (I) can open it.
+
+### Added
+- The Market: Bag Worth on your bags (what they would fetch and their five most valuable items,
+  numbered on their slots), and item tooltip lines for a stack's worth, the price change over the
+  week, and disenchanting.
+- The Market opens anywhere with /market or a key binding, on its new Crafts page: what your
+  characters' recipes make from your bags, priced from your last scan, with Add to Queue. Tooltips
+  show who makes an item and what a material crafts into.
+- The Market: a Farm page. The zones where your Herbalism and Mining gather the most, a zone's map
+  with every herb and vein priced, and a loop through it to follow by waypoint.
+- The Market: a Last Run page. Your gathering runs are recorded with the gold they made over time
+  and what they gathered, and Farm prices nodes and ranks zones from what you really gathered.
+- The Market: a sales log from your sold auctions (on My Auctions and item tooltips), Favourites on
+  Buy, and each item's last 14 days of prices on Buy.
+- Group Finder: Leader's Zone, under Group Finder > Settings > Browse, shows the zone each group's
+  leader is in.
+- Group Finder: Open With the Group Finder Key, under Group Finder > Settings > Key Binding, makes
+  the game's Group Finder key (I) open Naowh's Group Finder. Key Bindings also has Open Group
+  Finder.
+- QoL > Interface > Waypoint Pin: Follow Polestar, the world pin follows Polestar's guide target,
+  with Polestar's Next Stop to pin the flight master or boat first.
+- Forever skin: QoL > Interface > Top Bar has a Bar Style choice: Classic (today's bar), Framed (the
+  buttons in the game's micro menu art, with the FPS / MS readout under the clock) or Framed Grouped
+  (a frame round each group of buttons).
+- Waypoint Pin: on the Forever skin, a Pin Style choice: Classic (today's pin) or Forever, the
+  game's own waypoint art and arrows.
+- With the Gamepad interface style, Naowh's windows work with the gamepad: the D-pad moves, A
+  selects, B goes back, X flips a switch, LB/RB switch tabs, with a legend of the buttons under the
+  window. (thanks neopterygii)
+- Auction Prices: item tooltips, Waylaid Crates, Professions and The Market have auction house
+  prices before you scan. Every update carries every auction house's prices, refreshed every
+  evening, and your own scan wins when it is newer.
+- Dungeon map: Alcaz Prison has its second level, the Maximum Security Unit, from Santiago Reyes.
+- The Market: /market opens it, as well as /nfmarket.
+- The Market: click a column header on Last Run, Crafts, My Auctions or Buy to sort by it, and again
+  to reverse it; each list remembers your choice.
+- The Market: Farm ranks zones by the beasts you can skin as well, with their camps on the map and
+  in the loop (Beasts to skin).
+- The Market: Farm lists zones to fish, ranked by what you'd catch an hour, and puts the pools you
+  fish from on the map.
+- The Market: hovering an item's icon on Farm shows its tooltip.
+- The Market: Buy has the auction house's categories beside its search, to browse Weapons, Armor,
+  Trade Goods and the rest, or search by name inside one.
+- The Market: hovering an item on Buy (a search result, your Shopping List or Favourites) shows its
+  tooltip.
+
+### Changed
+- Credits: a new, shorter layout. The team sits in one band, everyone who has contributed is listed
+  under the part of Naowh Forever they worked on, and the supporters and data sources follow below.
+- Group Finder: Browse picks its dungeon from a Dungeon menu instead of a wall of buttons, and each
+  group takes two lines, so many more fit.
+- QoL > Interface > Chat Zones: zones in chat messages are now their own Zones in Chat setting, off
+  by default; the card on its own shows zones in the Group Finder. Turn Zones in Chat on to keep the
+  chat tags.
+- QoL > Interface > Waypoint Pin: Follow Polestar and Follow RestedXP are in a Guides group, one at
+  a time, and say when their guide is not loaded.
+- The Naowh Score is now called Gear Score, on tooltips, the character and inspect panels, the BiS
+  List, Group Inspect and Group Finder.
+- Professions: the Skill-up Plan says its costs count what each craft sells to a vendor for, and a
+  recipe's profit tooltip shows that vendor price beside the auction house one.
+- The Market: its pages sit in a rail down the left with their counts and your gathering skills, and
+  the title bar shows how old your prices are and when you can scan again.
+- The Market: a Farm loop takes the zone's 25 richest stops instead of every one.
+
+### Fixed
+- Food & Drink: an off-hand tankard in your bags (Lapidis Tankard of Tidesippe, Bael'dun Tankard) is
+  no longer picked as your drink.
+- Aura Buffs: the Hunter's Mark reminder no longer stays up in combat, where it could ask you to
+  mark a target another hunter had already marked.
+- Console Variables: hovering a console variable that has no help text no longer causes a Lua error,
+  and an import can change it. (thanks neopterygii)
+- QoL > Interface > Waypoint Pin: Follow RestedXP names the pin by the guide's own words for the
+  spot instead of "Guide destination".
+- QoL > Interface > Waypoint Pin: Follow RestedXP turned on without RestedXP loaded no longer clears
+  another guide's pin.
+- The Market: the Post button on the Sell page works without retyping the quantity first.
+- With the Gamepad interface style, Naowh's right-click menus and dropdowns no longer stop the
+  gamepad's bindings working; they open as Naowh's own list. Group Inspect is left off the game's
+  party and raid menus with that style. (thanks neopterygii)
+- Journeys: the way to the Deeprun Tram leads to the tram's door in Stormwind and the tunnel in
+  Ironforge, not through the walls to the portal.
+- The Market: hovering an item while it is compared with your gear no longer raises an error.
+- The Market: Last Run with no runs yet no longer shows its column names under the message.
+- The Market: Farm on a character without Herbalism or Mining no longer shows an empty item box and
+  a blank button.
+- The Market: greyed-out buttons such as Post and Cancel Undercut can be read.
+- The Market: the Sell page's silver and copper boxes show both digits, and the duration buttons
+  read in full.
+- Training Planner: Bear Form no longer shows up to train again after you learn Dire Bear Form.
+- The Market: Professions' Shopping List, Search Favorites AH and Disenchant Deals sit beside The
+  Market at the auction house instead of on top of it.
+- The Market: a craft added to Professions' Shopping List shows on Buy's Shopping List right away,
+  not only after reopening the tab.
+- Gear Score: the game's Inspect window no longer opens by itself on your target or a group member.
 
 ## 1.2.18
 
