@@ -24,7 +24,8 @@ local SETTINGS = Read("Shared/Settings/Settings.lua")
 
 -- itemID -> use spell, for the food scan.
 local ITEM_SPELLS = { [13931] = 1249513, [2679] = 433, [21023] = 25660 }
-local SPELL_NAMES = { [1248406] = "Well Fed", [1249520] = "Well Fed", [1319310] = "Well Fed", [1243969] = "Well Fed XP Boost" }
+local SPELL_NAMES = { [1248406] = "Well Fed", [1249520] = "Well Fed", [1319310] = "Well Fed", [1249927] = "Well Fed",
+    [1243969] = "Well Fed XP Boost" }
 
 -- Methods (capitalised) are no-ops; an unset field reads nil, as on a real frame.
 local function Recorder(props)
@@ -402,6 +403,17 @@ do
     t.Fire("UNIT_AURA", "player")
     t.Advance(0.5)
     Check("all up", t.Shown(), "")
+end
+
+-- A Forever tea is buff food: carried, it reminds; its Well Fed up, it does not.
+do
+    local t = Fixture({ instance = "party", bags = { 249865 }, itemSpells = { [249865] = 1249920 } })
+    t.Login()
+    Check("carried tea", t.Shown(), "item:249865")
+    t.state.auras.player = { { 1249927, 1800, 3600 } }
+    t.Fire("UNIT_AURA", "player")
+    t.Advance(0.5)
+    Check("tea's Well Fed up", t.Shown(), "")
 end
 
 -- The count keeps today's outlined Addon Font at 14 until Font, Font Size or Outline change it.

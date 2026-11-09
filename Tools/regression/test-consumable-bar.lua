@@ -718,6 +718,18 @@ do
     check('Plated Armorfish hidden while its Well Fed is up', not fish.shown)
 end
 
+-- A Forever tea: a Nutritious Drink, then a Well Fed of its own
+do
+    local s = fixture({ consumableBar = true, consumableBarItems = { 249866 },
+        consumableBarItemFlags = { [249866] = { used = true } } })
+    s.counts[249866] = 3
+    local tea = s.buttons()[1]
+    check('Royal Tea shown while not Well Fed', tea.shown)
+    s.auras[1249927] = { expirationTime = s.now + 900 }
+    s.fire('UNIT_AURA', 'player')
+    check('Royal Tea hidden while its Well Fed is up', not tea.shown)
+end
+
 -- Hide When Out leaves no button to catch clicks
 do
     local s = fixture({ consumableBar = true, consumableBarHideEmpty = true, consumableBarItems = { 13446, 20007 } })
