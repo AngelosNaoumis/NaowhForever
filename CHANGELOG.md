@@ -1,9 +1,66 @@
 # Changelog
 
-## Unreleased
+## 1.2.20
+
+### Added
+- Professions: a Reagents button beside Shopping List lists the reagents in your bags, what each
+  makes in every profession and whether to craft or sell it; click a recipe you have not learned for
+  a waypoint to where you learn it (off by default, needs Shopping List).
+- The Market: a Reagents page at the end of its list, with the same reagents and what to do with
+  each.
+- The Market: Undercut on the Selling settings card chooses whether Sell matches the cheapest
+  listing, goes the smallest step under it, or a silver under.
+- The Market: on Sell, click a listing to set your price against it, the same as Up and Down would.
+- Professions: Skill-up Plan's new "Plan Recipes You Can Train Later" option plans the trainer
+  recipes you'll unlock on the way to your cap, marked "Train at <skill>".
+- The Market: Crafts prices each craft at its best outlet (sell, disenchant or vendor) and shows
+  which, and a new Disenchant tab lists the crafts worth more disenchanted.
+- The Market: Buy's new star beside the search box saves a search with its category; saved searches
+  sit under Favourites and run again with one click.
+- The Market: Tooltip Style (Detailed or a Compact one line per price), Stack Prices (each item,
+  whole stack or both) and Best Way to Sell, which says whether the auction house, a vendor or
+  disenchanting pays most.
+- Professions: Disenchant Deals' Only When Worth Disenchanting option shows the detailed breakdown
+  only when disenchanting pays most; hold Shift to see it anyway.
+- The Market: its settings page has a Prices & Deals card with QoL's auction price settings and
+  Professions' Disenchant Deals, so every auction house setting is in one place.
+- Buffs & Consumables: Elemental Attractor Reminder shows your Elemental Attractor (or Arcane
+  Censer) in the world and dungeons while Magical Awareness is missing. On by default.
+- Buffs & Consumables: Other Buffs Reminder (off by default) reminds you of the Dire Maul drinks,
+  Jujus, Zanza and Blasted Lands items you carry while their buff is missing.
+- Discovery: a Field Journal tab with a page each for fish, herbs and cooking: every one there is,
+  where to find it, and how many this character has caught, picked or cooked. Turn it on in
+  Discovery > Field Journal.
 
 ### Changed
 - Quest List: quests updated from the latest Forever quest lists.
+- Dungeon Journal: dungeon, boss, chest and faction names, boss titles and kinds, and zones show in
+  the language Naowh Forever is set to.
+- BiS List: places, Run Next and the Quests page's zones show in the language Naowh Forever is set
+  to.
+- The Market: auctions run 8 hours unless you pick another duration, the same default as Blizzard's
+  auction house. Before, an unpicked duration posted for 2 hours.
+- The Market: on the Forever skin, Sell's Duration is a row of buttons instead of tabs.
+- NPC Gossip opens a flight master's flight map when "I need a ride" is its only option.
+
+### Fixed
+- Character Panel: Spirit's tooltip shows the health and mana it gives back every 5 seconds, like
+  the game's character sheet.
+- Character Panel: Mana / 5 sec shows the mana you get back while casting, which is what its tooltip
+  describes.
+- Buffs & Consumables: Goldthorn Tea, the Forever teas and smoothies, Prowler Steak and Sunrise
+  Omelette count as buff food, and Hide After Use keeps them hidden while you're Well Fed.
+- Dungeon Journal: outside English, Scarlet Monastery now knows which wing you are in.
+- Group Finder: outside English, Scarlet Monastery's wings and the Blackrock Spires find their
+  Journal dungeon.
+- The Market: away from an auctioneer, the Sell, Buy and My Auctions buttons on the left no longer
+  have their names running over the top edge with the Forever look.
+- The Market: gear and other items that aren't commodities are priced in whole silver, so posting
+  them no longer fails with "Internal auction error".
+- The Market: Sell and its settings show the auction house's real durations (2, 8 and 24 Hours)
+  instead of 12, 24 and 48.
+- Buffs & Consumables knows Forever's own elixirs and flasks (the Mageblood, Cleric's and Spirit
+  ranks, the other new elixirs and the four Natural flasks) and the lower classic elixir ranks.
 
 ## 1.2.19
 
