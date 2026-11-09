@@ -107,7 +107,7 @@ local function Index()
         if info.commandType == CVAR and not about[name] then
             names[#names + 1] = name
             lowered[name] = name:lower()
-            about[name] = info.help
+            about[name] = info.help or ""
             byLower[lowered[name]] = name
         end
     end

@@ -69,6 +69,7 @@ setmetatable(THEME, { __index = function() return { r = 1, g = 1, b = 1 } end })
 local timers = {}
 local tooltip = Frame()
 tooltip.GetOwner = function() return nil end
+tooltip.AddLine = function(f, text) f.line = text end
 
 local settings = { consoleVariables = false }
 local S = { Get = function(k) return settings[k] end, Set = function(k, v) settings[k] = v end,
@@ -115,13 +116,15 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
 -- The client: every console command, and each console variable's value, default and flags.
 local commands, cvars = {}, {}
 local function AddCVar(name, value, default, flags)
-    commands[#commands + 1] = { command = name, help = flags and flags.help or "", category = 4, commandType = CVAR,
+    local help = flags and flags.help or ""
+    if flags and flags.noHelp then help = nil end
+    commands[#commands + 1] = { command = name, help = help, category = 4, commandType = CVAR,
         scriptContents = "", scriptParameters = "" }
     cvars[name] = { value = value, default = default, locked = flags and flags.locked, secure = flags and flags.secure,
         readOnly = flags and flags.readOnly, refuse = flags and flags.refuse }
 end
 AddCVar("cameraDistanceMaxZoomFactor", "2.6", "1.9", { help = "Max camera distance." })
-AddCVar("SpellQueueWindow", "120", "400")
+AddCVar("SpellQueueWindow", "120", "400", { noHelp = true })
 AddCVar("nameplateTopInset", "0.08", "0.080000")
 AddCVar("autoLootDefault", "1", "1")
 AddCVar("graphicsQuality", "7", "3", { refuse = true })
@@ -295,6 +298,10 @@ check("a row shows its value and its default", camera.valueText.text == "2.6" an
 check("a changed value is in the accent, with a reset", camera.valueText.color[1] == THEME.accent.r
     and camera.reset.shown ~= false)
 check("an empty value shows as quotes", RowOf("blankThing").valueText.text == "\"\"")
+local quiet = RowOf("SpellQueueWindow")
+tooltip.line = nil
+check("one the game gives no help text for is listed and its hover still works", quiet ~= nil
+    and pcall(quiet.scripts.OnEnter, quiet) and tooltip.line == "Click to change it.")
 
 local search = Find(function(f) return rawget(f, "onChange") ~= nil end)
 search.onChange("CAMERA")
