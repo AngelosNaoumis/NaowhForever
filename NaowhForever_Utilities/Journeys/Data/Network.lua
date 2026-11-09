@@ -385,6 +385,6 @@ ns.JourneyNetwork = {
     },
     links = {
         { "Portal", "AH", 5, { 1, 8799.4, 969.8, "Rut'theran Village", 30.2 }, { 1, 9947.5, 2630.0, "Darnassus", 1318.6 } },
-        { "Tram", "AH", 150, { 0, -4840.3, -1330.5, "Ironforge", 508.2 }, { 0, -8346.5, 514.0, "Stormwind", 96.6 } },
+        { "Tram", "AH", 150, { 0, -4833.8, -1284.1, "Ironforge", 502.3 }, { 0, -8393.2, 572.2, "Stormwind", 92.4 } },
     },
 }

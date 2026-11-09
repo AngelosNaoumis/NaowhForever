@@ -32,12 +32,14 @@ NPC_REACH = 200   # yards: a flight master this close to a flight point, on its 
 CONTINENTS = (0, 1, 2991)
 ALLIANCE, HORDE = 1, 2
 DEAD = ("zzOLD", "Quest Path", "[DNT]", "DEPRECATED")
-# Fixed links between two spots, both ways: (kind, factions, place, AreaTrigger, place,
-# AreaTrigger, seconds through it). A portal's other end is where the portal back stands; the
-# tram's seconds are the ride with its wait, timed in game.
+# Fixed links between two spots, both ways: (kind, factions, place, end, place, end, seconds
+# through it). An end is an AreaTrigger, or a spot read in game as (continent, x, y, z) where the
+# trigger stands somewhere the walking maps cannot reach. A portal's other end is where the portal
+# back stands; the tram's ends are its doorways (the client gives no z, so z is the walking map's
+# ground there), and its seconds are the ride with its wait, timed in game.
 LINKS = [
     ("Portal", "AH", "Rut'theran Village", 542, "Darnassus", 527, 5),
-    ("Tram", "AH", "Ironforge", 2175, "Stormwind", 2173, 150),
+    ("Tram", "AH", "Ironforge", (0, -4833.8, -1284.1, 502.3), "Stormwind", (0, -8393.2, 572.2, 92.4), 150),
 ]
 # Lifts, learned from play (/nf lifts, Journeys' Learn Lifts as You Ride): (factions, seconds, low end,
 # high end), each end (continent, x, y, z, place), as the command prints them. Lifts are server-spawned, so
@@ -198,11 +200,15 @@ def main():
     # links = { { kind, factions, seconds, { continent, x, y, place, z }, { continent, x, y, place, z } }, ... }
     # z tells the floor an end stands on: the walking maps stack ground over ground in cities.
     lines.append("    links = {")
-    for kind, side, here, here_id, there, there_id, seconds in LINKS:
+    for kind, side, here, here_end, there, there_end, seconds in LINKS:
         ends = []
-        for place, trigger in ((here, here_id), (there, there_id)):
-            row = triggers[trigger]
-            ends.append(f"{{ {row['ContinentID']}, {float(row['Pos_0']):.1f}, {float(row['Pos_1']):.1f}, {lua_string(place)}, {float(row['Pos_2']):.1f} }}")
+        for place, end in ((here, here_end), (there, there_end)):
+            if isinstance(end, tuple):
+                continent, x, y, z = end
+            else:
+                row = triggers[end]
+                continent, x, y, z = row["ContinentID"], float(row["Pos_0"]), float(row["Pos_1"]), float(row["Pos_2"])
+            ends.append(f"{{ {continent}, {x:.1f}, {y:.1f}, {lua_string(place)}, {z:.1f} }}")
         lines.append(f'        {{ "{kind}", "{side}", {seconds}, {ends[0]}, {ends[1]} }},')
     for side, seconds, *ends in LIFTS:
         ends = [f"{{ {c}, {x:.1f}, {y:.1f}, {lua_string(place)}, {z:.1f} }}" for c, x, y, z, place in ends]

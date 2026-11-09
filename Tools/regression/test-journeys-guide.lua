@@ -236,8 +236,9 @@ Check(Title() == "Deeprun Tram to Stormwind" and Jy.Guide.Current().plan.legs[1]
     "at the tram: ride it, the waypoint now at the far end")
 
 local before = Title()
+local ride = Jy.Guide.Current().plan.legs[1]
 combat = true
-here = { x = -8346.5, y = 514.0, c = 0 }
+here = { x = ride.x, y = ride.y, c = ride.c }
 Fire("PLAYER_ENTERING_WORLD")
 RunTimers()
 Check(Title() == before and Jy.Guide.Current().waiting, "in combat the plan waits")

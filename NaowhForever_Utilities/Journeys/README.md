@@ -130,9 +130,13 @@ NaowhForever_Utilities/Journeys/
   A node learned with the map open (`TAXI_NODE_STATUS_CHANGED`) is read then too, but only between
   `TAXIMAP_OPENED` and `TAXIMAP_CLOSED`: the event also fires away from a flight master, where every node
   reads as unreachable and would wipe the list. With none known, the first journey says how to learn them.
-- A link's ends (the tram, the Darnassus portal) carry their height from the game's AreaTrigger table: the
+- A link's ends carry their height (the Darnassus portal's from the game's AreaTrigger table): the
   walking maps stack floors in the cities, and without it the Ironforge tram end attached to a roof cut
   off from the city, so no journey used the tram.
+- The tram's ends are its doorways, read in game, not its portals: the walking maps never join the tram
+  halls to the street, so a portal's end landed on the building's upper level and the last stretch of the
+  route ran straight through the building. The client gives no height, so each doorway's is the walking
+  map's ground there.
 - Every walk in a plan gets its path (the first for the guide's corners, the later ones for the drawn
   route), kept per journey so a replan does not search them again. Rides are drawn in their mode's colour,
   on both maps, and a flight through each flight point it stops at on the way.
