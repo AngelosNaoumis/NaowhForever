@@ -824,6 +824,44 @@ Report("plan from skill to cap", function()
     ns.Professions.SkillUpPlan.Get()
 end, 15, 60)
 Report("full redraw with the plan open", Redraw, 4, 0.05)
+-- Plan Recipes You Can Train Later: a step trained at a higher skill says at which, and the button
+-- takes only the steps before the first of them.
+settings.skillUpPlanLater = true
+Redraw()
+local later = ns.Professions.SkillUpPlan.Get()
+check("with recipes trained later, the plan goes at least as far", later.reach >= plan.reach)
+local laterAt
+for i = math.min(#later.steps, 18), 1, -1 do
+    if later.steps[i].trainAt then laterAt = i end
+end
+check("a step trained later says at which skill", laterAt
+    and win.plan.rows[laterAt].name.text:find("^Train at " .. later.steps[laterAt].trainAt .. ": ") ~= nil)
+check("the plan's button waits for the training it can do now",
+    action.enabled == (not ns.Professions.SkillUpPlan.NeedsTraining(later)))
+Report("plan from skill to cap, with recipes trained later", function()
+    ns.Professions.SkillUpPlan.Invalidate()
+    ns.Professions.SkillUpPlan.Get()
+end, 15, 60)
+local learnedInfo = ns.Professions.Entries.Learned()[1].recipes[1]
+local aheadSteps = { { info = learnedInfo, count = 1, from = later.from, to = later.steps[laterAt].from, band = 0 } }
+for i = laterAt, #later.steps do aheadSteps[#aheadSteps + 1] = later.steps[i] end
+local ahead = setmetatable({ steps = aheadSteps }, { __index = later })
+local Shopping = ns.Professions.Shopping
+local planGet, shoppingAdd, shoppingRedraw, openList = ns.Professions.SkillUpPlan.Get, Shopping.Add, Shopping.Redraw,
+    ns.OpenShoppingList
+local shopped = {}
+ns.Professions.SkillUpPlan.Get = function() return ahead end
+Shopping.Add = function(info) shopped[#shopped + 1] = info end
+Shopping.Redraw, ns.OpenShoppingList = Noop, Noop
+Redraw()
+check("with a known recipe first, the button says how far it goes", action.enabled and action._tipBody
+    == ("Puts the materials of the steps up to skill %d on your shopping list."):format(aheadSteps[2].from))
+action.scripts.OnClick(action)
+check("and lists only the steps before the first one trained later", #shopped == 1 and shopped[1] == learnedInfo)
+ns.Professions.SkillUpPlan.Get, Shopping.Add, Shopping.Redraw, ns.OpenShoppingList = planGet, shoppingAdd,
+    shoppingRedraw, openList
+settings.skillUpPlanLater = nil
+Redraw()
 local firstRow = win.plan.rows[1]
 firstRow.scripts.OnClick(firstRow)
 check("a step's row opens its recipe", not win.plan:IsShown()

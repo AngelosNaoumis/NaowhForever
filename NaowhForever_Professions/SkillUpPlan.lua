@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local P = ns.Professions
+local S = P.Settings
 local R = P.Recipes
 local Prices = P.Prices
 local SkillUps = P.SkillUps
@@ -9,7 +10,7 @@ local Entries = P.Entries
 local Cooldowns = P.CooldownRecipes
 
 local STICKY = 0.1
-local READY, TRAINER = "ready", "trainer"
+local READY, LATER, TRAINER = "ready", "later", "trainer"
 
 local candidates = {}
 local last = {}
@@ -39,10 +40,10 @@ local function Keep(current, score, chance, best, bestScore, bestChance)
     return Better(current, score, chance, best, bestScore, bestChance)
 end
 
-local function Pick(skill, excluded, current)
+local function Pick(skill, base, excluded, current)
     local best, bestScore, bestChance
     for _, c in ipairs(candidates) do
-        if not excluded[c] then
+        if not excluded[c] and (c.trainAt or 0) <= base then
             local chance = SkillUps.Chance(skill, c.yellow, c.grey)
             if chance > 0 then
                 local score = Score(c, chance)
@@ -65,7 +66,7 @@ local function Run(from, to, modifier, excluded)
     local run = { steps = {}, reach = from, crafts = 0, total = 0, priced = true, trained = {} }
     local step
     for skill = from, to - 1 do
-        local c, chance = Pick(skill + modifier, excluded, step and step.c)
+        local c, chance = Pick(skill + modifier, skill, excluded, step and step.c)
         if not c then break end
         if not step or step.c ~= c then
             local _, band = SkillUps.Chance(skill + modifier, c.yellow, c.grey)
@@ -78,7 +79,7 @@ local function Run(from, to, modifier, excluded)
     end
     for _, s in ipairs(run.steps) do
         s.count = math.ceil(s.expected)
-        s.info, s.r = s.c.info, s.c.r
+        s.info, s.r, s.trainAt = s.c.info, s.c.r, s.c.trainAt
         s.cost = s.c.net and s.c.net * s.count
         run.crafts = run.crafts + s.count
         if s.cost then run.total = run.total + s.cost else run.priced = false end
@@ -116,12 +117,12 @@ local function Optimise(from, to, modifier)
     return best
 end
 
-local function Add(id, yellow, grey, info, r, train)
+local function Add(id, yellow, grey, info, r, train, trainAt)
     candidates[#candidates + 1] = { id = id, yellow = yellow, grey = grey, net = Prices.NetCost(id),
-        info = info, r = r, train = train }
+        info = info, r = r, train = train, trainAt = trainAt }
 end
 
-local function Collect(skill)
+local function Collect(skill, later)
     wipe(candidates)
     for _, cat in ipairs(Entries.Learned()) do
         for _, info in ipairs(cat.recipes) do
@@ -132,36 +133,41 @@ local function Collect(skill)
     end
     local finder = ns.RecipeFinder
     for _, r in ipairs(Entries.Unlearned()) do
-        if r.source == TRAINER and r.yellow and r.yellow <= r.grey and r.grey > skill and not Cooldowns[r.spell]
-            and finder.Status(r) == READY then
-            Add(r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0)
+        if r.source == TRAINER and r.yellow and r.yellow <= r.grey and r.grey > skill and not Cooldowns[r.spell] then
+            local status = finder.Status(r)
+            if status == READY then
+                Add(r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0)
+            elseif status == LATER and later then
+                Add(r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0, finder.Skill(r))
+            end
         end
     end
 end
 
-local function Changed(prof)
+local function Changed(prof, later)
     local scan = ns.AuctionScanTime and ns.AuctionScanTime() or 0
     local recipes, unlearned = Entries.Count(), #Entries.Unlearned()
     if cached and last.id == prof.id and last.skill == prof.skill and last.max == prof.max
         and last.modifier == prof.modifier and last.recipes == recipes and last.unlearned == unlearned
-        and last.scan == scan then
+        and last.scan == scan and last.later == later then
         return false
     end
     last.id, last.skill, last.max, last.modifier = prof.id, prof.skill, prof.max, prof.modifier
-    last.recipes, last.unlearned, last.scan = recipes, unlearned, scan
+    last.recipes, last.unlearned, last.scan, last.later = recipes, unlearned, scan, later
     return true
 end
 
 function Plan.Get()
     local prof = R.Profession()
     if not prof then return nil end
-    if not Changed(prof) then return cached end
+    local later = S.Get("skillUpPlanLater")
+    if not Changed(prof, later) then return cached end
     local plan
     if prof.skill >= prof.max then
         plan = { from = prof.skill, to = prof.max, steps = {}, reach = prof.skill, crafts = 0, total = 0,
             priced = true, trained = {}, atCap = true }
     else
-        Collect(prof.skill + prof.modifier)
+        Collect(prof.skill + prof.modifier, later)
         plan = Optimise(prof.skill, prof.max, prof.modifier)
         plan.from, plan.to = prof.skill, prof.max
         wipe(candidates)
@@ -174,6 +180,16 @@ function Plan.Invalidate()
     cached = nil
 end
 
+function Plan.Doable(plan)
+    for i, step in ipairs(plan.steps) do
+        if step.trainAt then return i - 1 end
+    end
+    return #plan.steps
+end
+
 function Plan.NeedsTraining(plan)
-    return next(plan.trained) ~= nil
+    for i = 1, Plan.Doable(plan) do
+        if plan.steps[i].r then return true end
+    end
+    return false
 end

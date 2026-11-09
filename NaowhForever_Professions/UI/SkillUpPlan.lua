@@ -35,6 +35,7 @@ local TEXT_STUCK = ns.L("No recipe you know or can train now raises your skill p
 local TEXT_RANGE = "%d-%d"
 local TEXT_CRAFTS = "x%d"
 local TEXT_TRAIN = ns.L("Train: %s")
+local TEXT_TRAIN_AT = ns.L("Train at %d: %s")
 local TEXT_UNKNOWN = "?"
 local TEXT_TOTAL = ns.L("%d skill-ups: about %d crafts, %s")
 local TEXT_TOTAL_UNPRICED = ns.L("%d skill-ups: about %d crafts")
@@ -46,8 +47,11 @@ local TEXT_LIST = ns.L("Add Plan to List")
 local TIP_OPEN_HELP = ns.L("Shows the cheapest crafts from your skill to your cap.")
 local TIP_QUEUE_HELP = ns.L("Queues every step and lists their missing materials.")
 local TIP_LIST_HELP = ns.L("Puts every step's materials on your shopping list.")
+local TIP_QUEUE_UPTO = ns.L("Queues the steps up to skill %d and lists their missing materials.")
+local TIP_LIST_UPTO = ns.L("Puts the materials of the steps up to skill %d on your shopping list.")
 local TIP_TRAIN_FIRST = ns.L("Learn the recipes marked Train first.")
 local TIP_TRAIN_COST = ns.L("Learn it at a trainer first: %s")
+local TIP_TRAIN_AT = ns.L("Learn it at a trainer once your skill is %d: %s")
 
 local pane, opener
 local View = {}
@@ -93,7 +97,11 @@ local function OnRowEnter(self)
         end
     else
         GameTooltip:SetSpellByID(step.r.spell)
-        GameTooltip:AddLine(TIP_TRAIN_COST:format(Money(step.c.train)), 1, 1, 1)
+        if step.trainAt then
+            GameTooltip:AddLine(TIP_TRAIN_AT:format(step.trainAt, Money(step.c.train)), 1, 1, 1)
+        else
+            GameTooltip:AddLine(TIP_TRAIN_COST:format(Money(step.c.train)), 1, 1, 1)
+        end
     end
     GameTooltip:Show()
 end
@@ -102,7 +110,8 @@ local function OnAction()
     local plan = Plan.Get()
     if not plan or Plan.NeedsTraining(plan) then return end
     local queue = QueueOn()
-    for _, step in ipairs(plan.steps) do
+    for i = 1, Plan.Doable(plan) do
+        local step = plan.steps[i]
         if queue then
             Queue.AddWithShopping(step.info, step.count)
         else
@@ -158,6 +167,9 @@ local function FillRow(row, step)
     if step.info then
         row.name:SetText(name)
         SetColor(row.name, Style.DIFFICULTY_RGB[step.band] or T.fg)
+    elseif step.trainAt then
+        row.name:SetText(TEXT_TRAIN_AT:format(step.trainAt, name))
+        SetColor(row.name, T.muted)
     else
         row.name:SetText(TEXT_TRAIN:format(name))
         SetColor(row.name, Style.READY_RGB)
@@ -208,7 +220,14 @@ local function FillFooter(plan)
     local training = Plan.NeedsTraining(plan)
     EnableButton(action, not training)
     action._tipTitle = queue and TEXT_QUEUE or TEXT_LIST
-    action._tipBody = training and TIP_TRAIN_FIRST or queue and TIP_QUEUE_HELP or TIP_LIST_HELP
+    local doable = Plan.Doable(plan)
+    if training then
+        action._tipBody = TIP_TRAIN_FIRST
+    elseif doable < #plan.steps then
+        action._tipBody = (queue and TIP_QUEUE_UPTO or TIP_LIST_UPTO):format(plan.steps[doable + 1].from)
+    else
+        action._tipBody = queue and TIP_QUEUE_HELP or TIP_LIST_HELP
+    end
 end
 
 local function Build(mid)

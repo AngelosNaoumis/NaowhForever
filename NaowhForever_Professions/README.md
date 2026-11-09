@@ -192,11 +192,25 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   or reaches less far. The plan is tried again without each one it uses until none can go; a recipe's
   training is counted once. Recipes on a cooldown are never planned. The plan stops early, and says so,
   where nothing you know or can train gives a skill-up.
-- The plan is worked out when the pane opens and again only when the skill, the cap, the recipes or
-  the last price scan changes, not on every draw: it is a few thousand chance sums. Queue Plan queues
-  each step through the Crafting Queue (with its prerequisites and missing materials); without the
-  queue, Add Plan to List puts each step on the Shopping List. Both wait until every Train step is
-  learned. The disabled button keeps its tooltip (`SetMotionScriptsWhileDisabled`) to say why.
+- The plan is worked out when the pane opens and again only when the skill, the cap, the recipes, the
+  last price scan or Plan Recipes You Can Train Later changes, not on every draw: it is a few thousand
+  chance sums. Queue Plan queues each step through the Crafting Queue (with its prerequisites and
+  missing materials); without the queue, Add Plan to List puts each step on the Shopping List. Both wait
+  until every Train step is learned. The disabled button keeps its tooltip
+  (`SetMotionScriptsWhileDisabled`) to say why.
+- Plan Recipes You Can Train Later is off by default and adds no events, hooks or frames. On, the plan
+  also uses the trainer recipes under Needs more skill, each only from the skill its trainer asks for
+  (`ns.RecipeFinder.Skill`, which takes the trainer's own number once you have visited one); its step
+  reads Train at that skill. Trainers check your rank without its bonus, so this does too, while the
+  skill-up chance still counts the bonus. Recipes under Needs next rank stay out, as the plan ends at
+  your cap. Trainer recipes have no level requirement in `RecipeData.lua`, so none is checked. It needs
+  Unlearned Recipes, which finds the trainer recipes.
+- With it on, Queue Plan and Add Plan to List take only the steps before the first Train at step, since
+  the steps after it start where that recipe leaves off, and still wait while one of those is a Train
+  step. Their tooltip says up to which skill.
+- It makes the plan dearer to work out, since many more trainer recipes are tried in and out of it:
+  about 9 ms at worst offline (Leatherworking from 125 to 225 with no recipe past skill 1 learned),
+  against under 1 ms off. It is still worked out only on the triggers above.
 - The on/off switches' defaults (`enabled` and each feature's switch) are read from
   `ns.FEATURES.professions`; their options keep their own defaults in `Professions.lua`.
 - Blizzard's window stays open under ours at zero alpha: hiding it would close the trade skill (its
@@ -622,6 +636,10 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   stubs and times and weighs what runs while the window is open.
 - Skill-up ranges, chances and costs: `test-profession-skill-thresholds.lua`; the plan:
   `test-profession-skill-up-plan.lua`.
+- Plan Recipes You Can Train Later: `test-profession-skill-up-plan.lua` (off, the plan is as it was; on,
+  a recipe trained later is used only from its skill, left out when its training does not pay, and a
+  next-rank recipe stays out) and `test-professions-memory.lua` (the Train at row, the steps the button
+  takes and what the plan costs to work out).
 - The window's slices: `test-profession-combat-close.lua`, `test-profession-window-drag.lua`
   (Takeover.lua), `test-profession-link-view.lua` (LinkView.lua), `test-profession-shift-click.lua`
   (AuctionHouse.lua), `test-professions-ah-panels.lua` (the panels' edge, AuctionHouse.lua),

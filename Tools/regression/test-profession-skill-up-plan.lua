@@ -3,11 +3,13 @@ local checks = 0
 local function Check(label, condition) assert(condition, label); checks = checks + 1 end
 
 local prof = { id = 197, skill = 30, max = 50, modifier = 0 }
-local net, learned, unlearned, status, train = {}, {}, {}, {}, {}
+local net, learned, unlearned, status, train, need = {}, {}, {}, {}, {}, {}
+local settings = {}
 local scan = 1
 local ns = {
     AuctionScanTime = function() return scan end,
     Professions = {
+        Settings = { Get = function(key) return settings[key] end },
         Recipes = { Profession = function() return prof end },
         Prices = { NetCost = function(id) return net[id] end },
         CooldownRecipes = { [99] = true },
@@ -21,6 +23,7 @@ local ns = {
     RecipeFinder = {
         Status = function(r) return status[r.spell] or "ready" end,
         Cost = function(r) return train[r.spell] end,
+        Skill = function(r) return need[r.spell] or r.skill end,
     },
 }
 _G.NaowhForever = ns
@@ -40,7 +43,7 @@ end
 local function Learn(id) learned[#learned + 1] = { recipeID = id } end
 
 local function Reset()
-    for _, t in ipairs({ net, learned, unlearned, status, train }) do wipe(t) end
+    for _, t in ipairs({ net, learned, unlearned, status, train, need }) do wipe(t) end
     prof.skill, prof.max = 30, 50
 end
 
@@ -101,6 +104,45 @@ status[23] = "later"
 plan = Fresh()
 Check("a recipe not learnable yet is not planned", Ids(plan) == "21")
 status[23] = nil
+wipe(unlearned)
+
+Reset()
+Recipe(41, 1, 40, 60, 100)
+Learn(41)
+plan = Fresh()
+local alone = ("%s %d %d"):format(Ids(plan), plan.total, plan.crafts)
+unlearned[1] = Recipe(43, 40, 40, 80, 10)
+status[43], train[43] = "later", 50
+plan = Fresh()
+Check("off, a recipe you can train later leaves the plan as it was",
+    ("%s %d %d"):format(Ids(plan), plan.total, plan.crafts) == alone)
+settings.skillUpPlanLater = true
+local before = plan
+plan = Plan.Get()
+Check("turning it on plans again", plan ~= before)
+Check("on, it is planned from the skill it is trained at, not before",
+    Ids(plan) == "41,43" and plan.steps[1].to == 40 and plan.steps[2].from == 40 and plan.steps[2].trainAt == 40)
+Check("its training is in the total", plan.total == plan.steps[1].count * 100 + plan.steps[2].count * 10 + 50)
+Check("the steps before it are the ones to do now", Plan.Doable(plan) == 1 and not Plan.NeedsTraining(plan))
+need[43] = 45
+plan = Fresh()
+Check("its skill is the trainer's, as the recipe list reads it", plan.steps[2].from == 45 and plan.steps[2].trainAt == 45)
+need[43] = nil
+prof.modifier = 5
+plan = Fresh()
+Check("a skill bonus does not train it sooner", Ids(plan) == "41,43" and plan.steps[2].from == 40)
+prof.modifier = 0
+train[43] = 100000
+plan = Fresh()
+Check("one that costs more to learn than it saves is left out", Ids(plan) == "41")
+train[43] = 50
+unlearned[2] = Recipe(44, 35, 35, 90, 1)
+status[44], train[44] = "rank", 0
+plan = Fresh()
+Check("a recipe that needs the next rank stays out, however cheap", not Ids(plan):find("44"))
+settings.skillUpPlanLater = nil
+plan = Plan.Get()
+Check("turning it off plans as before", Ids(plan) == "41")
 wipe(unlearned)
 
 Reset()

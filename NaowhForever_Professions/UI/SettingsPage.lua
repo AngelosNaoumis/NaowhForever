@@ -7,7 +7,7 @@ local Settings = ns.Shared.Settings
 local Group = Settings.Group
 
 local RECIPE_KEYS = { "recipeFinder", "rankAlert", "bagReagents", "bankReagents", "trainFavorites", "skillThresholds",
-    "skillUpChances", "skillUpPlan", "learnedRecipeVendors" }
+    "skillUpChances", "skillUpPlan", "skillUpPlanLater", "learnedRecipeVendors" }
 local GATHER_LIFT = 8
 local GATHER_STAGE_H = 130
 local CRAFT_STAGE_H = 100
@@ -54,6 +54,10 @@ end
 
 local function FinderOn()
     return On() and S.Get("recipeFinder") == true
+end
+
+local function PlanOn()
+    return FinderOn() and S.Get("skillUpPlan") == true
 end
 
 local function ProfitOn()
@@ -168,6 +172,9 @@ page:Card({
           help = "Shows each recipe's skill-up chance in the list, and a Best for Skill-ups sort in Filter." },
         { key = "skillUpPlan", label = "Skill-up Plan", toggle = true, needs = On, why = TEXT_OFF,
           help = "Plans the cheapest crafts from your skill to your cap, ready to queue in one click." },
+        { key = "skillUpPlanLater", label = "Plan Recipes You Can Train Later", toggle = true, needs = PlanOn,
+          why = "Needs Skill-up Plan and Unlearned Recipes",
+          help = "Also plans trainer recipes you will be able to learn on the way to your cap." },
         { key = "recipeFinder", label = "Unlearned Recipes", toggle = true, needs = On, why = TEXT_OFF,
           help = "Lists the recipes you have not learned yet below your own. Click one to see the skill it "
               .. "needs, what it costs and where it comes from: the nearest trainers, the vendor selling its "
