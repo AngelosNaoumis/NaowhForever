@@ -6,6 +6,7 @@ ns.BADGE_STAFF = {
         ["Player-6796-006CA983"] = { tier = "developer", title = "Lead Developer" },
         ["Player-6931-0061A63C"] = "legendary",
         ["Player-6931-0061A6B9"] = "legendary",
+        ["Player-6929-00085AAF"] = "legendary",
     },
     [3] = {
         ["Player-6938-000B9D7E"] = "naowh",

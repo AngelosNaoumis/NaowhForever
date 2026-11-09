@@ -69,6 +69,7 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-4618-01920693   | Mulk     |
 | Player-4618-01921AD0   | Mulk     |
 | Player-4618-0193A583   | Mulk     |
+| Player-6929-00085AAF   | Sylla    |
 
 ## Why
 
