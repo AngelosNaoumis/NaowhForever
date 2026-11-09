@@ -7,6 +7,7 @@ local St = Market.Style
 local Parts = ns.Shared.Parts
 
 local ROW_H, ROW_IN, ICON, LABEL_X, MARKER_W = 40, 16, 18, 46, 2
+local FOREVER_ROW_H, FOREVER_DROP = 48, 3
 local SUB_GAP = 1
 local OFF_ALPHA, OFF_ICON_ALPHA = 0.7, 0.5
 local SKILLS_IN, SKILLS_TOP, SKILLS_HEAD_GAP = 16, 14, 10
@@ -62,7 +63,7 @@ local function DrawRow(row)
     row.off = row.auction and not atAuction
     row.label:ClearAllPoints()
     if row.off then
-        row.label:SetPoint("BOTTOMLEFT", row, "LEFT", row.x, SUB_GAP)
+        row.label:SetPoint("BOTTOMLEFT", row, "LEFT", row.x, SUB_GAP - row.drop)
     else
         row.label:SetPoint("LEFT", row.x, 0)
     end
@@ -75,11 +76,11 @@ local function DrawRow(row)
     PaintRow(row, row:IsMouseOver())
 end
 
-local function NewRow(parent, page, y, onPick)
+local function NewRow(parent, page, y, h, onPick)
     local row = CreateFrame("Button", nil, parent)
     row:SetPoint("TOPLEFT", 0, -y)
     row:SetPoint("TOPRIGHT", 0, -y)
-    row:SetHeight(ROW_H)
+    row:SetHeight(h)
     row.key, row.auction = page.key, page.auction
     row.fill = ns.Solid(row, "BACKGROUND", T.accent, St.PICKED_FILL)
     row.fill:SetAllPoints()
@@ -91,18 +92,18 @@ local function NewRow(parent, page, y, onPick)
     row.marker:SetWidth(MARKER_W)
     if ns.foreverSkin then
         Parts.ForeverNavButton(row)
-        row.x = ROW_IN
+        row.x, row.drop = ROW_IN, FOREVER_DROP
     else
         row.icon = row:CreateTexture(nil, "ARTWORK")
         row.icon:SetSize(ICON, ICON)
         row.icon:SetPoint("LEFT", ROW_IN, 0)
         row.icon:SetTexture(NAV_ICONS .. page.icon .. ".tga")
-        row.x = LABEL_X
+        row.x, row.drop = LABEL_X, 0
     end
     row.label = ns.Font(row, LABEL_SIZE, nil, T.muted, true)
     row.label:SetText(ns.L(page.label))
     row.sub = ns.Font(row, St.SMALL_SIZE, nil, T.muted)
-    row.sub:SetPoint("TOPLEFT", row, "LEFT", row.x, -SUB_GAP)
+    row.sub:SetPoint("TOPLEFT", row, "LEFT", row.x, -SUB_GAP - row.drop)
     row.sub:SetText(TEXT_AWAY)
     row.count = ns.Font(row, COUNT_SIZE, nil, T.muted)
     row.count:SetPoint("RIGHT", -ROW_IN, 0)
@@ -170,7 +171,8 @@ function Rail.Build(parent, pages, onPick)
     edge:SetPoint("TOPRIGHT")
     edge:SetPoint("BOTTOMRIGHT")
     edge:SetWidth(1)
-    for i, page in ipairs(pages) do rows[i] = NewRow(rail, page, ROW_IN / 2 + (i - 1) * ROW_H, onPick) end
+    local h = ns.foreverSkin and FOREVER_ROW_H or ROW_H
+    for i, page in ipairs(pages) do rows[i] = NewRow(rail, page, ROW_IN / 2 + (i - 1) * h, h, onPick) end
     local skills = CreateFrame("Frame", nil, rail)
     skills:SetPoint("BOTTOMLEFT")
     skills:SetPoint("BOTTOMRIGHT")

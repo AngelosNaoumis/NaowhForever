@@ -76,6 +76,9 @@ NaowhForever_Market/
 - Sell, Buy and My Auctions need the auction house, so away from it their tabs show a short "At an
   auctioneer" note instead; `/market` opens on Farm. Opening it while Blizzard's window is showing
   at an auctioneer steps back into ours instead.
+- With the Forever look, only about 27 of a rail row's 36 pixels of art are visible. A page name in the
+  heading font with that note under it is as tall as that and sat high, so the name ran over the top
+  edge. Those rows are `FOREVER_ROW_H` (48) tall, and the two lines sit `FOREVER_DROP` (3) lower.
 - Closing ours (its X or Escape) closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so
   the visit ends as Blizzard's own close does.
 - A right-click on a bag item at the auction house goes to Blizzard's `SetPostItem`. The Market hooks
