@@ -87,6 +87,7 @@ local function Setup(opts)
             AuctionHouseSortOrder = { Price = 0, Name = 1, Buyout = 4, Bid = 3 },
             AuctionStatus = { Active = 0, Sold = 1 } },
         Constants = { AuctionConstants = { DEFAULT_AUCTION_PRICE_MULTIPLIER = 1.5 } },
+        C_CVar = { GetCVarDefault = function(name) return name == "auctionHouseDurationDropdown" and "2" or nil end },
         ItemLocation = { CreateEmpty = function() return Location() end,
             CreateFromBagAndSlot = function(_, bag, slot) return Location(bag, slot) end },
         C_Container = {

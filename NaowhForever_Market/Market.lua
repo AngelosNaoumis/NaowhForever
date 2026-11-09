@@ -3,8 +3,10 @@ local ns = _G.NaowhForever
 
 local F = ns.FEATURES.market
 local REALM_JOIN = "-"
+local DURATION_CVAR = "auctionHouseDurationDropdown"
 
-local S = ns.UI.ModuleSettings("market", { enabled = F.enabled, duration = 1, postKeys = true, bagWorth = true,
+local S = ns.UI.ModuleSettings("market", { enabled = F.enabled,
+    duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), postKeys = true, bagWorth = true,
     tooltip = true, farmHerbs = true, farmVeins = true, farmSkins = true, farmFish = true, farmLocked = false,
     sortRun = "", sortCrafts = "", sortMine = "", sortBuy = "" })
 ns.MarketSettings = S

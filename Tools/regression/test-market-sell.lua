@@ -16,6 +16,7 @@ local t = Setup({
     vendor = { [2770] = 5, [4306] = 99, [9999] = 2000 },
 })
 local M = t.M
+Check("posts run for Blizzard's own default duration until you pick one", M.Sell.Duration() == 2)
 local loading = M.Sell.Read()
 Check("every item's slots add up to one entry", M.Bags.Get(2770).count == 25 and not loading)
 Check("an item that is not a commodity is one entry per link", M.Bags.Get("item:9999:suffix1").count == 1

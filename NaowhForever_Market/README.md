@@ -86,6 +86,10 @@ NaowhForever_Market/
 - `PostCommodity`, `PostItem` and their Confirm calls need a hardware event, so a post only ever runs
   from the Post button or from Space in the window's OnKeyDown. The key is claimed with
   `SetPropagateKeyboardInput(false)` only for that press, out of combat, as the Dungeon Journal does.
+- A post's duration is the index `PostItem` and `PostCommodity` take, 1 to 3, labelled with the game's
+  own `AUCTION_DURATION_ONE` to `_THREE` as Blizzard's sell frame does. On Forever they read 2, 8 and
+  24 Hours, not retail's 12, 24 and 48. Until you pick one it is the default of Blizzard's own
+  `auctionHouseDurationDropdown` CVar (2, 8 Hours, on Forever).
 - When the game asks to confirm a post (`needsConfirmation`), it shows Blizzard's own
   `AUCTION_HOUSE_POST_WARNING`, whose Accept confirms only Blizzard's pending post. The Market hooks
   that dialog's OnAccept with `hooksecurefunc`: the hook runs inside the same click, so it can confirm
