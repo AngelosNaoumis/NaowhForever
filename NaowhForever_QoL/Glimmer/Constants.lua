@@ -6,7 +6,7 @@ ns.Glimmer.C = {
     UNIT = "softinteract",
     BOBBER = 35591,
     GUID_OBJECT = "^GameObject%-%d+%-%d+%-%d+%-%d+%-(%d+)%-",
-    PROFESSION_OF = { ore = 186, herb = 182, skin = 393 },
+    PROFESSION_OF = { ore = 186, herb = 182, skin = 393, fish = 356 },
     SKILL_ORANGE = 25, SKILL_YELLOW = 50, SKILL_GREEN = 100,
     INTERACT_CVAR = "SoftTargetInteract",
     INTERACT_ON = "3",

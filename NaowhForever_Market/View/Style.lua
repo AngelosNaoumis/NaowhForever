@@ -17,6 +17,7 @@ ns.Market.Style = setmetatable({
     HERB_RGB = { r = 0.36, g = 0.78, b = 0.36 },
     ORE_RGB = { r = 0.87, g = 0.6, b = 0.34 },
     SKIN_RGB = { r = 0.69, g = 0.52, b = 0.87 },
+    FISH_RGB = { r = 0.45, g = 0.62, b = 0.98 },
 }, { __index = ns.Shared.Style })
 
 -- Faded, a primary button's dark label on its blue can't be read, so it turns light.

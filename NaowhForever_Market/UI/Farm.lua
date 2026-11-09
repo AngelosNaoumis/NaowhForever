@@ -1,4 +1,4 @@
--- Farm.lua: the Farm page: zones ranked for your skills, the chosen zone's map with its herbs, veins and skinning camps priced, and its loop.
+-- Farm.lua: the Farm page: zones ranked for your skills, the chosen zone's map with its herbs, veins, skinning camps and fishing pools priced, and its loop.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -9,8 +9,8 @@ local Parts = ns.Shared.Parts
 local Farm, Spark = Market.Farm, Market.Spark
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
-local ZONES_W, PANE_GAP, HEAD_H, ZONE_ROW_H, ZONE_ICON, ZONE_ICONS = 250, 12, 46, 52, 16, 5
-local FILTER_H, FILTERS_H, TICK = 20, 92, 12
+local ZONES_W, PANE_GAP, HEAD_H, ZONE_ROW_H, ZONE_ICON, ZONE_ICONS = 250, 12, 62, 52, 16, 5
+local FILTER_H, FILTERS_H, TICK = 20, 112, 12
 local MAP_HEAD_H, STRIP_H, STRIP_ICON, SPARK_W, SPARK_H = 44, 74, 40, 200, 40
 local ROW_IN, GAP, SUB_GAP, BAR_H, SCROLL_IN = 8, 6, 4, 3, 4
 local PIN_MIN, PIN_GROW, PIN_RING = 10, 12, 2
@@ -19,42 +19,45 @@ local LAYER = 1
 local OPEN_W, LOOP_W = 110, 120
 local KV_W = 150
 local TEXT_BEST = ns.L("Best for You")
-local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d, Skinning %d")
+local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d, Skinning %d, Fishing %d")
 local TEXT_HOUR = ns.L("about %s an hour")
 local TEXT_MADE = ns.L("you made %s an hour")
 local TEXT_SUB = ns.L("Loop of %d stops, about %d minutes, about %s an hour, estimated")
 local TEXT_NO_LOOP = ns.L("Nothing here you can gather yet.")
+local TEXT_NO_POOLS = ns.L("Fish anywhere in this zone's water. Pools you fish from are added to this map.")
 local TEXT_OPEN = ns.L("Open Map")
 local TEXT_LOOP = ns.L("Start Loop")
 local TEXT_LOOP_TIP = ns.L("Waypoints through the loop, nearest stop first, each placed when you reach the last.")
 local TEXT_LOOP_TITLE = ns.L("%s loop")
 local TEXT_HERBS, TEXT_VEINS, TEXT_LOCKED = ns.L("Herbs"), ns.L("Veins"), ns.L("Nodes I can't gather yet")
-local TEXT_SKINS = ns.L("Beasts to skin")
+local TEXT_SKINS, TEXT_FISH = ns.L("Beasts to skin"), ns.L("Fishing")
 local TEXT_NOT_READY = ns.L("Farm needs Quality of Life (Glimmer's herb and vein map) and Professions turned on.")
-local TEXT_NO_ZONES = ns.L("No zone has anything for your skills. Learn Herbalism, Mining or Skinning, or turn on what you gather below.")
-local TEXT_NEEDS = { herb = ns.L("Herbalism %d"), ore = ns.L("Mining %d"), skin = ns.L("Skinning %d") }
+local TEXT_NO_ZONES = ns.L("No zone has anything for your skills. Learn Herbalism, Mining, Skinning or Fishing, or turn on what you gather below.")
+local TEXT_NEEDS = { herb = ns.L("Herbalism %d"), ore = ns.L("Mining %d"), skin = ns.L("Skinning %d"),
+    fish = ns.L("Fishing %d") }
 local TEXT_REQUIRES = { herb = ns.L("Requires Herbalism %d"), ore = ns.L("Requires Mining %d"),
-    skin = ns.L("Requires Skinning %d") }
+    skin = ns.L("Requires Skinning %d"), fish = ns.L("Requires Fishing %d") }
 local TEXT_CAMP = ns.L("%d here, level %d to %d")
-local TEXT_A_CAMP = ns.L("A camp")
 local TEXT_NODE = ns.L("About %s a node")
 local TEXT_PICKED = ns.L("Gathered %s")
 local TEXT_SCAN_PRICE = ns.L("at your last scan")
 local TEXT_NO_PRICE = ns.L("no scan price")
 local TEXT_HAVE, TEXT_WORTH, TEXT_A_NODE = ns.L("You have"), ns.L("Worth"), ns.L("A node")
+local TEXT_A = { skin = ns.L("A camp"), fish = ns.L("A catch") }
+local FISH_ICON = "Interface\\Icons\\Trade_Fishing"
 local TEXT_SELL = ns.L("Sell %d")
 
 local page, zonePane, zoneScroll, zoneList, zoneNote, skillsText, main, mapHead, nameText, subText
 local canvas, strip, openButton, loopButton
 local filters = {}
 local zoneRows, pins, tiles, lines = {}, {}, {}, {}
-local picked = { map = nil, item = nil }
+local picked = { map = nil, kind = nil, item = nil }
 local active = false
 
 local Page = {}
 Market.Pages.farm = Page
 
-local KIND_RGB = { herb = St.HERB_RGB, ore = St.ORE_RGB, skin = St.SKIN_RGB }
+local KIND_RGB = { herb = St.HERB_RGB, ore = St.ORE_RGB, skin = St.SKIN_RGB, fish = St.FISH_RGB }
 
 local function KindColor(kind)
     return KIND_RGB[kind]
@@ -62,13 +65,32 @@ end
 
 local Enable = St.Enable
 
+local function ItemEnter(icon)
+    if not icon.item then return end
+    GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
+    GameTooltip:SetItemByID(icon.item)
+    GameTooltip:Show()
+end
+
+-- Hover shows the item; a click still reaches the row or strip under it.
+local function ItemTip(icon)
+    icon:SetMouseMotionEnabled(true)
+    icon:SetMouseClickEnabled(false)
+    icon:SetScript("OnEnter", ItemEnter)
+    icon:SetScript("OnLeave", GameTooltip_Hide)
+end
+
 local function Panel(frame)
     ns.Solid(frame, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()
     ns.Border(frame, St.BORDER_RGB)
 end
 
+local function Picked(zone)
+    return zone.map == picked.map and zone.kind == picked.kind
+end
+
 local function ZoneClicked(row)
-    picked.map, picked.item = row.zone.map, nil
+    picked.map, picked.kind, picked.item = row.zone.map, row.zone.kind, nil
     Page.Draw()
 end
 
@@ -87,6 +109,7 @@ local function NewZoneRow()
     for i = 1, ZONE_ICONS do
         local icon = Parts.ItemIcon(row, ZONE_ICON)
         icon:SetPoint("BOTTOMLEFT", ROW_IN + (i - 1) * (ZONE_ICON + SUB_GAP), ROW_IN + BAR_H)
+        ItemTip(icon)
         row.icons[i] = icon
     end
     row.hour = ns.Font(row, SMALL_SIZE, nil, T.muted)
@@ -110,12 +133,18 @@ local function DrawZones()
         zoneRows[i] = row
         row.zone = zone
         row.stripe:SetShown(i % 2 == 0)
-        row.picked:SetShown(zone.map == picked.map)
+        row.picked:SetShown(Picked(zone))
         row.name:SetText(zone.name)
+        local shift = zone.kind == "fish" and 1 or 0
         for j, icon in ipairs(row.icons) do
-            local top = zone.items[j]
-            if top then icon.texture:SetTexture(C_Item.GetItemIconByID(top.item)) end
-            icon:SetShown(top ~= nil)
+            local top = zone.items[j - shift]
+            icon.item = j > shift and top and top.item or nil
+            if j <= shift then
+                icon.texture:SetTexture(FISH_ICON)
+            elseif top then
+                icon.texture:SetTexture(C_Item.GetItemIconByID(top.item))
+            end
+            icon:SetShown(j <= shift or top ~= nil)
         end
         row.hour:SetText((zone.measured and TEXT_MADE or TEXT_HOUR):format(Parts.Coins(zone.rank, true)))
         row.bar:SetWidth(math.max(1, room * (best > 0 and zone.rank / best or 0)))
@@ -129,7 +158,7 @@ local function DrawZones()
     zoneList:SetHeight(math.max(1, y))
     zoneNote:SetShown(#zones == 0)
     zoneNote:SetText(Farm.Ready() and TEXT_NO_ZONES or TEXT_NOT_READY)
-    skillsText:SetText(TEXT_SKILLS:format(Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin")))
+    skillsText:SetText(TEXT_SKILLS:format(Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin"), Farm.Skill("fish")))
     return zones
 end
 
@@ -168,10 +197,8 @@ end
 
 local function PinEnter(pin)
     local spot = pin.spot
-    local G = ns.Glimmer
-    local node = spot.kind ~= "skin" and G and G.NODES[spot.id]
     GameTooltip:SetOwner(pin, "ANCHOR_RIGHT")
-    GameTooltip:SetText(node and ns.L(node[3]) or Farm.CreatureName(spot.id), 1, 1, 1)
+    GameTooltip:SetText(Farm.SpotName(spot, ""), 1, 1, 1)
     if spot.count then
         local low, high = Farm.CreatureLevels(spot.id)
         GameTooltip:AddLine(TEXT_CAMP:format(spot.count, low, high), 1, 1, 1)
@@ -255,6 +282,7 @@ end
 
 local function TopItem()
     if picked.item then return picked.item end
+    if picked.kind == "fish" then return Farm.catchItem end
     local best
     for _, spot in ipairs(Farm.loop) do
         if spot.item and (not best or spot.value > best.value) then best = spot end
@@ -274,9 +302,12 @@ function Page.DrawStrip()
     strip:SetShown(item ~= nil)
     if not item then return end
     local value, spot = NodeValueOf(item)
+    local kind, need = spot and spot.kind, spot and spot.need
+    if picked.kind == "fish" then kind, need, value = "fish", Farm.catchNeed, Farm.catchWorth end
     strip.icon.texture:SetTexture(C_Item.GetItemIconByID(item))
+    strip.icon.item = item
     strip.name:SetText(C_Item.GetItemNameByID(item) or "")
-    strip.need:SetText(spot and TEXT_NEEDS[spot.kind]:format(spot.need) or "")
+    strip.need:SetText(kind and TEXT_NEEDS[kind]:format(need) or "")
     local scan = ns.AuctionPrice and ns.AuctionPrice(item)
     strip.price:SetText(scan and Parts.Coins(scan) or "")
     strip.priceNote:SetText(scan and TEXT_SCAN_PRICE or TEXT_NO_PRICE)
@@ -284,7 +315,7 @@ function Page.DrawStrip()
     strip.have:SetText(have)
     strip.worth:SetText(Parts.Coins(Market.AfterCut(scan or 0) * have, true))
     strip.node:SetText(Parts.Coins(value, true))
-    strip.node.key:SetText(spot and spot.kind == "skin" and TEXT_A_CAMP or TEXT_A_NODE)
+    strip.node.key:SetText(TEXT_A[kind] or TEXT_A_NODE)
     strip.spark:Paint(item)
     local atAuction = Market.Window.AtAuction()
     strip.sell:SetShown(atAuction and have > 0)
@@ -295,7 +326,7 @@ end
 local function DrawMap()
     local info, scale
     if picked.map then
-        Farm.Zone(picked.map)
+        Farm.Zone(picked.map, picked.kind)
         info, scale = Fit()
     end
     canvas:SetShown(info ~= nil)
@@ -312,23 +343,24 @@ local function DrawMap()
     nameText:SetText(mapInfo and mapInfo.name or "")
     local stops = #Farm.loop
     subText:SetText(stops > 0 and TEXT_SUB:format(stops, math.floor(Farm.loopMinutes + 0.5),
-        Parts.Coins(Farm.loopPerHour, true)) or TEXT_NO_LOOP)
+        Parts.Coins(Farm.loopPerHour, true)) or picked.kind == "fish" and TEXT_NO_POOLS or TEXT_NO_LOOP)
     Enable(loopButton, stops > 0)
     Page.DrawStrip()
 end
 
 local function PickZone(zones)
     for _, zone in ipairs(zones) do
-        if zone.map == picked.map then return end
+        if Picked(zone) then return end
     end
     local here = ns.Shared.Places.SameMap(C_Map.GetBestMapForUnit("player"))
+    local pick = zones[1]
     for _, zone in ipairs(zones) do
         if zone.map == here then
-            picked.map = here
-            return
+            pick = zone
+            break
         end
     end
-    picked.map = zones[1] and zones[1].map
+    picked.map, picked.kind = pick and pick.map, pick and pick.kind
 end
 
 function Page.Draw()
@@ -336,7 +368,7 @@ function Page.Draw()
     local zones = DrawZones()
     PickZone(zones)
     for _, row in ipairs(zoneRows) do
-        if row:IsShown() then row.picked:SetShown(row.zone.map == picked.map) end
+        if row:IsShown() then row.picked:SetShown(Picked(row.zone)) end
     end
     DrawMap()
 end
@@ -404,6 +436,8 @@ local function BuildZones()
     title:SetText(TEXT_BEST)
     skillsText = ns.Font(zonePane, SMALL_SIZE, nil, T.muted)
     skillsText:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -SUB_GAP)
+    skillsText:SetPoint("RIGHT", -ROW_IN, 0)
+    skillsText:SetJustifyH("LEFT")
     local box = CreateFrame("Frame", nil, zonePane)
     box:SetPoint("BOTTOMLEFT")
     box:SetPoint("BOTTOMRIGHT")
@@ -411,7 +445,8 @@ local function BuildZones()
     NewFilter(box, "farmHerbs", TEXT_HERBS, 1)
     NewFilter(box, "farmVeins", TEXT_VEINS, 2)
     NewFilter(box, "farmSkins", TEXT_SKINS, 3)
-    NewFilter(box, "farmLocked", TEXT_LOCKED, 4)
+    NewFilter(box, "farmFish", TEXT_FISH, 4)
+    NewFilter(box, "farmLocked", TEXT_LOCKED, 5)
     zoneScroll = ns.UI.SlimScroll(zonePane)
     zoneScroll:SetPoint("TOPLEFT", 0, -HEAD_H)
     zoneScroll:SetPoint("BOTTOMRIGHT", box, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
@@ -443,6 +478,7 @@ local function BuildStrip()
     Panel(strip)
     strip.icon = Parts.ItemIcon(strip, STRIP_ICON)
     strip.icon:SetPoint("LEFT", ROW_IN, 0)
+    ItemTip(strip.icon)
     strip.name = ns.Font(strip, TEXT_SIZE, nil, T.fg, true)
     strip.name:SetPoint("TOPLEFT", strip.icon, "TOPRIGHT", ROW_IN, 0)
     strip.need = ns.Font(strip, SMALL_SIZE, nil, T.muted)

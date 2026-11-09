@@ -22,7 +22,15 @@ ns.Market.C = {
     SKIN_MID = 20,
     SKIN_MID_STEP = 10,
     SKIN_HIGH_STEP = 5,
+    FISH_LOW_CATCH = 0.5,
+    -- A cast, the wait for a bite and the loot: about one catch every 18 seconds.
+    CATCHES_PER_HOUR = 200,
+    -- A school gives about four catches before it moves on.
+    POOL_SECONDS = 72,
+    POOL_MERGE = 0.015,
+    POOLS_PER_MAP = 60,
     TOUR_FACTOR = 0.92,
+    LOOP_STOPS = 25,
     PICKED_FADE = 600,
     RUN_IDLE = 600,
     RUN_MIN = 300,

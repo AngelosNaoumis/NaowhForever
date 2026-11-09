@@ -1,4 +1,4 @@
--- Farm.lua: where to gather for your skills: each zone's herbs, veins and beasts to skin priced from your last scan, and a loop through one (Market.Farm).
+-- Farm.lua: where to gather for your skills: each zone's herbs, veins, beasts to skin and fishing priced from your last scan, and a loop through one (Market.Farm).
 local ns = _G.NaowhForever
 
 local Market = ns.Market
@@ -9,12 +9,14 @@ local Runs = Market.Runs
 local KIND, NEED, NAME = 1, 2, 3
 local GATHER_ITEM = 3
 local MAX_LEVEL, LOOT, CREATURE_NAME = 2, 3, 4
-local CAMP, LOOT_ENTRY = 4, 4
+local CAMP, LOOT_ENTRY, CATCH_ENTRY = 4, 4, 2
+local FISH_MIN, FISH_MAX = 1, 2
 local EMPTY = {}
-local SECONDS_PER_MINUTE, MINUTES_PER_HOUR = 60, 60
+local SECONDS_PER_MINUTE, MINUTES_PER_HOUR, SECONDS_PER_HOUR = 60, 60, 3600
 local PERCENT = 100
+local TEXT_POOL = ns.L("Fishing pool")
 
-local itemOf, skinWorth, skinItem = {}, {}, {}
+local itemOf, skinWorth, skinItem, catchWorth, catchItems = {}, {}, {}, {}, {}
 local zones, spots, loop = {}, {}, {}
 local zonePool, spotPool = {}, {}
 local cachedZones, cachedMap
@@ -57,6 +59,7 @@ local function Wanted(kind)
     if kind == "herb" then return S.Get("farmHerbs") end
     if kind == "ore" then return S.Get("farmVeins") end
     if kind == "skin" then return S.Get("farmSkins") end
+    if kind == "fish" then return S.Get("farmFish") end
     return false
 end
 
@@ -132,23 +135,75 @@ local function ByValue(a, b)
     return a.item < b.item
 end
 
+local function FishLevels(mapID)
+    local levels = ns.FishingLevels and ns.FishingLevels[mapID]
+    if levels then return levels[FISH_MIN], levels[FISH_MAX] end
+end
+
+-- Some fish get away below the zone's top skill: from FISH_LOW_CATCH at its lowest to every one at its top.
+local function CatchRate(skill, low, high)
+    if skill >= high then return 1 end
+    return C.FISH_LOW_CATCH + (1 - C.FISH_LOW_CATCH) * (skill - low) / (high - low)
+end
+
+-- What one catch on the map is worth after the cut, and each item's part of it, most valuable first.
+local function Catch(mapID)
+    local items = catchItems[mapID]
+    if not items then
+        items = {}
+        local worth, catches = 0, Market.FISH_CATCHES[mapID]
+        for i = 1, #catches, CATCH_ENTRY do
+            local value = Net(catches[i]) * catches[i + 1] / PERCENT
+            worth = worth + value
+            if value > 0 then items[#items + 1] = { item = catches[i], value = value } end
+        end
+        table.sort(items, ByValue)
+        catchItems[mapID], catchWorth[mapID] = items, worth
+    end
+    return catchWorth[mapID], items
+end
+
 local function Add(zone, item, value, gain, work)
     zone.stops, zone.value = zone.stops + 1, zone.value + value
     zone.gain, zone.work = zone.gain + gain, zone.work + work
     if item and value > 0 then Tally(zone, item, value) end
 end
 
+local found, foundPool = {}, {}
+
+local function Found(item, value, gain, work)
+    local stop = table.remove(foundPool) or {}
+    stop.item, stop.value, stop.gain, stop.work = item, value, gain, work
+    found[#found + 1] = stop
+end
+
+local function MoreGain(a, b)
+    if a.gain ~= b.gain then return a.gain > b.gain end
+    return (a.item or 0) < (b.item or 0)
+end
+
+-- A zone is rated on the stops its loop would take: its richest LOOP_STOPS.
+local function KeepRichest(zone)
+    if #found > C.LOOP_STOPS then table.sort(found, MoreGain) end
+    for i, stop in ipairs(found) do
+        if i <= C.LOOP_STOPS then Add(zone, stop.item, stop.value, stop.gain, stop.work) end
+        foundPool[#foundPool + 1] = stop
+    end
+    wipe(found)
+end
+
 local function ReadZone(G, mapID, all, camps, skill)
     local zone = table.remove(zonePool) or { items = {} }
     wipe(zone.items)
-    zone.map, zone.stops, zone.value, zone.gain, zone.work = mapID, 0, 0, 0, 0
+    zone.map, zone.kind, zone.rate = mapID, "gather", nil
+    zone.stops, zone.value, zone.gain, zone.work = 0, 0, 0, 0
     for i = 1, #all, 3 do
         local node = G.NODES[all[i]]
         local kind = node and node[KIND]
         if kind and Wanted(kind) and skill[kind] >= node[NEED] then
             local item = Item(all[i], node)
             local value = Value(all[i], kind, item)
-            Add(zone, item, value, value * C.OCCUPANCY, C.OCCUPANCY * C.GATHER_SECONDS)
+            Found(item, value, value * C.OCCUPANCY, C.OCCUPANCY * C.GATHER_SECONDS)
         end
     end
     if Wanted("skin") then
@@ -157,10 +212,11 @@ local function ReadZone(G, mapID, all, camps, skill)
             if creature and skill.skin >= SkinNeed(creature[MAX_LEVEL]) then
                 local each, item = Skin(camps[i])
                 local value = each * camps[i + 3]
-                Add(zone, item, value, value, camps[i + 3] * C.SKIN_SECONDS)
+                Found(item, value, value, camps[i + 3] * C.SKIN_SECONDS)
             end
         end
     end
+    KeepRichest(zone)
     if zone.stops == 0 then
         zonePool[#zonePool + 1] = zone
         return
@@ -177,15 +233,33 @@ local function ReadZone(G, mapID, all, camps, skill)
     zones[#zones + 1] = zone
 end
 
+local function ReadFish(mapID, skill)
+    local low, high = FishLevels(mapID)
+    if not low or skill < low then return end
+    local zone = table.remove(zonePool) or { items = {} }
+    wipe(zone.items)
+    local worth, items = Catch(mapID)
+    for i, entry in ipairs(items) do zone.items[i] = entry end
+    zone.map, zone.kind, zone.rate = mapID, "fish", CatchRate(skill, low, high)
+    zone.stops, zone.value, zone.gain, zone.work, zone.minutes = 0, worth, 0, 0, nil
+    zone.perHour = math.floor(C.CATCHES_PER_HOUR * zone.rate * worth)
+    zone.measured, zone.rank = nil, zone.perHour
+    local info = C_Map.GetMapInfo(mapID)
+    zone.name = info and info.name or ""
+    zones[#zones + 1] = zone
+end
+
 local function Richer(a, b)
     if a.rank ~= b.rank then return a.rank > b.rank end
-    return a.map < b.map
+    if a.map ~= b.map then return a.map < b.map end
+    return a.kind < b.kind
 end
 
 local function Key()
     local at = ns.AuctionScanTime and ns.AuctionScanTime() or 0
-    return table.concat({ at, Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin"), tostring(S.Get("farmHerbs")),
-        tostring(S.Get("farmVeins")), tostring(S.Get("farmSkins")) }, ":")
+    return table.concat({ at, Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin"), Farm.Skill("fish"),
+        tostring(S.Get("farmHerbs")), tostring(S.Get("farmVeins")), tostring(S.Get("farmSkins")),
+        tostring(S.Get("farmFish")) }, ":")
 end
 
 function Farm.Zones()
@@ -196,11 +270,15 @@ function Farm.Zones()
     if key == cachedZones then return zones end
     cachedZones = key
     for i = #zones, 1, -1 do zonePool[#zonePool + 1] = table.remove(zones, i) end
-    local skill = { herb = Farm.Skill("herb"), ore = Farm.Skill("ore"), skin = Farm.Skill("skin") }
+    local skill = { herb = Farm.Skill("herb"), ore = Farm.Skill("ore"), skin = Farm.Skill("skin"),
+        fish = Farm.Skill("fish") }
     local camps = Camps() or EMPTY
     for mapID, all in pairs(byMap) do ReadZone(G, mapID, all, camps[mapID] or EMPTY, skill) end
     for mapID, list in pairs(camps) do
         if not byMap[mapID] then ReadZone(G, mapID, EMPTY, list, skill) end
+    end
+    if Wanted("fish") then
+        for mapID in pairs(Market.FISH_CATCHES) do ReadFish(mapID, skill.fish) end
     end
     table.sort(zones, Richer)
     return zones
@@ -228,6 +306,12 @@ local function Here(mapID)
     return { x = x, y = y }
 end
 
+local function Richest(a, b)
+    if a.gain ~= b.gain then return a.gain > b.gain end
+    if a.x ~= b.x then return a.x < b.x end
+    return a.y < b.y
+end
+
 local function Tour(mapID, width, height)
     wipe(loop)
     local left = {}
@@ -235,6 +319,10 @@ local function Tour(mapID, width, height)
         if spot.can and spot.wanted then left[#left + 1] = spot end
     end
     if #left == 0 then return 0 end
+    if #left > C.LOOP_STOPS then
+        table.sort(left, Richest)
+        for i = #left, C.LOOP_STOPS + 1, -1 do left[i] = nil end
+    end
     local at, yards = Here(mapID), 0
     local first = 1
     if at then
@@ -259,11 +347,8 @@ local function Tour(mapID, width, height)
     return yards + Distance(width, height, current, loop[1])
 end
 
-function Farm.Zone(mapID)
+local function GatherZone(mapID)
     local G = Glimmer()
-    for i = #spots, 1, -1 do spotPool[#spotPool + 1] = table.remove(spots, i) end
-    wipe(loop)
-    cachedMap = mapID
     local byMap = ns.GlimmerSpots
     local all = G and byMap and byMap[mapID]
     local camps = G and Camps()
@@ -307,13 +392,45 @@ function Farm.Zone(mapID)
             spots[#spots + 1] = spot
         end
     end
+    Farm.most = most
+    return true
+end
+
+local function FishZone(mapID)
+    local low, high = FishLevels(mapID)
+    local skill = Farm.Skill("fish")
+    local worth, items = Catch(mapID)
+    Farm.catchItem, Farm.catchWorth, Farm.catchNeed = items[1] and items[1].item, worth, low
+    local value = worth * CatchRate(skill, low, high) * C.CATCHES_PER_HOUR * C.POOL_SECONDS / SECONDS_PER_HOUR
+    local now = time()
+    for _, pool in ipairs(Runs.Pools(mapID)) do
+        local spot = table.remove(spotPool) or {}
+        spot.id, spot.kind, spot.need, spot.x, spot.y = pool.id, "fish", low, pool.x, pool.y
+        spot.item, spot.value, spot.count = Farm.catchItem, value, nil
+        spot.gain, spot.work = value, C.POOL_SECONDS
+        spot.can, spot.wanted = skill >= low, Wanted("fish")
+        spot.picked = now - pool.last < C.PICKED_FADE and pool.last or nil
+        spots[#spots + 1] = spot
+    end
+    Farm.most = value
+end
+
+function Farm.Zone(mapID, kind)
+    for i = #spots, 1, -1 do spotPool[#spotPool + 1] = table.remove(spots, i) end
+    wipe(loop)
+    cachedMap, Farm.kind = mapID, kind
+    if kind == "fish" then
+        FishZone(mapID)
+    elseif not GatherZone(mapID) then
+        return
+    end
     local width, height = C_Map.GetMapWorldSize(mapID)
     local yards = Tour(mapID, width, height)
     local value, gain, work = 0, 0, 0
     for _, spot in ipairs(loop) do
         value, gain, work = value + spot.value, gain + spot.gain, work + spot.work
     end
-    Farm.most, Farm.loopYards, Farm.loopValue = most, yards, value
+    Farm.loopYards, Farm.loopValue = yards, value
     Farm.loopMinutes = Hours(yards, work) * MINUTES_PER_HOUR
     Farm.loopPerHour = PerHour(gain, yards, work)
 end
@@ -328,13 +445,18 @@ function Farm.CreatureLevels(creatureID)
     if creature then return creature[1], creature[MAX_LEVEL] end
 end
 
-function Farm.Stops(title)
+function Farm.SpotName(spot, fallback)
+    if spot.kind == "fish" then return TEXT_POOL end
+    if spot.kind == "skin" then return Farm.CreatureName(spot.id) end
     local G = ns.Glimmer
+    local node = G and G.NODES[spot.id]
+    return node and ns.L(node[NAME]) or fallback
+end
+
+function Farm.Stops(title)
     local stops = {}
     for _, spot in ipairs(loop) do
-        local node = spot.kind ~= "skin" and G and G.NODES[spot.id]
-        local name = node and ns.L(node[NAME]) or spot.kind == "skin" and Farm.CreatureName(spot.id) or title
-        stops[#stops + 1] = { name, cachedMap, spot.x * PERCENT, spot.y * PERCENT }
+        stops[#stops + 1] = { Farm.SpotName(spot, title), cachedMap, spot.x * PERCENT, spot.y * PERCENT }
     end
     return stops
 end
@@ -343,4 +465,6 @@ function Farm.Changed()
     cachedZones = nil
     wipe(skinWorth)
     wipe(skinItem)
+    wipe(catchWorth)
+    wipe(catchItems)
 end

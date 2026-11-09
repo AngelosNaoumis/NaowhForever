@@ -17,6 +17,7 @@ local SKILLS = {
     { kind = "herb", name = ns.L("Herbalism"), icon = "Interface\\Icons\\Trade_Herbalism" },
     { kind = "ore", name = ns.L("Mining"), icon = "Interface\\Icons\\Trade_Mining" },
     { kind = "skin", name = ns.L("Skinning"), icon = "Interface\\Icons\\INV_Misc_Pelt_Wolf_01" },
+    { kind = "fish", name = ns.L("Fishing"), icon = "Interface\\Icons\\Trade_Fishing" },
 }
 local TEXT_SKILLS = ns.L("Your gathering")
 local TEXT_AWAY = ns.L("At an auctioneer")
@@ -121,9 +122,10 @@ end
 local function Skill(kind)
     local G = ns.Glimmer
     local line = G and G.C.PROFESSION_OF[kind]
-    local first, second = GetProfessions()
+    local first, second, _, fishing = GetProfessions()
     local rank, max = Rank(first, line)
     if not rank then rank, max = Rank(second, line) end
+    if not rank then rank, max = Rank(fishing, line) end
     return rank, max
 end
 

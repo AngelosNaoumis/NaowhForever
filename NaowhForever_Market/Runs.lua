@@ -1,4 +1,4 @@
--- Runs.lua: your gathering runs: each herb and vein you loot, when and where, and what each node yields on average (Market.Runs).
+-- Runs.lua: your gathering runs: each herb and vein you loot, when and where, what each node yields on average, and the fishing pools you fish from (Market.Runs).
 local ns = _G.NaowhForever
 
 local GetItemInfoInstant = C_Item.GetItemInfoInstant
@@ -8,9 +8,11 @@ local C = Market.C
 
 local STORE = "marketRuns"
 local YIELDS = "marketYields"
+local POOLS = "marketPools"
 local KIND = 1
 local SECONDS_PER_HOUR = 3600
 local LOOT_EVENTS = { "LOOT_OPENED", "LOOT_SLOT_CLEARED", "LOOT_CLOSED" }
+local EMPTY = {}
 
 local events, lastGUID
 local opened, taken = {}, {}
@@ -41,10 +43,15 @@ local function Net(item)
     return scan and Market.AfterCut(scan) or 0
 end
 
-function Runs.Node(guid)
+local function ObjectID(guid)
     local G = ns.Glimmer
     if not (G and type(guid) == "string" and Plain(guid)) then return end
-    local id = tonumber(guid:match(G.C.GUID_OBJECT) or "")
+    return tonumber(guid:match(G.C.GUID_OBJECT) or "")
+end
+
+function Runs.Node(guid)
+    local G = ns.Glimmer
+    local id = G and ObjectID(guid)
     local node = id and G.NODES[id]
     if node and (node[KIND] == "herb" or node[KIND] == "ore") then return id, node[KIND] end
 end
@@ -69,6 +76,46 @@ local function Where()
     if not pos then return same end
     local x, y = pos:GetXY()
     return same, x, y
+end
+
+local function Pools()
+    local account = ns.AccountSettings()
+    account[POOLS] = account[POOLS] or {}
+    return account[POOLS]
+end
+
+local function LearnPool(id)
+    local map, x, y = Where()
+    if not x then return end
+    local pools = Pools()
+    local list = pools[map] or {}
+    pools[map] = list
+    local now = time()
+    for _, pool in ipairs(list) do
+        local dx, dy = pool.x - x, pool.y - y
+        if dx * dx + dy * dy <= C.POOL_MERGE * C.POOL_MERGE then
+            pool.id, pool.last = id, now
+            return
+        end
+    end
+    list[#list + 1] = { id = id, x = x, y = y, last = now }
+    if #list <= C.POOLS_PER_MAP then return end
+    local oldest = 1
+    for i, pool in ipairs(list) do
+        if pool.last < list[oldest].last then oldest = i end
+    end
+    table.remove(list, oldest)
+end
+
+local function FishedPool()
+    for slot = 1, GetNumLootItems() do
+        local id = ObjectID(GetLootSourceInfo(slot))
+        if id and Market.FISH_POOLS[id] then return id end
+    end
+end
+
+function Runs.Pools(map)
+    return Pools()[map] or EMPTY
 end
 
 function Runs.Record(id, kind, guid, items)
@@ -129,6 +176,8 @@ end
 local function OnLoot(_, event, slot)
     if event == "LOOT_OPENED" then
         Opened()
+        local pool = IsFishingLoot() and FishedPool()
+        if pool then LearnPool(pool) end
     elseif event == "LOOT_SLOT_CLEARED" then
         Cleared(slot)
     else

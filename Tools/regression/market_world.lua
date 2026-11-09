@@ -162,6 +162,7 @@ local function Setup(opts)
         GetLootSourceInfo = function(slot) return t.loot[slot].source end,
         GetLootSlotLink = function(slot) return "item:" .. t.loot[slot].item end,
         GetLootSlotInfo = function(slot) return nil, nil, t.loot[slot].qty end,
+        IsFishingLoot = function() return t.fishing end,
         GetRealmName = function() return "Realm" end,
         UnitFactionGroup = function() return "Horde" end,
         UnitGUID = function() return "Player-1" end,
@@ -187,6 +188,7 @@ local function Setup(opts)
     env.NaowhForever = ns
     Load(FILES, env)
     t.M = ns.Market
+    t.M.FISH_CATCHES, t.M.FISH_POOLS = {}, {}
     return t
 end
 

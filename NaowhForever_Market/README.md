@@ -31,7 +31,7 @@ NaowhForever_Market/
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, and their most valuable items (Market.Worth)
   Crafts.lua         your characters' known recipes priced, and what your bags make (Market.Crafts)
-  Runs.lua           your gathering runs, and what each node yields on average (Market.Runs)
+  Runs.lua           your gathering runs, what each node yields on average, and the pools you fish from (Market.Runs)
   Farm.lua           zones ranked for your skills, a zone's spots priced, and its loop (Market.Farm)
   Data/
     Skinning.lua     the creatures you can skin, their loot and their camps, packed, from Tools/build/market_gather.py
@@ -179,6 +179,16 @@ NaowhForever_Market/
   you when you are in the zone, on its own map ID or one `Shared.Places.SameMap` reads as it. Its time is its length at `TRAVEL_SPEED` (10 yards a second, riding)
   plus `GATHER_SECONDS` a node, and its worth assumes `OCCUPANCY` (a third) of spots hold a node at a
   time, so the hourly figure is an estimate and says so.
+- A zone you can fish is a row of its own, beside its gathering row, once your Fishing reaches the
+  lowest skill that fishes there (QoL's `ns.FishingLevels`). A catch is worth each of the zone's
+  catches (`FISH_CATCHES`) at its chance, after the cut. Below the zone's top skill some fish get away,
+  so the catch rate climbs from `FISH_LOW_CATCH` (a half) at the lowest to every catch at the top, and
+  the hour is `CATCHES_PER_HOUR` (200, a catch every 18 seconds) times that rate times a catch.
+- No source places fishing pools, so Farm learns them: a fishing loot window (`IsFishingLoot`) whose
+  source GUID is one of `FISH_POOLS` marks a pool where you stand, account-wide (`marketPools`), at most
+  `POOLS_PER_MAP` (60) a map, the one seen longest ago going first. One within `POOL_MERGE` (1.5 map
+  percent) of a known pool is that pool again. A fish row's loop runs through its pools, `POOL_SECONDS`
+  (72, about four catches) at each; with none learned, its map has no pins and says to fish anywhere.
 - Ranking every zone with a full tour would stall a frame, so the zone list estimates each tour's
   length as `TOUR_FACTOR` (0.92) times the square root of its spots times its area, the
   nearest-neighbour length for scattered points; the zone you pick gets its real tour.
@@ -283,3 +293,9 @@ Away from the auction house:
     tooltip shows "You sold N" with the price and when.
 33. On Buy, the star beside a picked item keeps it under Favourites; clicking a favourite picks it.
 34. Buy's detail and Farm's strip draw the item's last 14 days once two days have scans.
+35. With Fishing learned, Farm lists fishing rows (the Fishing icon first, then the best catches) beside
+    the gathering rows, and the Fishing filter takes them out. A fish row's map says to fish anywhere
+    until a pool is learned; its strip shows the best catch and what A catch is worth.
+36. Fish from a school (Oily Blackmouth, Firefin Snapper, Floating Wreckage): a pool pin appears where
+    you stood. Unverified: that a pool's catch names the pool as its loot source (`GetLootSourceInfo`).
+    If it names the bobber instead, no pool is ever recorded.

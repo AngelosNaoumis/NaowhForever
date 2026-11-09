@@ -86,8 +86,8 @@ end
 
 function Target.Skill(category)
     local line = C.PROFESSION_OF[category]
-    local first, second = GetProfessions()
-    return SkillAt(first, line) or SkillAt(second, line) or 0
+    local first, second, _, fishing = GetProfessions()
+    return SkillAt(first, line) or SkillAt(second, line) or SkillAt(fishing, line) or 0
 end
 
 function Target.Tier(skill, need)
