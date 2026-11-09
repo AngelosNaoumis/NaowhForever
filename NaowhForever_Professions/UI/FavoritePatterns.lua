@@ -448,7 +448,7 @@ Render = function()
     local scanned = ns.AuctionScanTime and ns.AuctionScanTime()
     if Manual() then RenderManual(list, scanned) else RenderAutomatic(list, scanned) end
     market:ClearAllPoints()
-    market:SetPoint("TOPLEFT", ah, "TOPRIGHT", PANEL_GAP, 0)
+    market:SetPoint("TOPLEFT", P.AH.Edge(), "TOPLEFT", PANEL_GAP, 0)
     market:Show()
     if not Manual() or scanState == "scanning" then NextLookup() end
 end

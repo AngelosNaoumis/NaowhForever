@@ -67,6 +67,10 @@ NaowhForever_Market/
   you last dragged it (`marketWindow`, placed by the shared `Parts.Place`), one strata up (`HIGH`), and
   drags. A scan finishing redraws the page shown, but never a Sell, Buy or My Auctions tab away from the
   auctioneer, and Bag Worth's rows pick an item on Sell only at the auctioneer.
+- While ours covers Blizzard's window, `ns.MarketAuctionWindow` hands it to Professions, whose panels
+  at the auction house (Search Favorites AH, Disenchant Deals, the Shopping List) then sit beside ours
+  instead of on top of it; Takeover tells it each time ours covers or steps aside
+  (`ns.AuctionWindowChanged`).
 - Sell, Buy and My Auctions need the auction house, so away from it their tabs show a short "At an
   auctioneer" note instead; `/market` opens on Farm. Opening it while Blizzard's window is showing
   at an auctioneer steps back into ours instead.
@@ -252,7 +256,8 @@ In game, at an auctioneer, with The Market on:
 3. Space posts it, the next item comes up, and the bar's total counts up.
 4. Up and Down step the price to just under the next listing; typing a price makes it yours.
 5. Right-clicking a bag item picks it.
-6. The eye button shows Blizzard's window; The Market button under it comes back.
+6. The eye button shows Blizzard's window; The Market button under it comes back. Professions' Shopping
+   List (and Search Favorites AH, Disenchant Deals) sits beside whichever window shows, never on top of ours.
 7. Escape or the X closes the auction house.
 8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
    auction's price is the price for one (check against Blizzard's Auctions tab).

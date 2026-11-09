@@ -361,7 +361,7 @@ function ns.ShoppingListPlace()
     elseif market and market:IsVisible() then
         panel:SetPoint("TOPLEFT", market, "BOTTOMLEFT", 0, -PANEL_GAP)
     elseif ah then
-        panel:SetPoint("TOPLEFT", ah, "TOPRIGHT", AH_GAP, 0)
+        panel:SetPoint("TOPLEFT", P.AH.Edge(), "TOPLEFT", AH_GAP, 0)
     end
 end
 

@@ -25,12 +25,14 @@ local function Activate()
     ah:SetAlpha(0)
     if back then back:Hide() end
     Window.Show(ah, NextStrata(ah:GetFrameStrata()))
+    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
 end
 
 local function Deactivate()
     Window.Hide(true)
     if ah then ah:SetAlpha(1) end
     if back then back:Hide() end
+    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
 end
 
 local function Return()

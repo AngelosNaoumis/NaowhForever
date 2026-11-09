@@ -405,7 +405,7 @@ Place = function()
     elseif favorite and favorite:IsVisible() then
         market:SetPoint("TOPLEFT", favorite, "BOTTOMLEFT", 0, -Style.SIDE_PANEL_GAP)
     else
-        market:SetPoint("TOPLEFT", ah, "TOPRIGHT", Style.SIDE_PANEL_GAP, 0)
+        market:SetPoint("TOPLEFT", P.AH.Edge(), "TOPLEFT", Style.SIDE_PANEL_GAP, 0)
     end
 end
 

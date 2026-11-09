@@ -48,7 +48,7 @@ NaowhForever_Professions/
   Entries.lua          what the recipe list holds, by category and group (P.Entries)
   SkillUpPlan.lua      the cheapest crafts from your skill to your cap, step by step (P.SkillUpPlan)
   Orders.lua           craft orders: value, tip, messages, sending (P.Orders)
-  AuctionHouse.lua     the auction house open, searching it, Shift-click (P.AH)
+  AuctionHouse.lua     the auction house open, the edge its panels sit beside, searching it, Shift-click (P.AH)
   BagRoom.lua          how many crafts the bags have room for (ns.CraftBagRoom)
   ShoppingPlan.lua     the shopping list's store (crafts and other items) and make-or-buy plan (P.Shopping)
   Consumables.lua      the consumables that suit you, by class, mana and level, the best marked (P.Consumables)
@@ -306,6 +306,10 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   that spends gold. A search waits 5s for an answer, a purchase 15s (it settles slower); a purchase
   answering after its timeout still went through. A live price 25% over the last scan is warned
   about. Skip and Cancel are off while a purchase pays, or it would be spent but not counted.
+- Search Favorites AH, Disenchant Deals and the Shopping List stack beside the auction house from one
+  edge (`P.AH.Edge`): Blizzard's window, or The Market's while it covers it (`ns.MarketAuctionWindow`).
+  The Market is wider than Blizzard's window and covers it at alpha 0, so panels on Blizzard's edge sat
+  on top of The Market. The Market calls `ns.AuctionWindowChanged` when it covers or steps aside.
 - At a merchant only plain gold purchases are bought, never extended costs; items sold several to a
   purchase round up to whole purchases, and limited stock caps the amount.
 - Walking up to an anvil changes whether a recipe's requirements are met: SPELL_UPDATE_USABLE is
@@ -596,7 +600,8 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   `test-profession-skill-up-plan.lua`.
 - The window's slices: `test-profession-combat-close.lua`, `test-profession-window-drag.lua`
   (Takeover.lua), `test-profession-link-view.lua` (LinkView.lua), `test-profession-shift-click.lua`
-  (AuctionHouse.lua), `test-profession-merchant-events.lua` (Vendors.lua),
+  (AuctionHouse.lua), `test-professions-ah-panels.lua` (the panels' edge, AuctionHouse.lua),
+  `test-profession-merchant-events.lua` (Vendors.lua),
   `test-shopping-list-plan.lua` (ShoppingPlan.lua), `test-profession-craft-queue.lua` (CraftQueue.lua),
   `test-shopping-consumables.lua` (Consumables.lua),
   and the looks in `test-icon-look.lua` and

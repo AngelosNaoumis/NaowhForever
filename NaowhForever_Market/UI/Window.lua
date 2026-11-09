@@ -219,6 +219,10 @@ function Window.AtAuction()
     return atAuction and Window.Shown()
 end
 
+function ns.MarketAuctionWindow()
+    if Window.AtAuction() then return window end
+end
+
 function ns.ToggleMarketWindow()
     if not Market.On() then return ns.Print(TEXT_OFF) end
     if Window.Shown() then return window:Hide() end
