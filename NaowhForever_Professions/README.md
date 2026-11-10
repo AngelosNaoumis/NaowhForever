@@ -586,6 +586,9 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   is cast, so 3s stands in. Pressing Create mid-craft fails that press while the batch casts on, so
   that failure is ignored. A batch with no craft event 5s past its expected end has stopped. Its
   hooks are installed the first time it is switched on and stay, idle while it is off.
+- The Total Craft Timer's pips mark where each craft ends: a finished craft where it finished, the
+  rest where the timer expects them, so the fill meets a pip as the count goes up. Under 8px a craft
+  (more than 52 crafts) they run together, so a batch that long shows none.
 - Bag room is played out craft by craft on what the bags hold: the item onto a stack with room, else
   a free slot that can take it; the reagents out, smallest stack first (seen in game 2026-09-30), each
   emptied stack freeing its slot. A profession bag takes only its kind, the reagent bag only reagents.

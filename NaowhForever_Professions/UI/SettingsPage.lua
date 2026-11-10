@@ -18,7 +18,7 @@ local ORDER_DISENCHANT, ORDER_TRADE_ENCHANTS, ORDER_DISENCHANT_DEALS = 60, 65, 7
 local ORDER_NODE_ICONS, ORDER_NODE_TOAST = 55, 56
 local SAMPLE_ICON = "Interface\\Icons\\INV_Ingot_02"
 local SAMPLE_NAME, SAMPLE_DONE, SAMPLE_COUNT = ns.L("Smelt Copper"), 4, 10
-local SAMPLE_SHARE, SAMPLE_LEFT = 0.4, 15
+local SAMPLE_SHARE, SAMPLE_LEFT = 0.45, 15
 local TEXT_OFF = ns.L("Turn on Professions")
 local TEXT_SAMPLE_TRACK = ns.L("Track Herbs / Minerals")
 local TEXT_NONE = ns.L("No professions learned yet")
@@ -147,10 +147,15 @@ local function NewCraftPreview(stage)
     return preview
 end
 
+local function SamplePipAt(i)
+    return i / SAMPLE_COUNT
+end
+
 local function PaintCraftPreview(preview)
     local Look = P.CraftTimerLook
     Look.Style(preview)
     Look.Fill(preview, SAMPLE_ICON, SAMPLE_NAME, SAMPLE_DONE, SAMPLE_COUNT)
+    Look.Pips(preview, SAMPLE_COUNT, SAMPLE_DONE, SamplePipAt)
     Look.Progress(preview, SAMPLE_SHARE, SAMPLE_LEFT)
 end
 

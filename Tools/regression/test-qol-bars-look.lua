@@ -45,7 +45,8 @@ local function Load(path, ns, globals)
         Settings = { Group = function() return {} end, Look = function() return {} end,
             Page = function() return { Card = function(_, card) cards[#cards + 1] = card end, Window = Noop } end },
     }
-    ns.THEME = { accent = { r = 0, g = 0.57, b = 0.93 }, bg = { r = 0.05, g = 0.06, b = 0.07 }, accentSoft = {} }
+    ns.THEME = { accent = { r = 0, g = 0.57, b = 0.93 }, bg = { r = 0.05, g = 0.06, b = 0.07 }, accentSoft = {},
+        fg = { r = 0.94, g = 0.95, b = 0.95 } }
     ns.Font = function(parent) return Widget("FontString", parent) end
     ns.Solid = function(parent) return Widget("Texture", parent) end
     ns.Border, ns.PixelInset = Noop, Noop
@@ -124,6 +125,7 @@ do -- Total Craft Timer, drawn on its card's preview
     check("craft timer default: outlined labels at 14, the time at 18", preview.labels[1].font == " 14 OUTLINE"
         and preview.time.font == " 18 OUTLINE")
     check("craft timer default: the background at 90%", preview.bg.color[4] == 0.9)
+    check("craft timer preview: a pip between each sample craft", #preview.pips == 9)
     S.Set("craftTimerTexture", "Smooth")
     S.Set("craftTimerFont", "Arial")
     S.Set("craftTimerFontSize", 12)

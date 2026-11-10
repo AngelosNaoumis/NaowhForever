@@ -13,6 +13,7 @@ local Parts = ns.Shared.Parts
 local ROUND = 0.5
 local WIDTH, TRACK_H, PIN, NAME_SIZE, ICON = 420, 20, 18, 14, 30
 local SIDE_GAP = 10
+local PIP_W, PIP_MIN_GAP = 3, 8
 local TIME_LARGER = 4
 local LABEL_GAP = 4
 local LABEL_SHARE = 0.47
@@ -81,6 +82,7 @@ function Look.New(parent, name)
     frame.bg:SetAllPoints()
     ns.Border(track, Style.BORDER_RGB)
     frame.track = track
+    frame.pips = {}
     local over = CreateFrame("Frame", nil, frame)
     over:SetAllPoints()
     over:SetFrameLevel(track:GetFrameLevel() + LABEL_LEVEL)
@@ -119,6 +121,26 @@ function Look.Fill(frame, icon, name, done, count)
     frame.labels[2]:SetText(TEXT_DONE:format(done, count))
 end
 
+function Look.Pips(frame, count, done, At)
+    local shown = WIDTH / count < PIP_MIN_GAP and 0 or count - 1
+    for i = 1, shown do
+        local pip = frame.pips[i]
+        if not pip then
+            pip = ns.Solid(frame.track, "OVERLAY")
+            pip:SetWidth(PIP_W)
+            frame.pips[i] = pip
+        end
+        local x = At(i) * WIDTH
+        local c = i <= done and Style.BORDER_RGB or T.fg
+        pip:SetColorTexture(c.r, c.g, c.b)
+        pip:ClearAllPoints()
+        pip:SetPoint("TOP", frame.track, "TOPLEFT", x, 0)
+        pip:SetPoint("BOTTOM", frame.track, "BOTTOMLEFT", x, 0)
+        pip:Show()
+    end
+    for i = shown + 1, #frame.pips do frame.pips[i]:Hide() end
+end
+
 function Look.Progress(frame, share, left)
     frame.track:SetValue(math.min(share, 1))
     local seconds = math.max(0, math.floor(left + ROUND))
@@ -154,10 +176,15 @@ local function Place()
     end
 end
 
+local function PipAt(i)
+    return (job.ends[i] or job.known - (job.count - i) * (job.cast + job.gap)) / job.known
+end
+
 local function Show()
     if not bar then Build() end
     Place()
     Look.Fill(bar, job.icon, job.name, job.done, job.count)
+    Look.Pips(bar, job.count, job.done, PipAt)
     HideCastBars()
     bar:Show()
 end
@@ -184,12 +211,14 @@ local function OnStart()
     if not (startMS and endMS) then return end
     job.cast = (endMS - startMS) / MS
     Resync(endMS / MS - GetTime())
+    Look.Pips(bar, job.count, job.done, PipAt)
 end
 
 local function OnSucceeded()
     job.done = job.done + 1
     if job.done >= job.count then return Stop() end
     job.lastEnd = GetTime()
+    job.ends[job.done] = job.lastEnd - job.start
     Resync(job.gap + job.cast)
     Show()
 end
@@ -220,7 +249,7 @@ local function OnCraft(recipeID, count)
     local cast = spell and (spell.castTime or 0) / MS or 0
     Stop()
     job = { recipeID = recipeID, name = recipe and recipe.name or (spell and spell.name),
-        icon = recipe and recipe.icon or (spell and spell.iconID), count = count, done = 0,
+        icon = recipe and recipe.icon or (spell and spell.iconID), count = count, done = 0, ends = {},
         cast = cast > 0 and cast or GUESS_CAST, gap = GAP, start = GetTime() }
     Resync(job.cast)
     for _, event in ipairs(CAST_EVENTS) do events:RegisterUnitEvent(event, "player") end

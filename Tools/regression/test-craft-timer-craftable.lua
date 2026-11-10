@@ -7,8 +7,9 @@ local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
 local RECIPE = 3946
-local boot, bar, craftHook, settingHook, stopHook
+local boot, bar, events, craftHook, settingHook, stopHook
 local craftable = 0
+local now = 100
 
 local function Noop() end
 local frameMethods = {
@@ -23,6 +24,8 @@ local frameMethods = {
     RegisterEvent = function(f, event)
         if event == "PLAYER_LOGIN" then boot = f end
     end,
+    RegisterUnitEvent = function(f) events = f end,
+    SetPoint = function(f, _, _, _, x) f.x = x end,
 }
 local frameMeta = { __index = function(_, k) return frameMethods[k] or Noop end }
 local function Frame(_, name)
@@ -36,7 +39,7 @@ local color = { r = 1, g = 1, b = 1 }
 local settings = { enabled = true, craftTimer = true, craftTimerFontSize = 14, craftTimerBgAlpha = 0.9 }
 local ns = {
     L = dofile("Tools/regression/locale_stub.lua").L,
-    THEME = { bg = color, accent = color, accentSoft = color },
+    THEME = { bg = color, accent = color, accentSoft = color, fg = color },
     Shared = { Parts = { HudFont = Noop } },
     UI = { TexturePath = function() return "" end },
     Solid = function() return Frame() end, Border = Noop, Font = function() return Frame() end, Apply = Noop,
@@ -56,7 +59,7 @@ local env = setmetatable({
     NaowhForever = ns,
     UIParent = Frame(),
     CreateFrame = Frame,
-    GetTime = function() return 100 end,
+    GetTime = function() return now end,
     wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
     UnitCastingInfo = Noop,
     C_Spell = { GetSpellInfo = function() return { name = "Solid Dynamite", castTime = 5000 } end },
@@ -120,5 +123,24 @@ settings.enabled, settings.craftTimer = true, false
 settingHook("craftTimer")
 craftHook(RECIPE, 20)
 check("the new option does not activate a disabled timer", not bar.shown and blizzard.alpha == 0.7)
+
+local function Near(a, b) return math.abs(a - b) < 1e-6 end
+local function PipsShown()
+    local n = 0
+    for _, pip in ipairs(bar.pips) do if pip.shown then n = n + 1 end end
+    return n
+end
+settings.craftTimer = true
+settingHook("craftTimer")
+craftHook(RECIPE, 5)
+check("a batch of 5 has a pip between each craft", PipsShown() == 4)
+check("the first pip sits where the first 5s craft should end", Near(bar.pips[1].x, 5 / 26.2 * 420))
+now = 106
+events.OnEvent(events, "UNIT_SPELLCAST_SUCCEEDED", "player", nil, RECIPE)
+check("a finished craft's pip stays where it finished", Near(bar.pips[1].x, 6 / 27.2 * 420))
+check("the next pip is one craft and gap later", Near(bar.pips[2].x, 11.3 / 27.2 * 420))
+craftable = 60
+craftHook(RECIPE, 60)
+check("a batch too long for its pips to read shows none", PipsShown() == 0)
 
 print(("test-craft-timer-craftable: %d checks passed"):format(checks))
