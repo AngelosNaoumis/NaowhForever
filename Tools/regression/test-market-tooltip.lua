@@ -74,23 +74,24 @@ Check("but not on a single item", not Shows(GREEN, 2) and not Shows(CLOTH))
 
 S.Set("tooltipStyle", "compact")
 S.Set("tooltipStack", "both")
-Check("Compact prices a stack both ways on one line each, with no header",
-    Hover(CLOTH, 1) == "Auction | 100c each, 2000c for 20\nVendor | 10c each, 200c for 20")
+Check("Compact prices a stack both ways on one line each, the count beside the label, with no header",
+    Hover(CLOTH, 1) == "Auction x20 | 100c each, 2000c\nVendor x20 | 10c each, 200c")
 Check("and always takes the price from Auction Prices", Shows(CLOTH, 1) and Shows(GREEN, 2) and Shows(CLOTH))
 local unlinked = Tooltip(CLOTH, 1)
 unlinked.link = nil
 Check("but not on a tooltip it cannot read the item from, which would leave it without a price",
     not ns.Market.ShowsPrice(unlinked, CLOTH))
 S.Set("tooltipStack", "each")
-Check("Compact with Each Item", Hover(CLOTH, 1) == "Auction | 100c each\nVendor | 10c each")
+Check("Compact with Each Item, no count: the price is for one",
+    Hover(CLOTH, 1) == "Auction | 100c each\nVendor | 10c each")
 S.Set("tooltipStack", "stack")
-Check("Compact with Whole Stack", Hover(CLOTH, 1) == "Auction | 2000c for 20\nVendor | 200c for 20")
+Check("Compact with Whole Stack", Hover(CLOTH, 1) == "Auction x20 | 2000c\nVendor x20 | 200c")
 Check("a single item reads plain", Hover(GREEN, 2) == "Auction | 900c\nVendor | 20c\nDisenchant | about 950c")
 
 S.Set("tooltipBest", true)
 local text, tooltip = Hover(CLOTH, 1)
 Check("the verdict leads, after the cut, for the whole stack",
-    text == "Best: Auction | +1700c over Vendor\nAuction | 2000c for 20\nVendor | 200c for 20"
+    text == "Best: Auction | +1700c over Vendor\nAuction x20 | 2000c\nVendor x20 | 200c"
         and tooltip.lefts[1] == ns.THEME.accent.r and tooltip.lefts[2] == ns.THEME.muted.r)
 S.Set("tooltipStack", "each")
 Check("and for one item with Each Item", Hover(CLOTH, 1):find("^Best: Auction | %+85c over Vendor\n") ~= nil)

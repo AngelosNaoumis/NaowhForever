@@ -303,7 +303,9 @@ NaowhForever_Market/
 - Stack Prices reads a stack in your bags for each item, the whole stack, or both; away from your bags an
   item counts one. Both is the old split: Auction Prices' line per item, The Market's Stack of N under
   it. Each Item drops Stack of N; Whole Stack keeps it and Auction Prices leaves its line off on that
-  stack. Compact puts the two on one line ("10s each, 2g for 20") and a single item plain.
+  stack. Compact puts the two on one line ("Auction x20", "10s each, 2g") and a single item plain. The
+  count sits beside the label, so the prices line up on the right for a glance; Each Item has no count,
+  since its price is for one.
 - A price shows once: whenever The Market's lines carry the auction price (Compact, or Whole Stack on a
   stack), `Market.ShowsPrice` tells QoL's Auction Prices to leave its own line off. QoL reads it only
   when The Market is loaded, and it answers no until The Market's post-call is in, so Auction Prices
@@ -422,7 +424,8 @@ Away from the auction house:
     no The Market header and no Market Price line above them; a green adds Disenchant. Back on
     Detailed, the tooltip is as it was.
 49. Stack Prices on the same stack: Each Item, Whole Stack and Both change Compact's Auction and Vendor
-    lines. On Detailed, Whole Stack shows Stack of N and no Market Price line, Each Item the Market Price
+    lines. Whole Stack and Both read "Auction x20" on the left with the stack's price on the right; Each
+    Item reads "Auction" with no count. On Detailed, Whole Stack shows Stack of N and no Market Price line, Each Item the Market Price
     line and no Stack of N, and Both the two.
 50. Best Way to Sell on: the cloth reads Best: Auction (or Vendor, when a vendor pays more after the cut)
     and by how much. A green reads Best: Disenchant on an enchanter who can disenchant it when its
