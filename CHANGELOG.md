@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.23
 
 ### Changed
 - Dungeon Journal: its data is updated to WoW Forever build 1.60.1.70888.
