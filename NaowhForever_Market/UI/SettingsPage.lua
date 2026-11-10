@@ -50,6 +50,10 @@ local function DealTooltipsOn()
     return DealsOn() and Deal("disenchantDealsTooltip")
 end
 
+local function ShareFree()
+    return ns.PriceShareFree == nil or ns.PriceShareFree()
+end
+
 local function PriceRows()
     local qol = ns.QoLSettings
     local rows = {
@@ -65,6 +69,9 @@ local function PriceRows()
         { key = "ahCapture", label = "Capture Other Addons' Scans", toggle = true, store = qol,
           help = "Also keeps the prices from full auction house scans that other addons start, "
               .. "such as Auctionator or TSM." },
+        { key = "ahShare", label = "Prices for Other Addons", toggle = true, store = qol,
+          needs = ShareFree, why = "Auctionator is installed",
+          help = "Addons that read Auctionator's prices get these prices while Auctionator is not installed." },
     }
     local deals = ns.ProfessionSettings
     if not deals then return rows end

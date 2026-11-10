@@ -30,7 +30,7 @@ globals = {
     "NaowhForeverQuestGiverPinMixin",
     "NaowhForeverRarePinMixin",
     "SlashCmdList", "StaticPopupDialogs",
-    "STANDARD_TEXT_FONT", "UNIT_NAME_FONT", "DAMAGE_TEXT_FONT", "RXPGuides_Themes",
+    "STANDARD_TEXT_FONT", "UNIT_NAME_FONT", "DAMAGE_TEXT_FONT", "RXPGuides_Themes", "Auctionator",
 }
 
 -- The game's API and constants the addon reads. A name missing here is flagged, which is

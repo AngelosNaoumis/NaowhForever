@@ -419,6 +419,14 @@ Check("before your faction is known nothing loads", t.ns.AuctionPrice(10) == nil
 t.Faction("Alliance")
 Check("and the release's prices load once it is", t.ns.AuctionPrice(10) == 50 and t.Loads() == 1)
 
+t = Setup(true, false, true)
+t.Priced({ [10] = 77 }, 60)
+t.Faction(nil)
+Check("a price asked for before your faction is known finds none", t.ns.AuctionPrice(10) == nil)
+t.Faction("Alliance")
+Check("and the realm alone is not kept as your house: your scan's price reads once it is known",
+    t.ns.AuctionPrice(10) == 77)
+
 t = Setup(true, false, true, nil, nil, Feed({ [110] = { "Alliance", { [10] = 5000000000 } } }))
 Check("a price past 32 bits reads whole on Windows", t.ns.AuctionPrice(10) == 5000000000)
 
@@ -435,5 +443,15 @@ t.Fire("REPLICATE_ITEM_LIST_UPDATE")
 t.Flush()
 Check("a scan carries the realm's time, so a PC clock hours off still compares right with the release's",
     t.ns.AuctionScanTime() == t.Now())
+
+t = Setup(true, false, true)
+local changed = 0
+t.ns.AuctionPricesChanged = function() changed = changed + 1 end
+t.Fire("AUCTION_HOUSE_SHOW")
+t.Button().click()
+Check("Prices for Other Addons hears nothing before a scan finishes", changed == 0)
+t.Fire("REPLICATE_ITEM_LIST_UPDATE")
+t.Flush()
+Check("and hears once when it does", changed == 1)
 
 print("auction prices: " .. checks .. " checks passed")

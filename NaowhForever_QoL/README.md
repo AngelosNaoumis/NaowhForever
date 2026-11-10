@@ -119,6 +119,7 @@ NaowhForever_QoL/
     LootConfirm.lua     the retired loot confirmation skip, inert
     WaylaidCratesData.lua what each Waylaid Crate can be filled with (ns.WaylaidCrates), generated
     AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
+    PriceShare.lua      Prices for Other Addons: Auctionator's price API (`Auctionator.API.v1`) answered from Auction Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
     BagSpaceIgnore.lua  Bag Space's Ignore List window (ns.ShowBagSpaceIgnoreList)
@@ -509,6 +510,33 @@ NaowhForever_QoL/
 - Auction House Price leaves its line off while The Market's tooltip carries the item's price itself (its
   Compact style, or Whole Stack on a stack), asked through `ns.Market.ShowsPrice` only when The Market is
   loaded, so the price shows once. A crate then keeps its bundles, under the prices' age.
+- Prices for Other Addons (`ahShare`) sets the global `Auctionator` to a table of its own whose `API.v1`
+  answers Auctionator's price calls: auction price, age and exactness by item ID and link, vendor and
+  disenchant price by item ID and link, and `RegisterForDBUpdate`. Nothing else of Auctionator's is there
+  (no searches, no shopping lists), so an addon that calls more than the prices errors in its own code.
+- It is set only while `Auctionator` is unset and Auctionator is not installed and enabled for this character
+  (`C_AddOns.IsAddOnLoadable` with the player's GUID, as Blizzard's `AddOnUtil` asks). Auctionator makes its
+  global anew in its first file, so even if it loads after us its own table replaces ours.
+- It is set when QoL loads, not at login, because some addons look for Auctionator as they load; one that
+  loads before QoL and looks only then never sees it. Turning it off clears the global only while it is ours,
+  and every call answers nothing while the global is not ours, so an addon that kept the `API.v1` table
+  agrees with one that looks again. With Auctionator installed the row is unavailable (`ns.PriceShareFree`):
+  turned on, it would change nothing. `PriceShare.lua` loads before `AuctionPrices.lua` so the row's card
+  can name that function.
+- Age is whole days since the price's scan or the release's prices, never below 0 (the release's time can
+  run a little ahead of the realm's clock), and nil past 21 days, as Auctionator's is. A price is per item
+  ID, so a link's price ignores a random suffix ("of the Bear"); for that reason a weapon or armour link is
+  never exact, while any other priced item is.
+- Other addons can ask for a price during their own load, before the player's faction is known, so
+  `House()` remembers its key only once the faction is there; until then it uses the realm-only key, as
+  before, without remembering it.
+- Vendor price is what a merchant sells the item for, one item, from Professions' learned and built-in
+  vendor prices (`ns.Professions.Vendors.Price`), as Auctionator's is; nil without Professions. Disenchant
+  price is Professions' expected disenchant value before the auction house cut (`DisenchantValues.Expected`).
+- `RegisterForDBUpdate` callbacks run when a scan finishes and its prices are saved (`ns.AuctionPricesChanged`,
+  from Auction Prices), and only while the global is ours. Each runs through `xpcall` with the game's error
+  handler, so another addon's broken callback is reported as its own and the rest still run. The release's prices loading is not an update: they load on the first
+  price asked for, inside that call.
 - The GCD Tracker reads only the player's own casts, and those are never secret.
 - Forever has no dedicated global cooldown spell, so the GCD Tracker watches one baseline spell
   per class with no cooldown of its own (`GCD_SPELLS`): any cooldown it shows is the global

@@ -62,9 +62,14 @@ local decoded = {}
 local function House(create)
     local account = ns.AccountSettings()
     account.ahPrices = account.ahPrices or {}
-    houseKey = houseKey or GetRealmName() .. REALM_JOIN .. (UnitFactionGroup("player") or "")
-    if create and not account.ahPrices[houseKey] then account.ahPrices[houseKey] = { prices = {} } end
-    return account.ahPrices[houseKey]
+    local key = houseKey
+    if not key then
+        local faction = UnitFactionGroup("player")
+        key = GetRealmName() .. REALM_JOIN .. (faction or "")
+        if faction then houseKey = key end
+    end
+    if create and not account.ahPrices[key] then account.ahPrices[key] = { prices = {} } end
+    return account.ahPrices[key]
 end
 
 local function FeedHouses()
@@ -273,6 +278,7 @@ local function Finish(prices)
     ns.Print(Tag() .. ": " .. ns.AuctionScanSummary())
     if ns.ProfWindowRefresh then ns.ProfWindowRefresh() end
     if ns.MarketRefresh then ns.MarketRefresh() end
+    if ns.AuctionPricesChanged then ns.AuctionPricesChanged() end
 end
 
 local function Read()
@@ -480,5 +486,8 @@ ns.Shared.Settings.Page("QoL/Loot & Items", S):Card({
         { key = "ahCapture", label = "Capture Other Addons' Scans", toggle = true,
           help = "Also keeps the prices from full auction house scans that other addons start, "
               .. "such as Auctionator or TSM." },
+        { key = "ahShare", label = "Prices for Other Addons", toggle = true,
+          needs = ns.PriceShareFree, why = "Auctionator is installed",
+          help = "Addons that read Auctionator's prices get these prices while Auctionator is not installed." },
     },
 })
