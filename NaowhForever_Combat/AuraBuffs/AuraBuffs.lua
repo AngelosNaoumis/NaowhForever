@@ -10,7 +10,7 @@ local S = ns.UI.ModuleSettings("auraBuffs", {
     consumablesMaxHide = false, raidBuffsMaxHide = false, personalBuffsMaxHide = false,
     onlyIfCarried = true, carriedPicks = {}, hideResting = true,
     raidBuffsWorld = true, raidBuffsDungeon = true, raidBuffsRaid = true,
-    personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true, personalBuffsSeconds = false,
+    personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true, personalBuffsSeconds = false, battleShoutSeconds = false,
     raidBuffs = F.raidBuffs, raidBuffsOwn = true, raidBuffRange = F.raidBuffRange, raidBuffRangeHide = F.raidBuffRangeHide,
     hideBlessingsOnPaladin = F.hideBlessingsOnPaladin,
     raidBuffPicks = { intellect = true, stamina = true, spirit = true, wild = true, blessing = false },

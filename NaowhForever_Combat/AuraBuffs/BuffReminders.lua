@@ -532,7 +532,7 @@ local function PersonalBuffs(list, buffs)
             if family.key == "imbue" and lastImbue and C_SpellBook.IsSpellKnown(lastImbue) then
                 spell = lastImbue
             end
-            local has, aura = Has(family, buffs, warn)
+            local has, aura = Has(family, buffs, family.seconds and S.Get(family.seconds) or warn)
             if not has then
                 local entry = { icon = C_Spell.GetSpellTexture(spell), aura = aura, key = family }
                 if family.items then

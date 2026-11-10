@@ -1458,6 +1458,25 @@ do
     Check("reset follows the minutes again", row.get(), 120)
 end
 
+-- Battle Shout's own seconds apply to the shout only; other personal buffs keep the shared warning.
+do
+    local t = Fixture({ page = true, instance = "raid", units = { player = "WARRIOR" }, known = { [6673] = true },
+        bags = { 13931 }, auras = { player = { { 1249520, 60, 900 }, { 6673, 100, 180 } } } })
+    t.Login()
+    local Settings = t.ns.Shared.Settings
+    local row
+    for _, r in ipairs(Settings.pages["AuraBuffs/Settings"].cards.buffs.rows) do
+        if r.key == "battleShoutSeconds" then row = r end
+    end
+    Check("unset, the slider shows the shared warning", row.get(), 120)
+    Check("unset, the shout warns with the shared warning", t.Shown(), "item:13931(t) spell:6673(t)")
+    row.set(30)
+    Check("set, the slider shows its own", row.get(), 30)
+    Check("the shout waits, the food still warns", t.Shown(), "item:13931(t)")
+    t.Advance(80)
+    Check("woken at thirty seconds left", t.Shown(), "item:13931(t) spell:6673(t)")
+end
+
 -- A class with no personal buff: the card still lists other classes'.
 do
     local t = Fixture({ page = true, units = { player = "PALADIN" },

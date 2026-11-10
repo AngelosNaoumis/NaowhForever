@@ -256,6 +256,11 @@ rows[#rows + 1] = { key = "personalBuffsSeconds", label = "Warn With Seconds Lef
     help = "How early your class buffs remind you; follows Warn With Minutes Left until you set it.",
     get = R.PersonalWarn,
     set = function(v) S.Set("personalBuffsSeconds", v) end }
+rows[#rows + 1] = { key = "battleShoutSeconds", label = "Battle Shout Seconds Left", slider = SECONDS_RANGE, unit = " s",
+    needs = PersonalBuffsOn, why = NEEDS_PERSONAL, hidden = function() return playerClass ~= "WARRIOR" end,
+    help = "How early Battle Shout reminds you; follows Warn With Seconds Left until you set it.",
+    get = function() return S.Get("battleShoutSeconds") or R.PersonalWarn() end,
+    set = function(v) S.Set("battleShoutSeconds", v) end }
 rows[#rows + 1] = Group(TEXT_PERSONAL_PICKS, true)
 for _, family in ipairs(ALL_PERSONAL) do
     rows[#rows + 1] = PersonalRow(family)

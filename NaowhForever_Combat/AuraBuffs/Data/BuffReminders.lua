@@ -148,7 +148,7 @@ D.PERSONAL = {
         spells = { 22783, 22782, 6117, 10220, 10219, 7320, 7302, 7301, 7300, 168 } },
     { key = "poisons", name = "Poisons", class = "ROGUE", weapons = { 16, 17 }, spells = { 2842 },
         items = D.POISON_ITEMS },
-    { key = "battleShout", name = "Battle Shout", class = "WARRIOR",
+    { key = "battleShout", name = "Battle Shout", class = "WARRIOR", seconds = "battleShoutSeconds",
         spells = { 25289, 11551, 11550, 11549, 6192, 5242, 6673 } },
     { key = "innerFire", name = "Inner Fire", class = "PRIEST",
         spells = { 10952, 10951, 1006, 602, 7128, 588 } },

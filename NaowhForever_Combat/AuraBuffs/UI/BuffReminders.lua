@@ -21,7 +21,7 @@ local KEYS = {
     enabled = true, consumablesMinutes = true,
     consumablesWorld = true, consumablesDungeon = true, consumablesRaid = true,
     raidBuffsWorld = true, raidBuffsDungeon = true, raidBuffsRaid = true,
-    personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true, personalBuffsSeconds = true,
+    personalBuffsWorld = true, personalBuffsDungeon = true, personalBuffsRaid = true, personalBuffsSeconds = true, battleShoutSeconds = true,
     consumablesMaxHide = true, raidBuffsMaxHide = true, personalBuffsMaxHide = true,
     onlyIfCarried = true, carriedPicks = true, hideResting = true, raidBuffs = true, raidBuffsOwn = true, raidBuffPicks = true, iconSize = true,
     buffIconMode = true, raidBuffRange = true, raidBuffRangeHide = true, hideBlessingsOnPaladin = true,
