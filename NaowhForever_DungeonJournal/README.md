@@ -311,11 +311,14 @@ the game's own tables, and what they can't settle is listed in the pull request 
   games were sent (build 1.60.1.70840, CC BY 4.0, credited in `LICENSE.md`). The quests it files
   under The Drowned City, Krol'dok Stronghold, Alcaz Prison and Blackmaw Hold that no other source
   has are from there, as is Take Two With Water's giver, whom its quest text names. Shareable is
-  the quest's own flag there. Quest givers come from ForeverChanges' pins, except on the four
-  redrawn maps (Stormwind, Mulgore, Redridge, the Eastern Plaguelands), where its spots are
-  Classic's. An entry in `Tools/data/quest_info.json` with `from` has its required level from that
-  source instead of Wowhead's page: the server's where the cached page is out of date, and
-  ForeverChanges' (else the server's) for quests the cache has no page for.
+  the quest's own flag there. The dungeons from Blackrock Depths up were checked again on
+  2026-11-10 (build 1.60.1.70862), which had three more of their quests' flags and the name
+  Forever gives Finkle Einhorn's quest (Pip Quickwit, At Your Service!). Quest givers come from
+  ForeverChanges' pins, except on the four redrawn maps (Stormwind, Mulgore, Redridge, the Eastern
+  Plaguelands), where its spots are Classic's. An entry in `Tools/data/quest_info.json` with
+  `from` has its required level from that source instead of Wowhead's page: the server's where the
+  cached page is out of date, and ForeverChanges' (else the server's) for quests the cache has no
+  page for.
 - The quests ForeverChanges and the server file under a dungeon that the guide left out are in
   too (2026-11-07): a quest with its own start is a row (Dire Maul's class books, the Valthalak
   amulet pieces in the dungeon each spirit is summoned in, The Challenge under Blackrock Depths,
