@@ -110,6 +110,9 @@ Shared/
                    QoL's Food & Drink Bar and Group Buttons, and the Gear Set, Trinket and Blessing bars
   UI/MinimapPins.lua spots on a world map as pins on the minimap, kept in place while you move
                    (Parts.MinimapLayer): Glimmer's herb and ore icons
+  UI/OpenMap.lua   map pins on OpenMap's seamless world map: the zones beside the map underneath
+                   (OpenMap.Maps), where a spot on any of them goes on it (OpenMap.Spot), and the zone
+                   under the cursor (OpenMap.MapAtCursor)
   UI/Anchor.lua    anchoring a bar to a frame (Shared.Anchor): its Anchor rows, the picker that lights the
                    frame under the cursor, and the editor beside the bar
   View/View.lua    the row engine: pooled rows, cards, the card grid, one redraw per burst
@@ -244,6 +247,13 @@ Each file uses only the ones above it in `Shared.xml`. Every part sits on `ns.Sh
   can be any list, flat or not. `layer:Set(mapID, spots, count)` shows a map's spots (nil to clear),
   `layer:Repaint()` paints every pin again. It moves the pins only while you move or the minimap turns,
   and looks only at the spots within twice the minimap's view, gathered again every `REFRESH_YARDS`.
+- **World map pins and OpenMap:** a pin provider loops `OpenMap.Maps(map)` where it read
+  `map:GetMapID()` (a list kept for that map: read it, never change it), places each spot of map
+  `mapID` at `OpenMap.Spot(map, mapID, x, y)` (0 to 1) and
+  leaves it off when that is nil, and gives its pins their own map for a waypoint or a tooltip, not the
+  map's. A provider that turns other maps' spots onto the map itself uses `OpenMap.Spot` for them while
+  `OpenMap.On()`, and a hover label asks `OpenMap.MapAtCursor()`. Without OpenMap, `Maps` is the map
+  alone and `Spot` the spot as it was.
 - **A price to type:** `Parts.MoneyBox(parent, onChange)` makes three number boxes, gold, silver and
   copper, each with its coin; Tab and Shift-Tab move between them. `money:SetAmount(copper)` fills them,
   `money:GetAmount()` reads them back in copper (silver and copper over 99 count as 99),
@@ -509,6 +519,34 @@ What a comment in the code used to say, in short. The house rules behind it are 
   only. They get it back on the next frame after the answer, so they do not print it, or after
   `MUTE_LIMIT` seconds if no answer comes. A ding starts the level's time again; a /played the
   player types updates it too.
+- OpenMap (another addon) stitches every zone into one world map on the game's own `WorldMapFrame`.
+  The map underneath (`GetMapID()`) is only the zone the view is on: OpenMap changes it each time the
+  view settles on another zone, about half a second after it stops, and the view shows that zone's
+  neighbours round it. Pins drawn for the map underneath alone showed one zone's at a time, all of them
+  swapped at each change, and none on the zones beside it. `OpenMap.Maps` adds the zones beside it and
+  `OpenMap.Spot` places their spots through OpenMap's own `OpenMapAPI` (`WorldFromMap`, then
+  `MapFromWorld`), so a pin sits where OpenMap draws its place, past the edge of the map underneath.
+- The zones beside it are picked by the map underneath, not by the view: OpenMap changes the map before
+  it sets the view for it, so the view while the pins are placed is still the last map's. Zones, and
+  spots, within `NEAR` (half the map's width and height) of it are placed, as far as OpenMap places
+  other addons' HereBeDragons pins round it. The pins then change only with the map, as without OpenMap.
+  The zones beside a map are worked out once and kept: they depend only on the map, and every provider
+  asks for them on each change of the map underneath.
+- A capital (`ns.TownCapitals`) is left out until the view zooms into it and it becomes the map
+  underneath, as the game's own maps leave a capital's pins to its own map, so a capital's vendors and
+  trainers never crowd a neighbouring zone's map. The list, not the maps' boxes, says what a capital is:
+  in the game's UiMapAssignment (build 1.60.1.70862) Stormwind's and Orgrimmar's boxes stick out past
+  their zones', while Mulgore's lies inside the Barrens', Moonglade's inside Winterspring's and
+  Shen'dralas's inside Mulgore's. On a continent or the whole world only that map's own pins show, and
+  `OpenMap.Spot` keeps another map's spots to that map (0 to 1), as without OpenMap.
+- `OpenMap.MapAtCursor` is OpenMap's zone under the cursor (`CursorPosition`, then `MapAt`, from its
+  API version 3): zoomed in, the map underneath is a zone, and `C_Map.GetMapInfoAtPosition` on it sees
+  no other zone. Over open water it is the continent (or the world), and with an older OpenMap nil, so a
+  hover label falls back to the game's lookup then, as without OpenMap. Zone Info's hover uses it; QoL's
+  Zone Levels and Fishing Levels stand down there instead (NaowhForever_QoL/README.md, Why).
+- OpenMap leaves the map to the game when the Gamepad UI is on at login, so the pins are as without it
+  there. With its own test option to keep its map under the Gamepad UI, the game hides every pin past
+  the map underneath's edge (`SetPinPosition`), so only that map's pins show.
 
 ### Parts
 

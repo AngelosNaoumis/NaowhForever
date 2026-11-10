@@ -159,7 +159,7 @@ addon.Shared = { Style = { ROUND = "round" }, Parts = { TrackerPanel = function(
     panel = setmetatable({ opts = opts, bar = BAR, shown = true }, PANEL)
     panel.mover = opts.mover(panel, NOTHING)
     return panel
-end } }
+end }, OpenMap = dofile("Tools/regression/shared_openmap.lua") }
 addon.UI.AttachMover = function(_, label, _, page)
     mover = { label, page, Show = NOTHING, Hide = NOTHING }
     return mover

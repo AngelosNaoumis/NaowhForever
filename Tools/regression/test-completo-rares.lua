@@ -250,7 +250,10 @@ local function Fixture(settings, units)
         if opts.background == "card" then rows[#rows + 1] = { key = prefix .. "Background" } end
         return rows
     end
+    local openMap, _, stitch = dofile("Tools/regression/shared_openmap.lua")
+    env.Stitch = stitch
     ns.Shared = { Settings = Settings, MapPins = {}, ScalePin = function() end, PinClicks = function() end, Places = dofile("Tools/regression/shared_places.lua"),
+        OpenMap = openMap,
         -- Per character, by the player's GUID.
         CharacterData = function(key)
             account[key] = account[key] or {}
@@ -334,7 +337,7 @@ local function Fixture(settings, units)
             return self.pins[i]
         end
     end
-    function map:AcquirePin(_, data)
+    function map:AcquirePin(_, ...)
         local pin = env.CreateFromMixins(env.NaowhForeverRarePinMixin)
         local icon = { atlas = nil, desaturated = false }
         function icon.SetAtlas(t, atlas) t.atlas = atlas; return true end
@@ -348,7 +351,7 @@ local function Fixture(settings, units)
         -- On a 1000-wide screen, the map filling it.
         pin.GetRight = function(p) return p.at[1] * 1000 end
         pin.GetEffectiveScale = function() return 1 end
-        pin:OnAcquired(data)
+        pin:OnAcquired(...)
         self.pins[#self.pins + 1] = pin
         return pin
     end
@@ -996,6 +999,33 @@ do
     Check(#PinsOf(10644) == 1 and PinsOf(10644)[1].Icon.desaturated, "with Show Killed Rares, a grey star")
     ns.CompletoSettings.Set("rarePins", false)
     Check(#env.worldMap.pins == 0, "switched off: the stars go")
+end
+
+-- Map Pins on OpenMap's seamless map: a rare of the zone beside the map underneath gets its star where
+-- OpenMap draws it, its way from its own zone and its waypoint on its own map.
+do
+    local ns, env = Fixture({ enabled = true, rarePins = false, rarePinsKilled = false, rarePinSize = 18 }, {})
+    ns.CompletoRareData.Rares[10647][7] = 1441
+    env.Stitch({ [1440] = { 0.4, 0.4, 0.5, 0.5 }, [1441] = { 0.5, 0.4, 0.55, 0.45 } })
+    ns.CompletoSettings.Set("rarePins", true)
+    local function PinsOf(npc, kind)
+        local out = {}
+        for _, pin in ipairs(env.worldMap.pins) do
+            if pin.npc == npc and (kind == nil or pin.kind == (kind or nil)) then out[#out + 1] = pin end
+        end
+        return out
+    end
+    local function Near(a, b) return math.abs(a - b) < 1e-9 end
+    local howler, raze = PinsOf(10644)[1], PinsOf(10647, false)[1]
+    Check(howler and howler.at[1] == 0.5 and howler.at[2] == 0.4, "the map underneath's rare where it was")
+    Check(raze and Near(raze.at[1], 1.35) and Near(raze.at[2], 0.1),
+        "a rare of the zone beside it: its star where OpenMap draws it, past the map underneath's edge")
+    raze:OnMouseEnter()
+    local dots = PinsOf(10647, "dot")
+    Check(#dots == 3 and Near(dots[1].at[1], 1.34) and Near(dots[1].at[2], 0.1), "its way's dots from its own zone")
+    raze:OnMouseLeave()
+    raze:OnClick("LeftButton")
+    Check(env.waypoints[1][2] == 1441 and env.waypoints[1][3] == 70, "its waypoint on its own zone's map")
 end
 
 -- Map Pins: the layer of a rare's last kill

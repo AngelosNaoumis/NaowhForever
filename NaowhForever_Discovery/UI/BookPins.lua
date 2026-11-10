@@ -6,6 +6,7 @@ local C = Discovery.C
 local S = Discovery.Settings
 local L = Discovery.Library
 local Style = Discovery.Style
+local OpenMap = ns.Shared.OpenMap
 
 local HINT, QUIET, GOLD = Style.HINT_RGB, Style.QUIET_RGB, Style.GOLD_RGB
 local TEMPLATE = "NaowhForeverLibraryPinTemplate"
@@ -76,16 +77,14 @@ end
 
 function NaowhForeverLibraryPinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverLibraryPinMixin:OnAcquired(entry)
+function NaowhForeverLibraryPinMixin:OnAcquired(entry, x, y)
     ns.Shared.PinClicks(self)
     self.entry = entry
     self:SetSize(S.Get("mapPinSize"), S.Get("mapPinSize"))
     local icon = entry.book and (C_Item.GetItemIconByID(entry.book.item) or BOOK_ICON) or TURN_IN_ICON
     self.Icon:SetTexture(icon)
     self.Icon:SetTexCoord(CROP_LOW, CROP_HIGH, CROP_LOW, CROP_HIGH)
-    local x, y
-    if entry.book then x, y = entry.spot[C.SPOT_X], entry.spot[C.SPOT_Y] else x, y = entry.npc.x, entry.npc.y end
-    self:SetPosition(x / C.PERCENT, y / C.PERCENT)
+    self:SetPosition(x, y)
     self:ApplyCurrentScale()
 end
 
@@ -111,6 +110,23 @@ function NaowhForeverLibraryPinMixin:OnClick(button)
     end
 end
 
+local function AddBooks(map, mapID)
+    for _, item in ipairs(L.OnMap(mapID)) do
+        local spot = item[2]
+        local x, y = OpenMap.Spot(map, mapID, spot[C.SPOT_X] / C.PERCENT, spot[C.SPOT_Y] / C.PERCENT)
+        if x then map:AcquirePin(TEMPLATE, { book = item[1], spot = spot }, x, y) end
+    end
+end
+
+local function AddTurnIns(map, mapID)
+    for kind, n in pairs(counts) do
+        local npc = ns.LibraryTurnIns[kind][L.Side()]
+        local x, y
+        if npc.map == mapID then x, y = OpenMap.Spot(map, mapID, npc.x / C.PERCENT, npc.y / C.PERCENT) end
+        if x then map:AcquirePin(TEMPLATE, { npc = npc, count = n }, x, y) end
+    end
+end
+
 function provider:RemoveAllData()
     self:GetMap():RemoveAllPinsByTemplate(TEMPLATE)
 end
@@ -119,15 +135,11 @@ function provider:RefreshAllData()
     self:RemoveAllData()
     if not On() then return end
     local map = self:GetMap()
-    local mapID = map:GetMapID()
-    for _, item in ipairs(L.OnMap(mapID)) do
-        map:AcquirePin(TEMPLATE, { book = item[1], spot = item[2] })
-    end
     CountCarried()
-    if not S.Get("mapTurnIn") then return end
-    for kind, n in pairs(counts) do
-        local npc = ns.LibraryTurnIns[kind][L.Side()]
-        if npc.map == mapID then map:AcquirePin(TEMPLATE, { npc = npc, count = n }) end
+    local turnIns = S.Get("mapTurnIn")
+    for _, mapID in ipairs(OpenMap.Maps(map)) do
+        AddBooks(map, mapID)
+        if turnIns then AddTurnIns(map, mapID) end
     end
 end
 

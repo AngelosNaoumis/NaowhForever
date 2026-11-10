@@ -5,6 +5,7 @@ local Completo = ns.Completo
 local S = Completo.Settings
 local Q = Completo.Quests
 local Style = Completo.Style
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverQuestGiverPinTemplate"
 local BANG_ATLAS, GREY_ATLAS, REPEAT_ATLAS = "QuestNormal", "TrivialQuests", "QuestDaily"
@@ -74,7 +75,7 @@ end
 
 function NaowhForeverQuestGiverPinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverQuestGiverPinMixin:OnAcquired(giver)
+function NaowhForeverQuestGiverPinMixin:OnAcquired(giver, x, y)
     ns.Shared.PinClicks(self)
     self.quests = self.quests or {}
     wipe(self.quests)
@@ -83,7 +84,7 @@ function NaowhForeverQuestGiverPinMixin:OnAcquired(giver)
     local size = S.Get("mapPinSize")
     self:SetSize(size, size)
     SetMark(self.Icon, giver)
-    self:SetPosition(giver.x / PERCENT, giver.y / PERCENT)
+    self:SetPosition(x, y)
     self:ApplyCurrentScale()
 end
 
@@ -122,8 +123,11 @@ function provider:RefreshAllData()
     if not On() then return end
     local map = self:GetMap()
     Q.Refresh()
-    for _, giver in ipairs(Q.Givers(map:GetMapID(), S.Get("mapGrey"), S.Get("mapChainsOnly"))) do
-        map:AcquirePin(TEMPLATE, giver)
+    for _, mapID in ipairs(OpenMap.Maps(map)) do
+        for _, giver in ipairs(Q.Givers(mapID, S.Get("mapGrey"), S.Get("mapChainsOnly"))) do
+            local x, y = OpenMap.Spot(map, mapID, giver.x / PERCENT, giver.y / PERCENT)
+            if x then map:AcquirePin(TEMPLATE, giver, x, y) end
+        end
     end
 end
 

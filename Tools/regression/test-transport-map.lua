@@ -9,7 +9,7 @@ local function Read(path)
 end
 
 local now, clock = 1700000000, 0
-local ns = { Shared = { Parts = {}, Settings = {}, Places = dofile("Tools/regression/shared_places.lua"),
+local ns = { Shared = { Parts = {}, Settings = {}, Places = dofile("Tools/regression/shared_places.lua"), OpenMap = dofile("Tools/regression/shared_openmap.lua"),
     Style = dofile("Tools/regression/shared_style.lua") },
     THEME = { accent = { r = 0, g = 0.5, b = 1 }, fg = { r = 1, g = 1, b = 1 } }, UI = {},
     QoLConstants = dofile("Tools/regression/qol_constants.lua"),

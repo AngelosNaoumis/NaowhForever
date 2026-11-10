@@ -52,6 +52,7 @@ end
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
     Print = function(msg) printed[#printed + 1] = msg end,
     WaypointPinOn = function() return true end,
+    Shared = { OpenMap = dofile("Tools/regression/shared_openmap.lua") },
 }
 local env = setmetatable({
     NaowhForever = ns,

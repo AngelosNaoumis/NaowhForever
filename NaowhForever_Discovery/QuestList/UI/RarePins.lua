@@ -6,6 +6,7 @@ local Completo = ns.Completo
 local S = Completo.Settings
 local Style = Completo.Style
 local R = Completo.Rares
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverRarePinTemplate"
 local STAR_ATLAS = Style.STAR_ATLAS
@@ -35,6 +36,7 @@ local added
 local focused
 local shown = {}
 local spot = {}
+local from = {}
 
 local function ScaleRarePin(pin)
     ns.Shared.ScalePin(pin, RARE_PIN_SCALE)
@@ -64,9 +66,12 @@ end
 
 local function Place(map, npc, points, first, kind, into)
     for i = first * 2 - 1, points and #points or 0, 2 do
-        spot.npc, spot.x, spot.y, spot.kind = npc, points[i], points[i + 1], kind
-        local pin = map:AcquirePin(TEMPLATE, spot)
-        if into then into[#into + 1] = pin end
+        local x, y = OpenMap.Spot(map, from[npc], points[i] / PERCENT, points[i + 1] / PERCENT)
+        if x then
+            spot.npc, spot.x, spot.y, spot.kind = npc, points[i], points[i + 1], kind
+            local pin = map:AcquirePin(TEMPLATE, spot, x, y)
+            if into then into[#into + 1] = pin end
+        end
     end
 end
 
@@ -126,7 +131,7 @@ end
 
 function NaowhForeverRarePinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverRarePinMixin:OnAcquired(data)
+function NaowhForeverRarePinMixin:OnAcquired(data, x, y)
     self.npc, self.spotX, self.spotY, self.kind = data.npc, data.x, data.y, data.kind
     self.killed = R.Killed(data.npc)
     self:UseFrameLevelType(FRAME_LEVEL, data.kind and MORE_LEVEL or STAR_LEVEL)
@@ -136,7 +141,7 @@ function NaowhForeverRarePinMixin:OnAcquired(data)
     if not icon:SetAtlas(STAR_ATLAS) then icon:SetTexture(SKULL_FILE) end
     icon:SetDesaturated(self.killed)
     Look(self)
-    self:SetPosition(data.x / PERCENT, data.y / PERCENT)
+    self:SetPosition(x, y)
     if self.ApplyCurrentScale then self:ApplyCurrentScale() end
 end
 
@@ -162,8 +167,18 @@ function NaowhForeverRarePinMixin:OnClick(button)
     end
 end
 
+local function AddStar(map, mapID, npc)
+    local spots = R.Spots(npc)
+    local x, y = OpenMap.Spot(map, mapID, spots[1] / PERCENT, spots[2] / PERCENT)
+    if not x then return end
+    from[npc] = mapID
+    spot.npc, spot.x, spot.y, spot.kind = npc, spots[1], spots[2], nil
+    map:AcquirePin(TEMPLATE, spot, x, y)
+end
+
 function provider:RemoveAllData()
     wipe(shown)
+    wipe(from)
     self:GetMap():RemoveAllPinsByTemplate(TEMPLATE)
 end
 
@@ -172,16 +187,12 @@ function provider:RefreshAllData()
     if not On() then return end
     local map = self:GetMap()
     local killedToo = S.Get("rarePinsKilled")
-    local still = false
-    for _, npc in ipairs(R.OnMap(map:GetMapID())) do
-        if killedToo or not R.Killed(npc) then
-            local spots = R.Spots(npc)
-            spot.npc, spot.x, spot.y, spot.kind = npc, spots[1], spots[2], nil
-            map:AcquirePin(TEMPLATE, spot)
-            if npc == focused then still = true end
+    for _, mapID in ipairs(OpenMap.Maps(map)) do
+        for _, npc in ipairs(R.OnMap(mapID)) do
+            if killedToo or not R.Killed(npc) then AddStar(map, mapID, npc) end
         end
     end
-    if not still then focused = nil end
+    if focused and not from[focused] then focused = nil end
     Rest()
 end
 

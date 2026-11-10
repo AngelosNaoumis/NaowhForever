@@ -41,7 +41,8 @@ local S = { Get = function(key) return settings[key] end, Set = function() end }
 ns.QoLSettings = S
 ns.Apply = function() end
 ns.L = function(text) return text end
-ns.Shared = { MapPins = {} }
+local OpenMap, _, Stitch = dofile("Tools/regression/shared_openmap.lua")
+ns.Shared = { MapPins = {}, OpenMap = OpenMap }
 ns.ZoneLevels = { [1411] = { 5, 10 } }
 
 local function FontString()
@@ -147,6 +148,15 @@ fishing = nil
 Hover(1440)
 Check(label.fishing.text == "Fishing 55-150" and label.fishing.color == "grey", "grey without Fishing")
 Check(label.fishing.anchor == description, "under the Description where the zone has no range")
+
+-- On OpenMap's seamless map both stand down: OpenMap's own area label adds the hovered zone's levels and
+-- Fishing, and back on the game's map they show again.
+local api = Stitch({ [1411] = { 0.4, 0.4, 0.5, 0.5 }, [1440] = { 0.5, 0.4, 0.6, 0.5 } })
+Hover(1411)
+Check(label.text.text == "" and label.fishing.text == "", "nothing of ours on OpenMap's stitched map")
+api.stitched = false
+Hover(1411)
+Check(label.text.text == "Level 5-10" and label.fishing.text ~= "", "back on the game's map, both again")
 
 settings.mapFishing = false
 boot()

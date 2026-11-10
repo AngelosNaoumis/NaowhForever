@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 local Z = ns.ZoneInfo
 local S = ns.QoLSettings
+local OpenMap = ns.Shared.OpenMap
 local INTERVAL, BUTTON_W, BUTTON_H, MAP_INSET, BUTTON_BOTTOM = 0.08, 100, 24, 12, 42
 local SAMPLE_MAP = 1436
 local PAGE, CARD = "QoL/Map & Pins", "QoL/Map & Pins:zoneInfo"
@@ -62,12 +63,16 @@ local function OnUpdate(_, elapsed)
     local x, y = map:GetNormalizedCursorPosition()
     local current = map:GetMapID()
     if not (Z.Plain(x) and Z.Plain(y) and Z.Plain(current)) then return end
-    if not x or not y or x < 0 or y < 0 or x > 1 or y > 1 then return end
     if x == lastX and y == lastY and current == lastMap then return end
+    local under = OpenMap.MapAtCursor()
+    local id = under and Z.ZoneMap(under)
+    if not id and (not x or not y or x < 0 or y < 0 or x > 1 or y > 1) then return end
     lastX, lastY, lastMap = x, y, current
-    local info = C_Map.GetMapInfoAtPosition(current, x, y)
-    local id = info and Z.Plain(info) and Z.Plain(info.mapID) and info.mapID
-    id = Z.ZoneMap(id or current)
+    if not id then
+        local info = C_Map.GetMapInfoAtPosition(current, x, y)
+        id = info and Z.Plain(info) and Z.Plain(info.mapID) and info.mapID
+        id = Z.ZoneMap(id or current)
+    end
     if id and id ~= hovered then hovered = id; Z.Hover(id); MapText() end
 end
 

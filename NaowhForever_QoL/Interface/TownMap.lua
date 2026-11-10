@@ -5,6 +5,7 @@ local GetServerTime = GetServerTime
 local S = ns.QoLSettings
 local ScalePin = ns.Shared.ScalePin
 local SameMap = ns.Shared.Places.SameMap
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverTownPinTemplate"
 local LINK_TEMPLATE = "NaowhForeverZoneLinkPinTemplate"
@@ -268,12 +269,12 @@ end
 
 function NaowhForeverTownPinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverTownPinMixin:OnAcquired(npc)
-    self.npc = npc
+function NaowhForeverTownPinMixin:OnAcquired(npc, x, y, mapID)
+    self.npc, self.mapID = npc, mapID
     local size = S.Get("townPinSize")
     self:SetSize(size, size)
     SetPinArt(self, npc)
-    self:SetPosition(npc[1] / PERCENT, npc[2] / PERCENT)
+    self:SetPosition(x, y)
     self:ApplyCurrentScale()
 end
 
@@ -284,7 +285,7 @@ function NaowhForeverTownPinMixin:OnMouseEnter()
     local title = npc[5] ~= "" and npc[5] or CATEGORIES[npc[3]][3]
     GameTooltip:AddLine(title, SoftBlue(HINT.r, HINT.g, HINT.b))
     if npc[3] == "flight" and ns.FlightPointReminderForPin then
-        local reminder = ns.FlightPointReminderForPin(self:GetMap():GetMapID(), npc)
+        local reminder = ns.FlightPointReminderForPin(self.mapID, npc)
         if reminder then GameTooltip:AddLine(reminder, SoftBlue(HINT.r, HINT.g, HINT.b)) end
     end
     GameTooltip:Show()
@@ -400,30 +401,37 @@ local function AddExits(map, mapID)
     end
 end
 
-local function AddDocks(map, mapID, faction)
+local function AddDocks(map, shown, mapID, faction)
     for _, dock in ipairs(ns.TownTravel[mapID] or EMPTY) do
-        if dock[3]:find(faction, 1, true) then
+        local x, y
+        if dock[3]:find(faction, 1, true) then x, y = OpenMap.Spot(map, shown, dock[1] / PERCENT, dock[2] / PERCENT) end
+        if x then
             map:AcquirePin(LINK_TEMPLATE, { name = ns.L(dock[4]), atlasName = TravelArt(dock[4]),
-                position = CreateVector2D(dock[1] / PERCENT, dock[2] / PERCENT), linkedUiMapID = dock[5],
+                position = CreateVector2D(x, y), linkedUiMapID = dock[5],
                 rightName = dock[6] and ns.L(dock[6]), rightUiMapID = dock[7],
                 stop = mapID .. STOP_MARK .. dock[4], rightStop = dock[6] and mapID .. STOP_MARK .. dock[6] })
         end
     end
 end
 
-local function AddNPCs(map, list, faction, class, shops)
+local function AddPin(map, shown, npc)
+    local x, y = OpenMap.Spot(map, shown, npc[1] / PERCENT, npc[2] / PERCENT)
+    if x then map:AcquirePin(TEMPLATE, npc, x, y, shown) end
+end
+
+local function AddNPCs(map, shown, list, faction, class, shops)
     for _, npc in ipairs(list or EMPTY) do
         local kind = npc[3]
         if (shops or EVERYWHERE[kind]) and npc[7]:find(faction, 1, true) and S.Get(CATEGORIES[kind][1])
             and (kind ~= "class" or npc[6] == class) and (kind ~= "stable" or class == STABLE_CLASS) then
-            map:AcquirePin(TEMPLATE, npc)
+            AddPin(map, shown, npc)
         end
     end
 end
 
-local function AddAll(map, list)
+local function AddAll(map, shown, list)
     for _, entry in ipairs(list or EMPTY) do
-        map:AcquirePin(TEMPLATE, entry)
+        AddPin(map, shown, entry)
     end
 end
 
@@ -432,20 +440,22 @@ function provider:RefreshAllData()
     local map = self:GetMap()
     anyTimed = false
     if not On() then return WatchClock(map) end
-    local mapID = SameMap(map:GetMapID())
-    local shops = not S.Get("townCapitalsOnly") or CAPITALS[mapID]
-    if S.Get("townZoneLinks") then AddExits(map, mapID) end
+    if S.Get("townZoneLinks") then AddExits(map, SameMap(map:GetMapID())) end
     local faction = UnitFactionGroup("player") == "Horde" and "H" or "A"
     local _, class = UnitClass("player")
-    if S.Get("townTravel") then AddDocks(map, mapID, faction) end
+    for _, shown in ipairs(OpenMap.Maps(map)) do
+        local mapID = SameMap(shown)
+        local shops = not S.Get("townCapitalsOnly") or CAPITALS[mapID]
+        if S.Get("townTravel") then AddDocks(map, shown, mapID, faction) end
+        AddNPCs(map, shown, ns.TownNPCs[mapID], faction, class, shops)
+        if S.Get("townMail") then
+            AddAll(map, shown, ns.TownMailboxes[mapID])
+        end
+        if S.Get("townSpiritHealers") then
+            AddAll(map, shown, ns.TownSpiritHealers[mapID])
+        end
+    end
     WatchClock(map)
-    AddNPCs(map, ns.TownNPCs[mapID], faction, class, shops)
-    if S.Get("townMail") then
-        AddAll(map, ns.TownMailboxes[mapID])
-    end
-    if S.Get("townSpiritHealers") then
-        AddAll(map, ns.TownSpiritHealers[mapID])
-    end
 end
 
 local function MiniOn()

@@ -24,7 +24,7 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
     Print = function(msg) printed[#printed + 1] = msg end,
     ThemeTint = function() return nil end,
     PlaceWaypoint = function() end,
-    Shared = { Style = dofile("Tools/regression/shared_style.lua"), MapPins = {} },
+    Shared = { Style = dofile("Tools/regression/shared_style.lua"), MapPins = {}, OpenMap = dofile("Tools/regression/shared_openmap.lua") },
 }
 
 local race, faction, combat, now = "Skyborne", "Horde", false, 1000

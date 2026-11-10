@@ -8,7 +8,8 @@ local FILES = dofile("Tools/regression/toc_files.lua")("^NaowhForever_QoL/Glimme
 table.insert(FILES, 1, "Core/Features.lua")
 table.insert(FILES, 2, "Shared/UI/MinimapPins.lua")
 
-local SHARED = {}
+local OPEN_MAP, _, STITCH = dofile("Tools/regression/shared_openmap.lua")
+local SHARED = { OpenMap = OPEN_MAP }
 dofile("Tools/regression/load_files.lua")({ "Shared/Style.lua", "Shared/Data/SameMaps.lua", "Shared/Game/Places.lua" }, { _G = { NaowhForever = {
     L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, Shared = SHARED } } })
 
@@ -67,7 +68,7 @@ local function Session(settings, opts)
     log.cvars = cvars
     local game = { combat = false, instance = false, guid = nil, object = true, near = false, related = false,
         tooltip = nil, plate = nil, mining = 70, miningBonus = 0, herbalism = 0, loaded = opts.loaded or {}, px = 0.5, py = 0.5,
-        pins = {} }
+        pins = {}, at = {} }
     log.game = game
     local account = {}
     log.account = account
@@ -194,7 +195,10 @@ local function Session(settings, opts)
                 p.GetMap = function() return {
                     GetMapID = function() return 1429 end,
                     RemoveAllPinsByTemplate = function() for k in pairs(game.pins) do game.pins[k] = nil end end,
-                    AcquirePin = function(_, _, entry) game.pins[#game.pins + 1] = entry end,
+                    AcquirePin = function(_, _, entry, x, y, mapID)
+                        game.pins[#game.pins + 1] = entry
+                        game.at[entry] = { x, y, mapID }
+                    end,
                 } end
             end,
             IsShown = function() return game.mapShown end,
@@ -910,6 +914,28 @@ do
     local ring
     for _, f in ipairs(c.frames) do if f.ring and f.shown and f.id then ring = f.ring end end
     check("the ring takes the new color", ring and ring.color[1] == 0.1 and ring.color[3] == 0.3)
+end
+
+-- Gathered on OpenMap's seamless map (last: the map stays stitched for the session's OpenMap): a node of
+-- the zone beside the map underneath is pinned where OpenMap draws it, knowing its own map, and its
+-- waypoint is on that map.
+do
+    local g = Session({ enabled = true, gatheredPins = true })
+    g.Login()
+    local api = STITCH({ [1429] = { 0.4, 0.4, 0.5, 0.5 }, [1430] = { 0.5, 0.4, 0.6, 0.5 } })
+    local here = { id = COPPER, x = 500, y = 500, count = 1, last = 0 }
+    local beside = { id = COPPER, x = 100, y = 500, count = 1, last = 0 }
+    g.account.glimmerGathered = { [1429] = { here = here }, [1430] = { beside = beside } }
+    g.game.mapShown = true
+    g.provider:RefreshAllData()
+    local at = g.game.at[beside]
+    check("a node of the zone beside it is pinned too", #g.game.pins == 2 and at ~= nil)
+    check("where OpenMap draws it, past the map underneath's edge, knowing its own map",
+        math.abs(at[1] - 1.1) < 1e-9 and math.abs(at[2] - 0.5) < 1e-9 and at[3] == 1430)
+    g.env.NaowhForeverGatheredPinMixin.OnClick({ entry = beside, node = g.ns.Glimmer.NODES[COPPER], mapID = 1430 },
+        "LeftButton")
+    check("its waypoint is on its own map", g.waypoint and g.waypoint[2] == 1430 and g.waypoint[3] == 10)
+    api.stitched = false
 end
 
 print(("test-glimmer: %d checks passed"):format(checks))

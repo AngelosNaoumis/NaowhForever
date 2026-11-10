@@ -7,6 +7,7 @@ local C = Discovery.C
 local S = Discovery.Settings
 local Bag = Discovery.Bag
 local Style = Discovery.Style
+local OpenMap = ns.Shared.OpenMap
 
 local GOLD = Style.GOLD_RGB
 local TEMPLATE = "NaowhForeverSleepingBagPinTemplate"
@@ -72,7 +73,7 @@ end
 
 function NaowhForeverSleepingBagPinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverSleepingBagPinMixin:OnAcquired(entry)
+function NaowhForeverSleepingBagPinMixin:OnAcquired(entry, x, y)
     ns.Shared.PinClicks(self)
     self.entry = entry
     local size = S.Get("bagMapPinSize")
@@ -81,7 +82,7 @@ function NaowhForeverSleepingBagPinMixin:OnAcquired(entry)
     self.Icon:SetTexCoord(CROP_LOW, CROP_HIGH, CROP_LOW, CROP_HIGH)
     self.badge.text:SetText(entry.number)
     self:SetAlpha(entry.now and 1 or LATER_ALPHA)
-    self:SetPosition(entry.step.x / C.PERCENT, entry.step.y / C.PERCENT)
+    self:SetPosition(x, y)
     self:ApplyCurrentScale()
 end
 
@@ -106,6 +107,17 @@ function NaowhForeverSleepingBagPinMixin:OnClick(button)
     if button == "LeftButton" then Bag.Waypoint(self.entry.step) end
 end
 
+local function AddSteps(map, mapID, steps, at)
+    for i = at, #steps do
+        local step = steps[i]
+        local x, y
+        if step.map == mapID and not (i > at and SameSpot(step, steps[i - 1])) then
+            x, y = OpenMap.Spot(map, mapID, step.x / C.PERCENT, step.y / C.PERCENT)
+        end
+        if x then map:AcquirePin(TEMPLATE, { step = step, number = i, now = i == at }, x, y) end
+    end
+end
+
 function provider:RemoveAllData()
     self:GetMap():RemoveAllPinsByTemplate(TEMPLATE)
 end
@@ -116,14 +128,8 @@ function provider:RefreshAllData()
     local _, at = Bag.Current()
     if not at then return end
     local map = self:GetMap()
-    local mapID = map:GetMapID()
     local steps = Bag.Steps()
-    for i = at, #steps do
-        local step = steps[i]
-        if step.map == mapID and not (i > at and SameSpot(step, steps[i - 1])) then
-            map:AcquirePin(TEMPLATE, { step = step, number = i, now = i == at })
-        end
-    end
+    for _, mapID in ipairs(OpenMap.Maps(map)) do AddSteps(map, mapID, steps, at) end
 end
 
 local function Apply()

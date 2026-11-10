@@ -41,6 +41,7 @@
     <Script file="UI\ItemBar.lua"/>
     <Script file="UI\Anchor.lua"/>
     <Script file="UI\MinimapPins.lua"/>
+    <Script file="UI\OpenMap.lua"/>
     <Script file="View\View.lua"/>
     <Script file="View\Kinds.lua"/>
     <Script file="Settings\Settings.lua"/>

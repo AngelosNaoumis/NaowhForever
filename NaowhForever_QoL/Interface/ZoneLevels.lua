@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local S = ns.QoLSettings
+local OpenMap = ns.Shared.OpenMap
 
 local SECTION_ORDER = 12
 local FISHING_ORDER = 13
@@ -94,7 +95,7 @@ end
 local function OnUpdate()
     local map = provider:GetMap()
     local mapID
-    if map:IsCanvasMouseFocus() then
+    if map:IsCanvasMouseFocus() and not OpenMap.On() then
         local x, y = map:GetNormalizedCursorPosition()
         local current = map:GetMapID()
         if x == lastX and y == lastY and current == lastMapID then return end

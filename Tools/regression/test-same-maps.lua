@@ -26,7 +26,7 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
     QoLConstants = dofile("Tools/regression/qol_constants.lua"),
     QoLSettings = { Get = function(key) return settings[key] end, Set = function() end },
     Apply = function() end, ThemeTint = function() end, ZoneExits = {},
-    Shared = { Style = dofile("Tools/regression/shared_style.lua"), Places = Places,
+    Shared = { Style = dofile("Tools/regression/shared_style.lua"), Places = Places, OpenMap = dofile("Tools/regression/shared_openmap.lua"),
         Settings = { Group = function() end, Page = function() return { Card = function() end } end } },
 }
 

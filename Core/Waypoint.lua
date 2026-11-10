@@ -98,8 +98,11 @@ end
 
 function NaowhForeverWaypointPreviewPinMixin:CheckMouseButtonPassthrough() end
 
-local function PreviewSpot(mapID, map, x, y)
+local function PreviewSpot(worldMap, map, x, y)
+    local mapID = worldMap:GetMapID()
     if map == mapID then return x, y end
+    local OpenMap = ns.Shared.OpenMap
+    if OpenMap.On() then return OpenMap.Spot(worldMap, map, x, y) end
     local continent, world = C_Map.GetWorldPosFromMapPos(map, CreateVector2D(x, y))
     local pos = continent and world and select(WORLD_POS_RETURN, C_Map.GetMapPosFromWorldPos(continent, world, mapID))
     if not pos then return end
@@ -116,7 +119,7 @@ local function NewPreview()
         self:RemoveAllData()
         if not (pending and pending[2]) then return end
         local map = self:GetMap()
-        local x, y = PreviewSpot(map:GetMapID(), pending[2], pending[3] / PERCENT, pending[4] / PERCENT)
+        local x, y = PreviewSpot(map, pending[2], pending[3] / PERCENT, pending[4] / PERCENT)
         if x then map:AcquirePin(PREVIEW_TEMPLATE):SetPosition(x, y) end
     end
     WorldMapFrame:AddDataProvider(provider)

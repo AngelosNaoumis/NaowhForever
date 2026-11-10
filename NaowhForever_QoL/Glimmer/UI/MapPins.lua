@@ -6,10 +6,12 @@ local G = ns.Glimmer
 local S = G.Settings
 local C, St = G.C, G.Style
 local Spots, Target = G.Spots, G.Target
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverGatheredPinTemplate"
 local PIN_SCALE = 0.5
 local PERCENT = 100
+local EMPTY = {}
 local OWN_KEYS = { enabled = true, gatheredPins = true, gatheredPinSize = true, ore = true, herb = true,
     myProfessions = true, skillColors = true, oreColor = true, herbColor = true }
 local TEXT_LINE = "%s (%d)"
@@ -41,17 +43,17 @@ end
 
 function NaowhForeverGatheredPinMixin:CheckMouseButtonPassthrough() end
 
-function NaowhForeverGatheredPinMixin:OnAcquired(entry)
+function NaowhForeverGatheredPinMixin:OnAcquired(entry, x, y, mapID)
     ns.Shared.PinClicks(self)
     local node = G.NODES[entry.id]
-    self.entry, self.node = entry, node
+    self.entry, self.node, self.mapID = entry, node, mapID
     local size = S.Get("gatheredPinSize")
     self:SetSize(size, size)
     self.Icon:SetTexture(C_Spell.GetSpellTexture(C.ICON_SPELL[node[1]]))
     local tier = S.Get("skillColors") and Spots.Tier(entry.id)
     local c = tier and St.TIER_RGB[tier] or S.Get(node[1] .. "Color")
     self.Ring:SetVertexColor(c.r, c.g, c.b)
-    self:SetPosition(entry.x / C.SPOT_SCALE, entry.y / C.SPOT_SCALE)
+    self:SetPosition(x, y)
     self:ApplyCurrentScale()
 end
 
@@ -77,8 +79,17 @@ end
 function NaowhForeverGatheredPinMixin:OnClick(button)
     if button ~= "LeftButton" then return end
     local entry = self.entry
-    ns.ToggleWaypoint(ns.L(self.node[3]), self:GetMap():GetMapID(), entry.x * PERCENT / C.SPOT_SCALE,
+    ns.ToggleWaypoint(ns.L(self.node[3]), self.mapID, entry.x * PERCENT / C.SPOT_SCALE,
         entry.y * PERCENT / C.SPOT_SCALE)
+end
+
+local function AddGathered(map, mapID)
+    for _, entry in pairs(Spots.Gathered(mapID) or EMPTY) do
+        local node = G.NODES[entry.id]
+        local x, y
+        if node and S.Get(node[1]) then x, y = OpenMap.Spot(map, mapID, entry.x / C.SPOT_SCALE, entry.y / C.SPOT_SCALE) end
+        if x then map:AcquirePin(TEMPLATE, entry, x, y, mapID) end
+    end
 end
 
 function provider:RemoveAllData()
@@ -89,10 +100,7 @@ function provider:RefreshAllData()
     self:RemoveAllData()
     if not On() then return end
     local map = self:GetMap()
-    for _, entry in pairs(Spots.Gathered(map:GetMapID()) or {}) do
-        local node = G.NODES[entry.id]
-        if node and S.Get(node[1]) then map:AcquirePin(TEMPLATE, entry) end
-    end
+    for _, mapID in ipairs(OpenMap.Maps(map)) do AddGathered(map, mapID) end
 end
 
 local function FromNode(guid)

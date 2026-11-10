@@ -35,7 +35,7 @@ local settings = { enabled = true, mapUnexplored = false, mapUnexploredDark = 0.
 local S = { Get = function(key) return settings[key] end, Set = function() end }
 ns.QoLSettings = S
 ns.QoLConstants = dofile("Tools/regression/qol_constants.lua")
-ns.Shared = { Style = dofile("Tools/regression/shared_style.lua"), MapPins = {} }
+ns.Shared = { Style = dofile("Tools/regression/shared_style.lua"), MapPins = {}, OpenMap = dofile("Tools/regression/shared_openmap.lua") }
 ns.Apply = function() end
 ns.MapOverlays = { [1] = { { 300, 100, 10, 20, 11, 12 }, { 64, 64, 500, 400, 13 } } }
 

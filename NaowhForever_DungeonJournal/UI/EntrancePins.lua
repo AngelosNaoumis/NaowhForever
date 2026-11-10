@@ -6,6 +6,7 @@ local S = J.Settings
 local PERCENT = J.C.PERCENT
 local St = J.Style
 local KIND_RGB, NAME_RGB, HINT_RGB = St.ENTRANCE_KIND_RGB, St.GOLD_NAME_RGB, St.ENTRANCE_HINT_RGB
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverEntrancePinTemplate"
 local PIN_SIZE = 18
@@ -55,7 +56,10 @@ local function FindSpot(mapID, entrance)
     return false
 end
 
-local function SpotOn(mapID, entrance)
+local function SpotOn(map, mapID, entrance)
+    if entrance.map ~= mapID and OpenMap.On() then
+        return OpenMap.Spot(map, entrance.map, entrance.x / PERCENT, entrance.y / PERCENT)
+    end
     local known = spots[mapID]
     if not known then
         known = {}
@@ -66,7 +70,7 @@ local function SpotOn(mapID, entrance)
         spot = FindSpot(mapID, entrance)
         known[entrance] = spot
     end
-    return spot or nil
+    if spot then return spot[1], spot[2] end
 end
 
 local function AllRaids(dungeons)
@@ -137,14 +141,15 @@ local function MakePinMixin()
     end
 end
 
-local function GroupBySpot(mapID, groups, bySpot, dungeon)
+local function GroupBySpot(map, mapID, groups, bySpot, dungeon)
     local entrance = dungeon.entrance
-    local spot = entrance and J.FactionShown(dungeon) and SpotOn(mapID, entrance)
-    if not spot then return end
+    if not (entrance and J.FactionShown(dungeon)) then return end
+    local x, y = SpotOn(map, mapID, entrance)
+    if not x then return end
     local key = SPOT_KEY:format(entrance.map, entrance.x, entrance.y)
     local group = bySpot[key]
     if not group then
-        group = { x = spot[1], y = spot[2], dungeons = {} }
+        group = { x = x, y = y, dungeons = {} }
         bySpot[key] = group
         groups[#groups + 1] = group
     end
@@ -165,7 +170,7 @@ local function MakeProvider()
         local mapID = map:GetMapID()
         if not mapID then return end
         local groups, bySpot = {}, {}
-        for _, dungeon in ipairs(J.Dungeons()) do GroupBySpot(mapID, groups, bySpot, dungeon) end
+        for _, dungeon in ipairs(J.Dungeons()) do GroupBySpot(map, mapID, groups, bySpot, dungeon) end
         for _, group in ipairs(groups) do map:AcquirePin(TEMPLATE, group) end
     end
 end

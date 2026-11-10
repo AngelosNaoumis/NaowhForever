@@ -26,12 +26,14 @@ local function Town()
         { 16, 16, "bank", "Banker", "Banker", nil, "AH" },
     }
 end
+local OpenMap, _, Stitch = dofile("Tools/regression/shared_openmap.lua")
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
     QoLConstants = dofile("Tools/regression/qol_constants.lua"),
     QoLSettings = S, Apply = function() end, ThemeTint = function() end,
     TownCapitals = { [2] = true }, TownNPCs = { [1] = Town(), [2] = Town() },
     TownMailboxes = {}, TownSpiritHealers = {}, ZoneExits = {}, TownTravel = {},
     Shared = { Style = dofile("Tools/regression/shared_style.lua"), Places = dofile("Tools/regression/shared_places.lua"),
+        OpenMap = OpenMap,
         Settings = { Group = function() end, Page = function() return { Card = function() end } end } },
 }
 
@@ -47,10 +49,13 @@ local function NewFrame()
 end
 
 local provider, shownMap
-local pins = {}
+local pins, placed = {}, {}
 local map = {
     GetMapID = function() return shownMap end,
-    AcquirePin = function(_, _, npc) pins[#pins + 1] = npc[3] end,
+    AcquirePin = function(_, _, npc, x, y, mapID)
+        pins[#pins + 1] = npc[3]
+        placed[#placed + 1] = { kind = npc[3], x = x, y = y, mapID = mapID }
+    end,
     RemoveAllPinsByTemplate = function() end,
 }
 local env = setmetatable({
@@ -76,6 +81,7 @@ provider.GetMap = function() return map end
 local function Shown(mapID)
     shownMap = mapID
     for i = #pins, 1, -1 do pins[i] = nil end
+    for i = #placed, 1, -1 do placed[i] = nil end
     provider:RefreshAllData()
     table.sort(pins)
     return table.concat(pins, " ")
@@ -108,15 +114,32 @@ ns.FlightPointReminderForPin = function(mapID, npc)
     requestedMap, requestedNPC = mapID, npc
     return "Learn the Flyer's Town flight point"
 end
-env.NaowhForeverTownPinMixin.OnMouseEnter({ npc = flightNPC, GetMap = function() return hoverMap end })
+env.NaowhForeverTownPinMixin.OnMouseEnter({ npc = flightNPC, mapID = 1, GetMap = function() return hoverMap end })
 Check(requestedMap == 1 and requestedNPC == flightNPC and tooltipLines[2] == "Learn the Flyer's Town flight point",
     "the existing flight-master pin tooltip uses the reminder's known-node check")
 ns.FlightPointReminderForPin = function() return nil end
 tooltipLines = {}
-env.NaowhForeverTownPinMixin.OnMouseEnter({ npc = flightNPC, GetMap = function() return hoverMap end })
+env.NaowhForeverTownPinMixin.OnMouseEnter({ npc = flightNPC, mapID = 1, GetMap = function() return hoverMap end })
 Check(#tooltipLines == 1, "a known flight-master pin keeps its ordinary tooltip")
 ns.FlightPointReminderForPin = function() error("not a flight master") end
 env.NaowhForeverTownPinMixin.OnMouseEnter({ npc = Town()[2] })
 Check(#tooltipLines == 2, "other town pins never query flight knowledge")
+
+-- On OpenMap's seamless map: the zone beside the map underneath brings its own town pins, each where
+-- OpenMap draws it and knowing its own map; the capital beside it waits until it is the map underneath.
+ns.FlightPointReminderForPin = nil
+ns.TownNPCs[3] = Town()
+Stitch({ [1] = { 0.4, 0.4, 0.5, 0.5 }, [2] = { 0.41, 0.38, 0.44, 0.42 }, [3] = { 0.5, 0.4, 0.6, 0.5 } }, { [2] = true })
+settings.townCapitalsOnly, settings.townFlight, playerClass = true, true, "HUNTER"
+Check(Shown(1) == "flight flight inn inn stable stable",
+    "the zone beside it brings its flight master, innkeeper and stable master; the capital beside it nothing")
+local beside
+for _, pin in ipairs(placed) do
+    if pin.kind == "flight" and pin.mapID == 3 then beside = pin end
+end
+Check(beside and math.abs(beside.x - 1.1) < 1e-9 and math.abs(beside.y - 0.1) < 1e-9,
+    "its flight master where OpenMap draws it, past the map underneath's edge, with its own map")
+Check(Shown(2) == "bank flight flight inn inn profession repair stable stable vendor",
+    "zoomed into the capital: everything of its own, and the zone round it its own")
 
 print(("test-town-capitals: %d checks passed"):format(checks))

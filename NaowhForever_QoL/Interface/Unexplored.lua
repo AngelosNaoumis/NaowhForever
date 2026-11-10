@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local S = ns.QoLSettings
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverUnexploredPinTemplate"
 local TILE = 256
@@ -75,7 +76,7 @@ function NaowhForeverUnexploredPinMixin:Refresh()
     self.textures:ReleaseAll()
     local map = self:GetMap()
     local mapID = map:GetMapID()
-    local overlays = On() and ns.MapOverlays[mapID]
+    local overlays = On() and not OpenMap.On() and ns.MapOverlays[mapID]
     if not overlays then return end
     self:SetSize(map:DenormalizeHorizontalSize(1), map:DenormalizeVerticalSize(1))
     self:SetAlpha(map:GetGlobalAlpha())

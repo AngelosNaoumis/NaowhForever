@@ -59,9 +59,11 @@ local function Fixture(runtime)
     function base:OnRemoved() self.owner = nil end
     function base:GetMap() return self.owner end
     local T = { muted = {}, fg = {} }
+    local openMap, _, stitch = dofile("Tools/regression/shared_openmap.lua")
+    state.Stitch = stitch
     local ns = { GamepadStandDown = function() return false end, QoLSettings = S, THEME = T, UI = {}, ZoneLevels = { [1] = { 9, 18 }, [2] = { 30, 40 } },
         FishingLevels = { [1] = { 1, 75 } }, Shared = { Style = { HAVE_RGB = {}, TIME_OUT_RGB = {} },
-            Places = { SameMap = function(id) return id end } } }
+            Places = { SameMap = function(id) return id end }, OpenMap = openMap } }
     ns.L = function(text) return text end
     ns.Apply, ns.ShowUnlockMode, ns.HideUnlockMode = function() end, function() end, function() end
     ns.UIScale = function() return state.uiScale or 1 end
@@ -309,6 +311,22 @@ do
     S.Set("zoneInfoOnMap", true)
     map.shown = false; map.provider:OnHide()
     Check(f.summary == nil, "closing the map hides its summary")
+end
+
+-- On OpenMap's seamless map the hovered zone is OpenMap's, under the cursor past the map underneath's
+-- edge too; over open water, the game's own lookup on the map underneath, as before.
+do
+    local f = Fixture(true); local S, map = f.S, f.map
+    S.Set("zoneInfo", true)
+    map.shown = true; map.provider:OnShow()
+    local api = f.Stitch({ [1] = { 0.4, 0.4, 0.5, 0.5 }, [2] = { 0.5, 0.4, 0.6, 0.5 } })
+    f.mouse, f.target, f.x, f.y = true, 1, 1.5, 0.5
+    api.cursorU, api.cursorV = 0.55, 0.45
+    f.Tick(0.1)
+    Check(f.hover == 2, "the zone under OpenMap's cursor, past the map underneath's edge")
+    api.cursorU, api.cursorV = 0.45, 0.9
+    f.x = 0.5; f.Tick(0.1)
+    Check(f.hover == 1, "over open water: the game's own lookup on the map underneath")
 end
 
 print("test-zone-info: " .. checks .. " checks passed")

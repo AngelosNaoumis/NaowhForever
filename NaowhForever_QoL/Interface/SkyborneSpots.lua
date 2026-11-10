@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local S = ns.QoLSettings
+local OpenMap = ns.Shared.OpenMap
 
 local TEMPLATE = "NaowhForeverSkybornePinTemplate"
 local SAME_SPOT = 40
@@ -181,9 +182,10 @@ local function InRange(px, py)
     return px >= 0 and px <= 1 and py >= 0 and py <= 1
 end
 
-local function SpotOn(mapID, spot)
+local function SpotOn(map, mapID, spot)
     local x, y = spot[2] / PERCENT, spot[3] / PERCENT
     if spot[1] == mapID then return x, y end
+    if OpenMap.On() then return OpenMap.Spot(map, spot[1], x, y) end
     local continent, world = C_Map.GetWorldPosFromMapPos(spot[1], CreateVector2D(x, y))
     local pos = continent and world and select(2, C_Map.GetMapPosFromWorldPos(continent, world, mapID))
     if not pos then return nil end
@@ -258,7 +260,7 @@ end
 
 local function AcquireAll(map, mapID, kind, list, found)
     for _, spot in ipairs(list) do
-        local x, y = SpotOn(mapID, spot)
+        local x, y = SpotOn(map, mapID, spot)
         if x then map:AcquirePin(TEMPLATE, { kind = kind, spot = spot, found = found }, x, y) end
     end
 end
