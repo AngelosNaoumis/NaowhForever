@@ -1,4 +1,4 @@
--- AuctionPrices.lua: Auction Prices, the lowest buyout per item from a full scan or the release's prices, per realm and faction.
+-- AuctionPrices.lua: Auction Prices, the lowest buyout per item and how many are listed, from a full scan or the release's prices, per realm and faction.
 local ns = _G.NaowhForever
 
 local S = ns.QoLSettings
@@ -55,9 +55,9 @@ local houseKey
 local priced, pricedAt
 local feedPriced, feedPricedFor
 local ageTicker
-local feedTried, feedHouses, feedTime, feedMedian, matched
+local feedTried, feedHouses, feedTime, feedMedian, feedMedianListed, matched
 local merged, mergedFeed, mergedAt
-local decoded = {}
+local decoded, decodedListed = {}, {}
 
 local function House(create)
     local account = ns.AccountSettings()
@@ -100,14 +100,15 @@ end
 
 local function Decode(id)
     if not decoded[id] then
-        local prices, item = {}, 0
-        for step, price in feedHouses[id]:gmatch("(%w+):(%w+)") do
+        local prices, listed, item = {}, {}, 0
+        for step, price, count in feedHouses[id]:gmatch("(%w+):(%w+):?(%w*)") do
             item = item + Number(step)
             prices[item] = Number(price)
+            if count ~= "" then listed[item] = Number(count) end
         end
-        decoded[id] = prices
+        decoded[id], decodedListed[id] = prices, listed
     end
-    return decoded[id]
+    return decoded[id], decodedListed[id]
 end
 
 local function Matches(own, feed)
@@ -137,14 +138,23 @@ local function Median()
                 all[item][#all[item] + 1] = price
             end
         end
-        feedMedian = {}
+        feedMedian, feedMedianListed = {}, {}
         for item, list in pairs(all) do
             table.sort(list)
             feedMedian[item] = list[math.ceil(#list / 2)]
         end
-        decoded = {}
+        for id in pairs(feedHouses) do
+            local prices, listed = Decode(id)
+            for item, price in pairs(prices) do
+                local count = listed[item]
+                if price == feedMedian[item] and count and count > (feedMedianListed[item] or 0) then
+                    feedMedianListed[item] = count
+                end
+            end
+        end
+        decoded, decodedListed = {}, {}
     end
-    return feedMedian
+    return feedMedian, feedMedianListed
 end
 
 local function FeedPrices()
@@ -152,7 +162,10 @@ local function FeedPrices()
     if matched == nil then
         local house = House()
         matched = house and house.time and MatchHouse(house) or false
-        if matched then decoded, feedMedian = { [matched] = decoded[matched] }, nil end
+        if matched then
+            decoded, decodedListed = { [matched] = decoded[matched] }, { [matched] = decodedListed[matched] }
+            feedMedian, feedMedianListed = nil, nil
+        end
     end
     if matched then return Decode(matched) end
     return Median()
@@ -163,12 +176,23 @@ local function FeedFirst(house)
     return not (house and house.time) or matched and house.time < feedTime
 end
 
+local function Lookup(itemID)
+    local house = House()
+    local feed, listed = FeedPrices()
+    local own = house and house.time and house.prices[itemID]
+    if feed and feed[itemID] and (not own or FeedFirst(house)) then return feed[itemID], feedTime, listed[itemID] end
+    if own then return own, house.time, house.listed and house.listed[itemID] end
+end
+
 function ns.AuctionPrice(itemID)
     if not itemID then return end
-    local house, feed = House(), FeedPrices()
-    local own = house and house.time and house.prices[itemID]
-    if feed and feed[itemID] and (not own or FeedFirst(house)) then return feed[itemID], feedTime end
-    if own then return own, house.time end
+    local price, at = Lookup(itemID)
+    return price, at
+end
+
+function ns.AuctionListed(itemID)
+    if not itemID then return end
+    return (select(3, Lookup(itemID)))
 end
 
 function ns.AuctionScanTime()
@@ -261,17 +285,18 @@ local function Stop(message)
     ownScan = nil
 end
 
-local function ReadListing(prices, i)
+local function ReadListing(prices, listed, i)
     local _, _, count, _, _, _, _, _, _, buyout, _, _, _, _, _, _, itemID =
         C_AuctionHouse.GetReplicateItemInfo(i)
     if not (itemID and buyout and buyout > 0 and count and count > 0) then return end
     local each = math.floor(buyout / count)
     if not prices[itemID] or each < prices[itemID] then prices[itemID] = each end
+    listed[itemID] = (listed[itemID] or 0) + 1
 end
 
-local function Finish(prices)
+local function Finish(prices, listed)
     local house = House(true)
-    house.prices, house.time = prices, GetServerTime()
+    house.prices, house.listed, house.time = prices, listed, GetServerTime()
     matched = nil
     Stop()
     ShowAge()
@@ -286,18 +311,18 @@ local function Read()
     scanGen = scanGen + 1
     local total = C_AuctionHouse.GetNumReplicateItems()
     if total == 0 then return Stop(TEXT_EMPTY) end
-    local prices, index, gen = {}, 0, scanGen
+    local prices, listed, index, gen = {}, {}, 0, scanGen
     local function Step()
         if gen ~= scanGen then return end
         local last = math.min(index + CHUNK, total) - 1
-        for i = index, last do ReadListing(prices, i) end
+        for i = index, last do ReadListing(prices, listed, i) end
         index = last + 1
         if index < total then
             Label(TEXT_PROGRESS:format(math.floor(index * PERCENT / total)))
             C_Timer.After(0, Step)
             return
         end
-        Finish(prices)
+        Finish(prices, listed)
     end
     Step()
 end

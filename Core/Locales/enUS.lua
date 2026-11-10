@@ -241,6 +241,9 @@ L["Plans the cheapest crafts from your skill to your cap, ready to queue in one 
 L["Plan Recipes You Can Train Later"] = true
 L["Also plans trainer recipes you will be able to learn on the way to your cap."] = true
 L["Needs Skill-up Plan and Unlearned Recipes"] = true
+L["Plan by Best Sale Price"] = true
+L["Values each craft at the best of its auction, disenchant and vendor prices."] = true
+L["Needs Skill-up Plan"] = true
 L["From skill %d to your cap of %d"] = true
 L["You are at your cap of %d. Train the next rank to go on."] = true
 L["No recipe you know or can train now raises your skill past %d."] = true
@@ -250,6 +253,7 @@ L["%d skill-ups: about %d crafts, %s"] = true
 L["%d skill-ups: about %d crafts"] = true
 L["Some steps have no price yet; scan the auction house to plan by cost."] = true
 L["Costs count what each craft sells to a vendor for, not its auction house price."] = true
+L["Costs count each craft at its best sale: the auction house when it has %d or more auctions, disenchanting, or a vendor."] = true
 L["+%d more steps"] = true
 L["Queue Plan"] = true
 L["Add Plan to List"] = true

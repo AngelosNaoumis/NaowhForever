@@ -118,8 +118,8 @@ NaowhForever_QoL/
     Durability.lua      the low durability warning
     LootConfirm.lua     the retired loot confirmation skip, inert
     WaylaidCratesData.lua what each Waylaid Crate can be filled with (ns.WaylaidCrates), generated
-    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
     PriceShare.lua      Prices for Other Addons: Auctionator's price API (`Auctionator.API.v1`) answered from Auction Prices
+    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
     BagSpaceIgnore.lua  Bag Space's Ignore List window (ns.ShowBagSpaceIgnoreList)
@@ -469,6 +469,11 @@ NaowhForever_QoL/
   again. A price then comes from your scan or that house, whichever is newer. Until a house is
   found, a price is the middle of your faction's houses, which may be other realms', so a scan of
   your own always comes first and the middle only prices what it does not list.
+- A scan also keeps how many auctions listed each item with a buyout (`house.listed`), a stack
+  counting once, and the release's prices carry the same count; `ns.AuctionListed` and
+  `ns.AuctionPrice` share one lookup, so the count is always from where the price came from, and a thin
+  market can be told apart from a liquid one. A scan from before the counts
+  has none, and reads as unknown.
 - Scans are stamped with `GetServerTime()`, as the release's prices carry Blizzard's time
   (Last-Modified), so a PC clock that is off still puts the newer one first.
 - Capture Other Addons' Scans hooks `C_AuctionHouse.ReplicateItems` the first time it is on, so a

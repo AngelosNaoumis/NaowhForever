@@ -1,19 +1,34 @@
--- Run with Lua 5.1 from the repository root: Professions crafting ROI and its colour thresholds, and a craft's two sales.
+-- Run with Lua 5.1 from the repository root: Professions crafting ROI and its colour thresholds, a craft's two sales,
+-- and the Skill-up Plan's best sale.
 local checks = 0
 local function Check(label, value) assert(value, label); checks = checks + 1 end
 
 local settings = { craftProfit = true, craftROI = false, roiGreyBelow = 10, roiGreenFrom = 30 }
 local prices = { [10] = 100, [20] = 250 }
+local listed = {}
 local vendorPrices = {}
 local sellPrices = {}
+local itemInfo = {}
+local enchanting = 0
 local makeOwn, madeCost, plans = false, {}, {}
 _G.wipe = function(t) for key in pairs(t) do t[key] = nil end return t end
-_G.C_Item = { GetItemInfo = function(item) return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, sellPrices[item] end }
+_G.C_Item = { GetItemInfo = function(item)
+    local i = itemInfo[item] or {}
+    return nil, nil, i.quality, i.level, nil, nil, nil, nil, i.equip, nil, sellPrices[item], i.classID
+end, GetDetailedItemLevelInfo = function(item) return (itemInfo[item] or {}).ilvl end }
 _G.NaowhForever = {
     L = function(text) return text end,
     AuctionScanTime = function() return 1 end,
     AuctionPrice = function(item) return prices[item] end,
+    AuctionListed = function(item) return listed[item] end,
+    AuctionPriceList = function() return prices end,
     Professions = {
+        DisenchantValues = {
+            ItemTakes = function(item) return itemInfo[item] ~= nil end,
+            RequiredSkill = function(level) return level end,
+            Expected = function() return 400 end,
+            AfterCut = function(gross) return math.floor(gross * 0.95) end,
+        },
         Settings = { Get = function(key) return settings[key] end },
         Recipes = {
             Owned = function() return {} end,
@@ -89,5 +104,37 @@ Check("one the plan buys keeps its own price and source", v.cost == 200 and v.pa
 makeOwn, madeCost[10] = false, 30
 Prices.ClearCache()
 Check("off, nothing is priced as made", Prices.CraftValue(1, 20, 1, { parts = {} }).cost == 200)
+
+sellPrices[20] = nil
+Prices.ClearCache()
+Check("at its best sale, a craft not loaded yet has no cost either", Prices.NetCost(1, enchanting) == nil)
+sellPrices[20] = 50
+Prices.ClearCache()
+Check("at its best sale, an auction price whose count is unknown is left out", Prices.NetCost(1, enchanting) == 150)
+listed[20] = Prices.LISTED_ENOUGH - 1
+Prices.ClearCache()
+Check("and so is one with too few listed", Prices.NetCost(1, enchanting) == 150)
+listed[20] = Prices.LISTED_ENOUGH
+Prices.ClearCache()
+Check("with enough listed, the auction sale after the cut counts", Prices.NetCost(1, enchanting) == 20)
+Check("while the vendor-only cost stays as it was", Prices.NetCost(1) == 150)
+itemInfo[20] = { quality = 2, level = 20, equip = "INVTYPE_CHEST", classID = 4 }
+Prices.ClearCache()
+Check("disenchanting counts only with the Enchanting it needs", Prices.NetCost(1, enchanting) == 20)
+enchanting = 50
+Prices.ClearCache()
+Check("with it, a better disenchant wins", Prices.NetCost(1, enchanting) == 200 - 380)
+Check("a lower Enchanting skill values it again without clearing the cache", Prices.NetCost(1, 10) == 20)
+itemInfo[20].ilvl = 60
+Prices.ClearCache()
+Check("the item's own level, not its base level, sets the Enchanting it needs", Prices.NetCost(1, enchanting) == 20)
+itemInfo[20].ilvl = nil
+prices[20], listed[20], enchanting = nil, nil, 0
+Prices.ClearCache()
+Check("with neither, the vendor sale is the best", Prices.NetCost(1, enchanting) == 150)
+sellPrices[20] = 500
+Check("a cached cost is kept until the cache is cleared", Prices.NetCost(1, enchanting) == 150)
+Prices.ClearCache()
+Check("and the vendor wins when it pays most", Prices.NetCost(1, enchanting) == -300)
 
 print(("test-profession-roi: %d checks passed"):format(checks))

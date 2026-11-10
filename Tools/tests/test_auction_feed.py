@@ -25,8 +25,10 @@ class AuctionFeedTest(unittest.TestCase):
                     {"item": {"id": 4306}, "quantity": 1, "buyout": 900}]
         commodities = [{"item": {"id": 2589}, "quantity": 100, "unit_price": 24},
                        {"item": {"id": 2770}, "quantity": 3, "unit_price": 68}]
-        prices = auction_feed.lowest(commodities, auction_feed.lowest(auctions, {}))
+        listed = {}
+        prices = auction_feed.lowest(commodities, auction_feed.lowest(auctions, {}, listed), listed)
         self.assertEqual(prices, {2589: 24, 2770: 68, 4306: 900})
+        self.assertEqual(listed, {2589: 3, 2770: 1, 4306: 1})
 
     def test_no_listings(self):
         self.assertEqual(auction_feed.lowest(None, {}), {})
@@ -35,11 +37,15 @@ class AuctionFeedTest(unittest.TestCase):
         self.assertEqual(auction_feed.encode({2770: 68, 2589: 26, 2592: 1296}), "1zx:q,3:100,4y:1w")
         self.assertEqual(auction_feed.encode({}), "")
 
+    def test_encode_how_many_are_listed(self):
+        self.assertEqual(auction_feed.encode({2589: 26, 2592: 1296}, {2589: 125}), "1zx:q:3h,3:100")
+
     def test_lua(self):
-        feed = {"us": {110: {"faction": "Alliance", "prices": {10: 35}}, 112: {"faction": "Alliance", "prices": {}}}}
+        feed = {"us": {110: {"faction": "Alliance", "prices": {10: 35}, "listed": {10: 40}},
+                       112: {"faction": "Alliance", "prices": {}}}}
         text = auction_feed.lua(feed, 1794114010)
         self.assertIn("    time = 1794114010,\r\n", text)
-        self.assertIn('        [1] = {\r\n            [110] = { faction = "Alliance", prices = "a:z" },\r\n', text)
+        self.assertIn('        [1] = {\r\n            [110] = { faction = "Alliance", prices = "a:z:14" },\r\n', text)
         self.assertIn('            [112] = { faction = "Alliance", prices = "" },\r\n', text)
         self.assertTrue(text.isascii())
 

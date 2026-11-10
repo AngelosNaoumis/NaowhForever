@@ -118,8 +118,8 @@ local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn, feed, 
     function t.Clock(seconds) skew = seconds end
     function t.Faction(value) faction = value end
     function t.Profile(key, value) values[key] = value end
-    function t.Priced(prices, ago)
-        account.ahPrices = { ["Realm-Alliance"] = { prices = prices, time = now - ago } }
+    function t.Priced(prices, ago, listed)
+        account.ahPrices = { ["Realm-Alliance"] = { prices = prices, listed = listed, time = now - ago } }
     end
     function t.Tooltip(id)
         local tooltip = { lines = {} }
@@ -154,6 +154,8 @@ t.Flush()
 Check("capture finishes without waiting on unused item data", t.Refreshes() == 1 and #t.messages == 1 and not t.Listening())
 local prices, when = t.ns.AuctionPriceList()
 Check("minimum unit prices preserved", prices[10] == 49 and prices[20] == 100 and when == 10000)
+Check("and how many auctions listed each at a price, a stack counting once",
+    t.ns.AuctionListed(10) == 998 and t.ns.AuctionListed(20) == 1)
 for _ = 1, 100 do t.Fire("REPLICATE_ITEM_LIST_UPDATE"); t.Flush() end
 Check("late Auctionator cache events do not repeat completion", t.Refreshes() == 1 and #t.messages == 1 and t.ns.AuctionScanTime() == when)
 t.Button().click()
@@ -328,12 +330,14 @@ local function Base36(n)
     return text
 end
 
-local function Encode(each)
+local function Encode(each, listed)
     local ids, parts, last = {}, {}, 0
     for id in pairs(each) do ids[#ids + 1] = id end
     table.sort(ids)
     for _, id in ipairs(ids) do
-        parts[#parts + 1] = Base36(id - last) .. ":" .. Base36(each[id])
+        local part = Base36(id - last) .. ":" .. Base36(each[id])
+        if listed and listed[id] then part = part .. ":" .. Base36(listed[id]) end
+        parts[#parts + 1] = part
         last = id
     end
     return table.concat(parts, ",")
@@ -342,7 +346,7 @@ end
 local FEED_TIME = 10000 - 3600
 local function Feed(houses)
     local region = {}
-    for id, house in pairs(houses) do region[id] = { faction = house[1], prices = Encode(house[2]) } end
+    for id, house in pairs(houses) do region[id] = { faction = house[1], prices = Encode(house[2], house[3]) } end
     return { time = FEED_TIME, regions = { [1] = region } }
 end
 
@@ -434,6 +438,31 @@ t = Setup(true, false, true, true, nil, Feed({ [110] = { "Alliance", { [PEACEBLO
 lines = t.Tooltip(HERBS)
 Check("crate prices alone from the release name them, not a scan", Headers(lines) == 1
     and lines[1].right == "Prices from 1h ago")
+
+t = Setup(true, false, true, nil, nil, Feed({
+    [110] = { "Alliance", { [10] = 40, [11] = 7 }, { [10] = 3 } },
+    [111] = { "Alliance", { [10] = 50 }, { [10] = 12 } },
+    [119] = { "Alliance", { [10] = 60, [11] = 9 }, { [10] = 30 } },
+}))
+Check("how many are listed comes from the house whose price is the middle",
+    t.ns.AuctionPrice(10) == 50 and t.ns.AuctionListed(10) == 12)
+Check("an entry from a release built before the counts still prices, and lists none",
+    t.ns.AuctionPrice(11) == 7 and t.ns.AuctionListed(11) == nil)
+Check("an item nobody sells lists none", t.ns.AuctionListed(12) == nil and t.ns.AuctionListed(nil) == nil)
+
+local wailingListed = {}
+for i = 1, 25 do wailingListed[1000 + i] = i end
+local counted = { [111] = { "Alliance", WAILING, wailingListed }, [119] = { "Alliance", OTHER } }
+scan = {}
+for id, each in pairs(WAILING) do scan[id] = each end
+scan[12] = 30
+t = Setup(true, false, true, nil, nil, Feed(counted))
+t.Priced(scan, 7200, { [12] = 4 })
+Check("once your house is found, its newer count is the one read", t.ns.AuctionListed(1003) == 3)
+Check("what only your scan prices takes your scan's count", t.ns.AuctionListed(12) == 4)
+t.Priced(scan, 60)
+Check("a newer scan of your own from before the counts lists none", t.ns.AuctionPrice(1003) == scan[1003]
+    and t.ns.AuctionListed(1003) == nil)
 
 t = Setup(true, false, true)
 t.Clock(-3 * 3600)

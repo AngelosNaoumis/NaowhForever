@@ -117,18 +117,18 @@ local function Optimise(from, to, modifier)
     return best
 end
 
-local function Add(id, yellow, grey, info, r, train, trainAt)
-    candidates[#candidates + 1] = { id = id, yellow = yellow, grey = grey, net = Prices.NetCost(id),
+local function Add(enchanting, id, yellow, grey, info, r, train, trainAt)
+    candidates[#candidates + 1] = { id = id, yellow = yellow, grey = grey, net = Prices.NetCost(id, enchanting),
         info = info, r = r, train = train, trainAt = trainAt }
 end
 
-local function Collect(skill, later)
+local function Collect(skill, later, enchanting)
     wipe(candidates)
     for _, cat in ipairs(Entries.Learned()) do
         for _, info in ipairs(cat.recipes) do
             local id = info.recipeID
             local _, yellow, grey = SkillUps.Range(id, info.maxTrivialLevel)
-            if yellow and grey > skill and not Cooldowns[id] then Add(id, yellow, grey, info) end
+            if yellow and grey > skill and not Cooldowns[id] then Add(enchanting, id, yellow, grey, info) end
         end
     end
     local finder = ns.RecipeFinder
@@ -136,24 +136,25 @@ local function Collect(skill, later)
         if r.source == TRAINER and r.yellow and r.yellow <= r.grey and r.grey > skill and not Cooldowns[r.spell] then
             local status = finder.Status(r)
             if status == READY then
-                Add(r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0)
+                Add(enchanting, r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0)
             elseif status == LATER and later then
-                Add(r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0, finder.Skill(r))
+                Add(enchanting, r.spell, r.yellow, r.grey, nil, r, finder.Cost(r) or 0, finder.Skill(r))
             end
         end
     end
 end
 
-local function Changed(prof, later)
+local function Changed(prof, later, enchanting)
     local scan = ns.AuctionScanTime and ns.AuctionScanTime() or 0
     local recipes, unlearned = Entries.Count(), #Entries.Unlearned()
     if cached and last.id == prof.id and last.skill == prof.skill and last.max == prof.max
         and last.modifier == prof.modifier and last.recipes == recipes and last.unlearned == unlearned
-        and last.scan == scan and last.later == later then
+        and last.scan == scan and last.later == later and last.enchanting == enchanting then
         return false
     end
     last.id, last.skill, last.max, last.modifier = prof.id, prof.skill, prof.max, prof.modifier
     last.recipes, last.unlearned, last.scan, last.later = recipes, unlearned, scan, later
+    last.enchanting = enchanting
     return true
 end
 
@@ -161,13 +162,14 @@ function Plan.Get()
     local prof = R.Profession()
     if not prof then return nil end
     local later = S.Get("skillUpPlanLater")
-    if not Changed(prof, later) then return cached end
+    local enchanting = S.Get("skillUpPlanBest") and (P.DisenchantDeals.Skill() or 0) or nil
+    if not Changed(prof, later, enchanting) then return cached end
     local plan
     if prof.skill >= prof.max then
         plan = { from = prof.skill, to = prof.max, steps = {}, reach = prof.skill, crafts = 0, total = 0,
             priced = true, trained = {}, atCap = true }
     else
-        Collect(prof.skill + prof.modifier, later)
+        Collect(prof.skill + prof.modifier, later, enchanting)
         plan = Optimise(prof.skill, prof.max, prof.modifier)
         plan.from, plan.to = prof.skill, prof.max
         wipe(candidates)

@@ -8,6 +8,7 @@ local S = P.Settings
 local W = P.State
 local R = P.Recipes
 local Plan = P.SkillUpPlan
+local Prices = P.Prices
 local Queue = P.CraftQueue
 local Shopping = P.Shopping
 local Text = P.Text
@@ -41,6 +42,8 @@ local TEXT_TOTAL = ns.L("%d skill-ups: about %d crafts, %s")
 local TEXT_TOTAL_UNPRICED = ns.L("%d skill-ups: about %d crafts")
 local TEXT_UNPRICED = ns.L("Some steps have no price yet; scan the auction house to plan by cost.")
 local TEXT_VENDOR = ns.L("Costs count what each craft sells to a vendor for, not its auction house price.")
+local TEXT_BEST = ns.L("Costs count each craft at its best sale: the auction house when it has %d or more auctions, "
+    .. "disenchanting, or a vendor.")
 local TEXT_MORE = ns.L("+%d more steps")
 local TEXT_QUEUE = ns.L("Queue Plan")
 local TEXT_LIST = ns.L("Add Plan to List")
@@ -212,7 +215,8 @@ local function FillFooter(plan)
         pane.total:SetText(TEXT_TOTAL_UNPRICED:format(points, plan.crafts))
     end
     pane.note:SetShown(not empty)
-    pane.note:SetText(plan.priced and TEXT_VENDOR or TEXT_VENDOR .. "\n" .. TEXT_UNPRICED)
+    local valued = S.Get("skillUpPlanBest") and TEXT_BEST:format(Prices.LISTED_ENOUGH) or TEXT_VENDOR
+    pane.note:SetText(plan.priced and valued or valued .. "\n" .. TEXT_UNPRICED)
     local queue = QueueOn()
     local action = pane.action
     action:SetShown(not empty and (queue or S.Get("shoppingList")) and true or false)

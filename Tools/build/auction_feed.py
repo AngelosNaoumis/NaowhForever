@@ -1,5 +1,5 @@
-"""Build the Auction Prices feed: every Forever auction house's lowest price per item, from
-Blizzard's auction data, into NaowhForever_AuctionData/Prices.lua (ns.AuctionFeed).
+"""Build the Auction Prices feed: every Forever auction house's lowest price per item and how many auctions
+list it, from Blizzard's auction data, into NaowhForever_AuctionData/Prices.lua (ns.AuctionFeed).
 
 Needs a Blizzard API client in BLIZZARD_CLIENT_ID and BLIZZARD_CLIENT_SECRET. The release
 workflow runs it before packaging, so every release carries the prices of that hour. The feed's
@@ -73,15 +73,20 @@ def seconds(last_modified):
     return int(email.utils.parsedate_to_datetime(last_modified).timestamp())
 
 
-def lowest(listings, prices):
-    """Fold listings into item ID -> lowest price for one, in copper; bid-only auctions skipped."""
+def lowest(listings, prices, listed=None):
+    """Fold listings into item ID -> lowest price for one, in copper, and into listed, item ID -> how many
+    auctions have a price; bid-only auctions skipped."""
     for listing in listings or []:
         item, quantity = listing["item"]["id"], listing.get("quantity") or 1
         each = listing.get("unit_price")
         if each is None and listing.get("buyout"):
             each = listing["buyout"] // quantity
-        if each and (item not in prices or each < prices[item]):
+        if not each:
+            continue
+        if item not in prices or each < prices[item]:
             prices[item] = each
+        if listed is not None:
+            listed[item] = listed.get(item, 0) + 1
     return prices
 
 
@@ -94,11 +99,15 @@ def base36(number):
             return text
 
 
-def encode(prices):
-    """"id:price,..." in base 36, each ID as the step from the one before."""
+def encode(prices, listed=None):
+    """"id:price:listed,..." in base 36, each ID as the step from the one before; ":listed" only for an item
+    listed holds."""
     parts, last = [], 0
     for item in sorted(prices):
-        parts.append(base36(item - last) + ":" + base36(prices[item]))
+        part = base36(item - last) + ":" + base36(prices[item])
+        if listed and item in listed:
+            part += ":" + base36(listed[item])
+        parts.append(part)
         last = item
     return ",".join(parts)
 
@@ -113,8 +122,9 @@ def houses(access, region, summary=False):
         started = time.time()
         listed, size, modified = get(access, region, str(house_id))
         goods, goods_size, goods_modified = get(access, region, f"{house_id}/commodities")
-        prices = lowest(goods.get("auctions"), lowest(listed.get("auctions"), {}))
-        found[house_id] = {"faction": name.split()[0] if name else "", "prices": prices,
+        counts = {}
+        prices = lowest(goods.get("auctions"), lowest(listed.get("auctions"), {}, counts), counts)
+        found[house_id] = {"faction": name.split()[0] if name else "", "prices": prices, "listed": counts,
                            "time": min(seconds(modified), seconds(goods_modified))}
         if summary:
             auctions, commodities = listed.get("auctions") or [], goods.get("auctions") or []
@@ -135,7 +145,8 @@ def lua(feed, at):
         lines.append(f"        [{REGIONS[region]}] = {{")
         for house_id in sorted(found):
             house = found[house_id]
-            lines.append(f'            [{house_id}] = {{ faction = "{house["faction"]}", prices = "{encode(house["prices"])}" }},')
+            prices = encode(house["prices"], house.get("listed"))
+            lines.append(f'            [{house_id}] = {{ faction = "{house["faction"]}", prices = "{prices}" }},')
         lines.append("        },")
     lines += ["    },", "}", ""]
     return "\r\n".join(lines)

@@ -181,6 +181,23 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   the plan and a loss on the recipe, with nothing saying why. A recipe with an unpriced reagent, or
   a result whose sell price has not loaded yet, comes after the priced ones, by chance. The cost is cached
   per recipe with the profit, until the next full draw. The unlearned groups keep their own order.
+- Plan by Best Sale Price (off by default) changes only the Skill-up Plan's cost: the result counts at the
+  best of its vendor sale, its auction price after the cut and its disenchant value after the cut. Best for
+  Skill-ups and the per skill-up line keep the vendor sale, so a setting found under the plan does not
+  move the recipe list. The plan reads it once per plan and keeps it in the plan's cache key, and
+  `Prices.NetCost` keeps a second cache for it, so turning it on or off plans again at once.
+- The auction price counts only when at least `LISTED_ENOUGH` (10) auctions listed the item in the same
+  scan or release (`ns.AuctionListed`), a stack counting once: one seller's stack at a silly price would
+  otherwise pick every step, and the plan crafts dozens of each. A price with no count, from a scan or
+  release made before counts were kept, counts as too few.
+- The disenchant value is the same estimate as Disenchant Deals' (`DisenchantValues.Expected` on the
+  last prices, at the item's own level from `GetDetailedItemLevelInfo`), and counts only when the
+  character's Enchanting meets the item's requirement, as The Market's Best Way to Sell does. The plan
+  reads the Enchanting skill once per plan and keeps it in its cache key, and `Prices.NetCost` drops its
+  best-sale cache when the skill it was worked out at changes, so learning Enchanting plans again.
+- The disenchant value prices the enchanting materials from the last prices without a count check, so
+  a thin market for a shard or essence can still lift it. Checking those counts would need a counted
+  price list through `DisenchantValues.Expected`; not done yet.
 - Skill-up Plan is off by default; its title bar button and its pane are made the first time they are
   needed, and its only hook is `Window.Render`, which places the button (as Disenchant does). Opening it
   shows the plan in the middle column in place of the recipe; clicking a recipe in the list, or a step,
@@ -696,6 +713,13 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   a recipe trained later is used only from its skill, left out when its training does not pay, and a
   next-rank recipe stays out) and `test-professions-memory.lua` (the Train at row, the steps the button
   takes and what the plan costs to work out).
+- Plan by Best Sale Price: `test-profession-skill-up-plan.lua` (turning it on or off plans again, and a
+  craft that sells well goes first, a new Enchanting skill plans again) and `test-profession-roi.lua` (the
+  auction sale only with enough auctions, disenchanting only with the Enchanting the item's own level
+  needs, the vendor-only cost unchanged). In game, with Skill-up Plan on, open a profession whose early
+  crafts sell on the auction house, scan, and turn Plan by Best Sale Price on: the plan's note names the
+  best sale, step costs drop for crafts with 10 or more auctions up, and a craft with one auction, even
+  a big stack, keeps its vendor cost.
 - The window's slices: `test-profession-combat-close.lua`, `test-profession-window-drag.lua`
   (Takeover.lua), `test-profession-link-view.lua` (LinkView.lua), `test-profession-shift-click.lua`
   (AuctionHouse.lua), `test-professions-ah-panels.lua` (the panels' edge, AuctionHouse.lua),

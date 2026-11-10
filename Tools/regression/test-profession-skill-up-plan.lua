@@ -3,16 +3,21 @@ local checks = 0
 local function Check(label, condition) assert(condition, label); checks = checks + 1 end
 
 local prof = { id = 197, skill = 30, max = 50, modifier = 0 }
-local net, learned, unlearned, status, train, need = {}, {}, {}, {}, {}, {}
+local net, bestNet, learned, unlearned, status, train, need = {}, {}, {}, {}, {}, {}, {}
 local settings = {}
 local scan = 1
+local enchanting
 local ns = {
     AuctionScanTime = function() return scan end,
     Professions = {
         Settings = { Get = function(key) return settings[key] end },
         Recipes = { Profession = function() return prof end },
-        Prices = { NetCost = function(id) return net[id] end },
+        Prices = { NetCost = function(id, best)
+            if best and bestNet[id] then return bestNet[id] end
+            return net[id]
+        end },
         CooldownRecipes = { [99] = true },
+        DisenchantDeals = { Skill = function() return enchanting end },
         Entries = {
             Learned = function() return { { recipes = learned } } end,
             Unlearned = function() return unlearned end,
@@ -43,7 +48,7 @@ end
 local function Learn(id) learned[#learned + 1] = { recipeID = id } end
 
 local function Reset()
-    for _, t in ipairs({ net, learned, unlearned, status, train, need }) do wipe(t) end
+    for _, t in ipairs({ net, bestNet, learned, unlearned, status, train, need }) do wipe(t) end
     prof.skill, prof.max = 30, 50
 end
 
@@ -144,6 +149,30 @@ settings.skillUpPlanLater = nil
 plan = Plan.Get()
 Check("turning it off plans as before", Ids(plan) == "41")
 wipe(unlearned)
+
+Reset()
+Recipe(51, 1, 40, 60, 100)
+Recipe(52, 1, 40, 60, 90)
+Learn(51)
+Learn(52)
+bestNet[51] = 20
+plan = Fresh()
+Check("off, crafts are costed at their vendor sale", Ids(plan) == "52")
+settings.skillUpPlanBest = true
+before = plan
+plan = Plan.Get()
+Check("turning best sale on plans again", plan ~= before)
+Check("on, a craft that sells well costs less and goes first", Ids(plan) == "51" and plan.total == plan.steps[1].count * 20)
+before = plan
+enchanting = 25
+plan = Plan.Get()
+Check("on, a new Enchanting skill plans again, as it can change what disenchanting pays", plan ~= before)
+before = plan
+Check("and an unchanged one keeps the plan", Plan.Get() == before)
+enchanting = nil
+settings.skillUpPlanBest = nil
+plan = Plan.Get()
+Check("turning it off plans by the vendor sale again", Ids(plan) == "52")
 
 Reset()
 Recipe(31, 1, 35, 60, nil)
