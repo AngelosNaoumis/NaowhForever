@@ -498,6 +498,12 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   shared cooldown can read 0 on the spell). What was bought counts at every level, and a craft taken
   off takes its purchases along. Every craft fires TRADE_SKILL_LIST_UPDATE, so the recipes known are
   recorded again only when they changed, 0.5s after the list settles.
+- Make Your Own Reagents (`makeReagents`) is off by default and needs the Shopping List, whose recorded
+  recipes (`profMakes`) it reads. On, a material you know the recipe for is made whenever its parts are
+  priced, even when buying it costs less, with the extra cost on its Make First row; Buy there still buys
+  it. Crafting Profit prices each reagent from the same plan, marked "(made)", in a plan of its own that
+  is cleared with the profit cache. A part that leads back to the item being made (one made from what it
+  makes) is bought at that step, so the plan never goes round in a loop.
 - Vendor Items on Shopping List is opt-in so the list stays as it was for everyone else: off, vendor
   reagents are left off the list as before. On, missing vendor items from recipes and manually added
   items stay in the Shopping List. They go to Buy from Vendor unless the last auction scan and a known

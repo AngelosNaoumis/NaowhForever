@@ -7806,3 +7806,7 @@ L["New rows go below the first instead of above it, or new columns left instead 
 L["New Rows Below"] = "新行在下方"
 L["The class's name or icon by each button, or a small class icon on the button itself."] = "每个按钮旁的职业名称或图标，或按钮上的小职业图标。"
 L["The edge of every button; with Status Color the class buttons show their state there."] = "每个按钮的边缘；选择状态颜色时，职业按钮在边缘显示其状态。"
+L["Make Your Own Reagents"] = "自制材料"
+L["Plans and prices every reagent you can craft as made from its parts, even when buying costs less."] = "把你会制造的每种材料都按用其原料制造来规划和计价，即使购买更便宜。"
+L["  (made)"] = "  （自制）"
+L["costs ~%s more"] = "多花约%s"

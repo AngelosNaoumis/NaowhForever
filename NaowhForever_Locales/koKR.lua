@@ -7802,3 +7802,7 @@ L["New rows go below the first instead of above it, or new columns left instead 
 L["New Rows Below"] = "새 줄을 아래로"
 L["The class's name or icon by each button, or a small class icon on the button itself."] = "각 버튼 옆의 직업 이름이나 아이콘, 또는 버튼 위의 작은 직업 아이콘."
 L["The edge of every button; with Status Color the class buttons show their state there."] = "모든 버튼의 테두리. 상태 색상을 선택하면 직업 버튼이 테두리로 상태를 표시합니다."
+L["Make Your Own Reagents"] = "직접 재료 제작"
+L["Plans and prices every reagent you can craft as made from its parts, even when buying costs less."] = "제작할 수 있는 모든 재료를 구매가 더 싸더라도 부품으로 만든 것으로 계획하고 가격을 매깁니다."
+L["  (made)"] = "  (제작)"
+L["costs ~%s more"] = "약 %s 더 비쌈"

@@ -103,6 +103,10 @@ local function VendorOn()
     return P.Settings.Get("shoppingVendor")
 end
 
+local function MakeOwn()
+    return P.Settings.Get("shoppingList") and P.Settings.Get("makeReagents")
+end
+
 local function SkipVendor(item)
     local api = ns.ProfWindowAPI
     return not VendorOn() and api and api.IsVendorItem(item)
@@ -132,6 +136,7 @@ local Cheapest
 local function PartsCost(m, plan, depth)
     local total = 0
     for part, per in pairs(m.need) do
+        if plan.busy[part] and MakeOwn() then return nil end
         local c = plan.owned[part] and 0 or Cheapest(part, plan, depth + 1)
         if not c then return nil end
         total = total + c * per
@@ -147,7 +152,7 @@ function Cheapest(item, plan, depth, ignoreKeep)
         plan.busy[item] = true
         local total = PartsCost(m, plan, depth)
         plan.busy[item] = nil
-        if total and (not bought or total / m.made < bought) then cost, make = total / m.made, true end
+        if total and (MakeOwn() or not bought or total / m.made < bought) then cost, make = total / m.made, true end
         if make and not ignoreKeep then plan.craft[item] = total end
     end
     if not ignoreKeep then plan.cost[item], plan.make[item] = cost or false, make end
@@ -212,7 +217,7 @@ local function PlanItem(item, qty, depth)
     local _, make = Cheapest(item, shopPlan, 0)
     local m, price, craft = shopPlan.makes[item], BuyPrice(item), shopPlan.craft[item]
     local crafts = m and math.ceil(qty / m.made)
-    if make and price and craft and crafts * craft >= qty * price then make = false end
+    if make and price and craft and crafts * craft >= qty * price and not MakeOwn() then make = false end
     if not (make and depth < MAX_DEPTH) then
         buy[item] = (buy[item] or 0) + qty
         return
@@ -480,6 +485,7 @@ Shopping.BuyPrice = BuyPrice
 Shopping.VendorPrice = VendorPrice
 Shopping.BuyFromVendor = BuyFromVendor
 Shopping.Cheapest = Cheapest
+Shopping.MakeOwn = MakeOwn
 Shopping.Materials = Materials
 Shopping.VendorMaterials = VendorMaterials
 Shopping.Drop = Drop

@@ -185,6 +185,7 @@ ns.FEATURES = {
         shoppingListDock = false,
         craftQueue = false,
         shoppingVendor = false,
+        makeReagents = false,
         reagentUses = false,
         trainFavorites = false,
         searchFavoritesAH = false,

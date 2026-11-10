@@ -22,7 +22,7 @@ local TEXT_AFTER_CUT = ns.L("after the 5% cut")
 local TIP_TITLE = ns.L("Crafting Profit")
 local TIP_PART = "%s x%d"
 local TIP_HAVE = ns.L("you have it")
-local TIP_VENDOR, TIP_AH = ns.L("  (vendor)"), "  (AH)"
+local TIP_VENDOR, TIP_AH, TIP_MADE = ns.L("  (vendor)"), "  (AH)", ns.L("  (made)")
 local TIP_NO_PRICE = ns.L("no price")
 local TIP_TO_BUY, TIP_MATERIALS = ns.L("Materials to buy"), ns.L("Materials")
 local TIP_SELLS = ns.L("Sells for, less 5% cut")
@@ -105,7 +105,8 @@ end
 local function PartPrice(p)
     if p.owned then return ns.Color("muted", TIP_HAVE) end
     if p.each then
-        return Text.Money(p.each * p.need) .. (p.from == Prices.FROM_VENDOR and TIP_VENDOR or TIP_AH)
+        local from = p.from == Prices.FROM_MADE and TIP_MADE or p.from == Prices.FROM_VENDOR and TIP_VENDOR or TIP_AH
+        return Text.Money(p.each * p.need) .. from
     end
     return TIP_NO_PRICE
 end

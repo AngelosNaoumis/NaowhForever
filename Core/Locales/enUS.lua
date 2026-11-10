@@ -8111,3 +8111,7 @@ L["New rows go below the first instead of above it, or new columns left instead 
 L["New Rows Below"] = true
 L["The class's name or icon by each button, or a small class icon on the button itself."] = true
 L["The edge of every button; with Status Color the class buttons show their state there."] = true
+L["Make Your Own Reagents"] = true
+L["Plans and prices every reagent you can craft as made from its parts, even when buying costs less."] = true
+L["  (made)"] = true
+L["costs ~%s more"] = true

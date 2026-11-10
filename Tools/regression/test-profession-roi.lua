@@ -6,6 +6,7 @@ local settings = { craftProfit = true, craftROI = false, roiGreyBelow = 10, roiG
 local prices = { [10] = 100, [20] = 250 }
 local vendorPrices = {}
 local sellPrices = {}
+local makeOwn, madeCost, plans = false, {}, {}
 _G.wipe = function(t) for key in pairs(t) do t[key] = nil end return t end
 _G.C_Item = { GetItemInfo = function(item) return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, sellPrices[item] end }
 _G.NaowhForever = {
@@ -21,6 +22,13 @@ _G.NaowhForever = {
             ItemName = function() end,
         },
         Vendors = { Price = function(item) return vendorPrices[item] end },
+        Shopping = {
+            MakeOwn = function() return makeOwn end,
+            Cheapest = function(item, plan)
+                plans[plan] = true
+                return madeCost[item] or prices[item], madeCost[item] ~= nil
+            end,
+        },
     },
 }
 dofile("NaowhForever_Professions/Prices.lua")
@@ -65,5 +73,21 @@ Check("so the plan, which counts the vendor sale, can gain where the auction sal
     Prices.NetCost(1) == -100 and v.sale - v.cost == -20)
 sellPrices[20] = nil
 Check("a vendor sale not loaded yet is left out", Prices.CraftValue(1, 20, 1, { parts = {} }).vendor == nil)
+
+-- Make Your Own Reagents: a reagent the plan makes costs what its parts do.
+makeOwn, madeCost[10], sellPrices[20] = true, 30, 100
+Prices.ClearCache()
+v = Prices.CraftValue(1, 20, 1, { parts = {} })
+Check("a reagent you make is priced from its parts", v.cost == 60 and v.parts[1].from == Prices.FROM_MADE)
+Check("the list's profit and the skill-up cost use it too", Prices.RecipeProfit(1, 20, 1) == 120
+    and Prices.NetCost(1) == -40)
+Check("one plan is shared until the cache is cleared", next(plans) ~= nil and next(plans, next(plans)) == nil)
+madeCost[10] = nil
+Prices.ClearCache()
+v = Prices.CraftValue(1, 20, 1, { parts = {} })
+Check("one the plan buys keeps its own price and source", v.cost == 200 and v.parts[1].from == "ah")
+makeOwn, madeCost[10] = false, 30
+Prices.ClearCache()
+Check("off, nothing is priced as made", Prices.CraftValue(1, 20, 1, { parts = {} }).cost == 200)
 
 print(("test-profession-roi: %d checks passed"):format(checks))

@@ -7,7 +7,7 @@ local R = P.Recipes
 local V = P.Vendors
 
 local AH_CUT = 0.05
-local FROM_VENDOR, FROM_AH = "vendor", "ah"
+local FROM_VENDOR, FROM_AH, FROM_MADE = "vendor", "ah", "made"
 local DEFAULT_ROI_GREY_BELOW, DEFAULT_ROI_GREEN_FROM = 10, 30
 local PERCENT = 100
 local SELL_PRICE = 11
@@ -15,6 +15,7 @@ local TEXT_ROI = ns.L("(%.0f%% ROI)")
 
 local EMPTY = {}
 local profitCache, netCache = {}, {}
+local plan = { cost = {}, make = {}, craft = {}, busy = {} }
 
 local function AuctionPrice(itemID)
     return ns.AuctionPrice and ns.AuctionPrice(itemID)
@@ -25,6 +26,20 @@ local function BuyPrice(itemID)
     local ah = AuctionPrice(itemID)
     if vendor and (not ah or vendor <= ah) then return vendor, FROM_VENDOR end
     if ah then return ah, FROM_AH end
+end
+
+local function MakePlan()
+    if not P.Shopping.MakeOwn() then return end
+    plan.owned = R.Owned()
+    return plan
+end
+
+local function ReagentPrice(itemID, makes)
+    if makes then
+        local each, made = P.Shopping.Cheapest(itemID, makes, 0)
+        if made then return each, FROM_MADE end
+    end
+    return BuyPrice(itemID)
 end
 
 local function ProfitShown()
@@ -45,9 +60,9 @@ end
 local function CraftValue(recipeID, output, made, v)
     v.cost, v.missing, v.owned, v.output, v.made = 0, 0, 0, output, made or 1
     local ok, reagents = pcall(R.Reagents, recipeID)
-    local owned, n = R.Owned(), 0
+    local owned, makes, n = R.Owned(), MakePlan(), 0
     for _, r in ipairs(ok and reagents or EMPTY) do
-        local each, from = BuyPrice(r.itemID)
+        local each, from = ReagentPrice(r.itemID, makes)
         local have = owned[r.itemID] == true
         n = n + 1
         local p = v.parts[n] or {}
@@ -70,10 +85,10 @@ local function CraftValue(recipeID, output, made, v)
 end
 
 local function ReagentCost(reagents)
-    local owned, cost, missing = R.Owned(), 0, 0
+    local owned, makes, cost, missing = R.Owned(), MakePlan(), 0, 0
     for _, r in ipairs(reagents) do
         if owned[r.itemID] ~= true then
-            local price = BuyPrice(r.itemID)
+            local price = ReagentPrice(r.itemID, makes)
             if price then
                 cost = cost + price * r.need
             else
@@ -144,10 +159,12 @@ end
 local function ClearCache()
     wipe(profitCache)
     wipe(netCache)
+    wipe(plan.cost); wipe(plan.make); wipe(plan.craft); wipe(plan.busy)
 end
 
 P.Prices = {
     FROM_VENDOR = FROM_VENDOR,
+    FROM_MADE = FROM_MADE,
     AfterCut = AfterCut,
     BuyPrice = BuyPrice,
     ProfitShown = ProfitShown,

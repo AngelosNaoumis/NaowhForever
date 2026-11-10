@@ -7802,3 +7802,7 @@ L["New rows go below the first instead of above it, or new columns left instead 
 L["New Rows Below"] = "Nuove righe sotto"
 L["The class's name or icon by each button, or a small class icon on the button itself."] = "Il nome o l'icona della classe accanto a ogni pulsante, o una piccola icona della classe sul pulsante stesso."
 L["The edge of every button; with Status Color the class buttons show their state there."] = "Il bordo di ogni pulsante; con Colore di stato i pulsanti di classe vi mostrano il loro stato."
+L["Make Your Own Reagents"] = "Crea i tuoi reagenti"
+L["Plans and prices every reagent you can craft as made from its parts, even when buying costs less."] = "Pianifica e stima ogni reagente che sai creare come fatto dai suoi componenti, anche quando comprarlo costa meno."
+L["  (made)"] = "  (creato)"
+L["costs ~%s more"] = "costa ~%s in più"
