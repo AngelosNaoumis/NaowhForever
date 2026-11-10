@@ -16,7 +16,6 @@ ns.Journal.NotYet = {
     [12960] = { 4, 2, 60, 55, 3, 133126, "Tribal War Feathers" },
     [12963] = { 4, 2, 63, 58, 3, 134586, "Blademaster Leggings" },
     [13098] = { 4, 0, 63, 58, 3, 133360, "Painweaver Band" },
-    [13141] = { 4, 0, 63, 58, 3, 133296, "Tooth of Gnarr" },
     [13148] = { 2, 6, 61, 56, 3, 135128, "Chillpike" },
     [13175] = { 2, 2, 60, 55, 2, 135498, "Voone's Twitchbow" },
     [13260] = { 4, 3, 61, 56, 3, 132535, "Wind Dancer Boots" },

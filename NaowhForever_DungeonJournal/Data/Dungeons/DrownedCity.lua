@@ -9,12 +9,12 @@ ns.Journal.AddDungeon("DrownedCity", {
     entrance = { map = 1434, x = 21.4, y = 27.9 },
     wings = {
         { bosses = {
-            { npc = 270882, name = "Zul'Alai", model = 144475, encounters = { 3474 }, loot = { 274598, 274599, 274600 } },
-            { npc = 270883, name = "Var'Taka", model = 144487, encounters = { 3475 }, loot = { 274601, 274602, 274613 } },
-            { npc = 270884, name = "Captain Dreadrise", model = 142144, encounters = { 3476 }, loot = { 274603, 274604, 274605 } },
+            { npc = 270882, name = "Zul'Alai", model = 144475, encounters = { 3474 }, loot = { 274599, 274598, 274600 }, chance = { 42, 33, 25 } },
+            { npc = 270883, name = "Var'Taka", model = 144487, encounters = { 3475 }, loot = { 274601, 274613, 274602, 271718 }, chance = { 37, 33, 31, 2 } },
+            { npc = 270884, name = "Captain Dreadrise", model = 142144, encounters = { 3476 }, loot = { 274603, 274604, 274605 }, chance = { 45, 34, 20 } },
             { npc = 270885, name = "Deathless Marrow", model = 142245, loot = { 274606, 274607, 274614 } },
-            { npc = 270887, name = "Primeval Elemental", encounters = { 3511 }, loot = { 274611, 274612, 274615 } },
-            { npc = 270886, name = "Min'loth the Serpent", model = 142286, encounters = { 3479 }, loot = { 274608, 274609, 274610, 271718 } },
+            { npc = 270887, name = "Primeval Elemental", encounters = { 3511 }, loot = { 274611, 274615, 274612, 271718 }, chance = { 38, 35, 26, 3 } },
+            { npc = 270886, name = "Min'loth the Serpent", model = 142286, encounters = { 3479 }, loot = { 274608, 274609, 274610, 271718 }, chance = { 41, 39, 20, 5 } },
             { npc = 270888, name = "Gill", rare = true, loot = { 286646, 286649 } },
         } },
     },

@@ -6,6 +6,8 @@
 - Dungeon Journal: 22 more boss drops for The Drowned City, Krol'dok Stronghold, Blackmaw Hold and
   Alcaz Prison (War Handler Ashka had none), and quest givers for The Drowned City, Krol'dok
   Stronghold's Tome of Twilight and Ancient Gurubashi Secrets.
+- Dungeon Journal: drop chances for The Drowned City's bosses, Linken's Boots of Iron on the three
+  bosses that drop it, and quest givers for five more dungeon quests.
 
 ## 1.2.25
 
