@@ -196,7 +196,7 @@ The workflow then:
   and pushes that as `chore(release): <version>` to `main`;
 - tags the commit, and the tag starts a second Release run that builds the zip,
   publishes the GitHub release with the player notes and every commit since the last
-  tag, uploads to CurseForge, and posts the notes to Discord;
+  tag, uploads to CurseForge and Wago, and posts the notes to Discord;
 - puts an empty `## Unreleased` back at the top of the changelog on `main`.
 
 The push uses the `RELEASE_DEPLOY_KEY` secret: a deploy key with write access, on Protect
