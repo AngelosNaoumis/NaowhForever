@@ -1,6 +1,30 @@
 # Changelog
 
-## Unreleased
+## 1.2.24
+
+### Added
+- Dungeon Journal: Blackmaw Hold lists its seven bosses (no loot yet).
+- BiS List: the Quests page lists the quests that reward a level-60 list's picks.
+- Dungeon Journal: Blackmaw Hold's and Shaper's Terrace's quests, and Blackrock Depths' Fragment of
+  the Firelands.
+
+### Changed
+- The Market: talking to an auctioneer opens Blizzard's auction house again, with The Market button
+  above it. Turn on Open at the Auctioneer (The Market > Settings > Selling) to open The Market
+  first.
+- The Market: Post With Keys (Space to post) and Bag Worth (numbers on your most valuable bag items)
+  are now off until you turn them on in The Market's settings.
+- BiS List: quests updated from the latest Forever quest lists.
+- Gear Score: the bar on the character panel and BiS List is flat green, blue, purple and legendary
+  bands instead of a gradient.
+
+### Fixed
+- Dungeon Journal: Blackrock Depths, Dire Maul, both Blackrock Spires, Scholomance, Stratholme,
+  Sunken Temple, Zul'Farrak and Maraudon no longer say they aren't open yet.
+- Dungeon Journal: kill counts for the bosses of Blackmaw Hold, The Drowned City, Alcaz Prison and
+  Shaper's Terrace.
+- Dungeon Journal: Share All no longer offers Unfinished Gordok Business or Kirtonos the Herald, now
+  shares Seal of Ascension, and Pip Quickwit's quest shows its Forever name.
 
 ## 1.2.23
 
