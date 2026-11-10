@@ -15,7 +15,7 @@ local FIRST_LOOK, RETRY_DELAY, MAX_TRIES = 0.2, 0.5, 4
 local CAST_SLACK = 1
 local DEFAULT_SIZE = 20
 local CONTINENT_SCALE = 0.75
-local MAXIMIZED_SHRINK = 2
+local PIN_SCALE = 0.67
 local MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 local HELP_RGB = { r = 0.61, g = 0.64, b = 0.69 }
 local HINT_RGB = ns.QoLConstants.HINT_RGB
@@ -198,7 +198,6 @@ local function PinSize(map)
     local info = C_Map.GetMapInfo(map:GetMapID())
     local size = S.Get("mapSkyborneSize") or DEFAULT_SIZE
     if info and info.mapType and info.mapType <= MAP_CONTINENT then size = size * CONTINENT_SCALE end
-    if map:IsMaximized() then size = size / MAXIMIZED_SHRINK end
     return size
 end
 
@@ -221,6 +220,10 @@ local function MakePinMixin()
         self.Icon:SetMask(MASK)
     end
 
+    function Pin:ApplyCurrentScale()
+        ns.Shared.ScalePin(self, PIN_SCALE)
+    end
+
     function Pin:CheckMouseButtonPassthrough() end
 
     function Pin:OnAcquired(entry, x, y)
@@ -230,6 +233,7 @@ local function MakePinMixin()
         self:SetSize(size, size)
         self.Icon:SetTexture(KINDS[entry.kind].icon)
         self:SetPosition(x, y)
+        self:ApplyCurrentScale()
     end
 
     function Pin:OnMouseEnter()
