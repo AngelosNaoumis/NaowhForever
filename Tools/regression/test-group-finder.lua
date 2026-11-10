@@ -23,7 +23,7 @@ end
 
 local modules = Read("Core/Options/Modules.lua")
 check("the options list it as a Utilities module needing BiS", modules:find(
-    '{ name = "Group Finder", group = "UTILITIES", navIcon = "search", settings = "GroupFinderSettings",\r\n'
+    '{ name = "Group Finder", navIcon = "search", settings = "GroupFinderSettings",\r\n'
     .. '      addon = "NaowhForever_GroupFinder", host = "NaowhForever_Utilities",\r\n'
     .. '      needs = { "NaowhForever_BiS" },', 1, true) ~= nil)
 local commands = Read("Core/Commands.lua")

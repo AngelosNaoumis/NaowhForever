@@ -3,8 +3,6 @@ local ns = _G.NaowhForever
 local UI = ns.UI
 
 local PROFILES_PAGE = "Profiles"
-local QOL = "QoL"
-local TEXT_QOL = ns.L("Quality of Life")
 local TEXT_AND = ns.L(" and ")
 local TEXT_ENABLE_ASK, TEXT_DISABLE_ASK = ns.L("Enable %s?"), ns.L("Disable %s?")
 local TEXT_ENABLE, TEXT_DISABLE = ns.L("Enable"), ns.L("Disable")
@@ -27,7 +25,8 @@ local SYSTEM_PAGES = {
 }
 
 local MODULES = {
-    { name = "QoL", navIcon = "checklist", settings = "QoLSettings", addon = "NaowhForever_QoL",
+    { name = "QoL", label = "Quality of Life", navIcon = "checklist", settings = "QoLSettings",
+      addon = "NaowhForever_QoL",
       subtitle = "Naowh's quality of life tweaks, trimmed to what Forever has.",
       tabs = {
           { name = "Interface", reuse = true },
@@ -41,7 +40,7 @@ local MODULES = {
           { name = "Cursor & Crosshair", reuse = true },
           { name = "Damage Meter", reuse = true },
       } },
-    { name = "Dungeon Journal", group = "ADVENTURE", navIcon = "map", settings = "JournalSettings",
+    { name = "Dungeon Journal", navIcon = "map", settings = "JournalSettings",
       addon = "NaowhForever_DungeonJournal",
       open = "ToggleJournalWindow",
       command = "journal", alias = "dj", short = "Journal", icon = "Interface\\Icons\\INV_Misc_Book_09",
@@ -51,7 +50,7 @@ local MODULES = {
           { name = "Quest Tracker", reuse = true },
           { name = "Map", reuse = true },
       } },
-    { name = "Instance Tracker", group = "UTILITIES", navIcon = "person", settings = "InstanceTrackerSettings",
+    { name = "Instance Tracker", navIcon = "person", settings = "InstanceTrackerSettings",
       addon = "NaowhForever_InstanceTracker", host = "NaowhForever_Utilities",
       open = "ToggleInstanceTrackerWindow",
       command = "instance", short = "Instance", icon = "Interface\\Icons\\INV_Misc_PocketWatch_01",
@@ -59,7 +58,7 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "BiS List", group = "ADVENTURE", navIcon = "trophy", settings = "QoLSettings", enabledKey = "bis",
+    { name = "BiS List", navIcon = "trophy", settings = "QoLSettings", enabledKey = "bis",
       addon = "NaowhForever_BiS",
       open = "ToggleBisWindow",
       command = "bis", short = "BiS", icon = "Interface\\Icons\\INV_Sword_39",
@@ -68,7 +67,7 @@ local MODULES = {
           { name = "Settings", reuse = true },
           { name = "Character", reuse = true },
       } },
-    { name = "Training Planner", group = "ADVENTURE", navIcon = "notes", settings = "TrainingSettings",
+    { name = "Training Planner", navIcon = "notes", settings = "TrainingSettings",
       addon = "NaowhForever_Training",
       open = "ToggleTrainingWindow",
       command = "training", short = "Training", icon = "Interface\\Icons\\INV_Misc_Book_11",
@@ -76,13 +75,13 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Journeys", group = "UTILITIES", navIcon = "compass", settings = "JourneysSettings",
+    { name = "Journeys", label = "Route Planner (Journeys)", navIcon = "compass", settings = "JourneysSettings",
       addon = "NaowhForever_Journeys", host = "NaowhForever_Utilities",
       subtitle = "The fastest way anywhere: walking, flights, boats, zeppelins, the tram, portals and your Hearthstone.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Discovery", group = "ADVENTURE", navIcon = "compass", settings = "DiscoverySettings",
+    { name = "Discovery", navIcon = "compass", settings = "DiscoverySettings",
       addon = "NaowhForever_Discovery",
       open = "ToggleDiscoveryWindow",
       command = "discovery", short = "Discovery", icon = "Interface\\Icons\\INV_Misc_Book_07",
@@ -94,13 +93,13 @@ local MODULES = {
           { name = "Quest List", reuse = true },
           { name = "Rares", reuse = true },
       } },
-    { name = "Consumable Bar", group = "COMBAT", navIcon = "heart", settings = "QoLSettings",
+    { name = "Consumable Bar", navIcon = "heart", settings = "QoLSettings",
       enabledKey = "consumableBar", addon = "NaowhForever_ConsumableBar", host = "NaowhForever_Combat",
       subtitle = "Your consumables on a bar you can click.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Gear & Trinkets", group = "COMBAT", navIcon = "shield", settings = "QoLSettings", enabledKey = "gearSets",
+    { name = "Gear & Trinkets", navIcon = "shield", settings = "QoLSettings", enabledKey = "gearSets",
       addon = "NaowhForever_GearSets", host = "NaowhForever_Combat",
       open = "ToggleGearSetsWindow",
       command = "gear", short = "Gear", icon = "Interface\\Icons\\INV_Chest_Plate04",
@@ -108,7 +107,7 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Blessings", group = "COMBAT", navIcon = "spark", settings = "QoLSettings", enabledKey = "blessings",
+    { name = "Blessings", navIcon = "spark", settings = "QoLSettings", enabledKey = "blessings",
       addon = "NaowhForever_Blessings", host = "NaowhForever_Combat",
       open = "ToggleBlessingsWindow",
       command = "bless", short = "Bless", icon = "Interface\\Icons\\Spell_Holy_GreaterBlessingofKings",
@@ -116,13 +115,13 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Professions", group = "ADVENTURE", navIcon = "hammer", settings = "ProfessionSettings",
+    { name = "Professions", navIcon = "hammer", settings = "ProfessionSettings",
       addon = "NaowhForever_Professions",
       subtitle = "Recipes, reagents and crafting in one window, with the recipes you have not learned yet.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "The Market", group = "ADVENTURE", navIcon = "coins", settings = "MarketSettings",
+    { name = "The Market", navIcon = "coins", settings = "MarketSettings",
       addon = "NaowhForever_Market",
       open = "ToggleMarketWindow",
       command = "market", bare = true, short = "Market", icon = "Interface\\Icons\\INV_Misc_Coin_02",
@@ -130,7 +129,7 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Macros", group = "UTILITIES", navIcon = "pen", settings = "MacroSettings",
+    { name = "Macros", navIcon = "pen", settings = "MacroSettings",
       addon = "NaowhForever_Macros", host = "NaowhForever_Utilities",
       open = "OpenMacroWindow",
       command = "macros", short = "Macros", icon = "Interface\\Icons\\INV_Misc_Note_01",
@@ -141,7 +140,7 @@ local MODULES = {
           { name = "Library", build = "BuildForgePage", arg = "lib", reuse = true },
           { name = "Settings", reuse = true },
       } },
-    { name = "Group Inspect", group = "UTILITIES", navIcon = "group", settings = "QoLSettings",
+    { name = "Group Inspect", navIcon = "group", settings = "QoLSettings",
       enabledKey = "groupInspect", addon = "NaowhForever_GroupInspect", host = "NaowhForever_Utilities",
       needs = { "NaowhForever_BiS" },
       open = "ToggleGroupInspect",
@@ -150,7 +149,7 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Action Bars", group = "UTILITIES", navIcon = "grid", settings = "ActionBarSettings",
+    { name = "Action Bars", navIcon = "grid", settings = "ActionBarSettings",
       addon = "NaowhForever_ActionBars", host = "NaowhForever_Utilities",
       open = "OpenActionBarsWindow", menu = "ActionBarsMenu",
       command = "bars", short = "Bars", icon = "Interface\\Icons\\INV_Misc_Gear_01",
@@ -159,7 +158,7 @@ local MODULES = {
           { name = "Bar Sets", build = "BuildActionBarsTab", terms = "ActionBarsSearchTerms", reuse = true },
           { name = "Settings", reuse = true },
       } },
-    { name = "Group Finder", group = "UTILITIES", navIcon = "search", settings = "GroupFinderSettings",
+    { name = "Group Finder", navIcon = "search", settings = "GroupFinderSettings",
       addon = "NaowhForever_GroupFinder", host = "NaowhForever_Utilities",
       needs = { "NaowhForever_BiS" },
       open = "ToggleGroupFinder",
@@ -168,21 +167,21 @@ local MODULES = {
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "AuraBuffs", group = "COMBAT", navIcon = "aura", settings = "AuraBuffSettings",
+    { name = "AuraBuffs", label = "Buff Reminders", navIcon = "aura", settings = "AuraBuffSettings",
       addon = "NaowhForever_AuraBuffs", host = "NaowhForever_Combat",
       command = "buffs", short = "Buffs", icon = "Interface\\Icons\\Spell_Holy_WordFortitude",
       subtitle = "Buff, consumable and campfire reminders, and a low health warning.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Threat Meter", group = "COMBAT", navIcon = "bars", settings = "ThreatMeterSettings",
+    { name = "Threat Meter", navIcon = "bars", settings = "ThreatMeterSettings",
       addon = "NaowhForever_ThreatMeter", host = "NaowhForever_Combat",
       command = "threat", short = "Threat", icon = "Interface\\Icons\\Ability_Warrior_Sunder",
       subtitle = "Threat on your target for the whole group, and a warning before you pull.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "PvP", group = "COMBAT", navIcon = "swords", settings = "PvPSettings",
+    { name = "PvP", navIcon = "swords", settings = "PvPSettings",
       addon = "NaowhForever_PvP", host = "NaowhForever_Combat",
       command = "pvp", short = "PvP", icon = "Interface\\Icons\\INV_Sword_27",
       subtitle = "What your target is doing in a fight: their short buffs and the crowd control on them.",
@@ -192,19 +191,19 @@ local MODULES = {
           { name = "Flag", reuse = true },
           { name = "Nearby Enemies", reuse = true },
       } },
-    { name = "Swing Timer", group = "COMBAT", navIcon = "infinity", settings = "SwingTimerSettings",
+    { name = "Swing Timer", navIcon = "infinity", settings = "SwingTimerSettings",
       addon = "NaowhForever_SwingTimer", host = "NaowhForever_Combat",
       subtitle = "Your swings from the game's own swing timer, with marks for timing around them.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Raid Debuffs", group = "COMBAT", navIcon = "bell", settings = "RaidDebuffSettings",
+    { name = "Raid Debuffs", navIcon = "bell", settings = "RaidDebuffSettings",
       addon = "NaowhForever_RaidDebuffs", host = "NaowhForever_Combat",
       subtitle = "The raid debuffs on your target, with the missing ones easy to spot.",
       tabs = {
           { name = "Settings", reuse = true },
       } },
-    { name = "Druid Mana", group = "COMBAT", navIcon = "bars", settings = "DruidManaSettings",
+    { name = "Druid Mana", navIcon = "bars", settings = "DruidManaSettings",
       addon = "NaowhForever_DruidMana", host = "NaowhForever_Combat",
       subtitle = "A druid's mana while shapeshifted, with the five second rule and shifts left.",
       tabs = {
@@ -223,7 +222,7 @@ UI.PROFILES_PAGE = PROFILES_PAGE
 local PAGES = {}
 
 local function DisplayName(mod)
-    return ns.L(mod.name == QOL and TEXT_QOL or mod.name)
+    return ns.L(mod.label or mod.name)
 end
 
 local function Loaded(mod)

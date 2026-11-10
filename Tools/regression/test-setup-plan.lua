@@ -56,7 +56,7 @@ do
     check("the modules step lists every module, in the options' order", #list == #MODULES)
     for i, m in ipairs(list) do
         check(m.id .. ": in order, named as the options name it", m.addon == MODULES[i].addon
-            and m.name == (MODULES[i].name == "QoL" and "Quality of Life" or MODULES[i].name))
+            and m.name == (MODULES[i].label or MODULES[i].name))
     end
 end
 

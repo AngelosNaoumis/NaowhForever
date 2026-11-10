@@ -53,8 +53,8 @@ local TEXT_IN_FLIGHT = ns.L("In flight")
 local TEXT_VIA, TEXT_NEXT = ns.L("Via"), ns.L("Next")
 local LIST_JOIN = ", "
 local TIP_LAND_TITLE, TIP_LAND = ns.L("Land Early"), ns.L("Come down at the next stop on the way.")
-local AIM_OFF = ns.L("Turn on the Aim Trainer in QoL > Travel")
-local WORD_OFF = ns.L("Turn on the Daily Word in QoL > Travel")
+local AIM_OFF = ns.L("Turn on the Aim Trainer in Map & Travel > Flight Games")
+local WORD_OFF = ns.L("Turn on the Daily Word in Map & Travel > Flight Games")
 local GAME_BUTTONS = {
     { id = "quiz", title = ns.L("Quiz"), tip = ns.L("WoW questions until you land.") },
     { id = "gridshot", aim = true, title = ns.L("Aim Trainer: Gridshot"), tip = ns.L("Three targets at once.") },

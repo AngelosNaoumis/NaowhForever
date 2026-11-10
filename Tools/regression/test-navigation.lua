@@ -176,9 +176,11 @@ ns.RegisterReapply = function() end
 ns.QueueReapply = function() end
 Load("Core/Options/Widgets.lua")
 for _, path in ipairs(dofile("Tools/regression/toc_files.lua")("^Core/Unlock/.-%.lua$")) do Load(path) end
--- The options window is several files now: its modules, the window, its Settings page, commands and launchers.
+-- The options window is several files now: its modules and categories, the window, its Home and Settings pages,
+-- commands and launchers.
 local function LoadWindow()
-    for _, name in ipairs({ "Options/Modules", "Options/Window", "Options/SettingsPage", "Commands", "Options/Launchers" }) do
+    for _, name in ipairs({ "Options/Modules", "Options/Categories", "Options/Window", "Options/HomePage",
+        "Options/SettingsPage", "Commands", "Options/Launchers" }) do
         Load("Core/" .. name .. ".lua")
     end
 end
@@ -257,13 +259,14 @@ local function Head(name)
         if head and head.card then return head end
     end
 end
-Check(Text("Quality of Life / Interface") ~= nil and Head("Top Bar") ~= nil, "opens to QoL Interface, the Top Bar's card first")
-Check(Text("ADVENTURE") and Text("COMBAT") and Text("UTILITIES"), "grouped navigation")
+Check(Text("Home") and Text("Open a Window") and Text("Dungeon Journal") and Text("Open"),
+    "opens on Home, with a row for each module's window")
+Check(Text("CHARACTER") and Text("WORLD") and Text("COMBAT & GROUPS"), "the categories, grouped in bands")
 do
     -- The game draws a scroll frame's rows only once it has measured them; the sidebar must measure on show.
     local navScroll
     for _, f in ipairs(frames) do
-        if f.text == "Quality of Life" and f.parent and f.parent.mod and f.parent.scripts.OnClick then
+        if f.text == "Interface" and f.parent and f.parent.cat and f.parent.scripts.OnClick then
             navScroll = f.parent.parent.parent
         end
     end
@@ -272,26 +275,33 @@ do
     navScroll.scripts.OnShow(navScroll)
     navScroll.UpdateScrollChildRect = nil
     Check(navScroll.kind == "ScrollFrame" and measured > 0,
-        "the sidebar measures its list when it shows, so its first row (Quality of Life) is drawn")
+        "the sidebar measures its list when it shows, so its first row (Home) is drawn")
 end
 Check(not Text("Close") and Button("Reload UI") ~= nil, "no footer: Reload UI sits in the header, closing is the X")
 Check(not Text("Custom Reminders"), "unfinished module is absent from navigation")
 local damageMeterLabels = 0
 for _, f in ipairs(frames) do if f.text == "Damage Meter" and f:IsShown() then damageMeterLabels = damageMeterLabels + 1 end end
-Check(damageMeterLabels == 1, "the Damage Meter is not shipped as a module: only the QoL tab carries the name")
-Check(Button("Quality of Life").switch == nil, "navigation does not toggle modules")
-for _, name in ipairs({ "Quality of Life", "Dungeon Journal", "Instance Tracker", "Discovery", "BiS List", "Professions",
-    "Gear & Trinkets", "Blessings", "AuraBuffs", "Threat Meter", "Swing Timer",
-    "Macros", "Action Bars" }) do
-    Check(Button(name).icon ~= nil, name .. " is listed with its glyph")
+Check(damageMeterLabels == 0, "the Damage Meter is not shipped as a module: nothing in the sidebar carries its name")
+Check(Button("Combat").switch == nil, "navigation does not toggle anything")
+Check(Button("Home").icon ~= nil, "Home is listed with its glyph")
+for _, cat in ipairs(ns.Options.CATEGORIES) do
+    Check(Button(cat.name).icon ~= nil, cat.name .. " is listed with its glyph")
 end
-Check(Head("Top Bar").card.uid == "QoL/Interface:topBar", "the Top Bar's own addon puts its card on QoL Interface")
-local moduleList = Button("Action Bars").parent
+do
+    local listed = {}
+    for _, cat in ipairs(ns.Options.CATEGORIES) do listed[#listed + 1] = (cat.band or "") .. ":" .. cat.name end
+    Check(table.concat(listed, "|") == ":Interface|CHARACTER:Character & Gear|CHARACTER:Leveling & Training"
+        .. "|CHARACTER:Action Bars & Macros|CHARACTER:Buffs & Consumables|WORLD:Quests & Exploration|WORLD:Map & Travel"
+        .. "|WORLD:Professions|WORLD:Auction House|WORLD:Bags, Loot & Mail|COMBAT & GROUPS:Combat"
+        .. "|COMBAT & GROUPS:Dungeons & Groups|COMBAT & GROUPS:PvP",
+        "the thirteen categories in their bands, Interface on its own under Home")
+end
+local moduleList = Button("Map & Travel").parent
 local navTopBar = false
 for _, f in ipairs(frames) do
     if f.text == "Top Bar" and f.parent and f.parent.parent == moduleList then navTopBar = true end
 end
-Check(not navTopBar, "the Top Bar has no sidebar entry: it is switched in Settings and set on QoL Interface")
+Check(not navTopBar, "the Top Bar has no sidebar entry: it is a page of Interface")
 local moduleScroll = moduleList.parent
 local mainWindow = moduleScroll.parent.parent
 local originalHeight = mainWindow:GetHeight()
@@ -321,7 +331,7 @@ for _ = 1, 100 do
     moduleScroll.scripts.OnUpdate(moduleScroll, 0.016)
 end
 Check(not moduleScroll.scripts.OnUpdate, "the glide stops once it lands")
-Check(moduleScroll:GetVerticalScroll() == moduleScroll:GetVerticalScrollRange(), "wheel reaches the last module")
+Check(moduleScroll:GetVerticalScroll() == moduleScroll:GetVerticalScrollRange(), "wheel reaches the last category")
 Check(moduleScroll.bar:GetValue() == moduleScroll:GetVerticalScroll(), "scrollbar follows wheel scrolling")
 moduleScroll.bar.scripts.OnValueChanged(moduleScroll.bar, 20)
 Check(moduleScroll:GetVerticalScroll() == 20, "dragging the scrollbar moves navigation")
@@ -373,10 +383,12 @@ grip.scripts.OnMouseUp(grip, "LeftButton")
 pageBar:SetValue(0)
 pageScroll:SetVerticalScroll(0)
 
-ns.OpenOptionsWindow("QoL/Combat"); Flush()
+ns.OpenOptionsWindow("Interface > Top Bar"); Flush()
+Check(Head("Top Bar").card.uid == "QoL/Interface:topBar", "the Top Bar's card, declared on QoL Interface, is on Interface > Top Bar")
+ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
 local S = ns.QoLSettings
-Check(Head("Stealth Reminder") and Head("Co-Tank Frame"),
-    "each feature on the page is a card")
+Check(Head("Co-Tank Frame") and not Head("Stealth Reminder"),
+    "each feature on the page is a card, and only the page's own")
 Check(not Text("Out of Stealth Color") and not Text("Max Icons"), "cards start closed: their settings do not show")
 local function Setting(label)
     local text = Text(label)
@@ -443,38 +455,29 @@ barStore.Set("hideInCombat", false); barStore.Set("mouseover", false); Flush()
 Click(Head("Top Bar")); Flush()
 local found = 0
 for _, target in ipairs(UI.Search.Collect()) do
-    if target.page == "QoL/Interface" and target.label == "Faded Opacity" and target.card == "QoL/Interface:topBar" then
+    if target.page == "Interface > Top Bar" and target.label == "Faded Opacity" and target.card == "QoL/Interface:topBar" then
         found = found + 1
     end
 end
 Check(found == 1, "the search lists the declared settings, each once")
-local strip = Button("Interface").parent
+local strip = Button("Overview").parent
 local tabs = 0
 for _, child in ipairs(strip.children) do
     if child.scripts.OnClick then
         tabs = tabs + 1
-        Check(child.points.LEFT and child.points.LEFT[4] == 0, "QoL categories share one row")
+        Check(child.points.LEFT and child.points.LEFT[4] == 0, "a category's pages share one row")
     end
 end
-Check(tabs == 10, "every QoL category has a tab, Glimmer's too")
+Check(tabs == 6 and strip.buttons[1].text.text == "Overview" and strip.buttons[2].text.text == "Top Bar",
+    "Interface has a tab for each page, after its Overview")
 local qolTabs = {}
 for _, tab in ipairs(ns.Options.MODULES[1].tabs) do qolTabs[#qolTabs + 1] = tab.name end
 Check(table.concat(qolTabs, "|", #qolTabs - 2) == "Travel|Cursor & Crosshair|Damage Meter",
     "Cursor & Crosshair and Damage Meter are the last QoL tabs, after Travel")
-local grouped = {}
-for _, mod in ipairs(ns.Options.MODULES) do
-    if mod.group then
-        grouped[mod.group] = grouped[mod.group] or {}
-        table.insert(grouped[mod.group], mod.name)
-    end
-end
-Check(grouped.COMBAT[1] == "Consumable Bar" and grouped.COMBAT[2] == "Gear & Trinkets",
-    "Consumable Bar heads COMBAT, above Gear & Trinkets")
-Check(table.concat(grouped.UTILITIES, "|"):find("Macros|Group Inspect|Action Bars", 1, true) ~= nil,
-    "Group Inspect sits in UTILITIES, where Consumable Bar was")
 Check(strip.buttons and strip:GetWidth() <= 1440 - 240 - 56, "the tabs are the boxed switch, inside the content width")
-Click(Button("Combat")); Flush()
-Check(Text("Quality of Life / Combat") ~= nil, "category navigation works")
+Click(Button("Tooltips")); Flush()
+Check(Text("Interface / Tooltips") ~= nil, "page navigation works")
+ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
 local heldCard = ns.Shared.Settings.CardOf("QoL/Combat:coTank")
 local wasOn, wasOpen = S.Get("coTank"), ns.Shared.Settings.IsOpen(heldCard)
 S.Set("coTank", true); ns.Shared.Settings.SetOpen(heldCard, true)
@@ -494,13 +497,13 @@ Check(coTankHead.switch.mouse ~= false and coTankHead.switch.alpha == 1, "let go
 local heldOff, heldWhy = ns.Shared.Settings.Off({ card = {}, needs = function() return false end,
     why = function() return "Held for this reason" end })
 Check(heldOff and heldWhy == "Held for this reason", "a row held for more than one reason says the one that applies")
-Click(Button("Swing Timer")); Flush()
-Check(Text("Swing Timer / Settings") and not Text("Interface"), "each module shows only its own page")
-Click(Button("Threat Meter")); Flush()
-Check(Text("Threat Meter / Settings") and not Text("Interface") and not Text("Cursor"),
-    "single-page module shows no tab row")
-Click(Button("Quality of Life")); Flush()
-Check(Text("Quality of Life / Combat") ~= nil, "returning to a module remembers its page")
+Click(Button("Map & Travel")); Flush()
+Check(Text("Map & Travel / Overview") and Text("Object Highlights") and not Text("Interface / Tooltips"),
+    "a category opens on its Overview, with its own tabs only")
+Click(Button("Home")); Flush()
+Check(Text("Open a Window") and not Text("Overview"), "Home shows no tab row")
+Click(Button("Combat")); Flush()
+Check(Text("Combat / Tank & Healer") ~= nil, "returning to a category remembers its page")
 local count = #frames
 for _ = 1, 8 do UI:RefreshPage(true); Flush() end
 Check(#frames == count, "refreshes reuse controls without accumulating frames")
@@ -508,37 +511,34 @@ local root = env.NaowhForeverOptions
 root:Hide(); UI:RefreshPage(true)
 local hiddenCount = #frames
 Check(#frames == hiddenCount, "hidden refresh does not build controls")
-ns.OpenOptionsWindow("QoL/Combat"); Flush()
+ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
 Check(Text("Co-Tank Frame") ~= nil, "reopening rebuilds the visible page")
-local header = Text("Enable QoL").parent
-local switch
-for _, child in ipairs(header.children) do if child._get then switch = child end end
-Check(switch and switch._get() == true, "header switch reads the current module")
-ns.QoLSettings.Set("coTankWidth", 222)
-switch.scripts.OnClick(); Flush()
-Check(Text("Disable Quality of Life?") ~= nil
-    and ns.QoLSettings.Get("enabled") == true and ns.QoLSettings.Get("coTankWidth") == 222,
-    "switching QoL off asks to turn its addon off, and its settings are kept")
-Click(Button("Cancel")); Flush()
-Check(not disabled.NaowhForever_QoL and switch._get() == true, "Cancel keeps QoL on")
-Click(Button("Threat Meter")); Flush()
-Check(switch._get() == false, "same switch rebinds to the newly selected module")
-switch.scripts.OnClick(); Flush()
-Check(ns.ThreatMeterSettings.Get("enabled") == true and ns.QoLSettings.Get("enabled") == true,
-    "switch changes only the selected module")
-Click(Button("Quality of Life")); Flush()
+Check(not Text("Enable QoL") and not Text("Enable Threat Meter"), "the page header has no module switch")
+ns.OpenOptionsWindow("Combat > Meters & Alerts"); Flush()
+local function ModuleSwitch(name) return Head(name).switch end
+Check(Head("Threat Meter") and ModuleSwitch("Threat Meter")._get() == false and Head("Threat Meter").summary.text == "Off",
+    "a module's own card heads the page that holds its settings, its switch off with it")
+ModuleSwitch("Threat Meter").scripts.OnClick(); Flush()
+Check(ns.ThreatMeterSettings.Get("enabled") == true and ns.QoLSettings.Get("enabled") == true
+    and ModuleSwitch("Threat Meter")._get() == true and Head("Threat Meter").summary.text == "/nfthreat",
+    "its switch turns that module alone on, and its card names its command")
 settings = { qol = { enabled = true, coTankWidth = 233 } }
 UI:RefreshPage(true); Flush()
-Check(switch._get() == true and ns.QoLSettings.Get("coTankWidth") == 233,
+Check(ModuleSwitch("Threat Meter")._get() == false and ns.QoLSettings.Get("coTankWidth") == 233,
     "profile replacement refreshes controls against the new settings")
-local beforeWidth = Head("Stealth Reminder"):GetWidth()
+ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
+local beforeWidth = Head("Co-Tank Frame"):GetWidth()
 root:SetWidth(1640); UI:RefreshPage(true); Flush()
-Check(Head("Stealth Reminder"):GetWidth() > beforeWidth, "cards grow with the window")
+Check(Head("Co-Tank Frame"):GetWidth() > beforeWidth, "cards grow with the window")
 root:SetWidth(1440); UI:RefreshPage(true); Flush()
-Check(Head("Stealth Reminder"):GetWidth() == beforeWidth, "and shrink with it")
+Check(Head("Co-Tank Frame"):GetWidth() == beforeWidth, "and shrink with it")
 local pages = UI.SearchPages
 UI.SearchPages = function()
-    for _, page in ipairs(pages()) do if page.key == "QoL/Combat" then return { page } end end
+    local out = {}
+    for _, page in ipairs(pages()) do
+        if page.key == "Combat > Your Class" or page.key == "Combat > Tank & Healer" then out[#out + 1] = page end
+    end
+    return out
 end
 local hit = UI.Search.Find(UI.Search.Collect(), "Out of Stealth Color")[1]
 Check(hit and hit.card == "QoL/Combat:stealthReminder" and hit.trail:find("Stealth Reminder", 1, true),
@@ -569,13 +569,14 @@ do
     local function Alpha(button) return button.label.color[4] end
     local note = "Nothing on this page matches the search."
     ns.OpenOptionsWindow("QoL/Interface"); Flush()
-    local threatAlpha = Alpha(Button("Threat Meter"))
+    Check(Text("Interface / Top Bar") ~= nil, "an old page key lands on the category page that holds its first card")
+    local threatAlpha = Alpha(Button("PvP"))
     Check(not Text("Search  " .. ns.Color("muted", "Ctrl+F")), "the header has no Search button")
     local input = Text("Search settings").parent
     local sidebar = moduleScroll.parent
     Check(input.parent == sidebar, "the search box sits in the sidebar")
     Check(input.points.TOPLEFT[4] > moduleScroll.points.TOPLEFT[4], "above the module list")
-    local row = Button("Quality of Life")
+    local row = Button("Home")
     Check(input.points.TOPLEFT[3] == row.points.TOPLEFT[3]
         and input.points.TOPRIGHT[3] == moduleScroll.points.BOTTOMRIGHT[3] + row.points.TOPRIGHT[3],
         "edge to edge with the module rows under it")
@@ -590,18 +591,18 @@ do
     Check(input:HasFocus() and root:IsShown(), "Ctrl+F puts the cursor in it")
 
     input:SetText("max icons"); Flush()
-    Check(Text("Quality of Life / Combat") ~= nil, "the page moves to the first one with a match")
+    Check(Text("Combat / Tank & Healer") ~= nil, "the page moves to the first one with a match")
     local icons = Shown("Max Icons")
     Check(icons and icons.parent.setting and Shown("Co-Tank Frame"), "the matching setting shows, its card open")
     Check(icons.text:find(ns.Color("accent", "Max"), 1, true) and icons.text:find(ns.Color("accent", "Icons"), 1, true),
         "the typed words are lit in its name")
     Check(not Shown("Width") and not Shown("Stealth Reminder"),
         "the rest of the page is left out")
-    Check(Button("Quality of Life").count.text == "1" and Alpha(Button("Quality of Life")) == 1,
-        "the module with the match counts it")
-    Check(Alpha(Button("Threat Meter")) < threatAlpha and Button("Threat Meter").count.text == "",
-        "a module without a match dims")
-    Check(Button("Interface").text.alpha < 1 and Button("Combat").text.alpha == 1, "and so does a tab")
+    Check(Button("Combat").count.text == "1" and Alpha(Button("Combat")) == 1,
+        "the category with the match counts it")
+    Check(Alpha(Button("PvP")) < threatAlpha and Button("PvP").count.text == "",
+        "a category without a match dims")
+    Check(Button("Meters & Alerts").text.alpha < 1 and Button("Tank & Healer").text.alpha == 1, "and so does a tab")
 
     S.Set("coTankWidth", 222); Flush()
     Check(not Text("Reset Co-Tank Frame") and not Shown("1 setting changed from its default"),
@@ -618,16 +619,16 @@ do
 
     input:SetText("zzzz"); Flush()
     Check(Text(note) ~= nil and not Shown("Co-Tank Frame"), "nothing found, the page says so")
-    Check(Alpha(Button("Threat Meter")) < threatAlpha and Button("Quality of Life").count.text == "",
-        "and every module but the open one dims, none with a count")
+    Check(Alpha(Button("PvP")) < threatAlpha and Button("Combat").count.text == "",
+        "and every category but the open one dims, none with a count")
 
     input:SetText("max icons"); Flush()
     root.scripts.OnKeyDown(root, "ESCAPE"); Flush()
     Check(root:IsShown() and input:GetText() == "" and UI.filter == nil, "Escape clears the search, not the window")
-    Check(Head("Stealth Reminder") and not Text(note), "the whole page is back")
+    Check(Head("Co-Tank Frame") and not Text(note), "the whole page is back")
     Check(Setting("Max Icons") ~= nil, "the card the search found stays open")
-    Check(Button("Quality of Life").count.text == "" and Alpha(Button("Threat Meter")) == threatAlpha
-        and Button("Interface").text.alpha == 1, "the counts go and nothing is dimmed")
+    Check(Button("Combat").count.text == "" and Alpha(Button("PvP")) == threatAlpha
+        and Button("Meters & Alerts").text.alpha == 1, "the counts go and nothing is dimmed")
 
     input:SetText("-"); Flush()
     root.scripts.OnKeyDown(root, "ESCAPE"); Flush()
@@ -638,12 +639,12 @@ do
     Check(input:GetText() == "" and UI.filter == nil and root:IsShown(), "Escape in the box clears it too")
     root.scripts.OnKeyDown(root, "ESCAPE"); Flush()
     Check(not root:IsShown(), "with no search, Escape closes the window")
-    ns.OpenOptionsWindow("QoL/Combat"); Flush()
+    ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
     input:SetText("max icons"); Flush()
     root:Hide(); Flush()
     Check(input:GetText() == "" and UI.filter == nil, "closing the window clears the search")
-    ns.OpenOptionsWindow("QoL/Combat"); Flush()
-    Check(Head("Stealth Reminder") ~= nil, "and it reopens on the whole page")
+    ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
+    Check(Head("Co-Tank Frame") ~= nil, "and it reopens on the whole page")
     input:SetText("max icons"); Flush()
     UI.GoToSetting("QoL/Combat", "Out of Stealth Color", "QoL/Combat:stealthReminder"); Flush()
     Check(UI.filter == nil and Setting("Out of Stealth Color") ~= nil, "a jump to a setting clears the search first")
@@ -669,11 +670,11 @@ do
         drawnWith[#drawnWith + 1] = filter or false
         return y - Settings.Render(parent, "Profiles/Setups", function() end, filter)
     end
-    ns.OpenOptionsWindow("QoL/Combat"); Flush()
+    ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
     input:SetText("onboarding"); Flush()
-    Check(Shown("Onboarding") and Shown("Setups") and not Shown("Stealth Reminder"),
+    Check(Shown("Onboarding") and Shown("Setups") and not Shown("Co-Tank Frame"),
         "a setting only the carried card has moves the window to the Profiles page, at that card")
-    Check(Button("Profiles").count.text == "1" and Button("Quality of Life").count.text == "",
+    Check(Button("Profiles").count.text == "1" and Button("Combat").count.text == "",
         "the Profiles page counts it")
     Check(Shown("Onboarding").text:find(ns.Color("accent", "Onboarding"), 1, true) and drawnWith[#drawnWith] ~= false,
         "drawn with the search, its words lit")
@@ -684,10 +685,10 @@ do
         "cleared, the page is drawn whole again, its card folded as it started")
 
     -- A window card is found by its button and drawn on its page while the search holds it.
-    Settings.Page("QoL/Combat", S):Window({ text = "Open Test Log", open = function() end, headline = "Test Log",
-        detail = "Every test, logged." })
+    Settings.Page("QoL/Cursor & Crosshair", S):Window({ text = "Open Test Log", open = function() end,
+        headline = "Test Log", detail = "Every test, logged." })
     input:SetText("test log"); Flush()
-    Check(Text("Quality of Life / Combat") and Shown("Test Log") and not Shown("Stealth Reminder"),
+    Check(Text("Combat / Cursor & Crosshair") and Shown("Test Log") and not Shown("Co-Tank Frame"),
         "a window card found shows on its page, the rest left out")
 
     -- The Settings page is drawn by its own builder and names what is on it.
@@ -720,15 +721,14 @@ do
     input:SetText(""); Flush()
     Check(not Text(note) and Text("MODULES"), "cleared, the note goes")
 
-    -- A module's open-window icon always shows, dimmed until the mouse is on its row.
-    local journal = Button("Dungeon Journal")
-    Check(journal.open:IsShown() and journal.open.alpha < 1, "the open-window icon shows, dimmed")
-    journal.open.scripts.OnEnter(journal.open)
-    Check(journal.open.alpha == 1, "and lights up under the mouse")
-    journal.open.scripts.OnLeave(journal.open)
-    input:SetText("max icons"); Flush()
-    Check(journal.open:IsShown() and journal.open.alpha < 1, "it stays while searching")
-    input:SetText(""); Flush()
+    -- Home opens a module's own window from its row, and Back brings the options window back.
+    ns.OpenOptionsWindow("Home"); Flush()
+    local journalRow = Text("Dungeon Journal").parent
+    local opened
+    ns.ToggleJournalWindow = function() opened = true end
+    Click(journalRow._control); Flush()
+    Check(opened and not root:IsShown(), "Home opens a module's window from its row")
+    ns.ToggleJournalWindow = nil
     ns.BuildProfileSettings = nil
 end
 
@@ -755,10 +755,10 @@ end
 local confirmText, confirmYes, reloadText
 ns.Confirm = function(text, yes) confirmText, confirmYes = text, yes end
 ns.ConfirmReload = function(text) reloadText = text end
-Click(Button("Dungeon Journal")); Flush()
-switch.scripts.OnClick(); Flush()
+ns.OpenOptionsWindow("Dungeons & Groups > Dungeon Journal"); Flush()
+ModuleSwitch("Dungeon Journal").scripts.OnClick(); Flush()
 Check(ns.JournalSettings.Get("enabled") == true and confirmText == nil, "switching an addon module on needs no reload")
-switch.scripts.OnClick(); Flush()
+ModuleSwitch("Dungeon Journal").scripts.OnClick(); Flush()
 Check(confirmText and confirmText:find("Dungeon Journal", 1, true) and not confirmText:find("BiS List", 1, true),
     "switching the journal off asks for the journal alone: the BiS List works without it")
 Check(next(disabled) == nil, "nothing is disabled before the player confirms")
@@ -766,48 +766,45 @@ confirmYes()
 Check(disabled.NaowhForever_DungeonJournal and not disabled.NaowhForever_BiS, "confirming disables the journal alone")
 Check(reloadText and reloadText:find("reload", 1, true), "then offers the reload")
 Check(ns.JournalSettings.Get("enabled") == false, "the profile's switch goes off with the addon, so another character follows it")
-Check(switch._get() == false, "the switch reads off while the disable waits for its reload")
-switch.scripts.OnClick(); Flush()
-Check(not disabled.NaowhForever_DungeonJournal and switch._get() == true,
+Check(ModuleSwitch("Dungeon Journal")._get() == false, "the switch reads off while the disable waits for its reload")
+ModuleSwitch("Dungeon Journal").scripts.OnClick(); Flush()
+Check(not disabled.NaowhForever_DungeonJournal and ModuleSwitch("Dungeon Journal")._get() == true,
     "switching it back on before the reload cancels the disable")
 confirmText, reloadText = nil, nil
-Click(Button("Swing Timer")); Flush()
+ns.OpenOptionsWindow("Combat > Swings & Casts"); Flush()
 local swingWas = ns.SwingTimerSettings.Get("enabled")
-switch.scripts.OnClick(); Flush()
+ModuleSwitch("Swing Timer").scripts.OnClick(); Flush()
 Check(confirmText == nil and reloadText == nil and ns.SwingTimerSettings.Get("enabled") == not swingWas,
     "a Combat module switches at once: no confirm, no reload")
-switch.scripts.OnClick(); Flush()
+ModuleSwitch("Swing Timer").scripts.OnClick(); Flush()
 Check(ns.SwingTimerSettings.Get("enabled") == swingWas and confirmText == nil and reloadText == nil
     and not disabled.NaowhForever_Combat, "and back the same way, with Combat left on for the others")
-Click(Button("Action Bars")); Flush()
+ns.OpenOptionsWindow("Action Bars & Macros > Bar Options"); Flush()
 local barsWas = ns.ActionBarSettings.Get("enabled")
-switch.scripts.OnClick(); Flush()
+ModuleSwitch("Action Bars").scripts.OnClick(); Flush()
 Check(confirmText == nil and reloadText == nil and ns.ActionBarSettings.Get("enabled") == not barsWas,
     "a Utilities module switches at once too")
-switch.scripts.OnClick(); Flush()
+ModuleSwitch("Action Bars").scripts.OnClick(); Flush()
 Check(ns.ActionBarSettings.Get("enabled") == barsWas and confirmText == nil and reloadText == nil
     and not disabled.NaowhForever_Utilities, "and back, with Utilities left on for the others")
 confirmText = nil
-Click(Button("Professions")); Flush()
-switch.scripts.OnClick(); Flush()
-switch.scripts.OnClick(); Flush()
+ns.OpenOptionsWindow("Professions > Crafting"); Flush()
+ModuleSwitch("Professions").scripts.OnClick(); Flush()
+ModuleSwitch("Professions").scripts.OnClick(); Flush()
 Check(confirmText and not confirmText:find("Training Planner", 1, true), "Professions leaves Training Planner alone")
 confirmYes()
 Check(disabled.NaowhForever_Professions and not disabled.NaowhForever_Training and not disabled.NaowhForever_BiS,
     "and only the modules that need it")
 missingAddOns.NaowhForever_Professions = true
-for _, page in ipairs(UI.SearchPages()) do
-    Check(not (page.module and page.module.name == "Professions"), "a module addon that is not loaded is not searched")
-end
 ns.OpenOptionsWindow("Professions/Settings"); Flush()
-Check(Text("MODULES") ~= nil, "a link to a module that is off lands on Settings, where it is turned back on")
+Check(Text("Professions / Crafting") and Head("Professions") and ModuleSwitch("Professions")._get() == false,
+    "a link to a module that is off lands on its category page, where its own card turns it back on")
 missingAddOns.NaowhForever_Professions = nil
 
 missingAddOns.NaowhForever_Utilities = true
-for _, page in ipairs(UI.SearchPages()) do
-    Check(not (page.module and page.module.name == "Instance Tracker"),
-        "Instance Tracker is not searched while the Utilities addon it ships in is not loaded")
-end
+ns.OpenOptionsWindow("Instance Tracker"); Flush()
+Check(Text("Dungeons & Groups / Instance Tracker") and ModuleSwitch("Instance Tracker")._get() == false,
+    "Instance Tracker's card stays while the Utilities addon it ships in is not loaded, off")
 missingAddOns.NaowhForever_Utilities = nil
 
 -- The core owns Unlock Mode.
@@ -825,12 +822,12 @@ local function GroupInspectRows()
     end
     return rows
 end
-Check(GroupInspectRows() == 1, "Settings: Modules and Minimap Icons start closed, only the sidebar lists Group Inspect")
+Check(GroupInspectRows() == 0, "Settings: Modules and Minimap Icons start closed")
 local searchInput = Text("Search settings").parent
 searchInput:SetText("group inspect"); Flush()
-Check(GroupInspectRows() >= 3, "a search that matches a row opens its section")
+Check(GroupInspectRows() >= 2, "a search that matches a row opens its section")
 searchInput:SetText(""); Flush()
-Check(GroupInspectRows() == 1, "and clearing the search folds them again")
+Check(GroupInspectRows() == 0, "and clearing the search folds them again")
 -- A disabled, unloaded module's description reveals its switch without loading or enabling it.
 do
     local function ThreatSwitch()
@@ -870,7 +867,7 @@ do
 end
 Click(Text("MODULES").parent.hit); Flush()
 Click(Text("MINIMAP ICONS").parent.hit); Flush()
-Check(GroupInspectRows() >= 3, "Group Inspect: in the sidebar, under Settings > Modules and in Minimap Icons once opened")
+Check(GroupInspectRows() >= 2, "Group Inspect: under Settings > Modules and in Minimap Icons once opened")
 local function FoldBox(title)
     local head = Text(title).parent
     for _, f in ipairs(frames) do
@@ -892,15 +889,15 @@ box, head = FoldBox("MODULES")
 Check(box and not head._sep.visible and box:GetHeight() == head:GetHeight(), "a shut fold is its header alone, boxed")
 Check(TextCount("Top Bar") == 0, "the Top Bar is part of QoL, so Settings > Modules has no row for it")
 ns.OpenOptionsWindow("Group Inspect/Settings"); Flush()
-Check(Text("Group Inspect / Settings") ~= nil, "Group Inspect has a settings page of its own")
+Check(Text("Dungeons & Groups / Group Tools") ~= nil, "Group Inspect's settings are on Dungeons & Groups > Group Tools")
 ns.OpenOptionsWindow("Blessings/Settings"); Flush()
-Check(Text("Blessings / Settings") ~= nil, "existing module/tab deep links still work")
-ns.OpenOptionsWindow("QoL/Combat"); Flush()
+Check(Text("Combat / Your Class") ~= nil, "existing module/tab deep links land on their category page")
+ns.OpenOptionsWindow("Combat > Tank & Healer"); Flush()
 local Settings = ns.Shared.Settings
 local function American(text) return not (text and text:find("Colour", 1, true)) end
 for key, page in pairs(Settings.pages) do
     for _, card in ipairs(page.items) do
-        if not card.window then
+        if not (card.window or card.heading) then
             local where = key .. " > " .. card.name
             Check(card.help and card.help ~= "", where .. " has its help")
             Check(American(card.name) and American(card.help), where .. " spells Color the house's way")
@@ -926,33 +923,20 @@ for key, page in pairs(Settings.pages) do
         end
     end
 end
--- With Consumable Bar, Gear & Trinkets and Blessings off (they ship in NaowhForever_Combat, so their
--- switch is what turns them off), AuraBuffs is the first COMBAT module; the group still sits above
--- UTILITIES. Group Inspect ships in NaowhForever_Utilities but needs the BiS List, so it is left out
--- while that is not loaded.
-local barWas = ns.QoLSettings.Get("consumableBar")
-ns.QoLSettings.Set("consumableBar", false)
-ns.QoLSettings.Set("gearSets", false)
-ns.QoLSettings.Set("blessings", false)
+-- Group Inspect ships in NaowhForever_Utilities but needs the BiS List, so while that is not loaded
+-- only its card shows, off, where its settings would be.
+Settings.Page("Group Inspect/Settings", S):Card({ id = "share", name = "Share Your Stats",
+    help = "Sends your stats to your group." })
+ns.OpenOptionsWindow("Dungeons & Groups > Group Tools"); UI:RefreshPage(true); Flush()
+Check(Head("Group Inspect") and Head("Share Your Stats"), "loaded, Group Inspect's card heads its own cards")
 missingAddOns.NaowhForever_BiS = true
-local built = #frames
-LoadWindow()
-ns.OpenOptionsWindow(); Flush()
-local headY, inspectNav = {}, false
-for i = built + 1, #frames do
-    local f = frames[i]
-    if (f.text == "COMBAT" or f.text == "UTILITIES") and f.points.TOPLEFT then headY[f.text] = f.points.TOPLEFT[4] end
-    if f.text == "Group Inspect" and f:IsShown() then inspectNav = true end
-end
-Check(headY.COMBAT and headY.UTILITIES and headY.COMBAT > headY.UTILITIES, "COMBAT stays above UTILITIES with its first modules off")
-Check(not inspectNav, "Group Inspect is left out of the sidebar while the BiS List it needs is not loaded")
-ns.QoLSettings.Set("consumableBar", barWas)
-ns.QoLSettings.Set("gearSets", true)
-ns.QoLSettings.Set("blessings", true)
+UI:RefreshPage(true); Flush()
+Check(Head("Group Inspect") and ModuleSwitch("Group Inspect")._get() == false and not Head("Share Your Stats"),
+    "Group Inspect is only its card, off, while the BiS List it needs is not loaded")
 missingAddOns.NaowhForever_BiS = nil
 
--- Quality of Life is its own addon, with the Top Bar inside it (its card sits on QoL > Interface);
--- while QoL is not loaded, the sidebar drops it and its pages land on Settings.
+-- Quality of Life is its own addon, with the Top Bar inside it (its card sits on Interface > Top Bar);
+-- while QoL is not loaded, its card stands in for its features on every page that holds them.
 local qolMod
 for _, mod in ipairs(ns.Options.MODULES) do
     if mod.addon == "NaowhForever_QoL" then qolMod = mod end
@@ -972,72 +956,51 @@ confirmYes()
 Check(disabled.NaowhForever_QoL, "confirming disables QoL")
 disabled.NaowhForever_QoL = nil
 missingAddOns.NaowhForever_QoL = true
-for _, page in ipairs(UI.SearchPages()) do
-    Check(not (page.module and page.module.name == "QoL"), "Quality of Life off is not searched")
-end
-built = #frames
+local built = #frames
 LoadWindow()
 ns.OpenOptionsWindow(); Flush()
-local qolShown = false
+Check(Text("Open a Window") ~= nil, "with QoL not loaded, the window still opens on Home")
+ns.OpenOptionsWindow("Interface > Top Bar"); Flush()
+Check(Head("Quality of Life") and ModuleSwitch("Quality of Life")._get() == false and not Head("Top Bar"),
+    "and its card stands in for the Top Bar on Interface > Top Bar")
+
+-- A module that is off is still searched, from the generated index: a setting is found on the page
+-- that will hold it, at the module's own card.
+local input, lootNav
 for i = built + 1, #frames do
     local f = frames[i]
-    if f.text == "Quality of Life" and f:IsShown() and f.parent and f.parent.icon then qolShown = true end
+    if f.text == "Search settings" then input = f.parent end
+    if f.text == "Bags, Loot & Mail" and f.parent and f.parent.cat then lootNav = f.parent end
 end
-Check(not qolShown, "with QoL not loaded, Quality of Life leaves the sidebar")
-Check(Text("MODULES") ~= nil, "and the window opens on Settings instead of QoL > Interface")
-
--- A module that is off is still searched, from the generated index, and waits in a group of its own.
-local function TextHas(...)
-    for _, f in ipairs(frames) do
-        if type(f.text) == "string" and f:IsShown() then
-            local plain, all = f.text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""), true
-            for i = 1, select("#", ...) do all = all and plain:find((select(i, ...)), 1, true) ~= nil end
-            if all then return f end
-        end
-    end
-end
-local function OffButton(name)
-    for i = built + 1, #frames do
-        local f = frames[i]
-        if f.text == name and f:IsShown() and f.parent and f.parent.mod and f.parent.scripts.OnClick then return f.parent end
-    end
-end
-local input
-for i = built + 1, #frames do
-    if frames[i].text == "Search settings" then input = frames[i].parent end
-end
-Check(not Text("TURNED OFF"), "the turned-off group stays hidden with nothing searched")
 input:SetText("auto repair"); Flush()
 Check(ns.SEARCH_INDEX ~= nil and indexLoads == 1, "the first search with a module off loads the index, once")
-Check(Text("TURNED OFF") and OffButton("Quality of Life"), "a match in a module that is off shows it under Turned Off")
-Click(OffButton("Quality of Life")); Flush()
-Check(Text("Quality of Life is turned off. Turn it on to change these settings.") and TextHas("Auto Repair"),
-    "its page says it is off and lists the settings found")
+Check(Text("Bags, Loot & Mail / Loot") and Head("Quality of Life") and tonumber(lootNav.count.text) >= 1,
+    "a match in a module that is off lands on the page that will hold it, at the module's card")
 input:SetText("auto rpair"); Flush()
-Check(TextHas("Auto Repair"), "a letter left out still finds the setting")
--- Enter on its setting lands on Settings (the module is off); the page grew, so the game must measure it again.
+Check(tonumber(lootNav.count.text) >= 1, "a letter left out still finds the setting")
+-- Enter on its setting opens that page; the page changed, so the game must measure it again.
 local measured
-methods.UpdateScrollChildRect = function(self) if self.child and Text("MODULES") then measured = true end end
+methods.UpdateScrollChildRect = function(self) if self.child and Head("Quality of Life") then measured = true end end
 input:SetText("auto repair"); Flush()
 input.scripts.OnEnterPressed(input)
 methods.UpdateScrollChildRect = nil
-Check(measured and Text("MODULES") and not ns.UI.SearchTyped(),
-    "Enter on a setting of a module that is off opens Settings and measures its scroll area again")
+Check(measured and Text("Bags, Loot & Mail / Loot") and not ns.UI.SearchTyped(),
+    "Enter on a setting of a module that is off opens its page and measures its scroll area again")
 input:SetText(""); Flush()
-Check(not Text("TURNED OFF") and Text("MODULES"), "cleared, the group hides and the page goes back to Settings")
+Check(Text("Bags, Loot & Mail / Loot") and Head("Quality of Life"), "cleared, the page stays, the module's card on it")
 missingAddOns.NaowhForever_QoL = nil
 -- The window was built while QoL was not loaded (something opened it before QoL loaded): once QoL
--- has loaded, opening the window again puts Quality of Life back at the top of the sidebar.
-ns.ToggleOptionsWindow()
-local reopened = #frames
-ns.OpenOptionsWindow("QoL/Interface"); Flush()
-local qolNav
-for i = reopened + 1, #frames do
-    local f = frames[i]
-    if f.text == "Quality of Life" and f.parent and f.parent.mod and f.parent.scripts.OnClick then qolNav = f.parent end
+-- has loaded, opening the window again draws its cards in place of its module card.
+local function OnPage(name, pageKey)
+    for i = built + 1, #frames do
+        local row = frames[i].text == name and frames[i]:IsShown() and frames[i].parent
+        if row and row.card and row.parent.pageKey == pageKey then return row end
+    end
 end
-Check(qolNav and qolNav:IsShown() and qolNav.points.TOPLEFT[4] == 0 and not Text("TURNED OFF"),
-    "loaded after the window was built, Quality of Life is back at the top of the sidebar, not under Turned Off")
+ns.ToggleOptionsWindow()
+ns.OpenOptionsWindow("QoL/Interface"); Flush()
+Check(OnPage("Top Bar", "Interface > Top Bar") and not OnPage("Quality of Life", "Interface > Top Bar"),
+    "loaded after the window was built, QoL's own cards are back on their pages")
 
 do
     ns.BuildProfileSettings = function(parent, y)

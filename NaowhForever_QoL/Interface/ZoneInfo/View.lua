@@ -22,7 +22,7 @@ local TEXT_MARK_HELP = ns.L("Marks this known location on your map.")
 local TEXT_FISH = ns.L("Fishing %d / %d reliable")
 local TEXT_PINNED = ns.L("Pinned zone")
 local TEXT_UNKNOWN, TEXT_SAMPLE_SUBZONE = ns.L("Unknown zone"), ns.L("Sentinel Hill")
-local TEXT_MANAGE = ns.L("Manage Zone Info in Map & Pins.")
+local TEXT_MANAGE = ns.L("Manage Zone Info in Map & Travel > World Map.")
 local hover, panel, hud
 local kinds = View.NewKinds()
 local Draw = {}

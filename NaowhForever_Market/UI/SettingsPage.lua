@@ -134,7 +134,7 @@ page:Card({
 
 page:Card({
     id = "prices", name = "Prices & Deals", order = ORDER_PRICES,
-    help = "Auction prices and Disenchant Deals, the same settings as in QoL and Professions.",
+    help = "Auction prices and Disenchant Deals, the same settings as on Bags, Loot & Mail and Professions.",
     search = "auction house scan prices tooltip waylaid crate capture disenchant deals enchanting",
     rows = PriceRows,
 })

@@ -386,8 +386,8 @@ local list = assert(core:match("local MODULES = (%b{})"))
 local MODULES = assert(loadstring("return " .. list))()
 local module
 for _, mod in ipairs(MODULES) do if mod.name == "Group Inspect" then module = mod end end
-check("a module of the Utilities addon, under Utilities, needing BiS, switched by groupInspect", module
-    and module.group == "UTILITIES" and module.addon == "NaowhForever_GroupInspect"
+check("a module of the Utilities addon, needing BiS, switched by groupInspect", module
+    and module.addon == "NaowhForever_GroupInspect"
     and module.host == "NaowhForever_Utilities" and module.needs[1] == "NaowhForever_BiS"
     and module.settings == "QoLSettings" and module.enabledKey == "groupInspect")
 local toc = Source("NaowhForever_Utilities/NaowhForever_Utilities.toc")
@@ -418,7 +418,8 @@ do
             SaveModuleDefaults = NOTHING, ThemeTint = function(_, literal) return literal end, ToggleOptionsWindow = NOTHING },
         CreateFrame = function() return frame end, LibStub = function(name) return libs[name] end,
         MODULES = MODULES, MinimapButtonOn = function() return false end,
-        OpenModule = function(mod) opened = mod end, Loaded = function() return true end }, { __index = _G })
+        OpenModule = function(mod) opened = mod end, Loaded = function() return true end,
+        DisplayName = function(mod) return mod.label or mod.name end }, { __index = _G })
     local launcher = assert(loadstring(chunk, "launcher"))
     setfenv(launcher, launchEnv)
     launcher()

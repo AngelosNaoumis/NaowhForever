@@ -38,7 +38,10 @@ Core/
   Unlock/Layouts.lua named layouts, per profile
   Unlock/Toolbar.lua the toolbar, and entering and leaving Unlock Mode
   Options/Modules.lua  the modules and system pages (ns.Options), switching a module on or off
+  Options/Categories.lua the window's categories, their pages and the cards each page shows, each
+                                    module's own card, and where an old page key or card lands
   Options/Window.lua   the options window, a module's own window, ns.OpenOptionsWindow
+  Options/HomePage.lua the Home page: a button for every module window, then this class's cards
   Options/SettingsPage.lua the Settings page: modules, minimap icons, scale, fonts, colors, RestedXP
   Commands.lua         /nf and the module commands, binding names, the compartment entry
   Options/Launchers.lua the broker launchers and minimap icons; a feature with its own window adds a button with ns.RegisterMinimapFeature
@@ -82,8 +85,8 @@ Core/
 ```
 
 Shared internal tables between split files: `ns.HudEditor` (the HUD Editor files), `ns.Options`
-(Modules, Window, SettingsPage, Commands, Launchers) and `ns.Profiles` (ProfileShare and its
-dialogs and page). They are not an API for modules.
+(Modules, Categories, Window, HomePage, SettingsPage, Commands, Launchers) and `ns.Profiles`
+(ProfileShare and its dialogs and page). They are not an API for modules.
 
 ## Feature switches
 
@@ -217,10 +220,37 @@ Modals and windows
 - Every module with a command and every window added with `ns.RegisterMinimapFeature` gets its broker
   launcher at login, so it can go on the Top Bar with its minimap icon off. A launcher is only a
   table; the minimap icon is a frame, so a feature's is registered only once its switch is on.
-- Sidebar rows are 28 high (`NAV_ROW`) so every module fits the default 852-high window
+- Sidebar rows are 28 high (`NAV_ROW`) so every category fits the default 852-high window
   (test-navigation.lua).
 - The options window and a module's window size through `Parts.Resizable`; letting go of the grip
   (`onReleased`) fits the page to the new width and redraws it only when that width changed.
+
+Categories
+- The window is laid out by what the player is doing, not by module: Home, then 13 categories in
+  three bands, each with an Overview and two to six pages. Players looked for a setting under the
+  game system it belongs to and could not find it inside a module (2026-11 feedback).
+- Modules still declare their cards on their own pages (`Module/Tab`), which their own windows
+  show. A category page lists what it shows by card uid, or takes a whole module page: every card
+  on it not placed elsewhere, its status window included. A page a module draws itself (Bar Sets,
+  the macro pages) is shown as it is.
+- Each declared card and window button is on exactly one category page; test-categories.lua fails
+  on one placed nowhere or twice. A new card goes on the page where a player would look for it,
+  by what they are doing when they use it, and a new page only when a page passes about eight cards.
+- A page holds several modules, so the header has no module switch. Each module's own card
+  (`@Name`) carries its switch and its command, on the page with its first settings. QoL and
+  Racial and Class Tracking have none: their cards carry their own switches.
+- A module that is not loaded is drawn as its own card wherever its settings would be, so a page
+  never loses a feature without saying so; turning it on asks for the reload as Settings > Modules
+  does.
+- Your Class shows this character's class first and the other classes under a heading, so a raid
+  leader still finds Blessings. The Overview and Home show this class's alone.
+- An old link (`QoL/Combat`, a card uid, a module's or tab's name) opens the category page that
+  holds that card, or the first one holding a card of that page.
+- Pages are put together as they are built. The window was sometimes built before a module had
+  loaded, so it builds its pages again on the next open once the loaded modules differ.
+- AuraBuffs shows as Buff Reminders and Journeys as Route Planner (Journeys), through `label` in
+  `MODULES`: `name` stays the key for saved window sizes, minimap buttons and key bindings. The
+  Glimmer and Scout cards are named for what they do, their own names after it.
 
 Settings and profiles
 - Profiles are account-wide with a per-character active pointer (name-realm). Forever returns
@@ -421,17 +451,19 @@ Search
   closely it found something in almost every help text. Close matches come after every exact one,
   the ones whose word was most fully typed first. A pattern holds at most 32 captures, so a longer
   typed word is only matched exactly.
-- A module with one tab does not add its tab's name (mostly "Settings", which would match "set"
-  everywhere).
-- A setting's module and tab names can narrow it ("journal minimap") but never find it alone, or
-  typing a module's name would count every setting it has.
+- A result names its category and page. A page is also found by the names of the modules whose
+  cards it holds, the old ones included ("qol", "aurabuffs"), through a target of their own: mixed
+  into the page's own words they matched settings' words ("co-tank debuffs" found Tank & Healer
+  through Raid Debuffs).
+- A setting's category, page and module names can narrow it ("journal minimap") but never find it
+  alone, or typing a category's name would count every setting in it.
 - A page its own builder draws (Settings, Profiles) names what is on it through `terms`; the
   Settings page runs its own sections into a recorder, so what is searched is what is drawn.
 - A module that is not loaded declares no pages, so it is searched from the generated index in the
   load-on-demand `NaowhForever_SearchIndex` addon (built at release), loaded by the first search while a module is off.
-  Its matches put it in a Turned Off group at the bottom of the sidebar, shown only while the search
-  finds something in it; its page lists them and its header switch turns it on. Its name is also
-  found on the Settings page, which says it is off.
+  Each match is counted on the category page that will hold that setting, and leads to the
+  module's own card there, which turns it on. Its name is also found on the Settings page, which
+  says it is off.
 - A window card is searched by its button and its fixed text, never by a headline function: those
   read live state and some do real work.
 

@@ -46,7 +46,7 @@
 - [ ] One header comment per file and nothing else; anything the code can't say goes in the README's Why
 - [ ] No bare numbers: sizes, timings, IDs and colors are named constants
 - [ ] UI built from the shared components (`Shared/`, `ns.UI`), nothing hand-rolled or copied
-- [ ] New module (or N/A): entry in `Core/Options/Modules.lua`, `.pkgmeta` `move-folders`, its item in `Core/Onboarding/Setup.lua`, a README with Layout and Why
+- [ ] New module (or N/A): entry in `Core/Options/Modules.lua`, its cards placed in `Core/Options/Categories.lua`, `.pkgmeta` `move-folders`, its item in `Core/Onboarding/Setup.lua`, a README with Layout and Why
 - [ ] Lua 5.1, ASCII only, CRLF line endings
 
 **Checks and release**

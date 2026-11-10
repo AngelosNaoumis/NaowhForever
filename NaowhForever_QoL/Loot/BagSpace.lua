@@ -71,7 +71,7 @@ local TEXT = {
     ON_CURSOR = ns.L("%s (%s) is on your cursor: click the ground to delete it, or a bag slot to put it back."),
     QUEST_DELETE = ns.L("%s is needed for %s. Ctrl-click it again within %d seconds to delete it anyway."),
     DELETED = ns.L("deleted %s (%s)."),
-    IGNORED = ns.L("%s is ignored and will not be offered again. Manage it under QoL > Loot > "
+    IGNORED = ns.L("%s is ignored and will not be offered again. Manage it under Bags, Loot & Mail > Bags & Junk > "
         .. "Bag Space > Ignore List."),
     COUNT = " x",
     STACK_STOPPED = ns.L("stacking stopped: put down what you are holding, and wait for combat to end."),

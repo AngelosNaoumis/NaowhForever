@@ -37,7 +37,7 @@ local SIDES = { { below = "Below", above = "Above", left = "Left", right = "Righ
 local PERCENT, SECONDS = A.C.PERCENT, A.C.SECONDS
 local ALERT_KEYS = { campAlertScale = true, campAlertFade = true }
 
-local OFF = ns.L("Turn on AuraBuffs")
+local OFF = ns.L("Turn on Buff Reminders")
 local NEEDS_CAMP = ns.L("Needs the Campfire reminder")
 local ALERT_HINT = ns.L("Wheel: size. Right-click for more.")
 local TEXT_HIDDEN = ns.L("Show Only When Low: hidden until under %d min.")

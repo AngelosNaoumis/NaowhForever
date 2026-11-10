@@ -307,6 +307,16 @@ function Settings.Page(key, store)
     return page
 end
 
+function Settings.Compose(key, items)
+    local page = pages[key]
+    if not page then
+        page = { key = key, cards = {} }
+        pages[key] = page
+    end
+    page.items = items
+    return page
+end
+
 function Settings.Group(title, fold)
     return { group = title, fold = fold }
 end
@@ -514,7 +524,7 @@ function Settings.Index(pageKey, add)
     for _, item in ipairs(page.items) do
         if item.window then
             if item.uid then IndexWindow(item, add) end
-        elseif not item.info then
+        elseif not (item.info or item.heading) then
             IndexCard(item, add)
         end
     end

@@ -83,6 +83,10 @@ comment, sent back for changes, or merged and fixed up by me.
 - Settings go through `UI.ModuleSettings`, option widgets through the `ns.UI` kit in
   `Core/Options/Widgets.lua`, confirmations through `ns.Confirm` / `ns.PromptText`,
   and movable frames through `UI.AttachMover` so they show up in Unlock Mode.
+- Every settings card is placed on one page of the options window in
+  `Core/Options/Categories.lua`, where a player would look for it by what they are doing when
+  they use it. Add a card to an existing page; add a page only when one passes about eight cards.
+  `test-categories.lua` fails on a card placed nowhere or twice.
 - One comment per file: its first line, `-- <File>.lua: <what it is>.` Anything a reader
   needs that the code cannot say goes in the module's `README.md`, under Why.
 
@@ -145,7 +149,8 @@ comment, sent back for changes, or merged and fixed up by me.
   list, and one file line, its `<Module>.xml`. It also needs a `move-folders` line in
   `.pkgmeta` after the modules it needs, `addon =` on its entry in `MODULES`
   (`Core/Options/Modules.lua`; `needs =` too when it cannot work without another module),
-  and its item in the onboarding's list (`Core/Onboarding/Setup.lua`).
+  its own card (`"@<Name>"`) and its pages placed in `Core/Options/Categories.lua`, and its
+  item in the onboarding's list (`Core/Onboarding/Setup.lua`).
 - A module can instead ship inside a combined addon, as the Combat and Utilities modules do: its
   folder goes inside that addon and its XML in the addon's XML, and its `MODULES` entry keeps its own
   `addon =` name and adds `host =` with the combined addon. `NaowhForever_Combat/README.md` has

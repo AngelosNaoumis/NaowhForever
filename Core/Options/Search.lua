@@ -34,10 +34,10 @@ end
 
 local function Place(page, cardName)
     local parts = {}
-    local mod = page.module
-    if mod and #mod.tabs > 1 then parts[#parts + 1] = ns.L(page.name) end
+    local cat = page.category
+    if cat then parts[#parts + 1] = ns.L(page.name) end
     if cardName then parts[#parts + 1] = ns.L(cardName) end
-    return mod and ns.Options.DisplayName(mod) or ns.L(page.title or page.name), table.concat(parts, " / ")
+    return ns.L(cat and cat.name or page.title or page.name), table.concat(parts, " / ")
 end
 
 local function Entry(page, card, label, help, cardName, group, scope)
@@ -62,19 +62,33 @@ local function AddTerms(list, page, tag, scope)
     end)
 end
 
-local function PageTarget(list, page, off)
-    local tag, trail = Place(page)
-    local pageWords = Words(table.concat({ tag, trail, page.module and page.module.name or "" }, " "))
-    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = pageWords, words = pageWords,
-        offPage = off }
-    return tag, pageWords
+local function ModuleNames(page)
+    local names = {}
+    for i, mod in ipairs(page.modules or NONE) do names[i] = Both(mod.label or mod.name) .. " " .. mod.name end
+    return table.concat(names, " ")
 end
 
-local function IndexOff(list, page, pageWords)
-    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[page.key] or NONE) do
-        local t = Entry(page, page.key .. ":" .. e[1], e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], pageWords)
-        t.offPage = true
-        list[#list + 1] = t
+local function PageTarget(list, page)
+    local tag, trail = Place(page)
+    local pageWords, names = Words(tag .. " " .. trail), ModuleNames(page)
+    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = pageWords, words = pageWords }
+    if names == "" then return tag, pageWords end
+    local moduleWords = Words(names)
+    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = moduleWords, words = moduleWords }
+    return tag, Words(tag .. " " .. trail .. " " .. names)
+end
+
+local function IndexOff(list, tab)
+    local O = ns.Options
+    local mod = tab.module
+    local card, name = O.ModuleCardUid(mod), O.DisplayName(mod)
+    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[tab.key] or NONE) do
+        local page = O.PAGES[O.NavPage(tab.key .. ":" .. e[1])]
+        if page then
+            local tag, trail = Place(page)
+            local scope = Words(tag .. " " .. trail .. " " .. name)
+            list[#list + 1] = Entry(page, card, e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], scope)
+        end
     end
 end
 
@@ -93,10 +107,7 @@ local function Collect()
     end
     local off = UI.SearchOffPages()
     if off[1] and not ns.SEARCH_INDEX then C_AddOns.LoadAddOn(INDEX_ADDON) end
-    for _, page in ipairs(off) do
-        local _, pageWords = PageTarget(list, page, true)
-        IndexOff(list, page, pageWords)
-    end
+    for _, tab in ipairs(off) do IndexOff(list, tab) end
     return list
 end
 
@@ -184,11 +195,6 @@ local function AddMatch(f, t)
     end
     f.count[key] = f.count[key] + 1
     f.first[key] = f.first[key] or t.card
-    if t.offPage then
-        local hits = f.hits[key] or {}
-        hits[#hits + 1] = t
-        f.hits[key] = hits
-    end
     if t.isCard then
         f.cards[t.card] = true
     elseif f.cards[t.card] ~= true then
@@ -201,19 +207,9 @@ end
 local function Build(list, query)
     local typed = Typed(query)
     if #typed == 0 then return nil end
-    local f = { typed = typed, count = {}, all = {}, cards = {}, order = {}, first = {}, off = {}, hits = {},
-        list = list }
+    local f = { typed = typed, count = {}, all = {}, cards = {}, order = {}, first = {}, off = {} }
     for _, t in ipairs(Matches(list, typed)) do AddMatch(f, t) end
     return f
-end
-
-local function OffRows(filter, pageKey)
-    if not filter.all[pageKey] then return filter.hits[pageKey] or NONE end
-    local rows = {}
-    for _, t in ipairs(filter.list) do
-        if t.page == pageKey and t.card then rows[#rows + 1] = t end
-    end
-    return rows
 end
 
 local function StartsWord(lower, s)
@@ -283,7 +279,7 @@ local function CarriedChanged(before, after)
     return false
 end
 
-UI.Search = { Collect = Collect, Find = Find, Build = Build, Mark = Mark, Narrowed = Narrowed, OffRows = OffRows }
+UI.Search = { Collect = Collect, Find = Find, Build = Build, Mark = Mark, Narrowed = Narrowed }
 
 function UI.SearchCarries(pageKey, settingsKey)
     local keys = carries[pageKey] or {}

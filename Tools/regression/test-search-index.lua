@@ -55,17 +55,15 @@ Settings.Page("Solo/Settings", store):Card({ id = "solo", name = "Solo Card", ro
     { key = "solo", label = "Solo Toggle", toggle = true },
 } })
 
-local meter, solo, qol = { name = "Meter" }, { name = "Solo" }, { name = "QoL", display = "Quality of Life" }
+local meter, solo, loot = { name = "Meter" }, { name = "Solo" }, { name = "Bags, Loot & Mail" }
+local qol = { name = "QoL", label = "Quality of Life" }
 local pages = {
     { key = "Settings", name = "Settings", title = "Settings" },
-    { key = "Meter/Bars", name = "Bars", module = meter },
-    { key = "Meter/Other", name = "Other", module = meter },
-    { key = "Solo/Settings", name = "Settings", module = solo },
-    { key = "QoL/Bags", name = "Bags", module = qol },
+    { key = "Meter/Bars", name = "Bars", category = meter },
+    { key = "Meter/Other", name = "Other", category = meter },
+    { key = "Solo/Settings", name = "Tools", category = solo },
+    { key = "QoL/Bags", name = "Bags", category = loot, modules = { qol } },
 }
-meter.tabs = { pages[2], pages[3] }
-solo.tabs = { pages[4] }
-qol.tabs = { pages[5] }
 ---@diagnostic disable-next-line: duplicate-set-field
 function UI.SearchPages() return pages end
 ---@diagnostic disable-next-line: duplicate-set-field
@@ -88,7 +86,7 @@ end
 Check(first.card == "Meter/Bars:timer" and first.page == "Meter/Bars" and first.isCard, "a card is a target, with its page")
 Check(not size.isCard, "a setting is not a card")
 Check(size.card == "Meter/Bars:timer" and size.tag == "Meter" and size.trail == "Bars / Swing Timer",
-    "a setting knows its module, tab and card")
+    "a setting knows its category, page and card")
 Check(list[1].page == "Settings" and list[1].tag == "Settings" and list[1].trail == "" and not list[1].label,
     "a window page is a target, named by itself")
 local trails = table.concat({ list[1].trail, size.trail }, "")
@@ -105,14 +103,14 @@ Check(Names("ping") == "Timer Sound", "a setting's help counts")
 Check(Names("look") == "Bar Size|Timer Sound", "and its group")
 Check(Names("parry") == "Timer Sound|Parry Alert|Alert Sound|Alert Color",
     "a card's name finds the card and the settings in it")
-Check(Names("meter") == "[Bars]|[Other]", "a module's name finds its pages")
+Check(Names("meter") == "[Bars]|[Other]", "a category's name finds its pages")
 Check(Names("bars ping") == "Timer Sound" and Names("meter naowh") == "Naowh's Tips",
-    "a module or tab name narrows the settings under it")
+    "a category or page name narrows the settings under it")
 Check(Names("bars") == "[Bars]" and Names("solo bars") == "", "but finds no setting on its own, nor one elsewhere")
-Check(Names("quality") == "[]" and Names("qol") == "[]" and UI.Search.Find(list, "quality")[1].page == "QoL/Bags"
+Check(Names("quality") == "[Bags]" and Names("qol") == "[Bags]" and UI.Search.Find(list, "quality")[1].page == "QoL/Bags"
     and Names("quality free") == "Free Slots",
-    "a module is found by the name the sidebar shows, and by its short name")
-Check(UI.Search.Find(list, "free")[1].tag == "Quality of Life", "and its settings are placed under that name")
+    "a module's old name, shown or short, still finds the pages that hold its settings")
+Check(UI.Search.Find(list, "free")[1].tag == "Bags, Loot & Mail", "which are placed under their category")
 
 -- A window card is found by its button and its fixed text, but not by text that changes; info cards are not searched.
 Check(Names("swing history") == "Open Swing Log" and Names("open swing") == "Open Swing Log", "a window card is found")
@@ -142,11 +140,15 @@ do
     Check(Labels("cht") == "Chat Frame|Cheat Sheet", "and close ones rank by how close they are")
 end
 
--- A module that is turned off is searched from the generated index (ns.SEARCH_INDEX) through its pages.
+-- A module that is turned off is searched from the generated index (ns.SEARCH_INDEX), and each of
+-- its settings is found on the page that will hold it, where the module's own card turns it on.
 do
     local planner = { name = "Planner" }
     local offPage = { key = "Planner/Settings", name = "Settings", module = planner }
-    planner.tabs = { offPage }
+    local home = { key = "Leveling > Spells", name = "Spells", category = { name = "Leveling" } }
+    ns.Options.PAGES = { [home.key] = home }
+    ns.Options.NavPage = function(uid) return uid:find("^Planner/Settings:") and home.key or nil end
+    ns.Options.ModuleCardUid = function(mod) return "@" .. mod.name end
     ns.SEARCH_INDEX = { ["Planner/Settings"] = {
         { "toast", false, "A toast when you level.", "Level-Up Toast", false },
         { "toast", "Toast Sound", "Plays a sound with the toast.", "Level-Up Toast", "Sound" },
@@ -154,16 +156,16 @@ do
     UI.SearchOffPages = function() return { offPage } end
     local offList = UI.Search.Collect()
     UI.SearchOffPages, ns.SEARCH_INDEX = function() return {} end, nil
-    local Build, OffRows = UI.Search.Build, UI.Search.OffRows
+    local Build = UI.Search.Build
+    local hit = UI.Search.Find(offList, "toast sound")[1]
     local f = Build(offList, "toast sound")
-    local rows = OffRows(f, "Planner/Settings")
-    Check(f.count["Planner/Settings"] == 1 and #rows == 1 and rows[1].label == "Toast Sound"
-        and rows[1].trail == "Level-Up Toast" and not rows[1].isCard, "a setting of a module that is off is found")
-    rows = OffRows(Build(offList, "level"), "Planner/Settings")
-    Check(#rows == 2 and rows[1].isCard and rows[1].label == "Level-Up Toast", "and its card, by the card's name")
-    rows = OffRows(Build(offList, "planner"), "Planner/Settings")
-    Check(#rows == 2, "the module's name lists all of its settings")
-    Check(#OffRows(Build(offList, "zzz"), "Planner/Settings") == 0, "nothing found, nothing listed")
+    Check(hit and hit.label == "Toast Sound" and hit.page == home.key and hit.card == "@Planner"
+        and hit.tag == "Leveling" and hit.trail == "Spells / Level-Up Toast" and f.count[home.key] == 1,
+        "a setting of a module that is off is found on the page with the module's card")
+    f = Build(offList, "level")
+    Check(f.count[home.key] == 2 and f.cards["@Planner"] == true, "and its card, by the card's name")
+    Check(#UI.Search.Find(offList, "planner toast") == 2, "the module's name narrows them")
+    Check(#Build(offList, "zzz").order == 0, "nothing found, nothing listed")
 end
 
 -- Translated names are found and shown.
@@ -195,9 +197,8 @@ do
     Check(f.all["Meter/Bars"] and f.all["Meter/Other"] and f.count["Meter/Other"] == 0,
         "a page matched by name shows whole, though it counts nothing")
     f = Build(list, "set")
-    Check(f.all.Settings and not f.count["Solo/Settings"],
-        "a lone tab's name (mostly Settings) does not match its module's page")
-    Check(Build(list, "solo").all["Solo/Settings"], "its module's name still does")
+    Check(f.all.Settings and not f.count["Solo/Settings"], "a page's name matches that page alone")
+    Check(Build(list, "solo").all["Solo/Settings"], "and a category's name its pages")
     f = Build(list, "zzz")
     Check(f and #f.order == 0 and next(f.count) == nil, "nothing found is a filter with no pages")
     f = Build(list, "swing log")

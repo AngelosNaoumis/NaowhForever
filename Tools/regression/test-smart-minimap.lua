@@ -28,7 +28,8 @@ for _, saved in ipairs({{}, {minimap={minimapPos=47,hide=true}}}) do
         LibStub=function(name) return assert(libs[name]) end, hooksecurefunc=function() end,
         MODULES={ {name="QoL"}, dq, gear },
         MinimapButtonOn=function(mod) return mod.micro==true end,
-        OpenModule=function(mod) opened=mod end, Loaded=function() return true end}, {__index=_G})
+        OpenModule=function(mod) opened=mod end, Loaded=function() return true end,
+        DisplayName=function(mod) return mod.label or mod.name end}, {__index=_G})
     local launcher = assert(loadstring(chunk, "launcher")); setfenv(launcher, env); launcher()
     assert(not registered)
     event(frame)

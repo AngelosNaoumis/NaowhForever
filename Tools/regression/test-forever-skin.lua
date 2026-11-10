@@ -110,7 +110,8 @@ local SHARED = { "Core/Core.lua", "Shared/Shared.lua", "Shared/Style.lua", "Core
     "Shared/UI/Tabs.lua", "Shared/UI/SettingsCard.lua", "Shared/View/View.lua",
     "Shared/Settings/Settings.lua", "Shared/Settings/Style.lua", "Shared/Settings/Controls.lua",
     "Shared/Settings/Rows.lua", "Shared/Settings/Page.lua" }
-local WINDOW = { "Core/Options/Modules.lua", "Core/Options/Window.lua", "Core/Options/Search.lua" }
+local WINDOW = { "Core/Options/Modules.lua", "Core/Options/Categories.lua", "Core/Options/Window.lua",
+    "Core/Options/HomePage.lua", "Core/Options/Search.lua" }
 local timers = {}
 
 local function Load(account, atlases, files, extra)
@@ -124,6 +125,7 @@ local function Load(account, atlases, files, extra)
         C_Timer = { After = function(_, fn) timers[#timers + 1] = fn end },
         InCombatLockdown = function() return false end,
         UnitGUID = function() return "Player-1" end,
+        UnitClass = function() return "Warrior", "WARRIOR", 1 end,
         GameTooltip = New("Frame"),
         Menu = { GetManager = function() return { IsAnyMenuOpen = function() return false end } end },
         Mixin = function(object, ...)
@@ -852,11 +854,11 @@ do
 end
 
 -- Forever: the options window as the game's own (Legacy Challenges): a header band under the title
--- bar with the page's name and its buttons, a bronze rail under it and down the side, the module
+-- bar with the page's name and its buttons, a bronze rail under it and down the side, the category
 -- list as list bars under the search box, no logo in the sidebar and no boxed content.
 do
     local ns = Load({ skin = "forever" }, ALL, nil, WINDOW)
-    ns.OpenOptionsWindow()
+    ns.OpenOptionsWindow("Interface")
     local window = Find(frames, function(f) return rawget(f, "strata") == "DIALOG" end)
     window.scripts.OnShow(window)
     local band, rail, sideTop = St.FOREVER_BAND_H, St.FOREVER_RAIL, St.FOREVER_BAND_H + St.FOREVER_RAIL
@@ -878,19 +880,19 @@ do
         and hud.points[1][2] == reload and hud.points[1][3] == "LEFT")
     check("both the game's red button, neither set apart", RedPieces(reload, "") and RedPieces(hud, "")
         and reload._primary == nil and hud._primary == nil)
-    local title = Find(header.children, function(x) return x.text == "Quality of Life" end)
+    local title = Find(header.children, function(x) return x.text == "Interface" end)
     local enable = Find(header.children, function(x) return x.text and x.text:find("^Enable") end)
-    check("the page's name on the band, clear of the portrait", title and title.points[1][2]
+    check("the category's name on the band, clear of the portrait", title and title.points[1][2]
         == St.FOREVER_PORTRAIT_ROOM)
-    check("Enable QoL left of the buttons, its box before it", enable and enable.points[1][2] == hud
-        and Find(header.children, function(x) return x.checkArt and x.points[1][2] == enable end))
+    check("no module switch on the band: each module's switch is on its own card", enable == nil
+        and not Find(header.children, function(x) return x.checkArt end))
     local search = Find(frames, function(f) return f.foreverArt ~= nil end)
     check("the search box at the top of the sidebar, under the rail", search and search.parent.points[1][3]
         == -sideTop and search.points[1][3] == -10)
-    local journal = Find(frames, function(f) return f.label and f.label.text == "Dungeon Journal" end)
-    check("each module plain text in the list, no bar and no icon", journal.forever and journal.listArt
+    local journal = Find(frames, function(f) return f.label and f.label.text == "Map & Travel" end)
+    check("each category plain text in the list, no bar and no icon", journal.forever and journal.listArt
         and journal.barArt == nil and journal.icon == nil)
-    local group = Find(frames, function(f) return f.label and f.label.text == ns.L("ADVENTURE") and f.barArt end)
+    local group = Find(frames, function(f) return f.label and f.label.text == ns.L("CHARACTER") and f.barArt end)
     local art = St.FOREVER_GROUP_ART
     local scale = group and group.h / art.bar
     check("each group the game's Settings category header, its bar the group's row", group
@@ -899,12 +901,13 @@ do
         and group.barArt.points[2][1] == "TOPRIGHT")
     local arrows = 0
     for _, f in ipairs(frames) do if f.delta then arrows = arrows + 1 end end
-    check("chevron arrows on the module list and the content", arrows == 4)
+    check("chevron arrows on the category list and the content", arrows == 4)
     check("no boxed content: the only nine-slice is the window's frame", #layouts == 1
         and layouts[1] == St.FOREVER_FRAME_LAYOUT)
     local scroll = Find(frames, function(f) return f.kind == "ScrollFrame" and f.points[1]
         and f.points[1][2] == window end)
-    local tabs = Find(frames, function(f) return f.buttons and f.shown and f.buttons[1].text.text == "Interface" end)
+    local tabs = Find(frames, function(f) return f.buttons and f.shown and f.buttons[1].text.text == "Overview"
+        and f.buttons[2].text.text == "Top Bar" end)
     check("the section tabs inside the content, the cards under them", tabs
         and tabs.points[1][4] == 240 + rail + 26 and tabs.points[1][5] == -(sideTop + 8)
         and scroll and scroll.points[1][4] == 240 + rail + 6 and scroll.points[1][5] == -(sideTop + 8 + 32 + 8))
@@ -939,7 +942,7 @@ do
         local p = child.points[1]
         if child.label and p and p[1] == "TOPLEFT" and child.shown ~= false then lowest = math.min(lowest, p[3]) end
     end
-    check("the module list scrolls past its last module by the dragon's room", navList.h
+    check("the category list scrolls past its last row by the dragon's room", navList.h
         >= -lowest + 28 + St.FOREVER_DRAGON.h + St.FOREVER_RAIL / 2)
     local utilityLine = Find(rod.parent.children, function(x) return x.kind == "Texture" and x ~= rod end)
     check("the plain line there hidden", utilityLine and utilityLine.shown == false)

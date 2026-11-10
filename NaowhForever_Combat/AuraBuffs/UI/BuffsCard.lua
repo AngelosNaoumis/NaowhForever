@@ -26,7 +26,7 @@ local STATES = {
       needs = "hideResting" },
 }
 
-local OFF = ns.L("Turn on AuraBuffs")
+local OFF = ns.L("Turn on Buff Reminders")
 local NEEDS_RAID = ns.L("Needs Raid Buff Reminders")
 local NEEDS_PERSONAL = ns.L("Needs Personal Buff Reminders")
 local NEEDS_WEAPON = ns.L("Needs Weapon Enhancement Reminder")

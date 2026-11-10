@@ -142,12 +142,14 @@ check("no key binding for the Damage Meter, which is not shipped", not bindings:
 local KEYED = { instance = "Instance Tracker", discovery = "Discovery", gear = "Gear & Trinkets", bless = "Blessings",
     macros = "Macros", bars = "Action Bars", buffs = "AuraBuffs", threat = "Threat Meter", pvp = "PvP",
     market = "The Market", lfg = "Group Finder" }
+-- A binding is named by the module's name in the options, which for these is a plainer one.
+local SHOWN = { AuraBuffs = "Buff Reminders", Journeys = "Route Planner (Journeys)" }
 for command, name in pairs(KEYED) do
     local key = "NAOWHFOREVER_" .. command:upper()
     check("a key binding for " .. name, bindings:find('<Binding name="' .. key
         .. '" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("' .. command .. '")</Binding>', 1, true))
     local t = Fixture(0)
-    check("with its name", t.env["BINDING_NAME_" .. key] == "Open " .. name)
+    check("with its name", t.env["BINDING_NAME_" .. key] == "Open " .. (SHOWN[name] or name))
     t.env.NaowhForever_ToggleModule(command)
     check("which opens its module", t.opened[#t.opened] == command)
 end
@@ -164,7 +166,7 @@ for key, name in pairs(NAMED) do
     check("a key binding for " .. name, bindings:find('<Binding name="NAOWHFOREVER_' .. key
         .. '" category="BINDING_HEADER_NAOWHFOREVER">NaowhForever_ToggleModule("' .. name .. '")</Binding>', 1, true))
     local t = Fixture(0)
-    check("with its name", t.env["BINDING_NAME_NAOWHFOREVER_" .. key] == "Open " .. name)
+    check("with its name", t.env["BINDING_NAME_NAOWHFOREVER_" .. key] == "Open " .. (SHOWN[name] or name))
     t.env.NaowhForever_ToggleModule(name)
     check("which opens its module", t.opened[#t.opened] == name)
 end

@@ -25,9 +25,11 @@ local GATED = {
     ["Core/Pages/Credits.lua"] = true,
     ["Core/Pages/PatchNotes.lua"] = true,
 }
--- The same words meaning something else: the patrons of a dungeon's bar.
+-- The same words meaning something else: the patrons of a dungeon's bar, and the badges card's ID,
+-- which places it in the options and is never shown.
 local UNRELATED = {
     ["DungeonJournal/Data/Tips.lua"] = "killing patrons turns the bar hostile",
+    ["Core/Options/Categories.lua"] = "QoL/Interface:supporterBadges",
 }
 
 -------------------------------------------------------------------------------

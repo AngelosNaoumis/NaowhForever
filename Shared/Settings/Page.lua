@@ -253,7 +253,12 @@ function Draw:Redraw()
     if page then
         local drawn = false
         for _, item in ipairs(page.items) do
-            if not f then
+            if item.heading then
+                if not f then
+                    self.left, self.width = 0, self:GetWidth()
+                    self:Add("group", item.heading)
+                end
+            elseif not f then
                 if item.window then
                     self:Add("window", item)
                     self:Space(CARD_GAP)

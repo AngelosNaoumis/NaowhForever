@@ -21,7 +21,7 @@ local STATES = {
     { key = "none", label = "None in Bags", tip = "Your health under the threshold, with nothing to drink or eat." },
 }
 
-local OFF = ns.L("Turn on AuraBuffs")
+local OFF = ns.L("Turn on Buff Reminders")
 local TEXT_NOTE = ns.L("Shown below %d%% health, in combat too.")
 local TEXT_HIDDEN = ns.L("Hidden while you carry no healing item.")
 

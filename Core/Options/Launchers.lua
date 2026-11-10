@@ -3,6 +3,7 @@ local ns = _G.NaowhForever
 local O = ns.Options
 
 local MODULES, Loaded, OpenModule, MinimapButtonOn = O.MODULES, O.Loaded, O.OpenModule, O.MinimapButtonOn
+local DisplayName = O.DisplayName
 
 local LOGO = ns.MEDIA .. "LogoAddon.tga"
 local LAUNCHER_NAME = "NaowhForever"
@@ -50,14 +51,14 @@ local function ModuleLauncher(account, mod)
     db.hide = not MinimapButtonOn(mod)
     local obj = LibStub("LibDataBroker-1.1"):NewDataObject(LAUNCHER_NAME .. mod.short, {
         type = "launcher",
-        label = ns.L(mod.name),
+        label = DisplayName(mod),
         icon = mod.icon,
         OnClick = function(frame, button)
             if button == "RightButton" and mod.menu and ns[mod.menu] then return ns[mod.menu](frame) end
             OpenModule(mod)
         end,
         OnTooltipShow = function(tooltip)
-            TipTitle(tooltip, ns.L(mod.name))
+            TipTitle(tooltip, DisplayName(mod))
             TipLine(tooltip, ns.L(mod.open and TEXT_MODULE_CLICK or TEXT_SETTINGS_CLICK))
             if mod.menu then TipLine(tooltip, TEXT_MENU_CLICK) end
         end,

@@ -169,7 +169,10 @@ Each file uses only the ones above it in `Shared.xml`. Every part sits on `ns.Sh
   or row's `search = "..."` adds words the settings
   search finds but nothing shows, for clicks and slash commands too small for its help. The page
   in the options window, its search entries, the dot on what you changed and each card's reset
-  all come from that one declaration. Settings pages hold settings only: a module's lists and
+  all come from that one declaration. The options window shows a module's page through its
+  categories (`Core/Options/Categories.lua`): `Settings.Compose(key, items)` makes a page of cards
+  declared on other pages, and an item `{ heading = "Title" }` puts a title between them. Settings
+  pages hold settings only: a module's lists and
   editors live in its own window, opened from the page's `page:Window{ ... }` card (first on
   the page, or where its `order` puts it). A card that
   shows something on screen can carry a live preview (`studio`, see `Settings/Studio.lua`; its
@@ -686,6 +689,9 @@ What a comment in the code used to say, in short. The house rules behind it are 
   hand-in read off while the Quest Tracker itself is off: they never run then.
 - A settings view changed while hidden is marked stale and drawn again as it shows, so it never
   shows an old value (an options window that stepped aside for a picker, a page another changed).
+- A composed page holds the same card objects as the page that declared them, so a card keeps one
+  uid, one open state and one undo wherever it shows; a jump or a dependency link names the card,
+  and the window finds the page it is on.
 
 ### The Forever skin
 
