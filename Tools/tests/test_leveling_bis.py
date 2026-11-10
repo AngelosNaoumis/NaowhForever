@@ -118,5 +118,16 @@ class Render(unittest.TestCase):
         self.assertIn('        [30] = "A \\"q\\" \\\\ Caf\\195\\169 \\194\\183 Quest",', text)
 
 
+class CurrentPicks(unittest.TestCase):
+    def test_a_levels_items_for_every_spec_and_side_not_its_sources(self):
+        found = lb.lists({**picks(), "60h": slots(p0=60, p2=62)})
+        other = lb.lists({**picks(), "60a": slots(p5=65)})
+        text = lb.render({"arms-warrior": found, "fury-warrior": other}, {60: "Quest", 99: "Crafted"})
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(lb, "OUT", Path(tmp) / "Leveling.lua"):
+            lb.OUT.write_text(text, encoding="utf-8", newline="")
+            self.assertEqual(lb.current_picks(60), {60, 61, 62, 65})
+            self.assertEqual(lb.current_picks(30), {30, 31})
+
+
 if __name__ == "__main__":
     unittest.main()

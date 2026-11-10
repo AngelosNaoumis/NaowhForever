@@ -136,6 +136,13 @@ def render(specs, sources):
     return "\r\n".join(lines) + "\r\n"
 
 
+def current_picks(level):
+    """The item IDs Leveling.lua lists at the level, for every spec and side."""
+    block = re.compile(r"\[%d\] = \{\s*Alliance = \{([^}]*)\},\s*Horde = \{([^}]*)\}," % level)
+    text = OUT.read_text(encoding="utf-8")
+    return {int(i) for sides in block.findall(text) for side in sides for i in re.findall(r"\] = (\d+)", side)}
+
+
 def main():
     specs, sources = {}, {}
     for path, keys in PAGES.items():

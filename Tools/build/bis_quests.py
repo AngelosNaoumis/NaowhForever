@@ -1,6 +1,10 @@
 """Build NaowhForever_DungeonJournal/Data/BiSQuests.lua: every quest that rewards an item a BiS ranking lists,
 for the BiS List's Quests page, as the Dungeon Journal's quest records.
 
+The rankings are BiS.lua's (Tools/build/bis_data.py), whose items are all below level 40, and the
+Leveling page's level-60 lists (Leveling.lua, Tools/build/leveling_bis.py): a player who loads one
+sees the quests that reward its picks.
+
 Which quests reward a ranked item, and whether it is one to choose, come from ForeverChanges' quest
 list (foreverchanges_quests.json, from Tools/build/foreverchanges_quests.py), with each quest's name,
 levels, side and class. Every ranked item is looked up, not only the ones whose source says Quest: a
@@ -27,6 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import paths  # noqa: E402
 from bis_data import WOWHEAD, current_specs, fetch, lua_string  # noqa: E402
 from completo_quests import listed_spot  # noqa: E402
+from leveling_bis import current_picks  # noqa: E402
 from quest_chains import REDRAWN, ZONE_MAP  # noqa: E402
 
 ROOT = paths.ROOT
@@ -36,6 +41,7 @@ ITEMS = paths.DATA / "bis_quests.json"
 PAGES = paths.DATA / "bis_quest_pages.json"
 CATALOG = paths.DATA / "quest_entity_catalog.json"
 JOURNAL = paths.DATA / "journal_cache.json"   # its "zones": Wowhead's zone names
+LEVELING = 60   # the Leveling page's level whose picks are ranked too
 
 SIDES = {1: "A", 2: "H"}
 CLASSES = {1: "WARRIOR", 2: "PALADIN", 4: "HUNTER", 8: "ROGUE", 16: "PRIEST", 64: "SHAMAN", 128: "MAGE",
@@ -190,6 +196,7 @@ def write(quests, starts, pages, races, zone_names):
 def main():
     offline = "--offline" in sys.argv
     ranked = {i for slots in current_specs().values() for ids in slots.values() for i in ids}
+    ranked |= current_picks(LEVELING)
     listed, pages = load(LISTED), load(PAGES)
     quests = rewarding(listed, ranked)
     failed = []

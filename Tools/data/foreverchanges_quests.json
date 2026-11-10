@@ -9549,14 +9549,16 @@
     "zone",
     33
    ],
-   "choices": [],
+   "choices": [
+    4125,
+    270096,
+    270097
+   ],
    "level": 46,
    "name": "Mai'Zoth",
    "reqclass": 0,
    "reqlevel": 30,
-   "rewards": [
-    4125
-   ],
+   "rewards": [],
    "side": 1
   },
   "207": {
@@ -31559,14 +31561,16 @@
     "zone",
     33
    ],
-   "choices": [],
+   "choices": [
+    4138,
+    270092,
+    270093
+   ],
    "level": 45,
    "name": "The Bloodsail Buccaneers",
    "reqclass": 0,
    "reqlevel": 37,
-   "rewards": [
-    4138
-   ],
+   "rewards": [],
    "side": 3
   },
   "6081": {
@@ -33374,7 +33378,9 @@
    ],
    "choices": [
     9643,
-    9644
+    9644,
+    270102,
+    270103
    ],
    "level": 48,
    "name": "Rescue OOX-17/TN!",
@@ -66055,7 +66061,9 @@
    "name": "Craftsman's Writ: Green Iron Gauntlets",
    "reqclass": 0,
    "reqlevel": 1,
-   "rewards": [],
+   "rewards": [
+    284584
+   ],
    "side": 3
   },
   "94227": {
@@ -66465,7 +66473,9 @@
    "name": "Craftsman's Writ: Greater Adept's Robe",
    "reqclass": 0,
    "reqlevel": 1,
-   "rewards": [],
+   "rewards": [
+    284584
+   ],
    "side": 1
   },
   "94255": {

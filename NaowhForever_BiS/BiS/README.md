@@ -86,7 +86,7 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
 | What a list keeps, or an old format | `Lists.lua` (saved lists) and `Sharing.lua` (strings) |
 | Which enchant or upgrade wins for a spec | the spec's weights in `StatWeights/Data/Defaults.lua` (players change their own in the module's page); a proc's worth in `PROCS` in `Tools/build/enchants.py` |
 | Where a zone's NPC stands | `python Tools/build/bis_spots.py` (on our machines: it reads Wowhead) |
-| The quests that reward a BiS | `python Tools/build/foreverchanges_quests.py`, then `python Tools/build/bis_quests.py` (`--offline` without Wowhead), then `python Tools/build/quest_chains.py` |
+| The quests that reward a BiS | `python Tools/build/foreverchanges_quests.py`, then `python Tools/build/bis_quests.py` (`--offline` without Wowhead; after `bis_data.py` and `leveling_bis.py`, whose picks it reads), then `python Tools/build/quest_chains.py` |
 
 ## Why
 
@@ -155,6 +155,9 @@ Other modules call in through `ns`: `ns.IsBisItem` (the Journal, Bag Space, the 
   the Journal's rules know none; a race the mask does not know of is let through. `RACE_BITS` is your
   race's bit in a quest's races mask (`ChrRaces.PlayableRaceBit`): the classic eight, and Forever's
   Skyborne.
+- The Quests page has the quests that reward a pick of a spec's ranking or of the Leveling page's
+  level-60 lists: the rankings stop below level 40, so a loaded level-60 list brings the endgame's
+  quests. The level-30 to 50 lists are not read: their quest rewards show where a ranking has them.
 - A quest starts where ForeverChanges maps its quest giver, else Wowhead, else the map of the
   Journal's quest giver, else the dungeon it starts inside.
 - Enchants: the game puts no level limit on any; the level is advice. `SKILL_LEVELS` follows the
