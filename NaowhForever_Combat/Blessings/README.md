@@ -219,15 +219,34 @@ NaowhForever_Combat/Blessings/
 - A class label too long for its slot under the bar (the button plus the gap after it) first shrinks,
   down to `LABEL_MIN`, then drops to its first three letters at that size, and is cut off if even
   that is too long, so neighbours never run into each other. Letters are counted in whole UTF-8
-  characters, so a localized name never splits. Nothing sits beside a column's names, so only a row's
-  are fitted. The class icon (Class Label Style: Class Icon) is two thirds of the button, kept between
-  `CLASS_ICON_MIN` and `CLASS_ICON_MAX`, and made the first time it is asked for.
+  characters, so a localized name never splits. A single column's names have nothing beside them and
+  are never fitted; once the class buttons wrap into more than one column, each name gets `LABEL_COLUMN`
+  and fits it the same way. The class icon (Class Label Style: Class Icon) is two thirds of the button,
+  kept between `CLASS_ICON_MIN` and `CLASS_ICON_MAX`, and made the first time it is asked for. Icon on the
+  Button puts that icon in the button's top left corner instead, `BADGE_SHARE` of the button between
+  `BADGE_MIN` and `BADGE_MAX`, so the rows need no room between them for labels. It is drawn on the button
+  itself (`BADGE_LEVEL`, in its artwork), not on a frame over it, so the missing count stays on top.
+- Class Buttons Per Row (`blessPerRow`, all nine by default, so one line) wraps only the class buttons:
+  your aura, Righteous Fury, Seal and Auto Buff buttons stay on the first row, and the class buttons start
+  after the Aura / Class Gap. Rows leave the class labels room between them (`Look.LabelRoom`). New rows
+  go above the first (New Rows Below, `blessFlipRows`, sends them below): the HUD Editor holds a bar
+  anchored on top of Buff Reminders by its bottom edge, so a row added above leaves the first row where it
+  was, and one added below would push it up. A column bar's new columns go right, or left with New Rows
+  Below. Its own label, not the Consumable Bar's Flip Row Direction, since that bar's rows go down unflipped.
+  While the class buttons can wrap (fewer per row than classes), the bar gives the HUD Editor its first
+  button's corner to hold (`Look.Hold`) instead of the edge it grows from, so an anchor keeps that corner
+  along the target's side as columns or rows come and go; one line keeps the edge, as before.
+- Button Border's Status Color moves a class button's status color from its icon onto a 2 px edge
+  (`STATUS_PIXELS`), so the blessing stays readable and the red count stands out against it. Only the class
+  buttons get it: the aura, Righteous Fury and player list buttons stay red under Blizzard's aura display
+  on purpose (see above), so an edge there would read missing while the buff is up.
 - The bar holds its first button, so a class joining or leaving never shifts the buttons already
-  there. Its place is saved by the edge Growth Direction grows from (`blessPos` LEFT, RIGHT, BOTTOM or
-  TOP of the bar, from the screen centre); a spot the HUD Editor saves by its centre, or one saved
-  before, is turned into that edge once the bar has its size. That rewrite of `blessPos` is one way:
-  the old centre is not kept, and the bar sits where it did. Changing Growth Direction keeps the bar
-  where it is.
+  there. Its place is saved by the corner its first button sits in (`blessPos`, from the screen centre:
+  BOTTOMLEFT growing right, BOTTOMRIGHT left, TOPLEFT down and BOTTOMLEFT up, each mirrored across by New
+  Rows Below), so new rows never move it; a spot the HUD Editor saves by its centre, or one saved
+  before by its edge, is turned into that corner once the bar has its size. That rewrite of `blessPos` is
+  one way: the old point is not kept, and the bar sits where it did. Changing Growth Direction or New Rows
+  Below keeps the bar where it is.
 - The bar starts above Buff Reminders (AuraBuffs), held there by the HUD Editor's own Anchor, so it
   follows Buff Reminders, shows on the HUD Editor's tag, and lets go like any other element. It is
   tied to their centre, not their edge: Buff Reminders grows both ways as reminders come and go, and
@@ -245,7 +264,8 @@ NaowhForever_Combat/Blessings/
 - `lua Tools/regression/test-blessing-autoassign.lua`: Auto-Assign's plans, around a PallyPower paladin's too.
 - `lua Tools/regression/test-blessing-names.lua`: the names a group header can find each member by.
 - `lua Tools/regression/test-blessing-range.lua`: what lights a class button, and its click queue.
-- `lua Tools/regression/test-blessing-preview.lua`: the settings preview and its edits.
+- `lua Tools/regression/test-blessing-preview.lua`: the settings preview and its edits, the class buttons'
+  rows and columns, Icon on the Button, Status Color, and how a saved place becomes the first button's corner.
 - `lua Tools/regression/test-import-safety.lua`: another paladin's per-player choices are capped, they
   are heard however their sender spells their name, and a plan set for them names their GUID. A PallyPower
   paladin's plan, aura, status and later changes are read by PallyPower's own rules, bad input changes nothing,

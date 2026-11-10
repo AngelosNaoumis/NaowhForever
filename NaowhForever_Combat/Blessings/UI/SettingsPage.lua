@@ -15,12 +15,13 @@ local Group = Settings.Group
 
 local BLESSINGS_OFF = ns.L("Turn on Blessings")
 local LABELS_OFF = ns.L("Turn on Blessings and Class Labels")
-local BORDERS = { values = { black = ns.L("Black"), accent = ns.L("Accent"), none = ns.L("None") },
-    order = { "black", "accent", "none" } }
+local BORDERS = { values = { black = ns.L("Black"), accent = ns.L("Accent"), status = ns.L("Status Color"),
+    none = ns.L("None") }, order = { "black", "accent", "status", "none" } }
 local OPACITY_RANGE, WINDOW_RANGE = { 10, 100, 5 }, { 60, 150, 5 }
 local WHY_BACKGROUND = ns.L("Pick a background texture")
-local LABEL_STYLES = { values = { name = ns.L("Name"), icon = "Class Icon" }, order = { "name", "icon" } }
-local STAGE_H, STAGE_MARGIN, LABEL_ROOM, LABEL_SIDE = 160, St.STAGE_MARGIN, 14, 46
+local LABEL_STYLES = { values = { name = ns.L("Name"), icon = "Class Icon", button = "Icon on the Button" },
+    order = { "name", "icon", "button" } }
+local STAGE_H, STAGE_MARGIN = 160, St.STAGE_MARGIN
 local NOTE_Y, NOTE_SIZE, NOTE_LINE = St.STAGE_NOTE_Y, St.STAGE_NOTE_SIZE, 15
 local TEXT_ROOM = NOTE_Y + NOTE_LINE * 2
 local REMOVE_SIZE, REMOVE_ICON, REMOVE_INSET = 12, 8, 3
@@ -29,8 +30,8 @@ local GRIP_MIN, GRIP_LINE = 6, 2
 local EDIT_LEVEL = 10
 local BLACK = St.BORDER_RGB
 local ROUND = B.ROUND
-local ICON_DROP, ICON_SIDE = 2, 3
 local SIZE_SLIDER, SPACING_SLIDER, GROUP_SLIDER = { 20, 70, 1 }, { 0, 30, 1 }, { 0, 40, 1 }
+local PER_ROW_SLIDER = { 1, #B.CLASSES, 1 }
 local FONT_SLIDER = St.HUD_TEXT_RANGE
 local ORDER_BAR, ORDER_ANCHOR = 10, 15
 local AURA_LABEL, FURY_LABEL, GROUP_LABEL = ns.L("Aura Button"), ns.L("Righteous Fury Button"), "Aura / Class Gap"
@@ -372,9 +373,9 @@ end
 
 local function Fit(preview)
     local bar = preview.bar
-    local labels, icon = Look.labels, Look.icons and Look.IconSize()
-    local below = labels and not Look.vertical and (icon and icon + ICON_DROP or LABEL_ROOM) or 0
-    local side = labels and Look.vertical and (icon and icon + ICON_SIDE or LABEL_SIDE) or 0
+    local room = Look.LabelRoom()
+    local below = Look.vertical and 0 or room
+    local side = Look.vertical and room or 0
     local w, h = bar:GetWidth() + side, bar:GetHeight() + below
     local roomW = preview:GetWidth() - STAGE_MARGIN * 2
     local roomH = preview:GetHeight() - STAGE_MARGIN * 2 - TEXT_ROOM
@@ -445,17 +446,18 @@ local function PaintPreview(preview, state)
     PlaceGrip(preview.grip, editable and x > start, x, bar)
     if x > start then x = Look.Gap(x) end
     local classes = preview.paladin and B.Store().classes
+    local done = Look.Grid(x, #SAMPLE)
     for i, sample in ipairs(SAMPLE) do
         local cell = preview.cells[i]
         local gone = state == "range" and sample.far
         local key = sample.blessing
         if classes then key = classes[sample.class] end
         cell.icon:SetTexture(B.SpellIcon(key))
+        Look.Place(cell, bar, Look.Slot(x, i - 1))
         Look.Class(cell, not gone and sample.colour or nil, not gone, sample.missing, sample.left)
         Tip(cell, editable)
-        x = Look.Place(cell, bar, x)
     end
-    Look.Fit(bar, x)
+    Look.Fit(bar, done)
     Fit(preview)
     preview.note:SetText(state == "group" and S.Get("blessThemeColors") and THEMED_GROUP or NOTES[state])
     preview.hint:SetText(editable and HINT or HINT_OFF)
@@ -512,7 +514,8 @@ page:Card({
         { key = "blessShowLabels", label = "Class Labels", toggle = true, needs = On, why = BLESSINGS_OFF,
           help = "Each class's name or icon, under its button or beside it when the bar is vertical." },
         { key = "blessLabelStyle", label = "Class Label Style", choice = LABEL_STYLES, needs = LabelsOn,
-          why = LABELS_OFF, help = "The class's name, or its class icon, which fits however small the buttons are." },
+          why = LABELS_OFF,
+          help = "The class's name or icon by each button, or a small class icon on the button itself." },
         { key = "blessTimers", label = "Minutes Left", toggle = true, needs = On, why = BLESSINGS_OFF,
           help = "Minutes left on each class's shortest blessing, and on each player's." },
         ClassRows(),
@@ -539,6 +542,11 @@ page:Card({
           help = "The gap between two buttons." },
         { key = "blessGroupSpacing", label = GROUP_LABEL, slider = GROUP_SLIDER, needs = On,
           why = BLESSINGS_OFF, help = "The extra gap between your aura and Righteous Fury and the class buttons." },
+        { key = "blessPerRow", label = "Class Buttons Per Row", slider = PER_ROW_SLIDER, needs = On,
+          why = BLESSINGS_OFF,
+          help = "How many class buttons fit in a row, or a column, before the next one starts." },
+        { key = "blessFlipRows", label = "New Rows Below", toggle = true, needs = On, why = BLESSINGS_OFF,
+          help = "New rows go below the first instead of above it, or new columns left instead of right." },
         Settings.Look("bless", { text = true, size = FONT_SLIDER, keys = { FontSize = "blessTimerSize" }, needs = On,
             why = BLESSINGS_OFF }),
         Group("Colors"),
@@ -552,7 +560,7 @@ page:Card({
           help = "A class button when only players on their own blessing need theirs." },
         Group("Look"),
         { key = "blessBorder", label = "Button Border", choice = BORDERS, needs = On, why = BLESSINGS_OFF,
-          help = "The edge of every button." },
+          help = "The edge of every button; with Status Color the class buttons show their state there." },
         { label = "Bar Background", choice = BackgroundChoices, needs = On, why = BLESSINGS_OFF,
           help = "A texture behind the whole bar.",
           get = function() return S.Get("blessBackground") end,

@@ -186,6 +186,7 @@ local S = UI.ModuleSettings("qol", {
     blessBorder = "black", blessBackground = "none", blessBackgroundAlpha = 0.6, blessWindowScale = 1,
     blessColorMissing = { r = 0.97, g = 0.27, b = 0.27 }, blessColorExpiring = { r = 1, g = 0.85, b = 0.3 },
     blessColorOwn = { r = 0.35, g = 0.6, b = 1 },
+    blessPerRow = 9, blessFlipRows = false,
     blessLayout = "horizontal", blessAnchor = "UIParent", blessAnchorPoint = "BOTTOMLEFT", blessAnchorRelPoint = "TOPLEFT",
     blessX = 0, blessY = 0,
 

@@ -654,6 +654,27 @@ UI.SetMoverGrow(growerMover, "LEFT")
 grower:SetSize(60, 20)
 Flush()
 Check(Near(grower:GetRight(), 960 - 15 + 120), "growing left from there keeps the right edge where it was")
+-- One that grows in rows or columns keeps the corner it grows from: a column under the target keeps its
+-- left edge as columns are added, and a grid off the target's side keeps its bottom as rows are.
+local column, columnMover = Display("Column", 20, 60, 0, -200)
+UI.SetMoverGrow(columnMover, "TOPLEFT")
+UI.SetAnchor(columnMover, { target = "Base", side = "BOTTOM", x = -10, y = -18 })
+Flush()
+Check(Near(column:GetLeft(), 960 - 10) and Near(column:GetTop(), base:GetBottom() - 18),
+    "a column under the target: its left edge off the target's centre")
+column:SetSize(80, 60)
+Flush()
+Check(Near(column:GetLeft(), 960 - 10) and Near(column:GetTop(), base:GetBottom() - 18),
+    "a second column keeps the first where it was")
+UI.SetMoverGrow(columnMover, "BOTTOMLEFT")
+UI.SetAnchor(columnMover, { target = "Base", side = "RIGHT", x = 18, y = -10 })
+Flush()
+local columnBottom = column:GetBottom()
+column:SetSize(80, 120)
+Flush()
+Check(Near(column:GetBottom(), columnBottom) and Near(column:GetLeft(), base:GetRight() + 18),
+    "off the target's side, a row added above keeps its bottom")
+columnMover:Hide()
 local lone, loneMover = Display("Lone", 40, 20, 300, -300)
 UI.SetAnchor(loneMover, { target = "Not Loaded", side = "TOP", x = 0, y = 18 })
 Flush()

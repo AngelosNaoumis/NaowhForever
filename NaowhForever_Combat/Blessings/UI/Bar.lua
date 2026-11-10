@@ -19,8 +19,6 @@ local HOME_Y = 230
 local PREFIX, SCREEN, CENTER = "bless", "UIParent", "CENTER"
 local BUFFS_MOVER = "Buff Reminders"
 local DOCK_GAP = 18
-local SPOT = { TOPLEFT = { -1, 1 }, TOP = { 0, 1 }, TOPRIGHT = { 1, 1 }, LEFT = { -1, 0 }, CENTER = { 0, 0 },
-    RIGHT = { 1, 0 }, BOTTOMLEFT = { -1, -1 }, BOTTOM = { 0, -1 }, BOTTOMRIGHT = { 1, -1 } }
 local RESCAN_DELAY = 1
 local LANDING_WINDOW = 1
 local TICK = 3
@@ -305,7 +303,11 @@ local function HideCell(cell)
 end
 
 local function PlaceCells(byClass, x)
-    local size = Look.size
+    local size, count = Look.size, 0
+    for _, class in ipairs(CLASSES) do
+        if byClass[class] then count = count + 1 end
+    end
+    local done, i = Look.Grid(x, count), 0
     for _, class in ipairs(CLASSES) do
         local members = byClass[class]
         local cell = cells[class]
@@ -314,29 +316,18 @@ local function PlaceCells(byClass, x)
             cells[class] = cell
             cell.members = members
             B.SizeRecipient(cell.header, cell.cast, size)
-            x = Look.Place(cell, bar, x)
+            Look.Place(cell, bar, Look.Slot(x, i))
+            i = i + 1
             PrepareCell(cell)
         elseif cell then
             HideCell(cell)
         end
     end
-    return x
+    return done
 end
 
-local function FirstShift()
-    local shift = -Look.TOWARD[Look.grow] * Look.size / 2
-    if Look.vertical then return 0, shift end
-    return shift, 0
-end
-
-local function ToEdge(pos)
-    local edge = Look.EDGE[Look.grow]
-    local p, r, e = SPOT[pos.point], SPOT[pos.relPoint], SPOT[edge]
-    if not (p and r) then return end
-    local w, h = bar:GetSize()
-    return { point = edge, relPoint = CENTER,
-        x = r[1] * UIParent:GetWidth() / 2 + pos.x + (e[1] - p[1]) * w / 2,
-        y = r[2] * UIParent:GetHeight() / 2 + pos.y + (e[2] - p[2]) * h / 2 }
+local function ToCorner(pos)
+    return Look.ToCorner(pos, bar:GetSize())
 end
 
 local function PutAt(pos)
@@ -346,24 +337,25 @@ end
 
 local function Place()
     if ItemBar.Anchored(S, PREFIX) or S.Get("blessPos") then return ItemBar.Put(bar, S, PREFIX, HOME_Y) end
-    local dx, dy = FirstShift()
+    local dx, dy = Look.Shift()
     bar:ClearAllPoints()
-    bar:SetPoint(Look.EDGE[Look.grow], UIParent, "BOTTOM", dx, HOME_Y + Look.size / 2 + dy)
+    bar:SetPoint(Look.corner, UIParent, "BOTTOM", dx, HOME_Y + Look.size / 2 + dy)
 end
 
 local function Settle()
     local pos = S.Get("blessPos")
     if not pos or ItemBar.Anchored(S, PREFIX) or bar:GetWidth() == 0 then return end
-    if pos.point == Look.EDGE[Look.grow] and pos.relPoint == CENTER then return end
-    local edge = ToEdge(pos)
-    if not edge then return end
-    S.Set("blessPos", edge)
-    PutAt(edge)
+    if pos.point == Look.corner and pos.relPoint == CENTER then return end
+    local corner = ToCorner(pos)
+    if not corner then return end
+    S.Set("blessPos", corner)
+    PutAt(corner)
 end
 
 local function DockAnchor()
     Look.Read()
-    local dx = FirstShift()
+    local dx = Look.Shift()
+    if Look.vertical and Look.Hold() == Look.grow then dx = 0 end
     if Look.grow == "DOWN" then return { target = BUFFS_MOVER, side = "BOTTOM", x = dx, y = -DOCK_GAP } end
     return { target = BUFFS_MOVER, side = "TOP", x = dx, y = DOCK_GAP }
 end
@@ -422,9 +414,9 @@ function Refresh()
 end
 
 local function SavePosition(pos)
-    local edge = ToEdge(pos) or pos
-    S.Set("blessPos", edge)
-    PutAt(edge)
+    local corner = ToCorner(pos) or pos
+    S.Set("blessPos", corner)
+    PutAt(corner)
     if ItemBar.Anchored(S, PREFIX) then S.Set("blessAnchor", SCREEN) end
 end
 
@@ -618,7 +610,7 @@ function Apply()
     end
     if not bar then BuildBar() end
     Look.Read()
-    ns.UI.SetMoverGrow(bar.mover, Look.grow)
+    ns.UI.SetMoverGrow(bar.mover, Look.Hold())
     placeDue = true
     ticker = C_Timer.NewTicker(TICK, OnTick)
     Refresh()

@@ -19,19 +19,27 @@ local LABEL_DROP, LABEL_SIDE, TIMER_Y = 2, 3, 1
 local CLASS_ICON_PATH = "Interface\\Icons\\ClassIcon_"
 local CLASS_ICON_MIN, CLASS_ICON_MAX = 12, 24
 local CLASS_ICON_SHARE = 2 / 3
+local BADGE_MIN, BADGE_MAX, BADGE_SHARE, BADGE_INSET = 10, 18, 0.4, 1
+local BADGE_EDGE_LEVEL, BADGE_LEVEL = 1, 2
+local LABEL_COLUMN = 46
+local STATUS_PIXELS = 2
 local SECONDS = 60
 local ROUND = B.ROUND
 local MINUTES = "m"
 local MARK = "!"
 local BACKDROP_PAD = 4
-local EDGE = { RIGHT = "LEFT", LEFT = "RIGHT", DOWN = "TOP", UP = "BOTTOM" }
+local CORNER = { RIGHT = "BOTTOMLEFT", LEFT = "BOTTOMRIGHT", DOWN = "TOPLEFT", UP = "BOTTOMLEFT" }
+local FLIPPED_CORNER = { RIGHT = "TOPLEFT", LEFT = "TOPRIGHT", DOWN = "TOPRIGHT", UP = "BOTTOMRIGHT" }
 local TOWARD = { RIGHT = 1, LEFT = -1, DOWN = -1, UP = 1 }
+local SPOT = { TOPLEFT = { -1, 1 }, TOP = { 0, 1 }, TOPRIGHT = { 1, 1 }, LEFT = { -1, 0 }, CENTER = { 0, 0 },
+    RIGHT = { 1, 0 }, BOTTOMLEFT = { -1, -1 }, BOTTOM = { 0, -1 }, BOTTOMRIGHT = { 1, -1 } }
+local CENTER = "CENTER"
 
 local tints = { [RED] = RED, [YELLOW] = YELLOW, [BLUE] = BLUE }
 local deepAccent
 
 local Look = { RED = RED, YELLOW = YELLOW, BLUE = BLUE, ICON_BORDER = ICON_BORDER,
-    ICON_CROP = ICON_CROP, CLASS_ICON_PATH = CLASS_ICON_PATH, EDGE = EDGE, TOWARD = TOWARD }
+    ICON_CROP = ICON_CROP, CLASS_ICON_PATH = CLASS_ICON_PATH, rows = 1 }
 B.Look = Look
 
 local function Shorten(text, n)
@@ -68,6 +76,23 @@ local function ClassIcon(frame)
     return icon
 end
 
+local function BadgeSize()
+    return math.max(BADGE_MIN, math.min(BADGE_MAX, math.floor(Look.size * BADGE_SHARE + ROUND)))
+end
+
+local function Badge(frame)
+    local badge = frame.badge
+    if badge then return badge end
+    badge = frame:CreateTexture(nil, "ARTWORK", nil, BADGE_EDGE_LEVEL)
+    badge:SetColorTexture(ICON_BORDER.r, ICON_BORDER.g, ICON_BORDER.b)
+    badge.icon = frame:CreateTexture(nil, "ARTWORK", nil, BADGE_LEVEL)
+    badge.icon:SetTexture(CLASS_ICON_PATH .. frame.class)
+    badge.icon:SetTexCoord(ICON_CROP, 1 - ICON_CROP, ICON_CROP, 1 - ICON_CROP)
+    ns.PixelInset(badge.icon, 1, badge)
+    frame.badge = badge
+    return badge
+end
+
 local function Hang(region, frame)
     region:ClearAllPoints()
     if Look.vertical then
@@ -77,12 +102,19 @@ local function Hang(region, frame)
     end
 end
 
+local function NameRoom(size)
+    if not Look.vertical then return size + Look.gap end
+    if Look.rows > 1 then return LABEL_COLUMN end
+    return math.huge
+end
+
 local function PlaceLabel(frame, size)
-    local name, icon = Look.labels and not Look.icons, Look.labels and Look.icons
+    local icon, badge = Look.labels and Look.icons, Look.labels and Look.badge
+    local name = Look.labels and not (icon or badge)
     frame.label:SetShown(name)
     if name then
         Hang(frame.label, frame)
-        FitLabel(frame.label, frame.labelText, Look.vertical and math.huge or size + Look.gap, Look.font, Look.outline)
+        FitLabel(frame.label, frame.labelText, NameRoom(size), Look.font, Look.outline)
     end
     if icon then
         local classIcon, side = ClassIcon(frame), Look.IconSize()
@@ -91,6 +123,16 @@ local function PlaceLabel(frame, size)
         classIcon:Show()
     elseif frame.classIcon then
         frame.classIcon:Hide()
+    end
+    if badge then
+        local classBadge, side = Badge(frame), BadgeSize()
+        classBadge:SetSize(side, side)
+        classBadge:ClearAllPoints()
+        classBadge:SetPoint("TOPLEFT", frame, "TOPLEFT", BADGE_INSET, -BADGE_INSET)
+    end
+    if frame.badge then
+        frame.badge:SetShown(badge)
+        frame.badge.icon:SetShown(badge)
     end
 end
 
@@ -110,6 +152,7 @@ function Look.Border(frame)
     if not border then return end
     local style = S.Get("blessBorder")
     border._frame:SetShown(style ~= "none")
+    border:SetPixels(style == "status" and frame.class and STATUS_PIXELS or 1)
     local color = style == "accent" and T.accent or ICON_BORDER
     border:SetColor(color.r, color.g, color.b)
 end
@@ -146,10 +189,15 @@ end
 function Look.Read()
     Look.size, Look.gap, Look.groupGap = S.Get("blessBarSize"), S.Get("blessSpacing"), S.Get("blessGroupSpacing")
     Look.timerSize, Look.labels = S.Get("blessTimerSize"), S.Get("blessShowLabels")
-    Look.icons = S.Get("blessLabelStyle") == "icon"
+    local style, flip = S.Get("blessLabelStyle"), S.Get("blessFlipRows")
+    Look.icons, Look.badge = style == "icon", style == "button"
+    Look.status = S.Get("blessBorder") == "status"
     Look.font, Look.outline = S.Get("blessFont"), S.Get("blessOutline")
     Look.grow = ItemBar.GrowOf(S.Get("blessLayout"))
     Look.vertical = ItemBar.Vertical(Look.grow)
+    Look.perRow, Look.rows = math.max(1, S.Get("blessPerRow")), 1
+    Look.across = flip and -1 or 1
+    Look.corner = (flip and FLIPPED_CORNER or CORNER)[Look.grow]
     if S.Get("blessThemeColors") then
         deepAccent = deepAccent or { r = T.accent.r * DEEP_SHADE, g = T.accent.g * DEEP_SHADE, b = T.accent.b * DEEP_SHADE }
         tints[RED], tints[YELLOW], tints[BLUE] = T.accent, T.accentSoft, deepAccent
@@ -163,7 +211,7 @@ function Look.Tint(colour)
     return tints[colour]
 end
 
-function Look.Place(frame, row, x)
+function Look.Place(frame, row, x, y)
     local size = Look.size
     frame:SetSize(size, size)
     local font, outline, missing = Look.font, Look.outline, tints[RED]
@@ -173,23 +221,62 @@ function Look.Place(frame, row, x)
     frame.mark:SetTextColor(missing.r, missing.g, missing.b)
     if frame.label then PlaceLabel(frame, size) end
     Look.Border(frame)
-    Look.Pin(frame, row, x)
+    Look.Pin(frame, row, x, y)
     frame:Show()
     return x + size + Look.gap
 end
 
-function Look.Pin(frame, row, x)
-    local edge, step = EDGE[Look.grow], TOWARD[Look.grow] * x
+function Look.Pin(frame, row, x, y)
+    local corner, along, across = Look.corner, TOWARD[Look.grow] * x, Look.across * (y or 0)
     frame:ClearAllPoints()
     if Look.vertical then
-        frame:SetPoint(edge, row, edge, 0, step)
+        frame:SetPoint(corner, row, corner, across, along)
     else
-        frame:SetPoint(edge, row, edge, step, 0)
+        frame:SetPoint(corner, row, corner, along, across)
     end
+end
+
+function Look.LabelRoom()
+    if not Look.labels or Look.badge then return 0 end
+    if Look.vertical then return LABEL_SIDE + (Look.icons and Look.IconSize() or LABEL_COLUMN) end
+    return LABEL_DROP + (Look.icons and Look.IconSize() or LABEL_SIZE)
+end
+
+local function RowStep()
+    return Look.size + Look.gap + Look.LabelRoom()
+end
+
+function Look.Grid(start, count)
+    Look.rows = math.max(1, math.ceil(count / Look.perRow))
+    return start + math.min(count, Look.perRow) * (Look.size + Look.gap)
+end
+
+function Look.Slot(start, i)
+    local perRow = Look.perRow
+    return start + i % perRow * (Look.size + Look.gap), math.floor(i / perRow) * RowStep()
 end
 
 function Look.IconSize()
     return math.max(CLASS_ICON_MIN, math.min(CLASS_ICON_MAX, math.floor(Look.size * CLASS_ICON_SHARE + ROUND)))
+end
+
+function Look.Shift()
+    local spot = SPOT[Look.corner]
+    return spot[1] * Look.size / 2, spot[2] * Look.size / 2
+end
+
+function Look.Hold()
+    if Look.perRow < #B.CLASSES then return Look.corner end
+    return Look.grow
+end
+
+function Look.ToCorner(pos, w, h)
+    local corner = Look.corner
+    local p, r, c = SPOT[pos.point], SPOT[pos.relPoint], SPOT[corner]
+    if not (p and r) then return end
+    return { point = corner, relPoint = CENTER,
+        x = r[1] * UIParent:GetWidth() / 2 + pos.x + (c[1] - p[1]) * w / 2,
+        y = r[2] * UIParent:GetHeight() / 2 + pos.y + (c[2] - p[2]) * h / 2 }
 end
 
 function Look.Gap(x)
@@ -202,10 +289,11 @@ function Look.Width(x)
 end
 
 function Look.Fit(frame, x)
+    local across = Look.size + (Look.rows - 1) * RowStep()
     if Look.vertical then
-        frame:SetSize(Look.size, Look.Width(x))
+        frame:SetSize(across, Look.Width(x))
     else
-        frame:SetSize(Look.Width(x), Look.size)
+        frame:SetSize(Look.Width(x), across)
     end
 end
 
@@ -216,8 +304,13 @@ end
 
 function Look.Class(cell, colour, reachable, missing, shortest)
     colour = colour and tints[colour]
+    local tint = not Look.status and colour
     cell.icon:SetDesaturated(not reachable)
-    cell.icon:SetVertexColor(colour and colour.r or 1, colour and colour.g or 1, colour and colour.b or 1)
+    cell.icon:SetVertexColor(tint and tint.r or 1, tint and tint.g or 1, tint and tint.b or 1)
+    if Look.status then
+        local edge = colour or ICON_BORDER
+        cell.border:SetColor(edge.r, edge.g, edge.b)
+    end
     cell.mark:SetText(missing > 0 and missing or "")
     cell.timer:SetText(Look.Minutes(shortest))
 end

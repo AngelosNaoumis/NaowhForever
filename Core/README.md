@@ -290,7 +290,9 @@ HUD Editor
   (`lootFeedOffAlerts`); the feed stays at its own saved spot.
 - An element that grows one way (`UI.SetMoverGrow`, the Blessing Bar) keeps that edge on its
   anchor instead of its centre, along the target's side, so it widens away from where it was put.
-  Changing the way it grows takes the offset again from where it is, so it does not move.
+  Changing the way it grows takes the offset again from where it is, so it does not move. One that
+  grows two ways, in rows or columns, passes the corner it grows from (`TOPLEFT` and the rest) and keeps
+  that corner along the side instead.
   `UI.SetAnchor` anchors an element from its own settings (Reset Position), `UI.HasAnchor` asks.
 - An element its module keeps beside another (the Campfire Bag beside the Campfire) names it
   through `UI.SetMoverFollows` while it does, and counts as following it like an anchored one: a

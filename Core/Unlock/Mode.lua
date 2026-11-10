@@ -3,7 +3,8 @@ local ns = _G.NaowhForever
 
 local MAX_DEPTH = 20
 local ROUND = 0.5
-local HELD_EDGE = { RIGHT = { -1, 0 }, LEFT = { 1, 0 }, UP = { 0, -1 }, DOWN = { 0, 1 } }
+local HELD_EDGE = { RIGHT = { -1, 0 }, LEFT = { 1, 0 }, UP = { 0, -1 }, DOWN = { 0, 1 },
+    TOPLEFT = { -1, 1 }, TOPRIGHT = { 1, 1 }, BOTTOMLEFT = { -1, -1 }, BOTTOMRIGHT = { 1, -1 } }
 local NO_EDGE = { 0, 0 }
 
 local H = {}
