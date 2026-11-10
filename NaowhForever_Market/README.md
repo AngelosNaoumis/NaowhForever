@@ -48,7 +48,7 @@ NaowhForever_Market/
     Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
     Runs.lua         the Last Run page: the run's gold over time, its haul, earlier runs
     Sell.lua         the Sell page: the item, its listings, the post line, Up Next
-    Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue
+    Crafts.lua       the Crafts page: recipes, who knows them, materials, gains, Add to Queue and Add to List
     Buy.lua          the Buy page: the Shopping List, the category and search, the listings, the buy button
     Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
     Reagents.lua     the Reagents page: Professions' Reagents list under a search
@@ -216,6 +216,11 @@ NaowhForever_Market/
 - Add to Queue goes to Professions' Craft Queue with `CraftQueue.AddWithShopping`, as its own Add does,
   only for your own recipes and while its Craft Queue is on. At an auctioneer, Buy opens the Buy page on
   the first material you are short of.
+- An alt's row has Add to List instead, while Professions' Shopping List is on: the Craft Queue is for
+  crafting, which the alt does, but a bank character can buy the alt's materials. It goes through
+  `Shopping.Add`, one craft a click as the profession window's Add to List starts at, with the materials the
+  alt saved (`need`), since this character may not be able to read a recipe it does not know. Away from an
+  auctioneer it opens the Shopping List; at one the list already shows beside the auction house.
 - The Reagents page is Professions' own Reagents list (`P.ReagentList`), so both say the same; without
   Professions loaded and on, it says to turn it on. It names an alt from The Market's list
   (`marketCharacters`) when that alt is on this realm and faction.
@@ -436,3 +441,7 @@ Away from the auction house:
 52. The Market's settings page has Key Binding: set a key there and it shows the same in the game's Key
     Bindings menu (Open The Market). Away from an auctioneer the key opens The Market and a second press
     closes it; at an auctioneer the second press closes the auction house too, as the window's X does.
+53. With Professions' Shopping List on, on a character whose alt (same realm and faction) has opened a
+    profession: Crafts' All Recipes shows Add to List on the alt's rows, never Add to Queue. A click adds one
+    craft's materials, with a chat line; away from an auctioneer the Shopping List opens, at one its panel
+    shows beside the auction house. A second click makes it two crafts. Your own rows are unchanged.

@@ -1,4 +1,4 @@
--- Crafts.lua: the Crafts page: your characters' recipes priced from your last scan, what your bags can make, and queueing them.
+-- Crafts.lua: the Crafts page: your characters' recipes priced from your last scan, what your bags can make, queueing yours and listing an alt's materials.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -43,6 +43,9 @@ local TEXT_NO_BAGS = ns.L("none")
 local TEXT_QUEUE = ns.L("Add to Queue")
 local TEXT_QUEUE_TIP = ns.L("Adds %d to Professions' Craft Queue, and what it still needs to your Shopping List.")
 local TEXT_QUEUED = ns.L("Queued")
+local TEXT_LIST = ns.L("Add to List")
+local TEXT_LIST_TITLE = ns.L("Add to Shopping List")
+local TEXT_LIST_TIP = ns.L("Puts the materials for one craft on your Shopping List, to buy on this character.")
 local TEXT_BUY = ns.L("Buy")
 local TEXT_BUY_TIP = ns.L("Opens Buy with %d %s, what you are short of for one craft.")
 local TEXT_NEGATIVE = "-%s"
@@ -114,6 +117,8 @@ local function ActionClicked(button)
     if button.mode == "queue" then
         if Crafts.Queue(row, row.can) then queued[row.recipe] = true end
         Page.Draw()
+    elseif button.mode == "list" then
+        if Crafts.List(row) and ns.OpenShoppingList and not Market.Window.AtAuction() then ns.OpenShoppingList() end
     elseif button.mode == "buy" then
         local part, short = Short(row)
         if not part then return end
@@ -195,6 +200,10 @@ local function PaintAction(row, data)
         button.mode = "queue"
         ns.SetButtonText(button, TEXT_QUEUE)
         ns.Tooltip(button, TEXT_QUEUE, TEXT_QUEUE_TIP:format(data.can))
+    elseif Crafts.CanList(data) then
+        button.mode = "list"
+        ns.SetButtonText(button, TEXT_LIST)
+        ns.Tooltip(button, TEXT_LIST_TITLE, TEXT_LIST_TIP)
     elseif Market.Window.AtAuction() and Short(data) then
         local part, short = Short(data)
         button.mode = "buy"

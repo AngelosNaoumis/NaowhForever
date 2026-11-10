@@ -7794,6 +7794,7 @@ L["Only for the other faction"] = "Только для другой фракци
 L["%d of %d fish, %d of %d herbs, %d of %d dishes"] = "Рыба: %d из %d, травы: %d из %d, блюда: %d из %d"
 L["Open Field Journal"] = "Открыть полевой дневник"
 L["Writes in each fish you catch, herb you pick and dish you cook, with how many."] = "Записывает каждую пойманную рыбу, собранную траву и приготовленное блюдо, и сколько."
+L["Puts the materials for one craft on your Shopping List, to buy on this character."] = "Добавляет материалы для одного изготовления в список покупок, чтобы купить их этим персонажем."
 L["Status Color"] = "Цвет состояния"
 L["Icon on the Button"] = "Значок на кнопке"
 L["Class Buttons Per Row"] = "Кнопок классов в строке"

@@ -7934,6 +7934,7 @@ L["vendor"] = true
 L["%d, %s"] = true
 L["Adds %d to Professions' Craft Queue, and what it still needs to your Shopping List."] = true
 L["Opens Buy with %d %s, what you are short of for one craft."] = true
+L["Puts the materials for one craft on your Shopping List, to buy on this character."] = true
 L["Made by"] = true
 L["Materials %s"] = true
 L["profit %s"] = true

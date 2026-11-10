@@ -344,9 +344,15 @@ local function Estimate(materials, unpriced, vendorMaterials)
         missing > 0 and TEXT_MISSING:format(missing, unpriced) or "")
 end
 
-local function Needs(recipeID)
+local function Needs(recipeID, saved)
     local api = ns.ProfWindowAPI
     local out, owned = {}, api.Owned()
+    if saved then
+        for item, per in pairs(saved) do
+            if not owned[item] and not SkipVendor(item) then out[item] = per end
+        end
+        return out
+    end
     local ok, reagents = pcall(api.Reagents, recipeID)
     for _, r in ipairs(ok and reagents or EMPTY) do
         if not owned[r.itemID] and not SkipVendor(r.itemID) then out[r.itemID] = r.need end
@@ -385,7 +391,7 @@ local function OnChange(fn)
 end
 
 local function Add(info, crafts, got, quiet, fromQueue, defer)
-    local need = Needs(info.recipeID)
+    local need = Needs(info.recipeID, info.need)
     if next(need) == nil then return false end
     local list = List()
     local craft = list[info.recipeID]

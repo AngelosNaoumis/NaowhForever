@@ -203,6 +203,19 @@ function Crafts.Queue(row, count)
     return true
 end
 
+function Crafts.CanList(row)
+    local P = ns.Professions
+    return row.who ~= nil and P ~= nil and P.On() == true and P.Settings.Get("shoppingList") == true
+end
+
+function Crafts.List(row)
+    local P = ns.Professions
+    if not (P and Crafts.CanList(row)) then return false end
+    return P.Shopping.Add({ recipeID = row.recipe, need = row.need,
+        name = C_Item.GetItemNameByID(row.output) or C_Spell.GetSpellName(row.recipe),
+        icon = C_Item.GetItemIconByID(row.output) }, 1)
+end
+
 function Crafts.Changed()
     stale = true
 end

@@ -162,6 +162,9 @@ SL.AddItem(FLUX, 2)
 auctionBuy, _, vendorBuy = Plan()
 check("off: a manually added vendor item stays with the auction house",
     Only(auctionBuy, FLUX, 2) and Empty(vendorBuy))
+check("off: a craft added with another character's saved materials leaves out vendor ones too",
+    SL.Add({ recipeID = 30, name = "c30", need = { [FLUX] = 1, [BAR] = 3 } }, 1, nil, true)
+    and SL.List()[30].need[BAR] == 3 and SL.List()[30].need[FLUX] == nil)
 SL.Clear()
 profSettings.shoppingVendor = true
 

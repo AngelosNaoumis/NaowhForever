@@ -24,17 +24,23 @@ local makes = {
     ["Player-3"] = { [WOOL] = { recipe = 1, made = 1, need = { [LINEN] = 1 }, prof = 197 } },
 }
 local buy = { [LINEN] = 20, [THREAD] = 10 }
-local queued = {}
-local craftQueue = true
+local queued, listed = {}, {}
+local craftQueue, shoppingList, professionsOn = true, true, true
+local switches = { craftQueue = function() return craftQueue end, shoppingList = function() return shoppingList end }
 t.ns.Professions = {
+    On = function() return professionsOn end,
     Shopping = {
         Makes = function() return makes["Player-1"] end,
         MakesOf = function(guid) return makes[guid] end,
         BuyPrice = function(item) return buy[item] end,
         VendorPrice = function(item) return item == THREAD and 10 or nil end,
+        Add = function(info, count)
+            listed[#listed + 1] = { info = info, count = count }
+            return true
+        end,
     },
     CraftQueue = { AddWithShopping = function(info, count) queued[#queued + 1] = { info = info, count = count } end },
-    Settings = { Get = function(key) return key == "craftQueue" and craftQueue end },
+    Settings = { Get = function(key) return switches[key] and switches[key]() end },
 }
 t.account.marketCharacters = {
     ["Player-2"] = { name = "Alt", house = "Realm-Horde" },
@@ -92,6 +98,15 @@ Check("yours goes to Professions' Craft Queue", Cr.Queue(bolt, 3) and queued[1].
     and queued[1].count == 3 and queued[1].info.need[LINEN] == 2)
 craftQueue = false
 Check("not while its Craft Queue is off", not Cr.Queue(bolt, 3) and #queued == 1)
+Check("your own craft is queued, not listed", not Cr.CanList(bolt) and not Cr.List(bolt) and #listed == 0)
+Check("an alt's craft puts one craft's materials on your Shopping List", Cr.CanList(bandage) and Cr.List(bandage)
+    and listed[1].count == 1 and listed[1].info.recipeID == 3275 and listed[1].info.need[LINEN] == 1
+    and listed[1].info.name == "Item " .. BANDAGE)
+shoppingList = false
+Check("not while the Shopping List is off", not Cr.CanList(bandage) and not Cr.List(bandage) and #listed == 1)
+shoppingList, professionsOn = true, false
+Check("nor while Professions is off", not Cr.CanList(bandage) and #listed == 1)
+professionsOn = true
 
 Cr.NoteMe()
 Check("logging in notes this character for its alts", t.account.marketCharacters["Player-1"].name == "Me"
