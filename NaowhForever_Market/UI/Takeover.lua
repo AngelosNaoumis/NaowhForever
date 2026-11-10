@@ -8,7 +8,7 @@ local Window = Market.Window
 local AH_ADDON = "Blizzard_AuctionHouseUI"
 local STRATA = { "BACKGROUND", "LOW", "MEDIUM", "HIGH", "DIALOG", "FULLSCREEN", "FULLSCREEN_DIALOG" }
 local FALLBACK_STRATA = "HIGH"
-local BACK_W, BACK_H, BACK_DROP = 120, 22, 4
+local BACK_W, BACK_H, BACK_GAP = 120, 22, 4
 local TEXT_BACK = "The Market"
 
 local events, ah, stepped, back
@@ -51,7 +51,7 @@ local function StepAside()
     Deactivate()
     if not back then
         back = ns.Button(ah, TEXT_BACK, BACK_W, BACK_H, Return)
-        back:SetPoint("TOPRIGHT", ah, "BOTTOMRIGHT", 0, -BACK_DROP)
+        back:SetPoint("BOTTOMRIGHT", ah, "TOPRIGHT", 0, BACK_GAP)
     end
     back:Show()
 end

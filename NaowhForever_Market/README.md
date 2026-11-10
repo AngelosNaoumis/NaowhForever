@@ -66,6 +66,8 @@ NaowhForever_Market/
   size, anchored to its top left, so nothing of Blizzard's can be clicked through ours. Blizzard's tabs,
   and QoL's Scan Prices button beside them, hang under its bottom edge, so ours reaches
   `BLIZZARD_TABS` further down to cover them too.
+- The Market button that comes back from Blizzard's window sits above its top right corner, not beside
+  its tabs: another addon's tabs push Scan Prices and its scan line along that row into the corner.
 - At an auctioneer ours does not move: Blizzard's window is placed by the panel manager and cannot be
   dragged either, and moving it from addon code would fight that placing. Away from one it opens where
   you last dragged it (`marketWindow`, placed by the shared `Parts.Place`), one strata up (`HIGH`), and
@@ -355,7 +357,7 @@ In game, at an auctioneer, with The Market on:
 3. Space posts it, the next item comes up, and the bar's total counts up.
 4. Up and Down step the price to just under the next listing; typing a price makes it yours.
 5. Right-clicking a bag item picks it.
-6. The eye button shows Blizzard's window; The Market button under it comes back. Professions' Shopping
+6. The eye button shows Blizzard's window; The Market button above it comes back. Professions' Shopping
    List (and Search Favorites AH, Disenchant Deals) sits beside whichever window shows, never on top of ours.
 7. Escape or the X closes the auction house.
 8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
