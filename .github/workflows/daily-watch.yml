@@ -2,8 +2,10 @@ name: daily-watch
 
 # Daily, two checks. The watch job: is there a newer WoW Forever build than the one the Journal's data is read from
 # (BUILD in Tools/sources/wago.py)? If so, a pull request that moves to it, with the faction data
-# rebuilt, a changelog line saying the Journal's data is updated to the build (and what it
-# changes), and a report of what the build changes for the Journal (Tools/release/watch_build.py).
+# and the Journal (Tools/build/journal.py --offline: which items are in the game, so which
+# dungeons are open, come from the build's tables) rebuilt, a changelog line saying the
+# Journal's data is updated to the build (and what it changes), and a report of what the
+# build changes for the Journal (Tools/release/watch_build.py).
 # If not, and the data still carries hotfixed rewards over from an older build, whether
 # wago.tools has recorded the build's own hotfixes yet: then a pull request that rebuilds
 # from them, dropping what Blizzard removed.
@@ -172,18 +174,22 @@ jobs:
 
       # The script made the change, and says what to call it (a new build, or the build's own
       # hotfixes coming in) and its changelog line, if any. A refitted Gear Score adds one.
+      # The Journal is rebuilt on the build's tables, as the loot job rebuilds it, so its open
+      # dungeons and the items not in Forever yet follow the build.
       - name: Add the build
         if: steps.watch.outcome == 'success' && steps.watch.outputs.made == 'true'
         env:
           TITLE: ${{ steps.watch.outputs.title }}
           CHANGELOG: ${{ steps.watch.outputs.changelog }}
         run: |
+          python Tools/build/journal.py --offline > /dev/null
           nl=$'\n'
           if ! git diff --quiet -- NaowhForever_BiS/NaowhScore/Data/Formula.lua; then
             CHANGELOG="${CHANGELOG:+$CHANGELOG$nl}Changed: Gear Score: refitted to the latest Forever items."
           fi
           $PR add watch "${TITLE#chore(data): }" "$RUNNER_TEMP/watch.md" "$CHANGELOG" \
-            Tools/sources/wago.py NaowhForever_DungeonJournal/Data NaowhForever_BiS/NaowhScore/Data Shared/Data
+            Tools/sources/wago.py Tools/data/journal_cache.json NaowhForever_DungeonJournal/Data \
+            NaowhForever_BiS/NaowhScore/Data Shared/Data
 
       # The list is read every run; a quest page only for a quest new to it, a second apart.
       - name: Compare ForeverChanges' quests with ours

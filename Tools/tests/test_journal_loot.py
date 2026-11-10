@@ -440,6 +440,28 @@ class DailyWatchLog(unittest.TestCase):
             self.assertFalse(self.hidden.search(line), line)
 
 
+class DailyWatchBuild(unittest.TestCase):
+    """The watch job's move to a new build rebuilds the Journal on it, before the change is added,
+    and adds what that rebuild writes."""
+
+    def setUp(self):
+        workflow = Path(__file__).resolve().parents[2] / ".github" / "workflows" / "daily-watch.yml"
+        text = workflow.read_text(encoding="utf-8")
+        found = re.search(r"- name: Add the build\n(.*?)\n\n", text.replace("\r\n", "\n"), re.S)
+        self.assertIsNotNone(found, "the watch job has its Add the build step")
+        self.step = found.group(1)
+
+    def test_journal_rebuilt_before_the_add(self):
+        build = self.step.find("python Tools/build/journal.py --offline")
+        self.assertGreaterEqual(build, 0)
+        self.assertLess(build, self.step.index("$PR add watch"))
+
+    def test_rebuilt_files_are_added(self):
+        added = self.step[self.step.index("$PR add watch"):]
+        for path in ("Tools/data/journal_cache.json", "NaowhForever_DungeonJournal/Data", "Shared/Data"):
+            self.assertIn(path, added)
+
+
 class RefreshDrops(unittest.TestCase):
     """--refresh-drops: a boss's cached drops are read again, once a run, and today's count wins."""
 

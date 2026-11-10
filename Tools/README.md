@@ -424,7 +424,9 @@ are not included. Classic baseline values remain unverified for Forever.
   - `watch`: `release/watch_build.py`. Only reads the game's tables through wago.tools. If
     there's a new build, the change moves our faction data to it, with a report of what
     changed (new gear the Journal doesn't list yet, new dungeon floor maps in the game's map
-    table). The same change refits the Gear Score (`build/fit_naowh_score.py --write`):
+    table). The same change rebuilds the Journal on the new build (`build/journal.py --offline`),
+    so the dungeons it opens and the items it adds follow the build without waiting for wowsrc
+    to change, and refits the Gear Score (`build/fit_naowh_score.py --write`):
     `Formula.lua` changes when the constants move enough, with a changelog line (every
     player's score moves), and the report gets a "Gear Score" section (old against new, the
     fit's quality, its gates). A manual run reports it too; a failed fit only says so.
