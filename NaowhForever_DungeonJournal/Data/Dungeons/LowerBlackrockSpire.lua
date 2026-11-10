@@ -4,7 +4,6 @@ local ns = _G.NaowhForever
 ns.Journal.AddDungeon("LowerBlackrockSpire", {
     name = "Lower Blackrock Spire",
     instance = 229,
-    closed = true,
     zone = "Blackrock Mountain", area = 25, territory = "Contested",
     entrance = { map = 1427, x = 41.1, y = 95.3 },
     wings = {

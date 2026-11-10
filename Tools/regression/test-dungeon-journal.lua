@@ -1319,7 +1319,7 @@ do
     end
     check("the trash in its own section, after the bosses", trashTitle and trashItem ~= nil)
     local notYet
-    for _, wing in ipairs(DJ.Get("SunkenTemple").wings) do
+    for _, wing in ipairs(DJ.Get("RazorfenDowns").wings) do
         for _, b in ipairs(wing.bosses) do
             for _, id in ipairs(b.loot or {}) do
                 local facts = DJ.NotYet[id]
@@ -1327,16 +1327,16 @@ do
             end
         end
     end
-    check("Sunken Temple lists loot not in Forever yet", notYet ~= nil)
+    check("Razorfen Downs lists loot not in Forever yet", notYet ~= nil)
     local notYetName = DJ.NotYet[notYet][DJ.FACT.NAME]
     state.requested = {}
     state.bis[notYet] = 1
     local tipLines, setByID = {}, 0
     rawset(state.tooltip, "AddLine", function(_, text) tipLines[#tipLines + 1] = text end)
     rawset(state.tooltip, "SetItemByID", function() setByID = setByID + 1 end)
-    ns.OpenJournalWindow(DJ.Get("SunkenTemple"))
-    check("a dungeon not open says so at the top of its page", DJ.Get("SunkenTemple").closed and PageSays(DJ.CLOSED_NOTE))
-    check("its bosses list their whole loot", Has(findBoss("SunkenTemple", "Atal'alarion").loot, 10800))
+    ns.OpenJournalWindow(DJ.Get("RazorfenDowns"))
+    check("a dungeon not open says so at the top of its page", DJ.Get("RazorfenDowns").closed and PageSays(DJ.CLOSED_NOTE))
+    check("its bosses list their whole loot", Has(findBoss("RazorfenDowns", "Tuten'kash").loot, 10776))
     local row = Row(notYet)
     check("an item not in Forever yet has its row", row ~= nil)
     check("named from the Journal's data", rawget(row.name, "text"):find(notYetName, 1, true) ~= nil)
@@ -1374,7 +1374,7 @@ do
         "ScarletMonasteryCathedral", "ExcavationSite", "HallOfThanes", "RuinsOfLordaeron", "Deadmines", "Dalaran" }) do
         check("open on Forever: " .. key, not DJ.Get(key).closed)
     end
-    for _, key in ipairs({ "RazorfenDowns", "Uldaman", "Scholomance" }) do
+    for _, key in ipairs({ "RazorfenDowns", "Uldaman", "ShapersTerrace" }) do
         check("not open on Forever yet: " .. key, DJ.Get(key).closed)
     end
     -- An item the server will not send: no redraw for it, never waited on again.

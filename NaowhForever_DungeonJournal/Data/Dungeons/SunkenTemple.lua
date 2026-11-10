@@ -4,7 +4,6 @@ local ns = _G.NaowhForever
 ns.Journal.AddDungeon("SunkenTemple", {
     name = "Sunken Temple",
     instance = 109,
-    closed = true,
     zone = "Swamp of Sorrows", area = 8, territory = "Contested",
     entrance = { map = 1435, x = 69.6, y = 53.7 },
     wings = {

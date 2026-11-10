@@ -9,7 +9,7 @@ ns.Journal.AddDungeon("AlcazPrison", {
     zone = "Dustwallow Marsh", area = 15, territory = "Contested",
     wings = {
         { bosses = {
-            { npc = nil, name = "Blazeroar" },
+            { npc = 255702, name = "Blazeroar" },
         } },
     },
 })

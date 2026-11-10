@@ -206,6 +206,7 @@
                    "Morphaz", "Hazzas", "Shade of Eranikus", "Avatar of Hakkar"],
         "optional": ["Spawn of Hakkar"] } ] },
     { "key": "AlcazPrison", "name": "Alcaz Prison", "new": true,
+      "npcs": { "Blazeroar": 255702 },
       "entranceZone": 15,
       "wings": [
       { "bosses": ["Blazeroar"] } ] },
@@ -272,9 +273,15 @@
         "rare": ["Jed Runewatcher"],
         "optional": ["Lord Valthalak"] } ] },
     { "key": "BlackmawHold", "name": "Blackmaw Hold", "new": true, "open": true,
+      "npcs": { "Withermaw": 247195, "Impaan the Imprisoner": 247206, "Elder Shaman Bloodmane": 247209,
+                "Bonesnout the Unbroken": 247198, "Varrox Bleakhoof": 247234, "Blackmaw Behemoth": 247207,
+                "Unbound Spirit": 247231 },
       "entranceZone": 16,
-      "wings": [] },
+      "wings": [
+      { "bosses": ["Withermaw", "Impaan the Imprisoner", "Elder Shaman Bloodmane", "Bonesnout the Unbroken",
+                   "Varrox Bleakhoof", "Blackmaw Behemoth", "Unbound Spirit"] } ] },
     { "key": "ShapersTerrace", "name": "Shaper's Terrace", "new": true,
+      "npcs": { "Nanaya": 261809, "Snowtalon": 262297, "Cinder": 261974, "Bolt": 262081 },
       "entranceZone": 490, "entrance": { "map": 1441, "x": 12.2, "y": 66.7, "source": "the game's terrain, build 1.60.1.70124: the instance portal in The Shaper's Terrace, north of the Un'Goro map, so on the Thousand Needles map" },
       "wings": [
       { "bosses": ["Nanaya", "Snowtalon", "Cinder", "Bolt"] } ] },
