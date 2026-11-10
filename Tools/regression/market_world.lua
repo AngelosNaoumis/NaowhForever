@@ -67,7 +67,7 @@ local function Setup(opts)
         AuctionPrice = function(itemID) return t.scan[itemID], 0 end,
         AuctionPriceList = function() if t.scanAt then return t.scan, t.scanAt end end,
         AccountSettings = function() return t.account end,
-        L = function(text) return text end,
+        L = dofile("Tools/regression/locale_stub.lua").L,
         Apply = Noop,
         Shared = {
             CharacterData = function(key, create)

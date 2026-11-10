@@ -430,8 +430,8 @@ Away from the auction house:
     Detailed, the tooltip is as it was.
 49. Stack Prices on the same stack: Each Item, Whole Stack and Both change Compact's Auction and Vendor
     lines. Whole Stack and Both read "Auction x20" on the left with the stack's price on the right; Each
-    Item reads "Auction" with no count. On Detailed, Whole Stack shows Stack of N and no Market Price line, Each Item the Market Price
-    line and no Stack of N, and Both the two.
+    Item reads "Auction" with no count. On Detailed, Whole Stack shows Stack of N and no Market Price
+    line, Each Item the Market Price line and no Stack of N, and Both the two.
 50. Best Way to Sell on: the cloth reads Best: Auction (or Vendor, when a vendor pays more after the cut)
     and by how much. A green reads Best: Disenchant on an enchanter who can disenchant it when its
     materials fetch more, never on a character without Enchanting; an item with no scan price reads
