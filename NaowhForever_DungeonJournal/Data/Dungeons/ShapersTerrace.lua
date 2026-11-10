@@ -10,10 +10,10 @@ ns.Journal.AddDungeon("ShapersTerrace", {
     entrance = { map = 1441, x = 12.2, y = 66.7 },
     wings = {
         { bosses = {
-            { npc = 261809, name = "Nanaya" },
-            { npc = 262297, name = "Snowtalon" },
-            { npc = 261974, name = "Cinder" },
-            { npc = 262081, name = "Bolt" },
+            { npc = 261809, name = "Nanaya", encounters = { 3502 } },
+            { npc = 262297, name = "Snowtalon", encounters = { 3597 } },
+            { npc = 261974, name = "Cinder", encounters = { 3503 } },
+            { npc = 262081, name = "Bolt", encounters = { 3505 } },
         } },
     },
 })

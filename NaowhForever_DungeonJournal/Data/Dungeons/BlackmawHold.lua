@@ -8,13 +8,13 @@ ns.Journal.AddDungeon("BlackmawHold", {
     zone = "Azshara", area = 16, territory = "Contested",
     wings = {
         { bosses = {
-            { npc = 247195, name = "Withermaw" },
-            { npc = 247206, name = "Impaan the Imprisoner" },
-            { npc = 247209, name = "Elder Shaman Bloodmane" },
-            { npc = 247198, name = "Bonesnout the Unbroken" },
-            { npc = 247234, name = "Varrox Bleakhoof" },
-            { npc = 247207, name = "Blackmaw Behemoth" },
-            { npc = 247231, name = "Unbound Spirit" },
+            { npc = 247195, name = "Withermaw", encounters = { 3315 } },
+            { npc = 247206, name = "Impaan the Imprisoner", encounters = { 3316 } },
+            { npc = 247209, name = "Elder Shaman Bloodmane", encounters = { 3327 } },
+            { npc = 247198, name = "Bonesnout the Unbroken", encounters = { 3322 } },
+            { npc = 247234, name = "Varrox Bleakhoof", encounters = { 3334 } },
+            { npc = 247207, name = "Blackmaw Behemoth", encounters = { 3323 } },
+            { npc = 247231, name = "Unbound Spirit", encounters = { 3336 } },
         } },
     },
 })

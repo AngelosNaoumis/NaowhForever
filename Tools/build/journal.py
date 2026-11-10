@@ -46,7 +46,8 @@ journal_bosses.json has one. Its instance map ID (where wago.BUILD's Map table h
 zone's area ID go in too: the addon asks the game for both names in the player's language.
 
 Each boss gets its encounter IDs, what ENCOUNTER_END names it by (the Journal counts kills
-with it): the game's DungeonEncounter table for the Forever build, from wago.tools' export,
+with it): the game's DungeonEncounter table for wago.BUILD, from wago.tools' export, read
+each run as the item tables are (so a new dungeon's bosses get theirs once the build moves),
 joined on the dungeon's instance (its map in Data/Quests.lua, else the Map table by name) and
 the boss's name, or its encounterNames entry in journal_bosses.json. Every row of the
 5-player dungeon counts: difficulty 0 fires on any, and Forever has two "Normal"s, 1 and
@@ -81,8 +82,6 @@ fetch's pace; a run stopped part way keeps the old answer for the bosses it did 
 
 Usage: python Tools/build/journal.py [--offline | --refresh-drops]
 """
-import csv
-import io
 import json
 import re
 import sys
@@ -101,8 +100,6 @@ OUT = ROOT / "NaowhForever_DungeonJournal"
 BIS_DATA = ROOT / "NaowhForever_BiS" / "BiS" / "Data" / "BiS.lua"
 QUESTS = OUT / "Data" / "Quests.lua"
 
-BUILD = "1.60.1.70094"   # the Forever client build the game's tables are read from
-WAGO = "https://wago.tools/db2/{}/csv?build=" + BUILD
 # A 5-player dungeon's difficulties, the one firing on every difficulty first. 198 and 215
 # are the 10- and 20-player raid versions of some dungeons: never the Journal's.
 DUNGEON_DIFFICULTIES = ("0", "1", "201")
@@ -555,18 +552,6 @@ def boss_entry(name, rare, pinned, extra, items, report, listed=None, kind=None,
             "loot": loot, "model": npc_model(npc) if npc else None}
 
 
-tables = {}
-
-
-def db2_rows(table, fields):
-    """The game's table for BUILD, each row as a list of the fields asked for. Read once per
-    run and not cached: what is taken from it is, so the cache keeps only the Journal's rows."""
-    if table not in tables:
-        rows = csv.DictReader(io.StringIO(fetch(WAGO.format(table))))
-        tables[table] = [[row[f] for f in fields] for row in rows]
-    return tables[table]
-
-
 def match_name(name):
     """A name as the encounter join compares it: no case, punctuation or leading "The"."""
     name = re.sub(r"^the ", "", name.lower().replace("\u2019", "'"))
@@ -574,23 +559,23 @@ def match_name(name):
 
 
 def map_encounters(map_id):
-    """The 5-player encounters in an instance, [ID, name, difficulty]."""
-    def get():
-        rows = db2_rows("DungeonEncounter", ("ID", "Name_lang", "MapID", "DifficultyID"))
-        return [[int(e), name, d] for e, name, m, d in rows if m == map_id and d in DUNGEON_DIFFICULTIES]
-    return cached(f"encounters:{BUILD}:{map_id}", get) if map_id else []
+    """The 5-player encounters in an instance, [ID, name, difficulty], from wago.BUILD's table."""
+    import wago
+    if not map_id:
+        return []
+    return [[int(e["ID"]), e["Name_lang"], e["DifficultyID"]] for e in wago.table("DungeonEncounter")
+            if e["MapID"] == map_id and e["DifficultyID"] in DUNGEON_DIFFICULTIES]
 
 
 def instance_maps():
-    """Dungeon name -> its instance map ID: Data/Quests.lua's, else the Map table's by name."""
+    """Dungeon name -> its instance map ID: Data/Quests.lua's, else wago.BUILD's Map table's by name."""
+    import wago
     text = QUESTS.read_text(encoding="ascii")
     maps = {m.group(1): m.group(2) for m in re.finditer(r'\{ name = "((?:[^"\\]|\\.)*)", map = (\d+),', text)}
 
     def by_name(dungeon):
-        def get():
-            want = match_name(dungeon)
-            return next((m for m, name in db2_rows("Map", ("ID", "MapName_lang")) if match_name(name) == want), None)
-        return cached(f"map:{BUILD}:{dungeon}", get)
+        want = match_name(dungeon)
+        return next((m["ID"] for m in wago.table("Map") if match_name(m["MapName_lang"]) == want), None)
     return lambda dungeon: maps.get(dungeon) or by_name(dungeon)
 
 

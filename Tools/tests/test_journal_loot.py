@@ -313,6 +313,37 @@ class NewBosses(unittest.TestCase):
         self.assertAlmostEqual(kept[0]["chance"], 100 * 59 / 157)
 
 
+class Encounters(unittest.TestCase):
+    """A boss's encounter IDs come from wago.BUILD's DungeonEncounter table, the 5-player rows only."""
+
+    def setUp(self):
+        self.saved = wago.table
+        self.asked = []
+        rows = [{"ID": "3474", "Name_lang": "Zul'Alai", "MapID": "2970", "DifficultyID": "0"},
+                {"ID": "3600", "Name_lang": "Zul'Alai", "MapID": "2970", "DifficultyID": "198"},
+                {"ID": "3511", "Name_lang": "Primeval Elemental", "MapID": "2970", "DifficultyID": "0"},
+                {"ID": "1084", "Name_lang": "Onyxia", "MapID": "249", "DifficultyID": "0"}]
+
+        def table(name, build=wago.BUILD, hotfixes=True, locale=None):
+            self.asked.append((name, build))
+            return rows
+
+        wago.table = table
+
+    def tearDown(self):
+        wago.table = self.saved
+
+    def test_the_builds_rows_for_the_instance(self):
+        found = journal.map_encounters("2970")
+        self.assertEqual(found, [[3474, "Zul'Alai", "0"], [3511, "Primeval Elemental", "0"]])
+        self.assertEqual(self.asked, [("DungeonEncounter", wago.BUILD)])
+        self.assertEqual(journal.boss_encounters("Zul'Alai", {}, found), [3474])
+
+    def test_no_instance_no_encounters(self):
+        self.assertEqual(journal.map_encounters(None), [])
+        self.assertEqual(self.asked, [])
+
+
 class SharedDrops(unittest.TestCase):
     def setUp(self):
         self.saved = journal.cache, journal.npc_drops, journal.npc_model
