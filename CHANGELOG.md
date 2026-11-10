@@ -1,6 +1,26 @@
 # Changelog
 
-## Unreleased
+## 1.2.25
+
+### Added
+- Dungeon Journal: drops for The Drowned City, Blackmaw Hold (with its trash and the rare
+  Moontouched Wanderer), Alcaz Prison and Krol'dok Stronghold.
+- Dungeon Journal: Forever's new recipes and gear seen dropping from bosses in Ragefire Chasm,
+  Wailing Caverns, the Deadmines, Shadowfang Keep, Blackfathom Deeps, the Stockade, Gnomeregan,
+  Razorfen Kraul, Razorfen Downs and Scarlet Monastery's Armory.
+- Buffs & Consumables: Battle Shout Seconds Left sets how early the Battle Shout reminder shows,
+  separately from your other personal buffs.
+
+### Changed
+- Dungeon Journal: Alcaz Prison and Krol'dok Stronghold list all their bosses and show as open, and
+  The Drowned City adds Primeval Elemental and the rare Gill.
+
+### Fixed
+- Buffs & Consumables: elixirs of different stats stack, so each carried elixir stat gets its own
+  icon (up to three) until that stat is up, instead of one elixir clearing the reminder for all of
+  them.
+- The Market: the Post button no longer stays disabled on Sell after a busy auction house; the
+  search retries on its own.
 
 ## 1.2.24
 
