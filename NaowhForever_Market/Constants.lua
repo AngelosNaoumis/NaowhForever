@@ -5,6 +5,7 @@ ns.Market.C = {
     AH_CUT = 0.05,
     SILVER = 100,
     SEARCH_TIMEOUT = 5,
+    SEARCH_RETRY = 1,
     POST_TIMEOUT = 10,
     MAX_ROWS = 50,
     DURATIONS = { 1, 2, 3 },

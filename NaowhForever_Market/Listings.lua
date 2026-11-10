@@ -75,6 +75,14 @@ local function TimedOut(searchGen)
     Changed()
 end
 
+local Send
+
+local function RetryWaiting(waitGen)
+    if waitGen ~= gen or Listings.state ~= "waiting" then return end
+    Send()
+    Changed()
+end
+
 local function SendItem()
     if wanted.itemKey then
         C_AuctionHouse.SendSearchQuery(wanted.itemKey, ITEM_SORTS, true)
@@ -92,10 +100,13 @@ local function SendItem()
     return true
 end
 
-local function Send()
+function Send()
     if not wanted.itemID then return end
     if not C_AuctionHouse.IsThrottledMessageSystemReady() then
         Listings.state = "waiting"
+        gen = gen + 1
+        local waitGen = gen
+        C_Timer.After(C.SEARCH_RETRY, function() RetryWaiting(waitGen) end)
         return
     end
     gen = gen + 1

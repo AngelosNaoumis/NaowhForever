@@ -67,6 +67,19 @@ Check("a search waits for the auction house's throttle", M.Listings.state == "wa
 t.ready = true
 t.Fire("AUCTION_HOUSE_THROTTLED_SYSTEM_READY")
 Check("and goes when it is ready", M.Listings.state == "searching" and #t.searches == 3)
+t.ready = false
+M.Sell.Pick(4306)
+M.Sell.Pick(2770)
+t.ready = true
+t.RunTimers()
+Check("a missed throttle event does not leave a search waiting", M.Listings.state == "searching")
+t.ready = false
+M.Sell.Pick(4306)
+t.RunTimers()
+Check("still throttled, it keeps waiting", M.Listings.state == "waiting")
+t.ready = true
+t.RunTimers()
+Check("and goes once the throttle frees", M.Listings.state == "searching")
 local onChange, changes = M.Listings.onChange, 0
 M.Listings.onChange = function() changes = changes + 1 end
 t.Fire("AUCTION_HOUSE_THROTTLED_SYSTEM_READY")
