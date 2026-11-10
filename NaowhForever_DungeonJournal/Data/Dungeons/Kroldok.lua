@@ -5,8 +5,15 @@ ns.Journal.AddDungeon("Kroldok", {
     name = "Krol'dok Stronghold",
     instance = 3039,
     new = true,
-    closed = true,
     zone = "Riverglades", area = 16591, territory = "Contested",
     wings = {
+        { bosses = {
+            { npc = 258966, name = "Slavecrusher Grox", encounters = { 3450 }, loot = { 274996 } },
+            { npc = 258972, name = "Twilight Commander Zarmok", encounters = { 3452 }, loot = { 274998 } },
+            { npc = 259281, name = "War Handler Ashka", encounters = { 3453 } },
+            { npc = 258964, name = "Nar'gurk", encounters = { 3449 }, loot = { 275004 } },
+            { npc = 258968, name = "Overlord Mugg", encounters = { 3451 }, loot = { 275009 } },
+            { npc = 264773, name = "Bossman Toof", optional = true, loot = { 286429 } },
+        } },
     },
 })

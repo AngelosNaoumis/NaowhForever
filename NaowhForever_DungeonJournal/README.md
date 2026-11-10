@@ -215,7 +215,7 @@ The rules, in plain words:
   instance's boss loot (Scarlet Monastery's four wings are one instance), or `"open"` on it in
   `Tools/data/journal_bosses.json` says so; an item the server sends on request does not count. One
   not open says "Not open on Forever yet." at the top of its page (`closed` in its data). The
-  Drowned City is open by hand: no source has its bosses' loot yet, so there is none to count.
+  Drowned City was opened by hand before any source had its bosses' loot.
 - A boss nobody has loot for yet says so on its card. Keys and quest items are left out: the
   Journal lists gear (uncommon or better) and the recipes a boss drops (common or better).
 
@@ -418,8 +418,8 @@ the game's own tables, and what they can't settle is listed in the pull request 
   seen from above in its own textures, split by height. The game names no part of the cave, so
   those three names are ours. The arrows mark where floors meet and the two ways in from the
   hold: the overlook, and the passages under the plank funnel.
-- Blackmaw Hold has no pins: the Journal lists no bosses for it yet, so its map shows only
-  beside the world map, inside the dungeon.
+- Blackmaw Hold has no pins yet: nobody has placed its bosses with `/nf mappins`, so its map shows
+  only beside the world map, inside the dungeon.
 - The same folder contains 22 pictures assembled from map tiles in
   [keyboardturner/WoWMapUprez_Dungeons](https://github.com/keyboardturner/WoWMapUprez_Dungeons),
   commit `c8325d4583c9cdce52658e1a245963e623501dfa`. The project upscales Blizzard's
@@ -644,6 +644,16 @@ the game's own tables, and what they can't settle is listed in the pull request 
 - `english` keeps the data's name for what is matched by it: `Data/Quests.lua`'s entries, the BiS
   List's places, and the boss each looted item is saved under, so loot saved in one language is
   still found in another.
+- The Drowned City's, Blackmaw Hold's, Alcaz Prison's and Krol'dok Stronghold's drops are the ones
+  players reported to wowtbc.gg's Forever loot tables, and for Blackmaw Hold also the ones
+  conquestcapped.com's guide and QuestieDB's Forever items list (all three gave us permission),
+  placed by hand (`"add"`). They say which boss dropped an item, not how often, so these drops show
+  no chance.
+- The Forever recipes, set helms and new gear placed by hand on the older dungeons' bosses are the
+  ones QuestieDB's Forever items (from Wowhead Forever) and its players' loot traces, or EG Link's
+  recorded loot and rolls, tie to that boss: only items new in Forever, seen on fewer than three
+  bosses and on no other creature, so a random world drop or one Forever no longer drops is not
+  put back. They show no chance either.
 
 ## Checking
 

@@ -8,8 +8,8 @@ ns.Journal.AddDungeon("Gnomeregan", {
     entrance = { map = 1426, x = 24.0, y = 40.0 },
     wings = {
         { bosses = {
-            { npc = 7361, name = "Grubbis", model = 144378, encounters = { 2768 }, loot = { 9445, 274042, 274043, 6400, 6407, 12039 }, chance = { 8, 0, 0, 0, 0, 0 } },
-            { npc = 7079, name = "Viscous Fallout", model = 5497, encounters = { 2769 }, loot = { 9454, 9452, 9453, 6388, 7330 }, chance = { 60, 20, 18, 0, 0 } },
+            { npc = 7361, name = "Grubbis", model = 144378, encounters = { 2768 }, loot = { 9445, 274042, 274043, 6400, 6407, 12039, 252515 }, chance = { 8, 0, 0, 0, 0, 0, 0 } },
+            { npc = 7079, name = "Viscous Fallout", model = 5497, encounters = { 2769 }, loot = { 9454, 9452, 9453, 6388, 7330, 253980 }, chance = { 60, 20, 18, 0, 0, 0 } },
             { npc = 6235, name = "Electrocutioner 6000", model = 6915, encounters = { 2770 }, loot = { 9448, 9447, 9446, 4073, 7330, 252822 }, chance = { 40, 32, 16, 0, 0, 0 } },
             { npc = 6229, name = "Crowd Pummeler 9-60", model = 6774, encounters = { 2771 }, loot = { 9450, 9449, 274068, 5007, 6396, 9819, 10408, 274049 }, chance = { 65, 33, 0, 0, 0, 0, 0, 0 } },
             { npc = 7800, name = "Mekgineer Thermaplugg", model = 6980, encounters = { 2772 }, loot = { 9461, 9458, 9459, 9492, 4717 }, chance = { 33, 32, 18, 10, 0 } },

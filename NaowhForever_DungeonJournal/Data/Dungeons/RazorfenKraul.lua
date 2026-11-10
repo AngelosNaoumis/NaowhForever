@@ -8,8 +8,8 @@ ns.Journal.AddDungeon("RazorfenKraul", {
     entrance = { map = 1413, x = 42.2, y = 89.8 },
     wings = {
         { bosses = {
-            { npc = 4424, name = "Aggem Thorncurse", model = 6097, encounters = { 2774 }, loot = { 6681, 274158, 274159, 252820, 252822, 252455, 252456, 252512, 252515 }, chance = { 53, 0, 0, 0, 0, 0, 0, 0, 0 } },
-            { npc = 4428, name = "Death Speaker Jargba", model = 4644, encounters = { 2775 }, loot = { 6685, 6682, 2816, 252820, 252822, 252512, 252515 }, chance = { 44, 42, 10, 0, 0, 0, 0 } },
+            { npc = 4424, name = "Aggem Thorncurse", model = 6097, encounters = { 2774 }, loot = { 6681, 274158, 274159, 252820, 252822, 251376, 252455, 252456, 252512, 252515 }, chance = { 53, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
+            { npc = 4428, name = "Death Speaker Jargba", model = 4644, encounters = { 2775 }, loot = { 6685, 6682, 2816, 252820, 252822, 252824, 252512, 252515 }, chance = { 44, 42, 10, 0, 0, 0, 0, 0 } },
             { npc = 4420, name = "Overlord Ramtusk", model = 4652, encounters = { 2776 }, loot = { 6686, 6687, 274161, 252822, 252512, 252513, 252515 }, chance = { 62, 34, 0, 0, 0, 0, 0 } },
             { npc = 4422, name = "Agathelos the Raging", model = 2450, encounters = { 2777 }, loot = { 6690, 6691, 274160, 252820, 274158, 252455, 252512, 252513 }, chance = { 63, 33, 0, 0, 0, 0, 0, 0 } },
             { npc = 4421, name = "Charlga Razorflank", model = 4642, encounters = { 2778 }, loot = { 6693, 6694, 6692, 273103, 252455, 252456, 252512, 252515 }, chance = { 35, 34, 18, 0, 0, 0, 0, 0 } },
