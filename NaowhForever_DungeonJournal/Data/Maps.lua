@@ -468,8 +468,12 @@ ns.Journal.Maps = {
         },
         pins = {},
     },
-    ShapersTerrace = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\ShapersTerrace", floors = 1,
+    ShapersTerrace = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\ShapersTerrace", floors = 2,
         imageBottom = 1,
+        names = {
+            [1] = "Shaper's Terrace",
+            [2] = "Prismatic Talus",
+        },
         pins = {},
     },
     OnyxiasLair = { image = "Interface\\AddOns\\NaowhForever_DungeonJournal\\Media\\Maps\\OnyxiasLair", floors = 1,
