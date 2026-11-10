@@ -99,7 +99,8 @@ UI/SettingsPage.lua  its card on BiS List > Character
 - Rings and trinkets need two different items for the best; a two-hander or a main and off hand,
   whichever counts more.
 - The colour ramp (`RAMP`, `{ share, r, g, b }` stops) is ours, so a little better reads a little
-  brighter; the paperdoll's and the character panel's bars draw the same stops. With Both, the
+  brighter; the paperdoll's and the character panel's bars are flat green, blue, purple and orange
+  bands (`BANDS`, `{ from, to, r, g, b }`) at the grade thresholds. With Both, the
   tooltip's share of their level's best is in gold, the colour of a level's goal on the cards.
 - Inspecting: one request at a time, `INSPECT_GAP` apart (the server drops ones that come faster),
   waited on `WAIT_FOR` seconds, only in inspect range (`CheckInteractDistance` 1) and out of combat,

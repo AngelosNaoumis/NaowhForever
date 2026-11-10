@@ -226,14 +226,11 @@ local function BarEnter(bar)
 end
 
 local function Ramp(bar, width)
-    local ramp = ns.NaowhScore.RAMP
-    for i = 1, #ramp - 1 do
-        local a, b = ramp[i], ramp[i + 1]
+    for _, band in ipairs(ns.NaowhScore.BANDS) do
         local segment = bar:CreateTexture(nil, "ARTWORK")
-        segment:SetColorTexture(1, 1, 1, 1)
-        segment:SetGradient("HORIZONTAL", CreateColor(a[2], a[3], a[4], 1), CreateColor(b[2], b[3], b[4], 1))
-        segment:SetPoint("TOPLEFT", a[1] * width, 0)
-        segment:SetSize((b[1] - a[1]) * width, BAR_H)
+        segment:SetColorTexture(band[3], band[4], band[5], 1)
+        segment:SetPoint("TOPLEFT", band[1] * width, 0)
+        segment:SetSize((band[2] - band[1]) * width, BAR_H)
     end
 end
 

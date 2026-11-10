@@ -186,6 +186,7 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
         Best = function() return 58.8 end,
         Grade = function(score) return score / 58.8 end,
         RAMP = { { 0, 0.6, 0.6, 0.6 }, { 1, 1, 0.5, 0 } },
+        BANDS = { { 0, 1, 1, 0.5, 0 } },
         COMPARE = { LEVEL = "level", BOTH = "both", MAX = "max" },
         Text = tostring,
         Remember = function(guid, score) remembered[guid] = score end,

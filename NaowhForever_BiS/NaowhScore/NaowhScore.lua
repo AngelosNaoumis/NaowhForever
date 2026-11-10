@@ -47,6 +47,10 @@ local RAMP = {
     { 0.88, 0.82, 0.32, 0.88 }, { 0.94, 1.00, 0.66, 0.25 }, { 1.00, 1.00, 0.50, 0.00 },
 }
 local RAMP_SHARE, RAMP_R, RAMP_G, RAMP_B = 1, 2, 3, 4
+local BANDS = {
+    { 0.00, 0.45, 0.12, 1.00, 0.00 }, { 0.45, 0.65, 0.00, 0.44, 0.87 },
+    { 0.65, 0.95, 0.64, 0.21, 0.93 }, { 0.95, 1.00, 1.00, 0.50, 0.00 },
+}
 
 local TOTAL = 0
 for _, slot in ipairs(ORDER) do TOTAL = TOTAL + Score.SLOTS[slot] end
@@ -145,6 +149,7 @@ end
 
 Score.GRADES = GRADES
 Score.RAMP = RAMP
+Score.BANDS = BANDS
 Score.COMPARE = COMPARE
 
 function Score.Of(read)
