@@ -160,15 +160,15 @@ J.QuestData = {
         { 97196, "The Coldbringer's Eye", 34, "H", true, "TBD" },
     } },
     { name = "The Drowned City", map = 2970, levels = { 35, 40 }, quests = {
-        { 95775, "The Drowned City", 30, "H", true, "TBD" },
-        { 95776, "The Only Good Brinescale...", 30, "H", true, "TBD" },
+        { 95775, "The Drowned City", 30, "H", true, "Stranglethorn Vale, Grom'gol Base Camp - Kin'weelay (32.3, 27.7)", 1434, 32.3, 27.7 },
+        { 95776, "The Only Good Brinescale...", 30, "H", true, "Stranglethorn Vale, Grom'gol Base Camp - Commander Aggro'gosh (32.2, 28.9)", 1434, 32.2, 28.9 },
         { 96774, "Ancient Gurubashi Idol", 30, "H", true, "Mulgore - Mazu'kon (32.4, 20.6)", 1412, 32.4, 20.6 },
-        { 95770, "Locating the Lost City", 30, "H", true, "TBD" },
+        { 95770, "Locating the Lost City", 30, "H", true, "Stranglethorn Vale, Grom'gol Base Camp - Kin'weelay (32.3, 27.7)", 1434, 32.3, 27.7 },
         { 95788, "Magics of the Drowned City", 30, "A", true, "TBD" },
         { 95787, "Take Two With Water", 30, "A", true, "Hillsbrad Foothills, Southshore - Loremaster Dibbs (50.6, 57.1)", 1424, 50.6, 57.1 },
-        { 97130, "Ancient Gurubashi Secrets", 34, "A", true, "TBD" },
-        { 95789, "Shady Saltseers", 34, "B", true, "TBD" },
-        { 95791, "The Saltseer Captain", 34, "B", true, "TBD" },
+        { 97130, "Ancient Gurubashi Secrets", 34, "A", true, "Alterac Mountains - Archmage Timear (15.4, 74)", 1416, 15.4, 74.0 },
+        { 95789, "Shady Saltseers", 34, "B", true, "Stranglethorn Vale, Booty Bay - Krazek (27, 77.2)", 1434, 27.0, 77.2 },
+        { 95791, "The Saltseer Captain", 34, "B", true, "Stranglethorn Vale, Booty Bay - Krazek (27, 77.2)", 1434, 27.0, 77.2 },
     } },
     { name = "Uldaman", map = 70, levels = { 41, 51 }, quests = {
         { 2342, "Reclaimed Treasures", 33, "H", true, "Undercity, Center - Patrick Garrett (62.3, 48.6)", 1458, 62.3, 48.6 },
@@ -188,7 +188,7 @@ J.QuestData = {
     } },
     { name = "Krol'dok Stronghold", map = 3039, levels = { 40, 45 }, quests = {
         { 94982, "Eye of Mugg", 40, "A", true, "TBD; hand it in to Commander Brant" },
-        { 94984, "Tome of Twilight", 39, "B", true, "TBD", alt = { 94972 } },
+        { 94984, "Tome of Twilight", 39, "B", true, "Riverglades - Ashe Amberhall for the Alliance (66.7, 81), Tran'gul for the Horde (59.4, 44.2)", alt = { 94972 } },
         { 96771, "Vengeance of the Highborne", 37, "A", true, "TBD" },
     } },
     { name = "Zul'Farrak", map = 209, levels = { 44, 54 }, quests = {

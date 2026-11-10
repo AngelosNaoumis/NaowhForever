@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Added
+- Dungeon Journal: 22 more boss drops for The Drowned City, Krol'dok Stronghold, Blackmaw Hold and
+  Alcaz Prison (War Handler Ashka had none), and quest givers for The Drowned City, Krol'dok
+  Stronghold's Tome of Twilight and Ancient Gurubashi Secrets.
+
 ## 1.2.25
 
 ### Added
