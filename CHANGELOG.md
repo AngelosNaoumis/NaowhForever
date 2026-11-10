@@ -1,6 +1,59 @@
 # Changelog
 
-## Unreleased
+## 1.2.22
+
+### Added
+- Dungeon map: Shaper's Terrace has its second level, the Prismatic Talus, and its first level is
+  Santiago Reyes's latest version.
+- Blessings: Class Buttons Per Row on the Blessing Bar card puts the class buttons in rows, or
+  columns on a vertical bar, and New Rows Below stacks them downward.
+- Blessings: Button Border has Status Color, which shows a class button's state on its edge and
+  keeps the blessing icon clear.
+- Blessings: Class Label Style has Icon on the Button, a small class icon in the corner of each
+  class button.
+- Professions: Make Your Own Reagents (Settings > Professions > Buying and Selling, with the
+  Shopping List on) prices and plans the reagents you can craft, such as Bolt of Woolen Cloth from
+  Wool Cloth, as made from their parts in Crafting Profit and on the Shopping List.
+- The Market: on Crafts, an alt's recipe has Add to List, which puts its materials on this
+  character's Shopping List to buy without relogging.
+- Professions: Your Alts' Professions (Professions settings, Buying and Selling): an Alts button on
+  the profession window opens your other characters' professions on this realm and faction, so you
+  can put their recipes' materials on your Shopping List without logging over. Each character needs
+  to open its professions once with it on.
+- QoL: Prices for Other Addons (Loot & Items, Auction Prices). With it on and Auctionator not
+  installed, addons that read Auctionator's prices get Naowh Forever's.
+- Professions: Plan by Best Sale Price, under Skill-up Plan in Professions settings, costs each
+  craft at the best of its vendor, auction house (10 or more auctions up) and disenchant value.
+- Options window: a Home page with a button for every module window and the features for your class.
+- Total Craft Timer: a pip between each craft in the batch, dark once that craft is done.
+- Bank Marker in QoL > Loot & Items lets you mark bag items for your character bank and deposit them
+  automatically or after confirmation.
+
+### Changed
+- The Market: Compact tooltips show a stack's count beside Auction and Vendor ("Auction x7"), so the
+  prices line up on the right.
+- Options window: the sidebar is now Home and 13 categories (Interface, Character & Gear, Leveling &
+  Training, Action Bars & Macros, Buffs & Consumables, Quests & Exploration, Map & Travel,
+  Professions, Auction House, Bags, Loot & Mail, Combat, Dungeons & Groups and PvP), each with an
+  Overview and a tab per page, instead of a row per module.
+- Options window: each module's switch and slash command are on its own card at the top of its
+  settings; a module that is off shows its card where its settings would be.
+- AuraBuffs is now Buff Reminders, Journeys is Route Planner (Journeys), Glimmer is Object
+  Highlights (Glimmer) and Scout is Creature Abilities (Scout); searching the old names still finds
+  them.
+- On OpenMap's seamless map, Zone Levels and Fishing Levels leave the hovered zone's levels to
+  OpenMap's own label, and Unexplored Areas is off there (OpenMap's map covers it).
+
+### Fixed
+- The Market: an alt's Add to List on Crafts uses the recipe's current materials, and hides when
+  there is nothing left to buy.
+- The Market: with other auction house tabs added, The Market button no longer overlaps Scan Prices
+  on Blizzard's window; it now sits above the window's top right corner.
+- World map pins with OpenMap's seamless map: quest givers, rares, town pins, gathered herbs and
+  ore, library books, Sleeping Bag steps, entrances and Skyborne spots now show for the zones beside
+  the one you look at, and no longer vanish and come back as you pan.
+- Glimmer: gathered herb and ore nodes are recorded and pinned on the map again, including with the
+  Gamepad interface style. (thanks neopterygii)
 
 ## 1.2.21
 
