@@ -141,8 +141,11 @@ local function Session(settings, opts)
             return game.loot or false, game.canLoot or false
         end,
         UnitIsUnit = function(unit) return unit ~= "nameplate9" end,
-        GetNumLootItems = function() return 1 end,
-        GetLootSourceInfo = function() return game.lootFrom or game.guid end,
+        GetNumLootItems = function() return game.lootSlots and #game.lootSlots or 1 end,
+        GetLootSourceInfo = function(slot)
+            if game.lootSlots then return unpack(game.lootSlots[slot]) end
+            return game.lootFrom or game.guid
+        end,
         SetUnitCursorTexture = function(texture, _, _, lowPriority)
             local cursor = game.cursor
             if game.cursorLow and not lowPriority then cursor = nil end
@@ -781,24 +784,26 @@ end
 do
     local g = Session({ enabled = true, gatheredPins = true })
     g.Login()
+    check("gathered nodes listen when loot data is ready", Listening(g, "LOOT_READY") and not Listening(g, "LOOT_OPENED"))
     check("gathered pins alone do not load the spot data", g.dataLoaded == nil)
     g.game.guid, g.game.near, g.game.px, g.game.py = GUID(COPPER), true, 0.501, 0.519
     g.game.lootFrom = "Creature-0-1-2-3-99-0000000001"
-    g.Fire("LOOT_OPENED")
+    g.Fire("LOOT_READY")
     check("a corpse looted beside a vein is not a gather", g.account.glimmerGathered == nil)
     g.game.lootFrom = nil
-    g.Fire("LOOT_OPENED")
+    g.Fire("LOOT_READY")
     local map = g.account.glimmerGathered and g.account.glimmerGathered[1429]
     local entry = map and map["1731:501:519"]
     check("a gathered vein is noted where you stand", entry ~= nil and entry.count == 1)
-    g.Fire("LOOT_OPENED")
+    g.Fire("LOOT_READY")
     check("the same loot window opened again counts once", entry.count == 1)
     g.game.guid, g.game.px, g.game.py = "GameObject-0-1-2-3-1731-0000ABCDF0", 0.503, 0.517
-    g.Fire("LOOT_OPENED")
+    g.Fire("LOOT_READY")
     check("the node grown back counts on the same pin", entry.count == 2)
-    g.game.near = false
-    g.Fire("LOOT_OPENED")
-    check("not while out of reach", entry.count == 2)
+    g.game.guid, g.game.near = nil, false
+    g.game.lootFrom = "GameObject-0-1-2-3-1731-0000ABCDF1"
+    g.Fire("LOOT_READY")
+    check("successful loot records without a soft target", entry.count == 3)
     g.game.mapShown = true
     g.provider:RefreshAllData()
     check("on the world map", #g.game.pins == 1 and g.game.pins[1] == entry)
@@ -808,6 +813,35 @@ do
     g.Set("ore", false)
     g.provider:RefreshAllData()
     check("ore off: not on the map", #g.game.pins == 0)
+end
+
+do
+    local g = Session({ enabled = true, gatheredPins = true })
+    g.Login()
+    g.env.UnitGUID = function() error("recording must not depend on a soft target") end
+    g.game.lootSlots = { { "Creature-0-1-2-3-1731-0000ABCDEF", 1 } }
+    g.Fire("LOOT_READY")
+    check("ore from a corpse is not a gathered vein", not g.account.glimmerGathered)
+    g.game.lootSlots = { { "GameObject-0-1-2-3-999999-0000ABCDEF", 1 } }
+    g.Fire("LOOT_READY")
+    check("unknown objects are not gathered nodes", not g.account.glimmerGathered)
+    local secret = GUID(COPPER)
+    g.env.issecretvalue = function(value) return value == secret end
+    g.game.lootSlots = { { secret, 1 } }
+    g.Fire("LOOT_READY")
+    check("secret loot sources are ignored", not g.account.glimmerGathered)
+    g.env.issecretvalue = nil
+    g.game.lootSlots = { { "Creature-0-1-2-3-99-0000ABCDEF", 1 },
+        { "GameObject-0-1-2-3-999999-0000ABCDEF", 1, GUID(COPPER), 2 } }
+    g.Fire("LOOT_READY")
+    local nodes = g.account.glimmerGathered and g.account.glimmerGathered[1429]
+    local copper = nodes and nodes["1731:500:500"]
+    check("known node in later slot and source pair records without interact key", copper and copper.count == 1)
+    g.Fire("LOOT_READY")
+    check("multiple loot slots and repeated readiness count a node once", copper.count == 1)
+    g.game.lootSlots = { { GUID(1618), 1 } }
+    g.Fire("LOOT_READY")
+    check("herb loot also records without a soft target", nodes["1618:500:500"].count == 1)
 end
 
 -- A look setting repaints the lit effect without starting it over; a nameplate that is not the soft target
@@ -901,7 +935,7 @@ do
     local d = Session({ enabled = true, gatheredPins = true, minimapIcons = true })
     d.Login()
     d.game.guid, d.game.near, d.game.px, d.game.py = GUID(COPPER), true, 0.501, 0.519
-    d.Fire("LOOT_OPENED")
+    d.Fire("LOOT_READY")
     local map = d.account.glimmerGathered and d.account.glimmerGathered[1429]
     check("snapped to the spot it grows", map and map["1731:500:520"] ~= nil)
 end

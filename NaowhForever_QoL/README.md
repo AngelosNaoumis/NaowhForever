@@ -167,6 +167,14 @@ NaowhForever_QoL/
 
 ## Why
 
+- Glimmer records gathered nodes at LOOT_READY from known herb and ore object GUIDs in the
+  loot sources. This works without a soft-interact target or Interact Key: Gamepad mode
+  temporarily overrides SoftTargetInteract, so that target need not be available. Corpses,
+  unknown objects and secret GUIDs do not count as gathered nodes. Reopening the same node's
+  loot does not count it again; source quantities are not the number of times gathered.
+  Loot can be taken without Glimmer receiving LOOT_OPENED, so waiting for the window event
+  can miss a vein entirely. Only one gathered source is recorded for a loot window.
+
 - Under Forever's Gamepad interface style (`ns.GamepadStandDown()`) the features that hook, move or
   add to the game's own windows stay off and their settings say why: Zone Info and the Town Pins
   button on the world map, the Map Window, Type DELETE For You, Auto-Accept Layer Swap, Saved Quest

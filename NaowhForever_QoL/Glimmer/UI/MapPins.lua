@@ -11,6 +11,7 @@ local OpenMap = ns.Shared.OpenMap
 local TEMPLATE = "NaowhForeverGatheredPinTemplate"
 local PIN_SCALE = 0.5
 local PERCENT = 100
+local LOOT_SOURCE_STRIDE = 2
 local EMPTY = {}
 local OWN_KEYS = { enabled = true, gatheredPins = true, gatheredPinSize = true, ore = true, herb = true,
     myProfessions = true, skillColors = true, oreColor = true, herbColor = true }
@@ -20,7 +21,6 @@ local TEXT_WAYPOINT = ns.L("Click for a waypoint (again to remove it).")
 
 local provider = CreateFromMixins(MapCanvasDataProviderMixin)
 local added, events, lastGUID
-local read = {}
 
 NaowhForeverGatheredPinMixin = CreateFromMixins(MapCanvasPinMixin)
 
@@ -103,21 +103,28 @@ function provider:RefreshAllData()
     for _, mapID in ipairs(OpenMap.Maps(map)) do AddGathered(map, mapID) end
 end
 
-local function FromNode(guid)
-    for slot = 1, GetNumLootItems() do
-        local source = GetLootSourceInfo(slot)
-        if source and G.Plain(source) and source == guid then return true end
+local function GatheredSource(...)
+    for i = 1, select("#", ...), LOOT_SOURCE_STRIDE do
+        local guid = select(i, ...)
+        if G.Plain(guid) and type(guid) == "string" then
+            local id = tonumber(guid:match(C.GUID_OBJECT))
+            local node = id and G.NODES[id]
+            if node and (node[1] == "ore" or node[1] == "herb") then return guid, id end
+        end
     end
-    return false
 end
 
 local function OnLoot()
-    local info = Target.Read(C.UNIT, read)
-    if not (info and info.ready and info.id and (info.category == "ore" or info.category == "herb")) then return end
-    local guid = UnitGUID(C.UNIT)
-    if not (guid and G.Plain(guid)) or guid == lastGUID or not FromNode(guid) then return end
-    lastGUID = guid
-    if Spots.Record(info.id) then Redraw() end
+    for slot = 1, GetNumLootItems() do
+        local guid, id = GatheredSource(GetLootSourceInfo(slot))
+        if guid then
+            if guid ~= lastGUID then
+                lastGUID = guid
+                if Spots.Record(id) then Redraw() end
+            end
+            return
+        end
+    end
 end
 
 local function Apply()
@@ -130,7 +137,7 @@ local function Apply()
             events = CreateFrame("Frame")
             events:SetScript("OnEvent", OnLoot)
         end
-        events:RegisterEvent("LOOT_OPENED")
+        events:RegisterEvent("LOOT_READY")
     elseif events then
         events:UnregisterAllEvents()
     end
