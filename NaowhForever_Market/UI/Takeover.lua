@@ -58,11 +58,13 @@ end
 
 local function WindowHidden(stepAside)
     if stepAside or not (ah and ah:IsShown()) then return end
-    C_AuctionHouse.CloseAuctionHouse()
+    if S.Get("openAtAuctioneer") then return C_AuctionHouse.CloseAuctionHouse() end
+    StepAside()
 end
 
 local function OnBlizzardShow()
-    Activate()
+    if S.Get("openAtAuctioneer") or not Market.On() then return Activate() end
+    StepAside()
 end
 
 local function OnBlizzardHide()

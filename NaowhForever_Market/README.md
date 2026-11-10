@@ -1,16 +1,17 @@
 # The Market
 
-Naowh's own auction house window. At an auctioneer it opens over Blizzard's: your bags most
-valuable first, the item in front of you with the auction house's live listings, a price one step
-under the cheapest of someone else's, and a post line you work through with Space (post), S (skip)
-and Up and Down (the next price step). Blizzard's own window is one button away until you leave the
-auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens the same window on Farm: the zones
+Naowh's own auction house window. At an auctioneer Blizzard's window opens as usual, with a The
+Market button above it that opens ours over it (Open at the Auctioneer opens ours first): your bags
+most valuable first, the item in front of you with the auction house's live listings, a price one step
+under the cheapest of someone else's, and a post line you work through with the Post button, or with
+Space (post), S (skip) and Up and Down (the next price step) once Post With Keys is on. Blizzard's own
+window is one button away until you leave the auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens the same window on Farm: the zones
 where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
 loop through it you can follow by waypoint. Last Run records each herb and vein you gather and draws
 the run's gold over time with its haul; what you really gather prices Farm's nodes. Crafts shows what your characters' known recipes make
 from your bags, priced from your last scan at whichever of selling, disenchanting or vendoring pays
 most, and Reagents what each reagent in them goes into, in every profession, and whether crafting it
-beats selling it. Bag Worth puts what your
+beats selling it. Bag Worth, once on, puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it, what it crafts into and, if you ask, the best way
 to sell it. A Compact style keeps only the auction, vendor and disenchant prices.
@@ -83,8 +84,12 @@ NaowhForever_Market/
 - With the Forever look, only about 27 of a rail row's 36 pixels of art are visible. A page name in the
   heading font with that note under it is as tall as that and sat high, so the name ran over the top
   edge. Those rows are `FOREVER_ROW_H` (48) tall, and the two lines sit `FOREVER_DROP` (3) lower.
-- Closing ours (its X or Escape) closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so
-  the visit ends as Blizzard's own close does.
+- Open at the Auctioneer, Post With Keys and Bag Worth start off. With ours opening first, players lost
+  Blizzard's own search, Space posted an item without meaning to, and Bag Worth's numbers on their
+  slots puzzled them.
+- With Open at the Auctioneer off, closing ours (its X or Escape) steps back to Blizzard's window. With
+  it on, closing ours closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so the visit
+  ends as Blizzard's own close does.
 - A right-click on a bag item at the auction house goes to Blizzard's `SetPostItem`. The Market hooks
   it and picks that item on its Sell page; Blizzard's window still takes it too, out of sight.
 - `PostCommodity`, `PostItem` and their Confirm calls need a hardware event, so a post only ever runs
@@ -349,17 +354,21 @@ history, Bag Worth and Best Way to Sell's verdict, `test-market-tooltip.lua` the
 `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
 `test-market-runs.lua` Last Run, `test-market-extras.lua` sales and favourites; all load the rules
 through
-`Tools/regression/market_world.lua`.
+`Tools/regression/market_world.lua`. `test-market-takeover.lua` checks which window an auctioneer opens
+and what closing ours does.
 In game, at an auctioneer, with The Market on:
 
-1. The Market opens over Blizzard's window with your bags in Up Next, most valuable first.
+1. Blizzard's window opens, with The Market button above it; the button opens The Market over it with
+   your bags in Up Next, most valuable first.
 2. The first item's listings fill in, and its price is one step under the cheapest that is not yours.
-3. Space posts it, the next item comes up, and the bar's total counts up.
+3. Post posts it, the next item comes up, and the bar's total counts up. With Post With Keys on, Space
+   does the same; with it off, Space does nothing in The Market.
 4. Up and Down step the price to just under the next listing; typing a price makes it yours.
 5. Right-clicking a bag item picks it.
 6. The eye button shows Blizzard's window; The Market button above it comes back. Professions' Shopping
    List (and Search Favorites AH, Disenchant Deals) sits beside whichever window shows, never on top of ours.
-7. Escape or the X closes the auction house.
+7. Escape or the X goes back to Blizzard's window. With Open at the Auctioneer on, The Market opens first
+   at an auctioneer, and Escape or the X closes the auction house.
 8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
    auction's price is the price for one (check against Blizzard's Auctions tab).
 9. Cancel asks first and cancels; Cancel Undercut cancels one per press; the list reads again.
@@ -369,7 +378,7 @@ In game, at an auctioneer, with The Market on:
 
 Away from the auction house:
 
-13. Opening your bags shows Bag Worth above them: the total, and the five most valuable items; the
+13. With Bag Worth on, opening your bags shows it above them: the total, and the five most valuable items; the
     same five are numbered on their slots, in Blizzard's bags and in EllesmereUI's.
 14. Selling or looting changes the card and the numbers.
 15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
@@ -444,7 +453,7 @@ Away from the auction house:
     Disenchant Deals rows (with Professions on). Turning one on there turns it on in QoL or Professions too.
 52. The Market's settings page has Key Binding: set a key there and it shows the same in the game's Key
     Bindings menu (Open The Market). Away from an auctioneer the key opens The Market and a second press
-    closes it; at an auctioneer the second press closes the auction house too, as the window's X does.
+    closes it; at an auctioneer the second press does what the window's X does.
 53. With Professions' Shopping List on, on a character whose alt (same realm and faction) has opened a
     profession: Crafts' All Recipes shows Add to List on the alt's rows, never Add to Queue. A click adds one
     craft's materials, with a chat line; away from an auctioneer the Shopping List opens, at one its panel

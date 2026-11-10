@@ -7827,9 +7827,11 @@ L["Reads every listing for the prices your bags are sorted by. Blizzard allows o
 L["Blizzard's Auction House"] = true
 L["Blizzard's own window, until you leave the auctioneer."] = true
 L["The Market"] = true
-L["Your bags, most valuable first, posted one key press at a time."] = true
+L["Your bags, most valuable first, priced and posted."] = true
 L["Selling"] = true
 L["How The Market posts your items at an auctioneer."] = true
+L["Open at the Auctioneer"] = true
+L["Talking to an auctioneer opens The Market instead of Blizzard's window."] = true
 L["Post With Keys"] = true
 L["Space posts the item in front of you, S skips it, Up and Down step its price."] = true
 L["How long your auctions run."] = true

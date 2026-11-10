@@ -35,7 +35,7 @@ local TEXT_OFF = ns.L("Turn on The Market in its settings to open it.")
 local PAGES = {
     { key = "farm", label = "Farm", icon = "map", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
     { key = "run", label = "Last Run", icon = "bars", tip = "Your last gathering run: its gold over time and its haul." },
-    { key = "sell", label = "Sell", icon = "coins", tip = "Your bags, most valuable first, posted one key press at a time.",
+    { key = "sell", label = "Sell", icon = "coins", tip = "Your bags, most valuable first, priced and posted.",
       auction = true },
     { key = "crafts", label = "Crafts", icon = "hammer", tip = "What your characters' recipes make from your bags, priced from your last scan." },
     { key = "buy", label = "Buy", icon = "search", tip = "Search by name or category, or pick from your Shopping List, and buy it.", auction = true },
