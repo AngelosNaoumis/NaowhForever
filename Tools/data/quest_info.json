@@ -1280,6 +1280,26 @@
   "name": "Leaders of the Fang",
   "reqlevel": 10
  },
+ "92066": {
+  "from": "ForeverChanges",
+  "name": "The Twin Bears",
+  "reqlevel": 47
+ },
+ "92069": {
+  "from": "EG Link, the server's quest data (1.60.1.70862)",
+  "name": "Claws That Rend, Tusks that Gore",
+  "reqlevel": 45
+ },
+ "92343": {
+  "from": "ForeverChanges",
+  "name": "Get to the Roots of It",
+  "reqlevel": 45
+ },
+ "92344": {
+  "from": "EG Link, the server's quest data (1.60.1.70862)",
+  "name": "Get to the Roots of It",
+  "reqlevel": 45
+ },
  "92401": {
   "name": "A Frightened Request",
   "reqlevel": 15
@@ -1482,6 +1502,26 @@
   "name": "Trouble at the Docks",
   "reqlevel": 14
  },
+ "95924": {
+  "from": "ForeverChanges",
+  "name": "Panic at the Digsite",
+  "reqlevel": 55
+ },
+ "95925": {
+  "from": "ForeverChanges",
+  "name": "Mapping the Way Forward",
+  "reqlevel": 55
+ },
+ "95926": {
+  "from": "ForeverChanges",
+  "name": "The Dark Crystal",
+  "reqlevel": 55
+ },
+ "95928": {
+  "from": "ForeverChanges",
+  "name": "Crystalline Elements",
+  "reqlevel": 55
+ },
  "95981": {
   "name": "Watching the Roads",
   "reqlevel": 10
@@ -1569,6 +1609,11 @@
   "name": "Source of Power",
   "reqlevel": 24
  },
+ "97049": {
+  "from": "ForeverChanges",
+  "name": "Essence of Seeping Slimes",
+  "reqlevel": 55
+ },
  "971": {
   "from": "EG Link, the server's quest data (1.60.1.70840)",
   "name": "Knowledge in the Deeps",
@@ -1589,6 +1634,16 @@
   "name": "The Coldbringer's Eye",
   "reqlevel": 34
  },
+ "97197": {
+  "from": "ForeverChanges",
+  "name": "Fragment of the Firelands",
+  "reqlevel": 46
+ },
+ "97198": {
+  "from": "ForeverChanges",
+  "name": "Blackmaw Magic",
+  "reqlevel": 52
+ },
  "97250": {
   "name": "Wrongly Blamed, Justly Corrected",
   "reqlevel": 18
@@ -1605,6 +1660,11 @@
  "97290": {
   "name": "Unending Torment",
   "reqlevel": 16
+ },
+ "97327": {
+  "from": "ForeverChanges",
+  "name": "Blackmaw Pouches",
+  "reqlevel": 55
  },
  "98027": {
   "name": "Gleaming Crescent Necklace",

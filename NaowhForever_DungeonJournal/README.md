@@ -326,6 +326,14 @@ the game's own tables, and what they can't settle is listed in the pull request 
   or only part of it. An item that starts a quest is the game's `ItemSparse.StartQuestID`. Quests
   no source gives a start for and the server has no data on (When Dreams Turn to Nightmares,
   Waking Naralex, the second Unfinished Gordok Business) are left out.
+- The quests ForeverChanges has since filed under Blackmaw Hold, Shaper's Terrace and Blackrock
+  Depths were added by hand from its quest list and pages (2026-11-10), with the server's data where EG
+  Link has them (build 1.60.1.70862: Claws That Rend, Tusks that Gore and the Alliance's Get to
+  the Roots of It). Their level is the required level, as on the other new dungeons' quests, and
+  shareable is ForeverChanges' where the server's data has none. No source has their givers yet,
+  so they start at TBD with whom their quest text says to hand them in to. Blood and Thunder,
+  filed under Blackrock Spire, is left out: it only sends you to Warlord Goretooth, and neither
+  source says which wing it is for.
 - Scarlet Monastery's four wings share one instance (189), each its own dungeon with classic's
   ranges. A quest goes under the wing it is done in: Hearts of Zeal (hearts from any wing) under
   the first, the two that kill Loksey, Herod, Mograine and Whitemane under the Cathedral.
