@@ -218,9 +218,11 @@ NaowhForever_Market/
   the first material you are short of.
 - An alt's row has Add to List instead, while Professions' Shopping List is on: the Craft Queue is for
   crafting, which the alt does, but a bank character can buy the alt's materials. It goes through
-  `Shopping.Add`, one craft a click as the profession window's Add to List starts at, with the materials the
-  alt saved (`need`), since this character may not be able to read a recipe it does not know. Away from an
-  auctioneer it opens the Shopping List; at one the list already shows beside the auction house.
+  `Shopping.Add`, one craft a click as the profession window's Add to List starts at. It reads the recipe's
+  materials live first, as the Craft Queue does, and falls back to the ones the alt saved (`need`) when this
+  character cannot read a recipe it does not know. The button shows only when the craft leaves something to
+  buy (`Shopping.HasNeeds`). Away from an auctioneer it opens the Shopping List; at one the list already
+  shows beside the auction house.
 - The Reagents page is Professions' own Reagents list (`P.ReagentList`), so both say the same; without
   Professions loaded and on, it says to turn it on. It names an alt from The Market's list
   (`marketCharacters`) when that alt is on this realm and faction.

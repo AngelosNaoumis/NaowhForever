@@ -165,6 +165,11 @@ check("off: a manually added vendor item stays with the auction house",
 check("off: a craft added with another character's saved materials leaves out vendor ones too",
     SL.Add({ recipeID = 30, name = "c30", need = { [FLUX] = 1, [BAR] = 3 } }, 1, nil, true)
     and SL.List()[30].need[BAR] == 3 and SL.List()[30].need[FLUX] == nil)
+check("off: saved materials with something left to buy count as needs", SL.HasNeeds(30, { [BAR] = 3 }))
+check("off: saved vendor-only materials leave nothing to add", not SL.HasNeeds(30, { [FLUX] = 1 }))
+recipes[31] = { need = { [ORE] = 4 } }
+check("off: a recipe this character can read uses its live materials over the saved ones",
+    SL.Add({ recipeID = 31, name = "c31", need = { [ORE] = 1 } }, 1, nil, true) and SL.List()[31].need[ORE] == 4)
 SL.Clear()
 profSettings.shoppingVendor = true
 

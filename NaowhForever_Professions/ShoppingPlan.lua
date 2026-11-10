@@ -344,29 +344,37 @@ local function Estimate(materials, unpriced, vendorMaterials)
         missing > 0 and TEXT_MISSING:format(missing, unpriced) or "")
 end
 
+local function LiveReagents(recipeID)
+    local ok, reagents = pcall(ns.ProfWindowAPI.Reagents, recipeID)
+    if ok and reagents and #reagents > 0 then return reagents end
+end
+
 local function Needs(recipeID, saved)
-    local api = ns.ProfWindowAPI
-    local out, owned = {}, api.Owned()
-    if saved then
-        for item, per in pairs(saved) do
-            if not owned[item] and not SkipVendor(item) then out[item] = per end
+    local out, owned = {}, ns.ProfWindowAPI.Owned()
+    local reagents = LiveReagents(recipeID)
+    if reagents then
+        for _, r in ipairs(reagents) do
+            if not owned[r.itemID] and not SkipVendor(r.itemID) then out[r.itemID] = r.need end
         end
         return out
     end
-    local ok, reagents = pcall(api.Reagents, recipeID)
-    for _, r in ipairs(ok and reagents or EMPTY) do
-        if not owned[r.itemID] and not SkipVendor(r.itemID) then out[r.itemID] = r.need end
+    for item, per in pairs(saved or EMPTY) do
+        if not owned[item] and not SkipVendor(item) then out[item] = per end
     end
     return out
 end
 
-local function HasNeeds(recipeID)
-    local api = ns.ProfWindowAPI
-    local owned = api.Owned()
-    local ok, reagents = pcall(api.Reagents, recipeID)
-    if not ok then return false end
-    for _, r in ipairs(reagents) do
-        if not owned[r.itemID] and not SkipVendor(r.itemID) then return true end
+local function HasNeeds(recipeID, saved)
+    local owned = ns.ProfWindowAPI.Owned()
+    local reagents = LiveReagents(recipeID)
+    if reagents then
+        for _, r in ipairs(reagents) do
+            if not owned[r.itemID] and not SkipVendor(r.itemID) then return true end
+        end
+        return false
+    end
+    for item in pairs(saved or EMPTY) do
+        if not owned[item] and not SkipVendor(item) then return true end
     end
     return false
 end

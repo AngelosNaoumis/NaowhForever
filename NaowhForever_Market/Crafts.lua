@@ -9,6 +9,7 @@ local Market = ns.Market
 local ROSTER = "marketCharacters"
 local VENDOR_PRICE = 11
 local SELL, DISENCHANT, VENDOR = "sell", "disenchant", "vendor"
+local TEXT_RECIPE = "Recipe %d"
 
 local rows, spare, byOutput, byPart = {}, {}, {}, {}
 local stale = true
@@ -206,13 +207,15 @@ end
 function Crafts.CanList(row)
     local P = ns.Professions
     return row.who ~= nil and P ~= nil and P.On() == true and P.Settings.Get("shoppingList") == true
+        and P.Shopping.HasNeeds(row.recipe, row.need)
 end
 
 function Crafts.List(row)
     local P = ns.Professions
     if not (P and Crafts.CanList(row)) then return false end
     return P.Shopping.Add({ recipeID = row.recipe, need = row.need,
-        name = C_Item.GetItemNameByID(row.output) or C_Spell.GetSpellName(row.recipe),
+        name = C_Item.GetItemNameByID(row.output) or C_Spell.GetSpellName(row.recipe)
+            or TEXT_RECIPE:format(row.recipe),
         icon = C_Item.GetItemIconByID(row.output) }, 1)
 end
 

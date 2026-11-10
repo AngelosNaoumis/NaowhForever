@@ -25,7 +25,7 @@ local makes = {
 }
 local buy = { [LINEN] = 20, [THREAD] = 10 }
 local queued, listed = {}, {}
-local craftQueue, shoppingList, professionsOn = true, true, true
+local craftQueue, shoppingList, professionsOn, hasNeeds = true, true, true, true
 local switches = { craftQueue = function() return craftQueue end, shoppingList = function() return shoppingList end }
 t.ns.Professions = {
     On = function() return professionsOn end,
@@ -34,6 +34,7 @@ t.ns.Professions = {
         MakesOf = function(guid) return makes[guid] end,
         BuyPrice = function(item) return buy[item] end,
         VendorPrice = function(item) return item == THREAD and 10 or nil end,
+        HasNeeds = function(recipeID, need) return hasNeeds and recipeID ~= nil and need ~= nil end,
         Add = function(info, count)
             listed[#listed + 1] = { info = info, count = count }
             return true
@@ -105,8 +106,10 @@ Check("an alt's craft puts one craft's materials on your Shopping List", Cr.CanL
 shoppingList = false
 Check("not while the Shopping List is off", not Cr.CanList(bandage) and not Cr.List(bandage) and #listed == 1)
 shoppingList, professionsOn = true, false
-Check("nor while Professions is off", not Cr.CanList(bandage) and #listed == 1)
-professionsOn = true
+Check("nor while Professions is off", not Cr.CanList(bandage) and not Cr.List(bandage) and #listed == 1)
+professionsOn, hasNeeds = true, false
+Check("nor when the craft has nothing left to buy", not Cr.CanList(bandage) and not Cr.List(bandage) and #listed == 1)
+hasNeeds = true
 
 Cr.NoteMe()
 Check("logging in notes this character for its alts", t.account.marketCharacters["Player-1"].name == "Me"
