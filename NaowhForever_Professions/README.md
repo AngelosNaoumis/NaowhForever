@@ -77,6 +77,7 @@ NaowhForever_Professions/
     OrderPanel.lua     the order controls and the order column (P.OrderPanel)
     CancelForm.lua     a druid's Create, Create All and Start leave the form first (P.CancelForm)
     Detail.lua         the middle column for one of your recipes (P.Detail)
+    EnchantSlot.lua    an Enchanting recipe's item slot: pick the item and Create enchants it, no targeting cursor (P.EnchantSlot)
     Learn.lua          the middle column for an unlearned recipe, and the where-lines Detail also uses (P.Learn)
     Book.lua           the overview's profession cards (P.Book)
     Window.lua         the window: frame, title, skill bar, rank banner, search, Filter, drawing (P.Window)

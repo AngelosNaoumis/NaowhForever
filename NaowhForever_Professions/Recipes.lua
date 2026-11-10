@@ -181,7 +181,13 @@ end
 local function Craft(count)
     local info = SelectedInfo()
     if not info or count < 1 then return end
-    local ok, err = pcall(C_TradeSkillUI.CraftRecipe, info.recipeID, count)
+    local target = P.EnchantSlot.Location(info.recipeID)
+    local ok, err
+    if target then
+        ok, err = pcall(C_TradeSkillUI.CraftEnchant, info.recipeID, 1, nil, target)
+    else
+        ok, err = pcall(C_TradeSkillUI.CraftRecipe, info.recipeID, count)
+    end
     if not ok then ns.Print(TEXT_CRAFT_FAILED .. tostring(err)) end
 end
 

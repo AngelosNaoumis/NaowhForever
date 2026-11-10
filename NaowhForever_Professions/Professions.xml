@@ -49,6 +49,7 @@
     <Script file="UI\BuyRow.lua"/>
     <Script file="UI\OrderPanel.lua"/>
     <Script file="UI\CancelForm.lua"/>
+    <Script file="UI\EnchantSlot.lua"/>
     <Script file="UI\Detail.lua"/>
     <Script file="UI\Learn.lua"/>
     <Script file="UI\Book.lua"/>
