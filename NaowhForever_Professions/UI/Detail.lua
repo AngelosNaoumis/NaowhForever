@@ -131,15 +131,17 @@ end
 local function ShowCraftOrOrder(info, output, made)
     local d = win.detail
     for _, control in ipairs(win.craftControls) do control:SetShown(not W.linked) end
+    if not W.orders then
+        d.orderRow:Hide()
+        d.bringHead:Hide()
+        d.orderValue.value = nil
+        d.orderValue:Hide()
+    end
     if W.linked then
         d.profit.value = nil
         d.profit:Hide()
         return
     end
-    d.orderRow:Hide()
-    d.bringHead:Hide()
-    d.orderValue.value = nil
-    d.orderValue:Hide()
     P.Lines.RenderProfit(d.profit, info.recipeID, output, made)
 end
 
@@ -173,7 +175,7 @@ end
 local function FillTrack(info)
     local d = win.detail
     local okTrack, tracked = pcall(C_TradeSkillUI.IsRecipeTracked, info.recipeID, false)
-    d.track:SetShown(okTrack and C_TradeSkillUI.SetRecipeTracked ~= nil)
+    d.track:SetShown(not W.linked and okTrack and C_TradeSkillUI.SetRecipeTracked ~= nil)
     d.track:SetChecked(okTrack and tracked == true)
 end
 
@@ -220,7 +222,7 @@ function Detail.Render()
     local unmet = Describe(info, output, made)
     d.reagentsLabel:ClearAllPoints()
     d.reagentsLabel:SetPoint("TOPLEFT", d.desc, "BOTTOMLEFT", 0, -REAGENTS_GAP - FillSold(info))
-    if W.linked then return P.OrderPanel.RenderDetail(info) end
+    if W.orders then return P.OrderPanel.RenderDetail(info) end
     local last = FillReagents(info)
     P.BuyRow.Render(info, last)
     if ns.ShoppingListRender then ns.ShoppingListRender(info, last) end

@@ -397,7 +397,7 @@ end
 
 function OrderPanel.Render()
     local p = win and win.order
-    if not (p and W.linked) then return end
+    if not (p and W.orders) then return end
     local o = Orders.Get()
     local list = o and o.list or {}
     p.title:SetText(o and Ambiguate(o.who, "short") or "")

@@ -406,23 +406,23 @@ local function Activate(mode)
     pf:SetAlpha(0)
     win:SetAlpha(1)
     local linked = mode == "linked"
-    local wide = linked
-    local width = wide and Style.WINDOW_W + Style.ORDER_W + Style.PAD or Style.WINDOW_W
+    local orders = linked and not R.Alt()
+    local width = orders and Style.WINDOW_W + Style.ORDER_W + Style.PAD or Style.WINDOW_W
     local wasWidth = win:GetWidth()
     if not InCombatLockdown() then
         win:SetSize(math.max(width, pf:GetWidth()), math.max(Style.MIN_H, pf:GetHeight()))
     end
     if not win:IsShown() or linked ~= W.linked or mode ~= lastMode then W.stale = true end
     lastMode = mode
-    local opening = not win:IsShown() or linked ~= W.linked
+    local opening = not win:IsShown() or linked ~= W.linked or orders ~= W.orders
     if opening then
         W.selectedID, W.selectedUnlearned, W.offset = nil, nil, 0
         win:Show()
         Drag.Follow()
     end
-    W.linked = linked
+    W.linked, W.orders = linked, orders
     win.rank:SetWidth(width - Style.PAD * 2 - RANK_INSET * 2)
-    win.order:SetShown(linked)
+    win.order:SetShown(orders)
     DockTabs(true)
     if opening or win:GetWidth() ~= wasWidth then Drag.Fit() end
     local book = mode == "book"

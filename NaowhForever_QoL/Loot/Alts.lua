@@ -69,6 +69,7 @@ local function AskForget(all, realm, chars, name)
     ns.Confirm(TEXT_FORGET:format(name, realm), function()
         chars[name] = nil
         if not next(chars) then all[realm] = nil end
+        if ns.ForgetAltProfessions then ns.ForgetAltProfessions(realm, name) end
     end)
 end
 

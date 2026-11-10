@@ -8115,3 +8115,7 @@ L["Make Your Own Reagents"] = true
 L["Plans and prices every reagent you can craft as made from its parts, even when buying costs less."] = true
 L["  (made)"] = true
 L["costs ~%s more"] = true
+L["Your Alts' Professions"] = true
+L["Opens a profession of another of your characters on this realm."] = true
+L["An Alts button opens your other characters' professions, once each has opened them with this on."] = true
+L["%s's %s did not open."] = true

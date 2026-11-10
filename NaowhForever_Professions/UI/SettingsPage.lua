@@ -300,6 +300,8 @@ page:Card({
         { key = "reagentUses", label = "Reagents", toggle = true, needs = ShoppingOn,
           why = "Needs Shopping List",
           help = "A Reagents button beside Shopping List: what each reagent makes, and whether to craft or sell it." },
+        { key = "altProfessions", label = "Your Alts' Professions", toggle = true, needs = PadFree, why = PadWhy,
+          help = "An Alts button opens your other characters' professions, once each has opened them with this on." },
         Group("Vendors"),
         { key = "vendorMaterials", label = "Crafts with Vendor Buys", toggle = true, needs = On,
           why = TEXT_OFF,

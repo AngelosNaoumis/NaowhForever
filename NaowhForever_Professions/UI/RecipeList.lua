@@ -391,7 +391,7 @@ local function FillRecipe(row, info)
     row.text:SetPoint("LEFT", row.icon, "RIGHT", TEXT_GAP, 0)
     row.text:SetText(info.name)
     SetColor(row.text, Style.DIFFICULTY_RGB[info.relativeDifficulty] or T.fg)
-    row.count:SetText(W.linked and Orders.Count(info.recipeID) or FormatCraftCount(info))
+    row.count:SetText(W.orders and Orders.Count(info.recipeID) or FormatCraftCount(info))
     local shoppingCount, bags, bank, queued, auctions = 0, 0, 0, 0, 0
     local output = R.OutputItem(info.recipeID)
     if S.Get("recipeAvailability") and not W.linked then

@@ -5,6 +5,7 @@ local P = ns.Professions
 local S = P.Settings
 local W = P.State
 local Links = P.Links
+local Alts = P.Alts
 
 local NO_ITEM = 0
 local DEFAULT_BAGS = 4
@@ -28,8 +29,12 @@ local function Own()
     return true
 end
 
+local function Alt()
+    return Links.Viewing() and Alts.On() and Alts.Is(Links.GUID()) or false
+end
+
 local function Linked()
-    if not S.Get("craftOrders") then return false end
+    if not (S.Get("craftOrders") or Alt()) then return false end
     if C_TradeSkillUI.IsTradeSkillGuild() then return false end
     if IsNPCCrafting() then return false end
     return C_TradeSkillUI.IsTradeSkillLinked() == true
@@ -187,6 +192,7 @@ end
 P.Recipes = {
     waiting = waiting,
     Own = Own,
+    Alt = Alt,
     Linked = Linked,
     Profession = Profession,
     Reagents = Reagents,

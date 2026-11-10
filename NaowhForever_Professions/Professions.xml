@@ -14,6 +14,7 @@
     <Script file="Data\GatherNodes.lua"/>
     <Script file="Text.lua"/>
     <Script file="LinkView.lua"/>
+    <Script file="Alts.lua"/>
     <Script file="Recipes.lua"/>
     <Script file="Vendors.lua"/>
     <Script file="Prices.lua"/>
@@ -62,6 +63,7 @@
     <Script file="UI\ShoppingList.lua"/>
     <Script file="UI\ReagentList.lua"/>
     <Script file="UI\ReagentsWindow.lua"/>
+    <Script file="UI\Alts.lua"/>
     <Script file="UI\CraftQueue.lua"/>
     <Script file="UI\TrainFavorites.lua"/>
     <Script file="UI\FavoriteMarks.lua"/>

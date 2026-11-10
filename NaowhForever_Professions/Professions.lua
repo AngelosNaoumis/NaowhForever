@@ -9,7 +9,7 @@ local S = ns.UI.ModuleSettings("professions", {
     skillUpPlan = F.skillUpPlan, skillUpPlanLater = false, learnedRecipeVendors = F.learnedRecipeVendors,
     recipeFinder = F.recipeFinder, rankAlert = F.rankAlert, bagReagents = F.bagReagents,
     bankReagents = F.bankReagents, vendorMaterials = F.vendorMaterials,
-    craftOrders = F.craftOrders, orderTip = 10,
+    craftOrders = F.craftOrders, orderTip = 10, altProfessions = F.altProfessions,
     craftTimer = F.craftTimer, craftTimerShowCastBar = F.craftTimerShowCastBar,
     craftTimerFont = "", craftTimerFontSize = 14, craftTimerOutline = "OUTLINE", craftTimerTexture = "",
     craftTimerBgAlpha = 0.9,
@@ -39,7 +39,7 @@ ns.ProfBagChanges = 0
 
 local P = {
     Settings = S,
-    State = { offset = 0, query = "", linked = false, stale = true, listChanged = false },
+    State = { offset = 0, query = "", linked = false, orders = false, stale = true, listChanged = false },
 }
 ns.Professions = P
 

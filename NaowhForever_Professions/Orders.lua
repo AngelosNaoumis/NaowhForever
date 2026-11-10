@@ -276,7 +276,7 @@ local function Count(recipeID)
 end
 
 local function Current()
-    return W.linked and Draft(R.SelectedInfo()) or nil
+    return W.orders and Draft(R.SelectedInfo()) or nil
 end
 
 P.Orders = {

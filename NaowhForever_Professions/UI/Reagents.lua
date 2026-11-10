@@ -59,7 +59,7 @@ end
 
 local function OnCheck(self)
     local r = self:GetParent()
-    if W.linked then
+    if W.orders then
         if r.draft then r.draft.bring[r.itemID] = self:GetChecked() or nil end
         return OrderChanged()
     end
@@ -72,7 +72,7 @@ end
 
 local function OnCheckEnter(self)
     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-    if W.linked then
+    if W.orders then
         GameTooltip:AddLine(TIP_BRING, 1, 1, 1)
         GameTooltip:AddLine(TIP_BRING_HELP, T.muted.r, T.muted.g, T.muted.b, true)
         return GameTooltip:Show()

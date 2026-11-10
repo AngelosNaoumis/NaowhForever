@@ -179,6 +179,7 @@ ns.FEATURES = {
         bankReagents = false,
         vendorMaterials = false,
         craftOrders = false,
+        altProfessions = false,
         craftTimer = false,
         craftTimerShowCastBar = false,
         shoppingList = false,

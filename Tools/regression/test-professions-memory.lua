@@ -1036,6 +1036,47 @@ requirements = EMPTY
 Fire("SPELL_UPDATE_USABLE"); Advance(0.6)
 check("and met again, once more", calls.detail == d0 + 2)
 
+-- Your Alts' Professions: an alt's link shows its recipes with Add to List, not the order column.
+do
+local P = ns.Professions
+local W, links = P.State, P.Links
+local was = { settings.altProfessions, settings.shoppingList, links.Viewing, links.GUID,
+    env.C_TradeSkillUI.IsTradeSkillLinked, ns.ShoppingListRender, P.OrderPanel.RenderDetail }
+settings.altProfessions, settings.shoppingList = true, true
+env.Ambiguate = function(name) return name end
+account.profLinks = { ["Player-1-ALT"] = { name = "Alt", realm = "Realm", links = {} } }
+links.Viewing, links.GUID = function() return true end, function() return "Player-1-ALT" end
+env.C_TradeSkillUI.IsTradeSkillLinked = function() return true, "Alt" end
+local added, orderDraws = 0, 0
+ns.ShoppingListRender = function(info, last)
+    if info then added = added + 1 end
+    return was[6](info, last)
+end
+P.OrderPanel.RenderDetail = function(...) orderDraws = orderDraws + 1 return was[7](...) end
+ns.ProfWindowRefresh(true)
+Advance(0.5)
+W.selectedID = recipeIDs[1]
+added, orderDraws = 0, 0
+P.Detail.Render()
+check("an alt's link opens linked, without the order column", W.linked and not W.orders and not win.order:IsShown())
+check("its recipe shows Add to List, not the order controls", added == 1 and orderDraws == 0)
+links.GUID = function() return "Player-1-STRANGER" end
+settings.craftOrders = true
+ns.ProfWindowRefresh(true)
+Advance(0.5)
+W.selectedID = recipeIDs[1]
+added, orderDraws = 0, 0
+P.Detail.Render()
+check("a stranger's link keeps the order column", W.orders and win.order:IsShown() and orderDraws == 1 and added == 0)
+settings.craftOrders = nil
+settings.altProfessions, settings.shoppingList, links.Viewing, links.GUID,
+    env.C_TradeSkillUI.IsTradeSkillLinked, ns.ShoppingListRender, P.OrderPanel.RenderDetail = unpack(was)
+account.profLinks, env.Ambiguate = nil, nil
+ns.ProfWindowRefresh(true)
+Advance(0.5)
+check("your own profession again: neither linked nor ordering", not W.linked and not W.orders)
+end
+
 professionsFrame:Hide()
 win:Hide()
 Step()

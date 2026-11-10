@@ -3,6 +3,7 @@ local ns = _G.NaowhForever
 
 local P = ns.Professions
 local S = P.Settings
+local W = P.State
 local C = P.C
 local Shopping = P.Shopping
 local Queue = P.CraftQueue
@@ -40,6 +41,10 @@ local function QueueOn()
     return On() and S.Get("craftQueue")
 end
 
+local function Queueing()
+    return QueueOn() and not W.linked
+end
+
 local function AddCrafts()
     return math.max(1, tonumber(addRow and addRow.qty:GetText() or "") or 1)
 end
@@ -47,7 +52,7 @@ end
 local function OnAdd()
     local info = ns.ProfWindowAPI.SelectedInfo()
     if not info then return end
-    if QueueOn() then
+    if Queueing() then
         Queue.AddWithShopping(info, AddCrafts())
         ns.OpenCraftQueue()
     else
@@ -92,7 +97,7 @@ function ns.ShoppingListRender(info, last)
     if opener then opener:SetShown(On()) end
     if queueOpener then queueOpener:SetShown(QueueOn()) end
     if not addRow then return end
-    local queue = QueueOn()
+    local queue = Queueing()
     if not (On() and info and last) or (not queue and not Shopping.HasNeeds(info.recipeID)) then
         return addRow:Hide()
     end
