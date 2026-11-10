@@ -343,6 +343,10 @@ local function Repair()
 end
 
 local function SellJunk()
+    if S.Get("sellJunk") and C_MerchantFrame.IsSellAllJunkEnabled() and ns.BankMarker and ns.BankMarker.On() then
+        ns.BankMarker.SellGreys()
+        return
+    end
     if S.Get("sellJunk") and C_MerchantFrame.IsSellAllJunkEnabled()
         and C_MerchantFrame.GetNumJunkItems() > 0 then
         C_MerchantFrame.SellAllJunkItems()

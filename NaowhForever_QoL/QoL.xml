@@ -67,6 +67,7 @@
     <Script file="Loot\BagSpace.lua"/>
     <Script file="Loot\BagSpaceIgnore.lua"/>
     <Script file="Loot\ScrapMarker.lua"/>
+    <Script file="Loot\BankMarker.lua"/>
     <Script file="Loot\ScrapList.lua"/>
     <Script file="Loot\Alts.lua"/>
     <Script file="Loot\Mail.lua"/>

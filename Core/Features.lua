@@ -79,6 +79,7 @@ ns.FEATURES = {
         consumableBar = false,
         bagSpace = false,
         scrapMarker = false,
+        bankMarker = false,
         townMap = true,
         mapUnexplored = true,
         zoneLevels = false,

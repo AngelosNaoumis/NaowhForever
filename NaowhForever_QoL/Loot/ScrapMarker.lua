@@ -92,6 +92,12 @@ local TEXT_ASK = ns.L("Sell your marked junk for %s?")
 local TEXT_SUMMARY_ONE, TEXT_SUMMARY = ns.L("%d item marked"), ns.L("%d items marked")
 local TEXT_IN_BAGS = ns.L(" in your bags")
 local TEXT_BAGANATOR = "Naowh Forever Junk"
+local TEXT_CYCLE = ns.L("Cycle bag items through Junk, Bank and Unmarked with your marking modifier.")
+local BANK_TIPS = {
+    move = ns.L("Bank: deposited at the next character bank"),
+    ask = ns.L("Bank: offered at the next character bank"),
+    none = ns.L("Bank"),
+}
 
 local marks, hooked, bagOf, slotOf = {}, {}, {}, {}
 local installed, registered, events = false, false, nil
@@ -112,10 +118,22 @@ local AskPanel, Toggle, Step
 local Scrap = {}
 ns.ScrapMarker = Scrap
 
+local function BankOn()
+    return ns.BankMarker and ns.BankMarker.On()
+end
+
+local function BankMarked(id)
+    return ns.BankMarker and ns.BankMarker.IsMarked(id)
+end
+
 local function On()
     return S.Get("enabled") and S.Get("scrapMarker") == true
 end
 Scrap.On = On
+
+local function Active()
+    return On() or BankOn()
+end
 
 function Scrap.Modifier()
     return S.Get("scrapMarkerModifier") == "ctrl" and "ctrl" or "alt"
@@ -184,7 +202,7 @@ end
 
 local function RuleMatch(id)
     local wear, old = S.Get("scrapRuleWear"), S.Get("scrapRuleOld")
-    if not (wear or old) or Kept()[id] or QUEST_GEAR[id] then return nil end
+    if not (wear or old) or Kept()[id] or QUEST_GEAR[id] or BankMarked(id) then return nil end
     local _, _, _, equipLoc, _, classID, sub = GetItemInfoInstant(id)
     if (classID ~= WEAPON and classID ~= ARMOR) or NEVER_RULED[equipLoc or ""] then return nil end
     local name, _, quality, itemLevel, minLevel, _, _, _, _, _, price = GetItemInfo(id)
@@ -198,7 +216,7 @@ end
 Scrap.RuleMatch = RuleMatch
 
 local function State(id)
-    if QUEST_GEAR[id] then return nil end
+    if QUEST_GEAR[id] or BankMarked(id) then return nil end
     if AccountMarks()[id] or CharMarks()[id] then return MARKED end
     if RuleMatch(id) then return RULED end
 end
@@ -241,24 +259,27 @@ local function NewMark(button, over)
     local icon = Parts.Smooth(mark:CreateTexture(nil, "OVERLAY"))
     icon:SetAtlas(St.SCRAP_ATLAS)
     icon:SetAllPoints()
+    mark.icon = icon
     marks[button] = mark
     return mark
 end
 
 local function Paint(button, over, id)
     local mark = marks[button]
-    local state = id and showMark and State(id)
+    local bank = id and BankMarked(id)
+    local state = id and (bank or (showMark and On() and State(id)))
     if not state then
         if mark then mark:Hide() end
         return
     end
     mark = mark or NewMark(button, over)
+    if bank then mark.icon:SetTexture(St.BAG) else mark.icon:SetAtlas(St.SCRAP_ATLAS) end
     mark:SetAlpha(state == RULED and RULE_ALPHA or 1)
     mark:Show()
 end
 
 local function OnClick(button, mouse)
-    if not On() or mouse ~= "LeftButton" or IsShiftKeyDown() or GetCursorInfo() then return end
+    if not Active() or mouse ~= "LeftButton" or IsShiftKeyDown() or GetCursorInfo() then return end
     if Scrap.Modifier() == "ctrl" then
         if not IsControlKeyDown() or IsAltKeyDown() then return end
     elseif not IsAltKeyDown() or IsControlKeyDown() then
@@ -283,7 +304,7 @@ local function Slot(button, over, bag, slot, id)
 end
 
 local function GameBag(frame)
-    if not On() then return end
+    if not Active() then return end
     showMark = S.Get("scrapMarkerShow")
     for _, button in frame:EnumerateValidItems() do
         local bag, slot = button:GetBagID(), button:GetID()
@@ -315,16 +336,19 @@ end
 
 local function BaganatorPaint(mark, details)
     local button = owners[mark]
-    if not On() or not (button.GetBagID and button:GetBagID()) then return false end
+    if not Active() or not (button.GetBagID and button:GetBagID()) then return false end
     HookClick(button, BaganatorClick)
     showMark = S.Get("scrapMarkerShow")
-    local state = showMark and State(details.itemID)
+    local bank = BankMarked(details.itemID)
+    local state = bank or (showMark and On() and State(details.itemID))
     if not state then return false end
+    if bank then mark.icon:SetTexture(St.BAG) else mark.icon:SetAtlas(St.SCRAP_ATLAS) end
     mark:SetAlpha(state == RULED and RULE_ALPHA or 1)
     return true
 end
 
 local function BaganatorJunk(_, _, id)
+    if BankMarked(id) then return false end
     local _, _, quality, _, _, _, _, _, _, _, price = GetItemInfo(id)
     return (quality == POOR and price ~= nil and price > 0) or Scrap.IsScrap(id)
 end
@@ -342,6 +366,7 @@ local function Changed()
     if ns.BagSpaceRescan then ns.BagSpaceRescan() end
     if ns.UI and ns.UI.RefreshPage then ns.UI:RefreshPage(true) end
 end
+Scrap.Refresh = Changed
 
 function Scrap.OnChange(fn)
     listeners[#listeners + 1] = fn
@@ -353,6 +378,7 @@ function Scrap.Mark(id, link, bag, slot)
         ns.Print((link or (TEXT_ITEM .. id)) .. why)
         return false
     end
+    if ns.BankMarker and ns.BankMarker.HasMark and ns.BankMarker.HasMark(id) then ns.BankMarker.Clear(id) end
     local keep = ns.AccountSettings().scrapKeep
     if keep then keep[id] = nil end
     if S.Get("scrapMarkerScope") == "char" and Me() then
@@ -389,7 +415,10 @@ end
 
 function Scrap.AddAll(ids)
     local list = (S.Get("scrapMarkerScope") == "char" and Me()) and WritableChar() or Writable("scrapItems")
-    for i = 1, #ids do list[ids[i]] = true end
+    for i = 1, #ids do
+        if ns.BankMarker and ns.BankMarker.HasMark and ns.BankMarker.HasMark(ids[i]) then ns.BankMarker.Clear(ids[i]) end
+        list[ids[i]] = true
+    end
     Changed()
 end
 
@@ -402,6 +431,16 @@ end
 
 function Toggle(id, bag, slot)
     local link = GetContainerItemLink(bag, slot) or (TEXT_ITEM .. id)
+    if BankOn() then
+        if BankMarked(id) then
+            ns.BankMarker.Clear(id, link)
+        elseif not On() or State(id) then
+            ns.BankMarker.Mark(id, link)
+        elseif not Scrap.Mark(id, link, bag, slot) then
+            ns.BankMarker.Mark(id, link)
+        end
+        return
+    end
     if State(id) then Scrap.Unscrap(id, link) else Scrap.Mark(id, link, bag, slot) end
 end
 
@@ -627,9 +666,15 @@ local function OnEvent(_, event)
 end
 
 local function OnItem(tooltip, data)
-    if not On() then return end
+    if not Active() then return end
     local id = data and data.id
     if not id or (issecretvalue and issecretvalue(id)) then return end
+    if BankMarked(id) then
+        local c = T.accent
+        tooltip:AddLine(BANK_TIPS[S.Get("bankMarkerMode")] or BANK_TIPS.ask, c.r, c.g, c.b)
+        return
+    end
+    if not On() then return end
     local state = State(id)
     if not state then return end
     local c = T.accent
@@ -645,21 +690,21 @@ local function Install()
 end
 
 local function Apply()
-    local on = On()
-    if on and not installed then Install() end
+    local on, active = On(), Active()
+    if active and not installed then Install() end
     if not installed then return end
     events:UnregisterAllEvents()
     watchingSets, setsDirty = false, true
     local bags = Bags.Ellesmere()
-    if bags and on ~= registered then
-        registered = on
-        if on then
+    if bags and active ~= registered then
+        registered = active
+        if active then
             bags.RegisterItemOverlayIcon(OVERLAY, EllesmereSlot)
         else
             bags.UnregisterItemOverlayIcon(OVERLAY)
         end
     end
-    local api = on and not baganator and Bags.Baganator()
+    local api = active and not baganator and Bags.Baganator()
     if api then
         baganator = api
         api.RegisterCornerWidget(TEXT_BAGANATOR, OVERLAY, BaganatorPaint, BaganatorInit, BAGANATOR_CORNER, true)
@@ -667,11 +712,12 @@ local function Apply()
     end
     if selling and not (on and S.Get("scrapMarkerVendor") ~= "none") then Finish() end
     if AskPanel and not (on and S.Get("scrapMarkerVendor") == "ask") then AskPanel:Hide() end
-    if not on then
+    if not active then
         for _, mark in pairs(marks) do mark:Hide() end
         Changed()
         return
     end
+    if not on then Changed(); return end
     events:RegisterEvent("EQUIPMENT_SETS_CHANGED")
     watchingSets = true
     if S.Get("scrapRuleOld") then events:RegisterEvent("PLAYER_LEVEL_UP") end
@@ -689,7 +735,7 @@ local function Apply()
 end
 
 S.OnChange(function(key)
-    if key == "enabled" or key:find("^scrap") then Apply() end
+    if key == "enabled" or key:find("^scrap") or key:find("^bankMarker") then Apply() end
 end)
 hooksecurefunc(ns, "Apply", Apply)
 
@@ -709,7 +755,7 @@ end
 
 Shared.Settings.Page("QoL/Loot & Items", S):Card({
     id = "scrapMarker", name = "Junk Marker", order = 65, switch = "scrapMarker",
-    help = function() return MARK_HELP[Scrap.Modifier()] end,
+    help = function() return BankOn() and TEXT_CYCLE or MARK_HELP[Scrap.Modifier()] end,
     search = "/nf junk nf junk list alt-click ctrl-click mark junk scrap sell vendor",
     summary = Summary,
     rows = {

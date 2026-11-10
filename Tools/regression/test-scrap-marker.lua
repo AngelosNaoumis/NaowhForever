@@ -1072,4 +1072,52 @@ Set("scrapMarker", true)
 check("on again: EllesmereUI's hook taken again, its bags repainted, the icons back",
     state.overlays.NaowhForeverScrap ~= nil and state.refreshed > refreshed and Mark(marked).shown == true)
 
+local bankMarks = {}
+ns.BankMarker = {
+    On = function() return state.values.bankMarker == true end,
+    HasMark = function(id) return bankMarks[id] == true end,
+    IsMarked = function(id) return state.values.bankMarker == true and bankMarks[id] == true end,
+    Mark = function(id) Scrap.Unscrap(id); bankMarks[id] = true; Scrap.Refresh(); return true end,
+    Clear = function(id) bankMarks[id] = nil; Scrap.Refresh() end,
+}
+Set("bankMarker", true)
+Scrap.Clear()
+state.bags[0][1] = 201
+bagFrame:UpdateItems()
+Alt(cloth)
+check("cycle: unmarked to junk", Scrap.IsScrap(201) and not bankMarks[201])
+Alt(cloth)
+check("cycle: junk to bank", not Scrap.IsScrap(201) and bankMarks[201])
+check("bank item excluded from Baganator junk", not junk.callback(0, 1, 201))
+Alt(cloth)
+check("cycle: bank to unmarked", not Scrap.IsScrap(201) and not bankMarks[201])
+state.bags[0][1] = 202
+Alt(cloth)
+check("cycle: a quest item goes straight to bank", bankMarks[202] and not Scrap.IsScrap(202))
+check("cycle: a quest item explains why it skipped junk",
+    Printed() == LINKS[202] .. " is a quest item, so it can't be junk.")
+Alt(cloth)
+Set("scrapRuleWear", true)
+state.bags[0][1] = 207
+bagFrame:UpdateItems()
+Alt(cloth)
+check("cycle: rule junk to bank", bankMarks[207] and not Scrap.IsScrap(207))
+Alt(cloth)
+check("cycle: clearing bank keeps rule exception", not bankMarks[207] and not Scrap.IsScrap(207))
+Set("scrapMarker", false)
+Alt(cloth)
+check("bank-only marking works with Junk Marker disabled", bankMarks[207])
+Alt(cloth)
+check("bank-only mark toggles off", not bankMarks[207])
+Set("bankMarker", false)
+Set("scrapMarker", true)
+state.bags[0][1] = 201
+bagFrame:UpdateItems()
+Alt(cloth)
+Alt(cloth)
+check("bank disabled preserves original junk toggle", not Scrap.IsScrap(201) and not bankMarks[201])
+bankMarks[201] = true
+Alt(cloth)
+check("marking junk removes an inactive saved bank mark", Scrap.IsScrap(201) and not bankMarks[201])
+
 print(("test-scrap-marker: %d checks passed"):format(checks))

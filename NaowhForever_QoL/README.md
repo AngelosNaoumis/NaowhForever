@@ -132,6 +132,7 @@ NaowhForever_QoL/
     Fishing.lua         One-Key Fishing: the key, double right-click, the lure and gear steps
     FishingSounds.lua   Louder Splash
     ScrapMarker.lua     the Junk Marker (ns.ScrapMarker), read by Bag Space and the Junk List
+    BankMarker.lua      bank marks, selective grey selling and character bank deposits (ns.BankMarker)
     ScrapList.lua       the Junk List window (ns.OpenScrapList, /nf junk)
     Mail.lua            Alts and Attach buttons at the mailbox, the expiring mail warning
   Travel/
@@ -1233,6 +1234,38 @@ NaowhForever_QoL/
 - Baganator pools its item buttons and moves them between slots, so a marking click reads the button's bag and slot when it lands, not at the last paint. Its buttons for other characters' bags have no bag, so they get no click and no mark.
 - Baganator's junk plugin takes over its junk detection, so ours counts grey items with a sell price as junk too, as Baganator's own Poor quality does, and adds marked junk on top.
 - `MAX_ITEM_ID` caps an imported ID at the largest 32-bit signed number, so a pasted list cannot ask for an impossible item.
+
+### Bank Marker
+- Bank Marker starts off. It shares Junk Marker's marking modifier and bag integrations: with both on,
+  clicks cycle Unmarked, Junk, Bank, Unmarked. If an item cannot be marked Junk, chat explains why
+  before confirming its Bank mark. With either feature alone, clicks toggle that mark. Bank shows
+  the shared bag icon and its own tooltip line.
+- Bank marks use item IDs, account-wide (`bankItems`) or per character GUID (`bankChars`). Marking Bank
+  removes explicit junk marks and keeps automatic junk rules from selecting the item. Clearing Bank
+  preserves that keep exception. Marking Junk explicitly removes a saved bank mark even while Bank is off.
+- Save Marks starts off. A mark is removed only after every carried copy leaves this character's bags,
+  and only for IDs seen this session. Clear Bank Marks clears account marks and this character's marks.
+- At the Bank starts at Ask First. The shared side panel lists carried marked items and their counts;
+  Deposit approves only those item IDs and at most those quantities. Move Automatically skips the panel.
+  Nothing keeps the marks without moving anything. There are no withdrawals or account-bank deposits.
+- Opening the bank schedules one offer after `OPEN_DELAY` to let its inventory arrive. A deposit explicitly
+  passes `Enum.BankType.Character` to `C_Container.UseContainerItem` and checks `C_Bank.CanUseBank`, combat,
+  cursor and the live source immediately before requesting it. No Blizzard bank UI functions are driven.
+- Ask First docks beside Ellesmere's visible `EUI_BankFrame`, falling back to Blizzard's bank. The local
+  variable inside Ellesmere is named EUI_Bank, but that is not its global frame name.
+- Each deposit checks for a compatible empty slot or enough unlocked matching stack space first. A full
+  bank stops the session with a chat message before calling the move API. Specialty bag families count
+  only for matching items. The result separates source stacks from the individual items they contain.
+- Only one deposit is in flight. Inventory and lock events advance it after both carried count decreases
+  and character bank count increases. `MOVE_TIMEOUT` stops a stalled operation, including a full bank or
+  a rejected item, without removing the remaining marks. The timeout is a watchdog, not a polling loop.
+- A bank visit starts one session. Inventory changes alone never start another, so withdrawing a saved
+  bank item does not immediately put it back. Closing the bank, combat, a mode change or disabling ends it.
+- While Bank Marker is enabled, Restock delegates grey selling to a selective pass that skips bank marks;
+  Blizzard's bulk junk call cannot express that exclusion. Each sale rechecks merchant, combat and cursor.
+  Disabling Bank Marker makes its marks inactive and restores the existing bulk grey selling behavior.
+- Bank API arguments follow the generated Container and Bank documentation. The Forever client remains
+  the runtime authority; offline tests do not establish absence of taint or successful server transfers.
 
 ### Skyborne Spots
 - The game marks neither ley lines nor Elemental Convergences, so the spots come from two places: the list every player starts with (`SkyborneData.lua`, from tr0tsky's Skyborne Ley Line & Convergence Marker, under its MIT licence, whose notice stays in that file) and the ones this account finds. Casting the racial on a spot gives its buff, and where it was cast is saved.
