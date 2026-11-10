@@ -73,8 +73,12 @@ D.SCROLLS = {
 
 D.DEFAULT_GROUPS = { food = { items = {}, auras = {}, wellFed = true }, flask = { items = D.FLASKS.items, auras = D.FLASKS.auras },
     battle = { items = {}, auras = {} }, scroll = { items = {}, auras = {}, carried = true } }
+D.ELIXIR_AURAS = {}
 for _, elixir in ipairs(D.ELIXIRS) do
-    for _, id in ipairs(elixir.items) do table.insert(D.DEFAULT_GROUPS.battle.items, id) end
+    for _, id in ipairs(elixir.items) do
+        table.insert(D.DEFAULT_GROUPS.battle.items, id)
+        D.ELIXIR_AURAS[id] = elixir.auras
+    end
     for _, id in ipairs(elixir.auras) do table.insert(D.DEFAULT_GROUPS.battle.auras, id) end
 end
 

@@ -667,7 +667,7 @@ do
     t.state.bags = { 13510, 13931, 13454, 10306 }
     t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
     Check("buff food, scroll and elixir too", t.Shown(), "item:13931 item:13510 item:10306 item:13454")
-    t.state.auras.player = { { 17626, 7000, 7200 }, { 1249520, 1800, 3600 }, { 11334, 3000, 3600 } }
+    t.state.auras.player = { { 17626, 7000, 7200 }, { 1249520, 1800, 3600 }, { 17539, 3000, 3600 } }
     t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
     Check("any flask, Well Fed and elixir counts, the scroll still missing", t.Shown(), "item:10306")
 end
@@ -693,6 +693,30 @@ do
     t.state.bags = {}
     t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
     Check("Only If I Carry One off: the Forever flask and elixir still count", t.Shown(), "spell:1248406")
+end
+
+-- Elixirs of different stats stack: each carried stat has its own icon until that stat is up, three at most.
+do
+    local t = Fixture({ settings = { personalBuffs = false }, instance = "raid",
+        bags = { 13452, 13454 } })
+    t.Login()
+    Check("Mongoose and Greater Arcane Elixir carried, an icon each", t.Shown(), "item:13452 item:13454")
+    t.state.auras.player = { { 17538, 3000, 3600 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("Mongoose up, the Arcane Elixir still reminds", t.Shown(), "item:13454")
+    t.state.bags = { 13452, 13454, 9264, 21546 }
+    t.state.auras.player = {}
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    Check("four stats carried, three icons", t.Shown(), "item:13452 item:13454 item:9264")
+    t.state.bags = { 13452, 13454 }
+    t.state.auras.player = { { 17538, 3000, 3600 } }
+    t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
+    t.state.auras.player = { { 17538, 3000, 3600 }, { 17539, 3000, 3600 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("both up", t.Shown(), "")
+    t.state.auras.player = { { 11328, 3000, 3600 } }
+    t.Fire("UNIT_AURA", "player"); t.Advance(0.5)
+    Check("a lower Agility elixir counts for Mongoose, the Arcane Elixir reminds", t.Shown(), "item:13454")
 end
 
 -- A carried scroll reminds one stat at a time, the class buff it does not stack with counts as
@@ -768,16 +792,16 @@ do
     local t = Fixture({ instance = "raid", bags = { 9187, 13452, 9264 }, levels = { [9187] = 38, [13452] = 46, [9264] = 40 },
         settings = { personalBuffs = false } })
     t.Login()
-    Check("highest level elixir", t.Shown(), "item:13452")
+    Check("highest level elixir of each stat", t.Shown(), "item:13452 item:9264")
     local cell
     for _, f in ipairs(t.frames) do if rawget(f, "items") and f.shown then cell = f end end
     Check("menu lists the carried elixirs, best first", table.concat(cell.items, " "), "13452 9187 9264")
     t.state.level = 40
     t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
-    Check("one too high for you is skipped", t.Shown(), "item:9264")
+    Check("one too high for you is skipped", t.Shown(), "item:9264 item:9187")
     t.ns.AccountSettings().lastIcons = { battle = "item:9187" }
     t.Set("buffIconMode", "last")
-    Check("Last Used icon kept", t.Shown(), "item:9187")
+    Check("Last Used icon kept", t.Shown(), "item:9264 item:9187")
 end
 
 -- Off is unchanged: a reminder per kind, carried or not.

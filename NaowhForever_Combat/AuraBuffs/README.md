@@ -163,8 +163,10 @@ NaowhForever_Combat/AuraBuffs/
 - The preview's raid buff (Unlock Mode and the card) is the first picked one the reminders would track for you
   (`A.Buffs.RaidSample`): one you know, or with Only Buffs I Can Cast off any non-talent one. With Raid Buff
   Reminders off, or none that applies, it shows none, so a warrior no longer sees Arcane Intellect.
-- Two classic elixirs for the same stat do not stack, so one of each group counts; Forever's
-  stacking is unconfirmed. Forever keeps the classic IDs for flasks, elixirs, scrolls and class
+- Two classic elixirs for the same stat do not stack, so one of each group counts. Elixirs of different stats
+  do stack on Forever (Robin), so with the pick on each carried stat is its own icon while its buff is missing
+  (`Elixirs` over `D.ELIXIR_AURAS`, `MAX_ELIXIRS` = 3 until the real limit is known), each menu still holding
+  every carried elixir; with the pick off, any elixir is one reminder as before. Forever keeps the classic IDs for flasks, elixirs, scrolls and class
   buffs; cooked food moved to Forever-only "Nutritious Food" spells with one shared Well Fed aura
   per stat (Wowhead's Forever data, build 1.60.1). Flask of Petrification is left out: it is a
   minute of stone form, not a buff to keep up.

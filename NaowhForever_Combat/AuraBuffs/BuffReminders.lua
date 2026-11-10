@@ -7,6 +7,7 @@ local D = ns.BuffReminderData
 local Camp = A.CampData
 
 local MAX_AURAS = 40
+local MAX_ELIXIRS = 3
 local SECONDS = A.C.SECONDS
 local GCD = A.C.GCD
 local PARTY_UNITS = MAX_PARTY_MEMBERS or 4
@@ -245,6 +246,28 @@ local function FamilyGroup(items, buffs, byItem)
     return { items = same, auras = auras }, same[1]
 end
 
+local function Elixirs(list, buffs, last, carriedItems)
+    local seen, shown = {}, 0
+    for _, id in ipairs(carriedItems) do
+        local auras = D.ELIXIR_AURAS[id]
+        if not seen[auras] then
+            seen[auras] = true
+            local same = {}
+            for _, other in ipairs(carriedItems) do
+                if D.ELIXIR_AURAS[other] == auras then same[#same + 1] = other end
+            end
+            local group, item = FamilyGroup(same, buffs, D.ELIXIR_AURAS)
+            local before = #list
+            Consumable(list, buffs, group, item, nil, last, true)
+            if #list > before then
+                list[#list].items, list[#list].key = carriedItems, "battle"
+                shown = shown + 1
+                if shown == MAX_ELIXIRS then return end
+            end
+        end
+    end
+end
+
 local function Consumables(list, buffs)
     for _, category in ipairs(CATEGORY_ORDER) do
         local onlyCarried = Carried(category)
@@ -252,7 +275,12 @@ local function Consumables(list, buffs)
         local group, item
         if onlyCarried or builtIn.carried then
             group, item = CarriedBuiltIn(category, builtIn)
-            if item and category == "scroll" then group, item = FamilyGroup(group.items, buffs, D.SCROLL_AURAS) end
+            if item and category == "scroll" then
+                group, item = FamilyGroup(group.items, buffs, D.SCROLL_AURAS)
+            elseif item and category == "battle" then
+                Elixirs(list, buffs, LastIcon(category), group.items)
+                group = nil
+            end
         elseif category == "food" then
             group, item = CarriedBuiltIn(category, builtIn)
             group = group or builtIn
