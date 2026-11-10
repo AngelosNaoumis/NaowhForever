@@ -16,7 +16,9 @@ Then wowsrc.com's Forever loot pages (Tools/sources/wowsrc.py, its own data file
 boss drops in Forever: their items are added, their chances win, and an old item they no
 longer list on that boss is dropped. Each wing's trash comes from them too. Last, the items
 placed by hand ("add", which also puts back an old item the merge took off a boss where
-Wowhead's counts still give it a real chance: Herod's Scarlet Leggings) and the BiS sources
+Wowhead's counts still give it a real chance: Herod's Scarlet Leggings), the drops
+ForeverChanges' players have seen in game (Tools/build/foreverchanges_loot.py, its own data file;
+one on a boss we do not list is reported, not placed) and the BiS sources
 in NaowhForever_BiS/BiS/Data/BiS.lua; those have no chance, but an item put back keeps the
 chance Wowhead counts for it on that boss, and one Wowhead does not count there takes the one
 "counts" gives it (loot players counted in game: Dalaran's blueprints).
@@ -388,10 +390,12 @@ def item_facts(item_id):
 WOWSRC = paths.DATA / "wowsrc_loot.json"
 ITEM_NAMES = paths.DATA / "item_names.json"
 RECIPE_DROPS = paths.DATA / "journal_recipes.json"   # Tools/sources/recipe_drops.py: {dungeon: {boss: [IDs]}}
+FOREVERCHANGES = paths.DATA / "foreverchanges_loot.json"   # Tools/build/foreverchanges_loot.py
 WING_SUFFIX = re.compile(r"^(.*) \((\w+)\)$")   # Dire Maul's "Hydrospawn (East)"
 wowsrc_pages = json.loads(WOWSRC.read_text(encoding="utf-8")) if WOWSRC.exists() else {}
 item_names = json.loads(ITEM_NAMES.read_text(encoding="utf-8")) if ITEM_NAMES.exists() else {}
 recipe_drops = json.loads(RECIPE_DROPS.read_text(encoding="utf-8")) if RECIPE_DROPS.exists() else {}
+fc_pages = json.loads(FOREVERCHANGES.read_text(encoding="utf-8")) if FOREVERCHANGES.exists() else {}
 
 
 def name_key(name):
@@ -708,14 +712,47 @@ def item_facts_file(items):
     return lines
 
 
-def extra_loot(dungeon, bis):
+def foreverchanges_drops(dungeon, report):
+    """Boss name -> the item IDs ForeverChanges' players have seen it drop, from the dungeon's pages
+    there (its "foreverchanges": a page's slug, or {wing: slug}), by our names ("foreverchangesNames"
+    where theirs differ). Their trash is "Trash" for the whole dungeon's or its last wing's page, the
+    trash card a hand list reaches. A boss of theirs that is not one of our bosses, rares or optional
+    bosses (a chest takes only Wowhead's and wowsrc's loot), and another wing's trash, are reported,
+    not placed."""
+    slugs = dungeon.get("foreverchanges")
+    if not slugs:
+        return {}
+    if isinstance(slugs, str):
+        slugs = {None: slugs}
+    ours = {b.lower(): b for w in dungeon["wings"] for b in w["bosses"] + w.get("rare", []) + w.get("optional", [])}
+    renamed = {k.lower(): v for k, v in dungeon.get("foreverchangesNames", {}).items()}
+    found = {}
+    for wing, slug in slugs.items():
+        page = fc_pages[slug]
+        for boss in page["bosses"]:
+            ids = [i["id"] for i in boss["items"]]
+            if boss["kind"] == "trash":
+                name = "Trash" if wing is None or wing == dungeon["wings"][-1].get("name") else None
+            else:
+                name = ours.get(renamed.get(boss["name"].lower(), boss["name"]).lower())
+            if name:
+                found.setdefault(name, []).extend(ids)
+            else:
+                report.append(f"ForeverChanges' seen drops not placed: {boss['name']} ({page['name']}): "
+                              + ", ".join(str(i) for i in ids))
+    return found
+
+
+def extra_loot(dungeon, bis, report):
     """Boss name (lower case) -> the items the guide, the BiS sources, the recipes its item XML
-    ties to it (Tools/sources/recipe_drops.py) and the dungeon's own "add" list (by hand: items
-    seen dropping that Wowhead has not tied to the boss yet) place on it, with the chance the
-    dungeon's "counts" give (else none)."""
+    ties to it (Tools/sources/recipe_drops.py), the dungeon's own "add" list (by hand: items seen
+    dropping that Wowhead has not tied to the boss yet) and the drops ForeverChanges' players have
+    seen it drop (foreverchanges_drops) place on it, with the chance the dungeon's "counts" give
+    (else none)."""
     extra = guide_drops(dungeon["guide"]) if dungeon.get("guide") else {}
     placed = {}
-    for source in (recipe_drops.get(dungeon["name"], {}), dungeon.get("add", {})):
+    for source in (recipe_drops.get(dungeon["name"], {}), dungeon.get("add", {}),
+                   foreverchanges_drops(dungeon, report)):
         for boss, ids in source.items():
             mine = placed.setdefault(boss, [])
             mine += [i for i in ids if i not in mine]
@@ -779,7 +816,7 @@ def main():
     for dungeon in config["dungeons"]:
         if dungeon.get("announced") is False:
             continue   # a raid not announced for Forever: kept in the list, not built
-        extra = extra_loot(dungeon, bis)
+        extra = extra_loot(dungeon, bis, report)
         pinned = dungeon.get("npcs", {})
         renamed = dungeon.get("encounterNames", {})
         pinned_encounters = dungeon.get("encounterIDs", {})

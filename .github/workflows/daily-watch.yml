@@ -21,8 +21,11 @@ name: daily-watch
 # section either way (a manual run reports it too). A fit that fails only says so. A refit
 # that changes Formula.lua gets its own changelog line: every player's score moves.
 # The loot job: whether wowsrc.com's Forever loot pages list something the Journal was not
-# built from (Tools/data/wowsrc_loot.json): items a boss gained or lost, new bosses and pages.
-# If so, the Journal is rebuilt from them and a pull request says what. The quests job: whether
+# built from (Tools/data/wowsrc_loot.json): items a boss gained or lost, new bosses and pages;
+# and whether ForeverChanges' dungeon pages (Tools/build/foreverchanges_loot.py) list a drop seen
+# in game, or no longer list one, since Tools/data/foreverchanges_loot.json. Their site failing
+# only says so. If either changed, the Journal is rebuilt from them and a pull request says what.
+# The quests job: whether
 # ForeverChanges' quest list (Tools/build/foreverchanges_quests.py, with their permission) gained,
 # lost or changed a quest; if so, the Quest List is rebuilt from it and the caches
 # (Tools/build/completo_quests.py --offline), a new quest's giver from its ForeverChanges page.
@@ -223,17 +226,31 @@ jobs:
             "Changed: Quest List: quests updated from the latest Forever quest lists." \
             Tools/data/foreverchanges_quests.json NaowhForever_DiscoveryData
 
-      - name: Compare wowsrc.com's loot pages with ours
+      - name: Compare wowsrc.com's and ForeverChanges' loot pages with ours
         id: loot
         if: ${{ !cancelled() && contains(env.CHECKS, 'loot') }}
         continue-on-error: true
         run: |
           git reset -q --hard HEAD && git clean -fdq -- Tools NaowhForever_DungeonJournal NaowhForever_BiS Shared
-          python Tools/sources/wowsrc.py --check --report "$RUNNER_TEMP/loot.md" --github-output "$GITHUB_OUTPUT"
-          if grep -q "^changes=true" "$GITHUB_OUTPUT"; then
-            # The pages the check read (Tools/data/wowsrc_pages), their names to item IDs, the Journal.
+          python Tools/sources/wowsrc.py --check --report "$RUNNER_TEMP/loot.md" --github-output "$RUNNER_TEMP/wowsrc.out"
+          # ForeverChanges' seen drops, written to their file when they changed. Their site failing
+          # leaves wowsrc's change to go in alone.
+          if ! python Tools/build/foreverchanges_loot.py --report "$RUNNER_TEMP/foreverchanges.md"; then
+            echo "::warning::ForeverChanges' dungeon pages could not be read: their seen drops stay as they were."
+            echo "ForeverChanges' dungeon pages could not be read (see the run log)." > "$RUNNER_TEMP/foreverchanges.md"
+          fi
+          { echo; cat "$RUNNER_TEMP/foreverchanges.md"; } >> "$RUNNER_TEMP/loot.md"
+          changes=false
+          : > "$RUNNER_TEMP/resolve.txt"
+          if grep -q "^changes=true" "$RUNNER_TEMP/wowsrc.out"; then
+            changes=true
+            # The pages the check read (Tools/data/wowsrc_pages), their names to item IDs.
             python Tools/sources/wowsrc.py
             python Tools/sources/wowsrc.py --resolve --offline 2> "$RUNNER_TEMP/resolve.txt"
+          fi
+          if ! git diff --quiet -- Tools/data/foreverchanges_loot.json; then changes=true; fi
+          echo "changes=$changes" >> "$GITHUB_OUTPUT"
+          if [ "$changes" = true ]; then
             python Tools/build/journal.py --offline > /dev/null 2> "$RUNNER_TEMP/build.txt"
             {
               echo
@@ -252,7 +269,8 @@ jobs:
         run: |
           $PR add loot "boss loot" "$RUNNER_TEMP/loot.md" \
             "Changed: Dungeon Journal: boss loot updated from the latest Forever loot lists." \
-            Tools/data/wowsrc_loot.json Tools/data/item_names.json Tools/data/journal_cache.json NaowhForever_DungeonJournal/Data Shared/Data
+            Tools/data/wowsrc_loot.json Tools/data/foreverchanges_loot.json Tools/data/item_names.json \
+            Tools/data/journal_cache.json NaowhForever_DungeonJournal/Data Shared/Data
       # Every boss's and chest's drops, read again from Wowhead Forever: one page each, at
       # fetch's pace (a 403 waits and tries again). Added only when the Journal's data moved:
       # a count that changes no whole percent is not worth a pull request. Only when asked (checks).

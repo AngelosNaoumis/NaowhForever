@@ -122,6 +122,7 @@ calls are on `ns`.
 | An item a boss drops that no source has placed yet | `"add": { "Boss Name": [itemID] }` on the dungeon (`"Trash"` for its trash) |
 | The chance of an item placed by hand, where Wowhead has no count for it | `"counts": { "Boss Name": { "itemID": [drops, kills] } }` on the dungeon, from loot players counted in game |
 | A boss wowsrc names differently | `"wowsrcNames": { "Their Name": "Our Name" }` on the dungeon |
+| A boss ForeverChanges names differently | `"foreverchangesNames": { "Their Name": "Our Name" }` on the dungeon |
 | A boss's NPC ID the build cannot find | `"npcs": { "Name": ID }` on the dungeon in `Tools/data/journal_bosses.json` |
 | Whether a dungeon is open, where the game's tables say otherwise | `"open": true` or `false` on the dungeon in `Tools/data/journal_bosses.json` |
 | Where a boss stands on its dungeon's map | `/nf mappins` in game, drag the pins (one on another floor waits along the top, a right-click takes one off its floor), Copy, and paste the line into `Data/Maps.lua`. `/nf mapcheck` says which map art and floors the client has |
@@ -157,6 +158,7 @@ flowchart TD
     wowsrc["wowsrc.com<br/>Forever's own list per boss, and trash"]
     names["item_names.json<br/>wowsrc names to item IDs"]
     hand["add lists and BiS sources<br/>(by hand)"]
+    fc["ForeverChanges<br/>drops its players have seen"]
     wago["wago.tools<br/>the game's own tables"]
 
     bosses --> build
@@ -166,6 +168,7 @@ flowchart TD
     wowsrc --> names --> merge
     merge["merge with wowsrc:<br/>their items added, their chances win,<br/>old items they moved dropped"] --> build
     hand --> build
+    fc --> build
     wago -->|"encounter IDs for kill counts"| build
     build["build/journal.py"] --> out["Data/Dungeons/*.lua<br/>Data/Items.lua"]
 ```
@@ -197,6 +200,16 @@ The rules, in plain words:
   Dalaran's two blueprints take their chance from `"counts"`, the drops players counted there
   (Spinning Wheel 14 of 166 Unstable Sentinel kills, Arcane Salvager 13 of 174 of the Shade's):
   Wowhead's answers for those bosses predate the recipes, so it counts neither.
+- **ForeverChanges** (with their permission) marks the drops its players have seen in game on
+  its dungeon pages. `Tools/build/foreverchanges_loot.py` reads them into
+  `Tools/data/foreverchanges_loot.json`, and the build places them as an `"add"` list does: on
+  the boss, after the hand list's, with no chance of their own; nothing is taken off and no
+  chance changes. On a classic dungeon only the items new in Forever count: who drops what there
+  is Classic's on their pages, and a mark on a Classic item only says its Forever version has
+  been seen. A boss of theirs that is not one of ours (an object, a chest of ours, a mob we do
+  not list) and a wing's trash but the last wing's are listed at the end of the build, not
+  placed. Every drop the hand lists above took from their pages is on them too, but the Defias
+  Rapier, a Classic item.
 - **Everything, and what is not in Forever yet marked.** Forever keeps a row in its Item table
   for every Classic item, but the server only sends the items in the game; asked for any other,
   the client shows "Item 10800" and its tooltip waits forever. An item is in the game when its
@@ -220,13 +233,16 @@ The rules, in plain words:
   Journal lists gear (uncommon or better) and the recipes a boss drops (common or better).
 
 To refresh it all: `python Tools/sources/wowsrc.py` (new pages), `python Tools/sources/wowsrc.py --resolve`
-(new names), `python Tools/sources/recipe_drops.py` (the recipes each boss drops, by their item XML), then
+(new names), `python Tools/sources/recipe_drops.py` (the recipes each boss drops, by their item XML),
+`python Tools/build/foreverchanges_loot.py` (the drops ForeverChanges' players have seen), then
 `python Tools/build/journal.py`. Read what the build prints at the end:
-bosses it found no loot for, wowsrc bosses we don't list, names it couldn't map.
+bosses it found no loot for, wowsrc bosses we don't list, names it couldn't map, seen drops it
+could not place.
 
-The daily CI does the same when wowsrc's pages change (`.github/workflows/daily-watch.yml`,
-its `loot` job), with `--offline`: Wowhead is never asked there, a new item's facts come from
-the game's own tables, and what they can't settle is listed in the pull request it opens.
+The daily CI does the same when wowsrc's pages or ForeverChanges' seen drops change
+(`.github/workflows/daily-watch.yml`, its `loot` job), with `--offline`: Wowhead is never asked
+there, a new item's facts come from the game's own tables, and what they can't settle is listed
+in the pull request it opens.
 
 ## Adding things
 

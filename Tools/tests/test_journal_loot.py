@@ -144,11 +144,82 @@ class Counts(unittest.TestCase):
     def test_counted_loot_gives_the_chance_wowhead_lacks(self):
         dungeon = {"name": "Test Dungeon", "add": {"Unstable Sentinel": [273099, 273100]},
                    "counts": {"Unstable Sentinel": {"273099": [14, 166]}}}
-        extra = journal.extra_loot(dungeon, {})
+        extra = journal.extra_loot(dungeon, {}, [])
         loot = journal.boss_entry("Unstable Sentinel", False, {"Unstable Sentinel": 246017}, extra, {}, [])["loot"]
         self.assertEqual([i["id"] for i in loot], [273046, 273099, 273100])
         self.assertAlmostEqual(loot[1]["chance"], 100 * 14 / 166, msg="Blueprint: Spinning Wheel, 14 of 166 kills")
         self.assertIsNone(loot[2]["chance"], "no counts, no chance")
+
+
+def seen_page(name, bosses):
+    """A page as Tools/build/foreverchanges_loot.py keeps it: {boss: (kind, [item IDs])}."""
+    return {"name": name, "seen": "2026-10-03", "bosses": [
+        {"name": boss, "kind": kind, "items": [{"id": i, "name": f"Item {i}"} for i in ids]}
+        for boss, (kind, ids) in bosses.items()]}
+
+
+class ForeverChangesDrops(unittest.TestCase):
+    """foreverchanges_drops and extra_loot: the drops ForeverChanges' players have seen, placed on
+    our bosses as an add list places them, with no chance of their own."""
+
+    SFK = {"name": "Test Dungeon", "foreverchanges": "shadowfang-keep",
+           "foreverchangesNames": {"Fel Steed / Shadow Charger": "Fel Steed"},
+           "add": {"Commander Springvale": [6341, 273643]},
+           "wings": [{"bosses": ["Commander Springvale"], "rare": ["Fel Steed"]}]}
+
+    def setUp(self):
+        self.saved = journal.fc_pages, journal.item_facts, journal.npc_drops, journal.npc_model
+        journal.fc_pages = {
+            "shadowfang-keep": seen_page("Shadowfang Keep", {
+                "Commander Springvale": ("boss", [273643, 3191, 273105]),
+                "Fel Steed / Shadow Charger": ("boss", [273456]),
+                "Jordan's Smithing Hammer": ("object", [6895]),
+                "Trash mobs": ("trash", [286977])}),
+            "dire-maul-east": seen_page("Dire Maul East", {"Trash mobs": ("trash", [18296])}),
+            "dire-maul-north": seen_page("Dire Maul North", {"Trash mobs": ("trash", [18298])})}
+        journal.item_facts = lambda item_id: drop(item_id, 0, 0)
+        journal.npc_drops = lambda npc: journal.choose([drop(3191, 5241, 15624)])
+        journal.npc_model = lambda npc: None
+
+    def tearDown(self):
+        journal.fc_pages, journal.item_facts, journal.npc_drops, journal.npc_model = self.saved
+
+    def test_a_seen_drop_goes_on_its_boss_with_no_chance(self):
+        extra = journal.extra_loot(self.SFK, {}, [])
+        loot = journal.boss_entry("Commander Springvale", False, {"Commander Springvale": 4278}, extra, {}, [])["loot"]
+        self.assertEqual([i["id"] for i in loot], [3191, 6341, 273643, 273105],
+                         "the hand list's order first, an item both name once")
+        self.assertAlmostEqual(loot[0]["chance"], 100 * 5241 / 15624, msg="Wowhead's chance stays")
+        self.assertEqual([i["chance"] for i in loot[1:]], [None, None, None])
+
+    def test_wowsrcs_chance_stays(self):
+        extra = journal.extra_loot(self.SFK, {}, [])
+        listed = {"items": [{"id": 3191, "chance": 35.7, "new": False}], "complete": True}
+        loot = journal.boss_entry("Commander Springvale", False, {"Commander Springvale": 4278}, extra, {}, [],
+                                  listed)["loot"]
+        self.assertEqual(loot[0]["chance"], 35.7)
+
+    def test_their_name_is_mapped_to_ours_and_trash_to_the_trash_card(self):
+        found = journal.foreverchanges_drops(self.SFK, [])
+        self.assertEqual(found["Fel Steed"], [273456])
+        self.assertEqual(found["Trash"], [286977])
+
+    def test_what_has_no_place_of_ours_is_reported(self):
+        report = []
+        found = journal.foreverchanges_drops(self.SFK, report)
+        self.assertNotIn("Jordan's Smithing Hammer", found)
+        self.assertEqual(report, ["ForeverChanges' seen drops not placed: Jordan's Smithing Hammer "
+                                  "(Shadowfang Keep): 6895"])
+
+    def test_only_the_last_wings_trash_takes_a_wing_pages_trash(self):
+        dire_maul = {"name": "Dire Maul", "foreverchanges": {"East": "dire-maul-east", "North": "dire-maul-north"},
+                     "wings": [{"name": "East", "bosses": []}, {"name": "North", "bosses": []}]}
+        report = []
+        self.assertEqual(journal.foreverchanges_drops(dire_maul, report), {"Trash": [18298]})
+        self.assertEqual(report, ["ForeverChanges' seen drops not placed: Trash mobs (Dire Maul East): 18296"])
+
+    def test_no_page_no_drops(self):
+        self.assertEqual(journal.foreverchanges_drops({"name": "Onyxia's Lair", "wings": []}, []), {})
 
 
 class InGame(unittest.TestCase):
@@ -460,6 +531,31 @@ class DailyWatchBuild(unittest.TestCase):
         added = self.step[self.step.index("$PR add watch"):]
         for path in ("Tools/data/journal_cache.json", "NaowhForever_DungeonJournal/Data", "Shared/Data"):
             self.assertIn(path, added)
+
+
+class DailyWatchForeverChanges(unittest.TestCase):
+    """The loot job reads ForeverChanges' seen drops beside wowsrc's pages, rebuilds the Journal when
+    their file changed too, and adds the file with the rest."""
+
+    def setUp(self):
+        workflow = Path(__file__).resolve().parents[2] / ".github" / "workflows" / "daily-watch.yml"
+        text = workflow.read_text(encoding="utf-8").replace("\r\n", "\n")
+        loot = re.search(r"\n        id: loot\n(.*?)\n\n", text, re.S)
+        added = re.search(r"- name: Add the boss loot\n(.*?)\n      #", text, re.S)
+        self.assertIsNotNone(loot, "the loot job has its compare step")
+        self.assertIsNotNone(added, "the loot job has its Add the boss loot step")
+        self.step, self.added = loot.group(1), added.group(1)
+
+    def test_their_pages_are_read_before_the_build(self):
+        read = self.step.find("python Tools/build/foreverchanges_loot.py")
+        self.assertGreaterEqual(read, 0)
+        self.assertLess(read, self.step.index("python Tools/build/journal.py --offline"))
+
+    def test_their_file_changing_is_a_change(self):
+        self.assertIn("git diff --quiet -- Tools/data/foreverchanges_loot.json", self.step)
+
+    def test_their_file_is_added(self):
+        self.assertIn("Tools/data/foreverchanges_loot.json", self.added)
 
 
 class RefreshDrops(unittest.TestCase):

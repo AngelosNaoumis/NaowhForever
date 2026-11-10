@@ -1,0 +1,1670 @@
+{
+ "alcaz-prison": {
+  "bosses": [],
+  "name": "Alcaz Prison",
+  "seen": "2026-10-03"
+ },
+ "blackfathom-deeps": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273840,
+      "name": "Cursed Murloc Eye"
+     },
+     {
+      "id": 273141,
+      "name": "Blueprint: Fishing Rack"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Gelihast"
+   },
+   {
+    "items": [
+     {
+      "id": 273843,
+      "name": "Fallenroot Longbow"
+     },
+     {
+      "id": 273841,
+      "name": "Twilight Maul"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 273842,
+      "name": "Treacherous Treads"
+     }
+    ],
+    "kind": "boss",
+    "name": "Lorgus Jett"
+   },
+   {
+    "items": [
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Baron Aquanis"
+   },
+   {
+    "items": [
+     {
+      "id": 273846,
+      "name": "Twilight Lord Girdle"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Twilight Lord Kelris"
+   },
+   {
+    "items": [
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     }
+    ],
+    "kind": "boss",
+    "name": "Old Serra'kis"
+   },
+   {
+    "items": [
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Aku'mai"
+   }
+  ],
+  "name": "Blackfathom Deeps",
+  "seen": "2026-10-03"
+ },
+ "blackmaw-hold": {
+  "bosses": [],
+  "name": "Blackmaw Hold",
+  "seen": "2026-10-03"
+ },
+ "blackrock-depths": {
+  "bosses": [],
+  "name": "Blackrock Depths",
+  "seen": "2026-10-03"
+ },
+ "city-of-dalaran": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273036,
+      "name": "Graveweave Bindings"
+     },
+     {
+      "id": 273032,
+      "name": "Bonebinder's Signet"
+     },
+     {
+      "id": 273033,
+      "name": "Gravespike Repeater"
+     }
+    ],
+    "kind": "boss",
+    "name": "Atrexis the Grave Knight"
+   },
+   {
+    "items": [
+     {
+      "id": 273054,
+      "name": "Cartilage Shapers"
+     },
+     {
+      "id": 273053,
+      "name": "Tendonscraper Dagger"
+     },
+     {
+      "id": 273055,
+      "name": "Bonepile Gaze"
+     }
+    ],
+    "kind": "boss",
+    "name": "Lyn the Ignored"
+   },
+   {
+    "items": [
+     {
+      "id": 273031,
+      "name": "Runemender's Seal"
+     },
+     {
+      "id": 273034,
+      "name": "Ephemeral Grips"
+     },
+     {
+      "id": 273035,
+      "name": "Mana-Warped Chain Shirt"
+     }
+    ],
+    "kind": "boss",
+    "name": "Arcane Anomaly"
+   },
+   {
+    "items": [
+     {
+      "id": 273045,
+      "name": "Drape of Shifting Energy"
+     },
+     {
+      "id": 273044,
+      "name": "Violet Sorcerer's Robes"
+     },
+     {
+      "id": 273043,
+      "name": "Wand of Mana Concentration"
+     }
+    ],
+    "kind": "boss",
+    "name": "Arcanic Enigma"
+   },
+   {
+    "items": [
+     {
+      "id": 273046,
+      "name": "Guardian's Dualblade"
+     },
+     {
+      "id": 273048,
+      "name": "Refractory Scaleguards"
+     },
+     {
+      "id": 273047,
+      "name": "Unstable Crystalline Shoulderpads"
+     },
+     {
+      "id": 273099,
+      "name": "Blueprint: Spinning Wheel"
+     }
+    ],
+    "kind": "boss",
+    "name": "Unstable Sentinel"
+   },
+   {
+    "items": [
+     {
+      "id": 273040,
+      "name": "Spine of the Devourer"
+     },
+     {
+      "id": 273042,
+      "name": "Manascale Treads"
+     },
+     {
+      "id": 273041,
+      "name": "Slitherwrap Girdle"
+     }
+    ],
+    "kind": "boss",
+    "name": "Mana Devourer"
+   },
+   {
+    "items": [
+     {
+      "id": 273039,
+      "name": "Blightleaf Rope"
+     },
+     {
+      "id": 273038,
+      "name": "Garb of Fallen Felbark"
+     },
+     {
+      "id": 273037,
+      "name": "Felbough Arm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Fel Ancient"
+   },
+   {
+    "items": [
+     {
+      "id": 273052,
+      "name": "Ponderous Orb"
+     },
+     {
+      "id": 273051,
+      "name": "Violet Sorcerer's Mantle"
+     },
+     {
+      "id": 273049,
+      "name": "Archmagister's Faceted Pendant"
+     },
+     {
+      "id": 273103,
+      "name": "Blueprint: Arcane Salvager"
+     }
+    ],
+    "kind": "boss",
+    "name": "Shade of the Archmage"
+   },
+   {
+    "items": [
+     {
+      "id": 276160,
+      "name": "Mana Fragment"
+     },
+     {
+      "id": 276158,
+      "name": "Crystallized Shard"
+     },
+     {
+      "id": 286987,
+      "name": "Violet Sorcerer's Sandals"
+     },
+     {
+      "id": 286989,
+      "name": "Violet Sorcerer's Wraps"
+     },
+     {
+      "id": 286988,
+      "name": "Violet Sorcerer's Leggings"
+     },
+     {
+      "id": 286992,
+      "name": "Construct's Grips"
+     },
+     {
+      "id": 286995,
+      "name": "Guardian's Emblem"
+     },
+     {
+      "id": 286994,
+      "name": "Tattered Kirin Tor Cloak"
+     },
+     {
+      "id": 286991,
+      "name": "Roused Nature Footwraps"
+     }
+    ],
+    "kind": "trash",
+    "name": "Trash mobs"
+   }
+  ],
+  "name": "City of Dalaran",
+  "seen": "2026-10-19"
+ },
+ "dire-maul-east": {
+  "bosses": [],
+  "name": "Dire Maul East",
+  "seen": "2026-10-03"
+ },
+ "dire-maul-north": {
+  "bosses": [],
+  "name": "Dire Maul North",
+  "seen": "2026-10-03"
+ },
+ "dire-maul-west": {
+  "bosses": [],
+  "name": "Dire Maul West",
+  "seen": "2026-10-03"
+ },
+ "excavation-site": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273022,
+      "name": "Supple Bellyskin Leggings"
+     },
+     {
+      "id": 273023,
+      "name": "Saltscale Girdle"
+     },
+     {
+      "id": 273024,
+      "name": "Glinteye Slippers"
+     }
+    ],
+    "kind": "boss",
+    "name": "Saltspine"
+   },
+   {
+    "items": [
+     {
+      "id": 273025,
+      "name": "Raptorclaw Greaves"
+     },
+     {
+      "id": 273026,
+      "name": "Garb of Florid Feathers"
+     },
+     {
+      "id": 273027,
+      "name": "Raptor's Gaze"
+     },
+     {
+      "id": 273106,
+      "name": "Blueprint: Greenhouse"
+     }
+    ],
+    "kind": "boss",
+    "name": "Shadetooth"
+   },
+   {
+    "items": [
+     {
+      "id": 273028,
+      "name": "Reliquary Mantle"
+     },
+     {
+      "id": 273030,
+      "name": "Ring of Power Regulation"
+     },
+     {
+      "id": 273029,
+      "name": "Golemsight Long Gun"
+     },
+     {
+      "id": 273097,
+      "name": "Blueprint: Rock Garden"
+     }
+    ],
+    "kind": "boss",
+    "name": "Relic Guardian"
+   },
+   {
+    "items": [
+     {
+      "id": 287068,
+      "name": "Excavated Dagger"
+     },
+     {
+      "id": 286983,
+      "name": "Ancient Cleaver"
+     }
+    ],
+    "kind": "trash",
+    "name": "Trash mobs"
+   }
+  ],
+  "name": "Excavation Site: Wetlands",
+  "seen": "2026-10-03"
+ },
+ "gnomeregan": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 274043,
+      "name": "Irradiated Shield"
+     },
+     {
+      "id": 274042,
+      "name": "Skullduggery Belt"
+     }
+    ],
+    "kind": "boss",
+    "name": "Grubbis"
+   },
+   {
+    "items": [
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     }
+    ],
+    "kind": "boss",
+    "name": "Electrocutioner 6000"
+   },
+   {
+    "items": [
+     {
+      "id": 274049,
+      "name": "Schematic: 9-60 Battery Pack"
+     }
+    ],
+    "kind": "boss",
+    "name": "Crowd Pummeler 9-60"
+   },
+   {
+    "items": [
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     }
+    ],
+    "kind": "rare",
+    "name": "Dark Iron Ambassador"
+   }
+  ],
+  "name": "Gnomeregan",
+  "seen": "2026-10-06"
+ },
+ "hall-of-thanes": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 270227,
+      "name": "Ephemeral Choker"
+     },
+     {
+      "id": 271096,
+      "name": "Aetherwisp Bracers"
+     },
+     {
+      "id": 271097,
+      "name": "Spiritwraith Drape"
+     }
+    ],
+    "kind": "boss",
+    "name": "Faldrim Anvilmar"
+   },
+   {
+    "items": [
+     {
+      "id": 270230,
+      "name": "Kindlegem Girdle"
+     },
+     {
+      "id": 270231,
+      "name": "Flamefist Grips"
+     },
+     {
+      "id": 271095,
+      "name": "Fang of Magmatus"
+     }
+    ],
+    "kind": "boss",
+    "name": "Magmatus"
+   },
+   {
+    "items": [
+     {
+      "id": 270228,
+      "name": "Golemheart Stave"
+     },
+     {
+      "id": 270229,
+      "name": "Treads of the Protector Golem"
+     },
+     {
+      "id": 271098,
+      "name": "Golemguard Chest"
+     }
+    ],
+    "kind": "boss",
+    "name": "Plunder"
+   },
+   {
+    "items": [
+     {
+      "id": 270256,
+      "name": "Durgen's Crescent Axe"
+     },
+     {
+      "id": 270260,
+      "name": "Direhammer Leggings"
+     },
+     {
+      "id": 270261,
+      "name": "Robes of the Disgraced Thane"
+     }
+    ],
+    "kind": "boss",
+    "name": "Durgen Dirgehammer"
+   }
+  ],
+  "name": "Hall of Thanes",
+  "seen": "2026-10-03"
+ },
+ "kroldok-stronghold": {
+  "bosses": [],
+  "name": "Krol'dok Stronghold",
+  "seen": null
+ },
+ "lower-blackrock-spire": {
+  "bosses": [],
+  "name": "Lower Blackrock Spire",
+  "seen": "2026-10-03"
+ },
+ "maraudon": {
+  "bosses": [],
+  "name": "Maraudon",
+  "seen": "2026-10-03"
+ },
+ "ragefire-chasm": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 272999,
+      "name": "Barbaric Crossbow"
+     },
+     {
+      "id": 272996,
+      "name": "Trogg Scepter"
+     },
+     {
+      "id": 272998,
+      "name": "Bone Knuckles"
+     }
+    ],
+    "kind": "boss",
+    "name": "Oggleflint"
+   },
+   {
+    "items": [
+     {
+      "id": 273003,
+      "name": "Searing Dagger"
+     },
+     {
+      "id": 273005,
+      "name": "Satyrskin Cloak"
+     },
+     {
+      "id": 273007,
+      "name": "Chasm Walkers"
+     }
+    ],
+    "kind": "boss",
+    "name": "Bazzalan"
+   }
+  ],
+  "name": "Ragefire Chasm",
+  "seen": "2026-10-03"
+ },
+ "razorfen-downs": {
+  "bosses": [],
+  "name": "Razorfen Downs",
+  "seen": "2026-10-03"
+ },
+ "razorfen-kraul": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 274158,
+      "name": "Death Prophet Spine"
+     },
+     {
+      "id": 274159,
+      "name": "Thorncursed Grips"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Aggem Thorncurse"
+   },
+   {
+    "items": [
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     }
+    ],
+    "kind": "boss",
+    "name": "Death Speaker Jargba"
+   },
+   {
+    "items": [
+     {
+      "id": 274155,
+      "name": "Geomancer Headdress"
+     },
+     {
+      "id": 274149,
+      "name": "Thornweaver Drape"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 274152,
+      "name": "Roogug's Severed Head"
+     }
+    ],
+    "kind": "boss",
+    "name": "Roogug"
+   },
+   {
+    "items": [
+     {
+      "id": 274161,
+      "name": "Quillord Mail Leggings"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Overlord Ramtusk"
+   },
+   {
+    "items": [
+     {
+      "id": 274160,
+      "name": "Quilrager Throwing Axe"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Agathelos the Raging"
+   },
+   {
+    "items": [
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 273103,
+      "name": "Blueprint: Arcane Salvager"
+     }
+    ],
+    "kind": "boss",
+    "name": "Charlga Razorflank"
+   },
+   {
+    "items": [
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     }
+    ],
+    "kind": "rare",
+    "name": "Earthcaller Halmgar"
+   }
+  ],
+  "name": "Razorfen Kraul",
+  "seen": "2026-10-04"
+ },
+ "ruins-of-lordaeron": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 271204,
+      "name": "Meathook Slicer"
+     },
+     {
+      "id": 271205,
+      "name": "Abomination Bones"
+     },
+     {
+      "id": 271206,
+      "name": "Leftover Abomination Skin"
+     }
+    ],
+    "kind": "boss",
+    "name": "The Baron"
+   },
+   {
+    "items": [
+     {
+      "id": 271201,
+      "name": "Atrophic Girdle"
+     },
+     {
+      "id": 271202,
+      "name": "Witherbite Bracers"
+     },
+     {
+      "id": 271203,
+      "name": "Segmented Spider Leg"
+     }
+    ],
+    "kind": "boss",
+    "name": "Witherfang"
+   },
+   {
+    "items": [
+     {
+      "id": 271207,
+      "name": "Rotmender's Leggings"
+     },
+     {
+      "id": 271208,
+      "name": "Grip of Fear"
+     },
+     {
+      "id": 271216,
+      "name": "Scepter of the Abandoned"
+     }
+    ],
+    "kind": "boss",
+    "name": "The Abandoned"
+   },
+   {
+    "items": [
+     {
+      "id": 271209,
+      "name": "Bonerust Leggings"
+     },
+     {
+      "id": 271210,
+      "name": "Tuskwrap Belt"
+     },
+     {
+      "id": 271217,
+      "name": "Corpse Chopper"
+     }
+    ],
+    "kind": "boss",
+    "name": "Bjork"
+   },
+   {
+    "items": [
+     {
+      "id": 271213,
+      "name": "Mirror of Rath'mael"
+     },
+     {
+      "id": 271214,
+      "name": "Rotmender's Treads"
+     },
+     {
+      "id": 271215,
+      "name": "Coldspire Staff"
+     },
+     {
+      "id": 273085,
+      "name": "Blueprint: Fermenter"
+     },
+     {
+      "id": 273103,
+      "name": "Blueprint: Arcane Salvager"
+     }
+    ],
+    "kind": "boss",
+    "name": "Rath'mael"
+   },
+   {
+    "items": [
+     {
+      "id": 271211,
+      "name": "Vilewalkers"
+     },
+     {
+      "id": 271212,
+      "name": "Bloodied Chestwraps"
+     },
+     {
+      "id": 271218,
+      "name": "Vileblood Scimitar"
+     }
+    ],
+    "kind": "boss",
+    "name": "Viktor the Vile"
+   },
+   {
+    "items": [
+     {
+      "id": 6641,
+      "name": "Haunting Blade"
+     },
+     {
+      "id": 6642,
+      "name": "Phantom Armor"
+     }
+    ],
+    "kind": "rare",
+    "name": "Lordaeron Captain"
+   }
+  ],
+  "name": "Ruins of Lordaeron",
+  "seen": "2026-10-03"
+ },
+ "scarlet-monastery-armory": {
+  "bosses": [],
+  "name": "Scarlet Monastery Armory",
+  "seen": "2026-10-03"
+ },
+ "scarlet-monastery-cathedral": {
+  "bosses": [],
+  "name": "Scarlet Monastery Cathedral",
+  "seen": "2026-10-03"
+ },
+ "scarlet-monastery-graveyard": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 274290,
+      "name": "Painwalker Buckler"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Interrogator Vishas"
+   },
+   {
+    "items": [
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     }
+    ],
+    "kind": "rare",
+    "name": "Azshir the Sleepless"
+   },
+   {
+    "items": [
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     }
+    ],
+    "kind": "rare",
+    "name": "Fallen Champion"
+   },
+   {
+    "items": [
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     }
+    ],
+    "kind": "rare",
+    "name": "Ironspine"
+   },
+   {
+    "items": [
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 274291,
+      "name": "Polished Skullcap"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Bloodmage Thalnos"
+   }
+  ],
+  "name": "Scarlet Monastery Graveyard",
+  "seen": "2026-10-11"
+ },
+ "scarlet-monastery-library": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 274292,
+      "name": "Houndmaster Boomerang"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Houndmaster Loksey"
+   },
+   {
+    "items": [
+     {
+      "id": 274293,
+      "name": "Spellsever Crossbow"
+     },
+     {
+      "id": 274294,
+      "name": "Library Walkers"
+     }
+    ],
+    "kind": "boss",
+    "name": "Arcanist Doan"
+   }
+  ],
+  "name": "Scarlet Monastery Library",
+  "seen": "2026-10-06"
+ },
+ "scholomance": {
+  "bosses": [],
+  "name": "Scholomance",
+  "seen": "2026-10-03"
+ },
+ "shadowfang-keep": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273456,
+      "name": "Cell Keeper's Claws"
+     },
+     {
+      "id": 273457,
+      "name": "Sorcerer Collar"
+     }
+    ],
+    "kind": "boss",
+    "name": "Rethilgore"
+   },
+   {
+    "items": [
+     {
+      "id": 273096,
+      "name": "Blueprint: Tanning Rack"
+     }
+    ],
+    "kind": "boss",
+    "name": "Razorclaw the Butcher"
+   },
+   {
+    "items": [
+     {
+      "id": 273637,
+      "name": "Blade of Silverlaine"
+     }
+    ],
+    "kind": "boss",
+    "name": "Baron Silverlaine"
+   },
+   {
+    "items": [
+     {
+      "id": 273643,
+      "name": "Worgenbane Talisman"
+     },
+     {
+      "id": 273105,
+      "name": "Blueprint: Toxin Study"
+     }
+    ],
+    "kind": "boss",
+    "name": "Commander Springvale"
+   },
+   {
+    "items": [
+     {
+      "id": 273645,
+      "name": "Blindwatcher's Sight"
+     }
+    ],
+    "kind": "boss",
+    "name": "Odo the Blindwatcher"
+   },
+   {
+    "items": [
+     {
+      "id": 273646,
+      "name": "Half-Eaten Boots"
+     }
+    ],
+    "kind": "boss",
+    "name": "Fenrus the Devourer"
+   },
+   {
+    "items": [
+     {
+      "id": 273647,
+      "name": "Worgpelt Leggings"
+     }
+    ],
+    "kind": "boss",
+    "name": "Wolf Master Nandos"
+   }
+  ],
+  "name": "Shadowfang Keep",
+  "seen": "2026-10-06"
+ },
+ "shapers-terrace": {
+  "bosses": [],
+  "name": "Shaper's Terrace",
+  "seen": "2026-10-03"
+ },
+ "stratholme-main-gate": {
+  "bosses": [],
+  "name": "Stratholme Main Gate",
+  "seen": "2026-10-03"
+ },
+ "stratholme-service-gate": {
+  "bosses": [],
+  "name": "Stratholme Service Gate",
+  "seen": "2026-10-03"
+ },
+ "sunken-temple": {
+  "bosses": [],
+  "name": "Sunken Temple",
+  "seen": "2026-10-03"
+ },
+ "the-deadmines": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273289,
+      "name": "Ogre Loincloth"
+     }
+    ],
+    "kind": "boss",
+    "name": "Rhahk'Zor"
+   },
+   {
+    "items": [
+     {
+      "id": 273293,
+      "name": "Bandsaw Wristbands"
+     }
+    ],
+    "kind": "boss",
+    "name": "Sneed"
+   },
+   {
+    "items": [
+     {
+      "id": 285292,
+      "name": "Dull Sawblade"
+     }
+    ],
+    "kind": "boss",
+    "name": "Sneed's Shredder"
+   },
+   {
+    "items": [
+     {
+      "id": 273297,
+      "name": "Goblin Hammer"
+     },
+     {
+      "id": 273086,
+      "name": "Blueprint: Anvil"
+     }
+    ],
+    "kind": "boss",
+    "name": "Gilnid"
+   },
+   {
+    "items": [
+     {
+      "id": 284715,
+      "name": "First Mate Band"
+     }
+    ],
+    "kind": "boss",
+    "name": "Mr. Smite"
+   },
+   {
+    "items": [
+     {
+      "id": 273298,
+      "name": "Lookie's Spyglass"
+     },
+     {
+      "id": 273102,
+      "name": "Blueprint: Cookie's Feast"
+     }
+    ],
+    "kind": "boss",
+    "name": "Cookie"
+   }
+  ],
+  "name": "The Deadmines",
+  "seen": "2026-10-03"
+ },
+ "the-drowned-city": {
+  "bosses": [],
+  "name": "The Drowned City",
+  "seen": null
+ },
+ "the-stockade": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273804,
+      "name": "Executioner Mantle"
+     },
+     {
+      "id": 273805,
+      "name": "Blackrock Harness"
+     },
+     {
+      "id": 273806,
+      "name": "Dark Horde Band"
+     }
+    ],
+    "kind": "boss",
+    "name": "Targorr the Dread"
+   },
+   {
+    "items": [
+     {
+      "id": 273807,
+      "name": "Demolition Girdle"
+     },
+     {
+      "id": 273808,
+      "name": "Bridgebreaker Bindings"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     }
+    ],
+    "kind": "boss",
+    "name": "Kam Deepfury"
+   },
+   {
+    "items": [
+     {
+      "id": 273809,
+      "name": "Hamhock's Cleaver"
+     },
+     {
+      "id": 273810,
+      "name": "Ogre Grips"
+     },
+     {
+      "id": 273811,
+      "name": "Repurposed Rack"
+     },
+     {
+      "id": 252513,
+      "name": "Trapper's Leather Helm"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Hamhock"
+   },
+   {
+    "items": [
+     {
+      "id": 273817,
+      "name": "Graverobber's Shovel"
+     },
+     {
+      "id": 273819,
+      "name": "Boneslicer"
+     },
+     {
+      "id": 273820,
+      "name": "Nightskulker Ring"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     }
+    ],
+    "kind": "boss",
+    "name": "Dextren Ward"
+   },
+   {
+    "items": [
+     {
+      "id": 273824,
+      "name": "Defias Jailbreakers"
+     },
+     {
+      "id": 273825,
+      "name": "Red Wool Cloak"
+     },
+     {
+      "id": 273827,
+      "name": "Debt Collector"
+     },
+     {
+      "id": 273829,
+      "name": "Concealed Hand Crossbow"
+     },
+     {
+      "id": 252822,
+      "name": "Pattern: Defender's Leather Kilt"
+     },
+     {
+      "id": 252455,
+      "name": "Defender's Leather Helm"
+     },
+     {
+      "id": 252456,
+      "name": "Totemic Leather Helm"
+     },
+     {
+      "id": 252515,
+      "name": "Wisdom's Leather Helm"
+     },
+     {
+      "id": 252512,
+      "name": "Brawler's Leather Helm"
+     },
+     {
+      "id": 252514,
+      "name": "Stormrider's Leather Helm"
+     },
+     {
+      "id": 252820,
+      "name": "Pattern: Brawler's Leather Legguards"
+     }
+    ],
+    "kind": "boss",
+    "name": "Bazil Thredd"
+   },
+   {
+    "items": [
+     {
+      "id": 274092,
+      "name": "Sharpened Cutlery"
+     }
+    ],
+    "kind": "trash",
+    "name": "Trash mobs"
+   }
+  ],
+  "name": "The Stockade",
+  "seen": "2026-10-03"
+ },
+ "uldaman": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 274430,
+      "name": "Rock Sentinel Slicer"
+     },
+     {
+      "id": 274428,
+      "name": "Dark Golem Breastplate"
+     },
+     {
+      "id": 274425,
+      "name": "White Obsidian Wand"
+     },
+     {
+      "id": 274485,
+      "name": "Axe of Lingering Dread"
+     },
+     {
+      "id": 251400,
+      "name": "Plans: Warder's Boots"
+     }
+    ],
+    "kind": "boss",
+    "name": "Obsidian Sentinel"
+   }
+  ],
+  "name": "Uldaman",
+  "seen": "2026-10-23"
+ },
+ "upper-blackrock-spire": {
+  "bosses": [],
+  "name": "Upper Blackrock Spire",
+  "seen": "2026-10-03"
+ },
+ "wailing-caverns": {
+  "bosses": [
+   {
+    "items": [
+     {
+      "id": 273088,
+      "name": "Snake Eye Kaleidoscope"
+     },
+     {
+      "id": 273098,
+      "name": "Blueprint: Field Guide"
+     }
+    ],
+    "kind": "boss",
+    "name": "Lady Anacondra"
+   },
+   {
+    "items": [
+     {
+      "id": 273084,
+      "name": "Cloak of Hermitic Bliss"
+     }
+    ],
+    "kind": "boss",
+    "name": "Kresh"
+   },
+   {
+    "items": [
+     {
+      "id": 273089,
+      "name": "Slither Cord"
+     }
+    ],
+    "kind": "boss",
+    "name": "Lord Pythas"
+   },
+   {
+    "items": [
+     {
+      "id": 273137,
+      "name": "Skum's Bucket"
+     }
+    ],
+    "kind": "boss",
+    "name": "Skum"
+   },
+   {
+    "items": [
+     {
+      "id": 273087,
+      "name": "Blueprint: Journeyman Campfire"
+     }
+    ],
+    "kind": "boss",
+    "name": "Lord Serpentis"
+   }
+  ],
+  "name": "Wailing Caverns",
+  "seen": "2026-10-06"
+ },
+ "zulfarrak": {
+  "bosses": [],
+  "name": "Zul'Farrak",
+  "seen": "2026-10-03"
+ }
+}

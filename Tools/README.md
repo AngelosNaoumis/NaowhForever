@@ -278,6 +278,7 @@ are not included. Classic baseline values remain unverified for Forever.
 | --- | --- | --- |
 | `journal.py` | Builds every dungeon's bosses and loot into `NaowhForever_DungeonJournal/Data/`. `--offline` asks Wowhead nothing (its cache and the game's tables only); `--refresh-drops` reads every boss's drops again for today's chances (both daily in CI). | The heart of the Journal. How it decides what a boss drops is drawn in `NaowhForever_DungeonJournal/README.md`. |
 | `factions.py` | Builds the Reputation and PvP tabs from `data/journal_factions.json` and the game's own item tables. | Rewards, standings and prices are in the client, so we read them from there, not a website. |
+| `foreverchanges_loot.py` | Builds `data/foreverchanges_loot.json`, which `journal.py` reads: the drops ForeverChanges' dungeon pages mark seen in game, per boss, the items new in Forever only on a classic dungeon (their pages give Classic's loot tables there). Written only when those drops changed; `--report FILE` writes what changed, for the daily watch. | The drops players see arrive in the Journal without a hand list. |
 | `quest_chains.py` | Builds each dungeon quest's chain and what you need first, from Wowhead Forever. | So the Journal can say "do this first". |
 | `abilities.py` | Builds `NaowhForever_DungeonJournal/Data/Abilities.lua` (each boss's spell IDs, each name once) and `BossInfo.lua` (its level, classification, creature type and title) from its Wowhead Forever NPC page. Cached in `data/abilities_cache.json`; `--offline` writes what the cache has. | A boss's page shows its abilities and header. The game gives each spell's name, icon and description. |
 | `boss_quests.py` | Builds `NaowhForever_DungeonJournal/Data/BossQuests.lua`: the dungeon quests whose objective on Wowhead Forever names or links a boss. Cached in `data/quest_objectives_cache.json`. | A boss's page lists the quests that need it. |
@@ -374,7 +375,7 @@ are not included. Classic baseline values remain unverified for Forever.
 | `journal_bosses.json` | The bosses per dungeon, in kill order, with rares, optional bosses, chests and hand fixes. Kept by hand: no source has the right list for Forever. |
 | `journal_factions.json` | The Journal's factions, with rewards added or removed by hand on top of the game's. |
 | `completo_fixes.json` | The Quest List's corrections, kept by hand: what a quest needs first where the sources are wrong, the quests of which you take one, breadcrumbs, the profession and camp recipe a quest needs, the quests the game has that ForeverChanges does not list yet, and the holiday and event quests its event sorts miss, each with what shows it. |
-| `journal_cache.json`, `wowsrc_loot.json`, `item_names.json` | Every Wowhead answer the Journal's build used; wowsrc's pages as last read; their item names to IDs. Committed, so a rebuild (and CI) gives the same data without asking again. |
+| `journal_cache.json`, `wowsrc_loot.json`, `item_names.json`, `foreverchanges_loot.json` | Every Wowhead answer the Journal's build used; wowsrc's pages as last read; their item names to IDs; the drops ForeverChanges' players have seen. Committed, so a rebuild (and CI) gives the same data without asking again. |
 | `preset_minimalist.lua`, `preset_recommended.lua` | Naowh's two setups, the input of `build/presets.lua`. |
 | Every other `*.json` | The cache of the builder that names it above. |
 
@@ -434,8 +435,10 @@ are not included. Classic baseline values remain unverified for Forever.
     lost or changed a quest, it rebuilds the Quest List with `build/completo_quests.py --offline`,
     whose report names each class, level or side it newly takes where ForeverChanges and the
     catalog agree.
-  - `loot`: `sources/wowsrc.py --check`. If wowsrc's loot pages changed (a boss gained or lost
-    items, a new boss or page), it rebuilds the Journal with `build/journal.py --offline`.
+  - `loot`: `sources/wowsrc.py --check` and `build/foreverchanges_loot.py --report`. If wowsrc's
+    loot pages changed (a boss gained or lost items, a new boss or page), or the drops
+    ForeverChanges' players have seen did, it rebuilds the Journal with `build/journal.py --offline`.
+    ForeverChanges' site failing only says so: wowsrc's change goes in alone.
   - `drops`: `build/journal.py --refresh-drops`. Every boss's and chest's drops read again from
     Wowhead Forever, so the chances follow today's kill counts. A change only when a chance
     moved a whole percent, or an item came or went. Only when a run asks for it: it has failed
