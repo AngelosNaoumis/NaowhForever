@@ -93,4 +93,33 @@ Check("an unpriced disenchant leaves the verdict partial", best == "auction" and
 Check("one priced way to sell is no verdict", W.Best(5, nil, false) == nil and W.Best(0, 95, false) == nil
     and W.Best(nil, nil, nil) == nil)
 
+local S = t.M.Settings
+S.Set("tooltipBestMargin", 0)
+best, margin, second = W.Best(94, 95, false)
+Check("with no margin a copper over the vendor is enough", best == "auction" and margin == 1 and second == "vendor")
+S.Set("tooltipBestMargin", 10)
+best, margin, second, complete = W.Best(90, 95, false)
+Check("under the margin the vendor is best, and the auction's lead shows as less than nothing",
+    best == "vendor" and margin == -5 and second == "auction" and complete)
+best, margin, second = W.Best(85, 95, false)
+Check("exactly the margin is still the vendor's", best == "vendor" and margin == -10 and second == "auction")
+best, margin, second = W.Best(84, 95, false)
+Check("past the margin the auction house wins by its whole lead", best == "auction" and margin == 11
+    and second == "vendor")
+best, margin, second = W.Best(95, 95, false)
+Check("a tie is still the vendor's", best == "vendor" and margin == 0 and second == "auction")
+best, margin, second = W.Best(90, 95, 92)
+Check("an auction held under the margin falls below a disenchant that beats the vendor", best == "disenchant"
+    and margin == 2 and second == "vendor")
+best, margin, second = W.Best(20, 95, 90)
+Check("the margin weighs only the vendor, not disenchanting", best == "auction" and margin == 5
+    and second == "disenchant")
+best, margin, second = W.Best(0, 5, 3)
+Check("with no vendor price there is no margin to meet", best == "auction" and margin == 2
+    and second == "disenchant")
+best, margin, second, complete = W.Best(90, 95, nil)
+Check("an unpriced disenchant still leaves the vendor's verdict partial", best == "vendor" and margin == -5
+    and second == "auction" and complete == false)
+S.Set("tooltipBestMargin", 0)
+
 print("market worth: " .. checks .. " checks passed")

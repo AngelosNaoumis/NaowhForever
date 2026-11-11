@@ -6,6 +6,7 @@ local GetContainerItemInfo = C_Container.GetContainerItemInfo
 local GetItemInfo = C_Item.GetItemInfo
 
 local Market = ns.Market
+local S = Market.Settings
 local C = Market.C
 
 local FIRST_BAG = 0
@@ -14,7 +15,7 @@ local VENDOR_PRICE = 11
 local OUTLETS = { "vendor", "auction", "disenchant" }
 
 local items, byID, spare, ranks = {}, {}, {}, {}
-local offers = {}
+local offers, scores = {}, {}
 
 local Worth = { items = items, total = 0, auction = 0 }
 Market.Worth = Worth
@@ -87,15 +88,19 @@ end
 
 function Worth.Best(vendor, auction, disenchant)
     offers.vendor, offers.auction, offers.disenchant = vendor, auction, disenchant
+    scores.vendor, scores.auction, scores.disenchant = vendor, auction, disenchant
+    if vendor and vendor > 0 and auction and auction > vendor and auction - vendor <= S.Get("tooltipBestMargin") then
+        scores.auction = vendor
+    end
     local best, second, complete = nil, nil, true
     for _, outlet in ipairs(OUTLETS) do
-        local value = offers[outlet]
+        local value = scores[outlet]
         if value == nil then
             complete = false
         elseif value and value > 0 then
-            if not best or value > offers[best] then
+            if not best or value > scores[best] then
                 best, second = outlet, best
-            elseif not second or value > offers[second] then
+            elseif not second or value > scores[second] then
                 second = outlet
             end
         end

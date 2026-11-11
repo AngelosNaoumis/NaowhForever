@@ -316,6 +316,12 @@ NaowhForever_Market/
   with the auction house, as in Bag Worth, and the auction house a tie with disenchanting: the surer
   gold first. Its line leads the block and says how much more the winner pays than the next way, for
   the whole stack unless Stack Prices is Each Item.
+- Auction Margin (`tooltipBestMargin`, saved in copper, set in whole silver) is how much more per item,
+  after the cut, the auction house must pay than a vendor before the verdict says Auction. A lead of
+  exactly the margin stays the vendor's, so 0 is the tie rule above and today's verdict. An auction
+  held under the margin ranks just under the vendor, so disenchanting can still beat both, and the
+  line reads "Auction only +..." with what the auction house would have added. It weighs only the
+  verdict: Bag Worth and Crafts still count an item at the most it fetches.
 - Disenchanting counts only when Professions is loaded, the item takes it, and this character's
   Enchanting can disenchant it now (`DisenchantDeals.MeetsSkill`): a way you cannot take is no advice, so
   a character without Enchanting is told to sell even when the Disenchant line is higher. A bound item
@@ -454,3 +460,6 @@ Back at an auctioneer:
 Away from it again:
 
 49. Prices still has the Watch box for the item it shows, and its list is your bags, not the Watch List.
+50. Best Way to Sell on, Auction Margin at 1s: a stack of cloth whose auction price beats its vendor price
+    by under a silver each after the cut reads Best: Vendor and "Auction only +..."; at 0 it reads Best:
+    Auction again. With Best Way to Sell off, Auction Margin is dimmed and says it needs it.

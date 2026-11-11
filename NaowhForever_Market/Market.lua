@@ -8,7 +8,7 @@ local DURATION_CVAR = "auctionHouseDurationDropdown"
 local S = ns.UI.ModuleSettings("market", { enabled = F.enabled,
     duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), postKeys = false,
     bagWorth = false,
-    tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipBest = false,
+    tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipBest = false, tooltipBestMargin = 0,
     farmHerbs = true, farmVeins = true, farmSkins = true, farmFish = true, farmLocked = false,
     sortRun = "", sortCrafts = "", sortMine = "", undercut = "step", watchAlerts = true })
 ns.MarketSettings = S

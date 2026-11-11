@@ -9,6 +9,8 @@ local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_WATCH, ORDER_KEYS = 10, 20,
 local TEXT_OFF = ns.L("Turn on The Market")
 local TEXT_PROFESSIONS_OFF = "Turn on Professions"
 local TEXT_NEEDS_TOOLTIP = ns.L("Needs Tooltip Lines")
+local TEXT_NEEDS_BEST = ns.L("Needs Best Way to Sell")
+local MARGIN_RANGE = { 0, 100, 1 }
 local DURATIONS = { Market.C.DURATION_LABELS, Market.C.DURATIONS }
 local UNDERCUTS = { { match = "Match the Cheapest", step = "Smallest Step", silver = "One Silver" },
     { "match", "step", "silver" } }
@@ -30,6 +32,15 @@ end
 local function TooltipWhy()
     if not On() then return Why() end
     return TEXT_NEEDS_TOOLTIP
+end
+
+local function BestOn()
+    return TooltipOn() and S.Get("tooltipBest")
+end
+
+local function BestWhy()
+    if not TooltipOn() then return TooltipWhy() end
+    return TEXT_NEEDS_BEST
 end
 
 local function ProfessionsOn()
@@ -108,6 +119,9 @@ page:Card({
           help = "On a stack in your bags, prices read for each item, the whole stack, or both." },
         { key = "tooltipBest", label = "Best Way to Sell", toggle = true, needs = TooltipOn, why = TooltipWhy,
           help = "Says whether the auction house, a vendor or disenchanting pays you the most." },
+        { key = "tooltipBestMargin", label = "Auction Margin", slider = MARGIN_RANGE, unit = "s",
+          scale = Market.C.SILVER, needs = BestOn, why = BestWhy,
+          help = "A vendor stays best unless the auction house pays more than this over it, per item." },
     },
 })
 
