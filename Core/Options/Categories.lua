@@ -103,7 +103,8 @@ local CATEGORIES = {
     { name = "Bags, Loot & Mail", band = "WORLD", navIcon = "checklist",
       subtitle = "Looting, junk, vendors and mail.",
       pages = {
-          { name = "Loot", cards = { "QoL/Loot & Items:lootFeed", "QoL/Loot & Items:lootTrade" } },
+          { name = "Loot", cards = { "QoL/Loot & Items:lootFeed", "QoL/Loot & Items:lootTrade",
+              "QoL/Interface:undermineReal" } },
           { name = "Bags & Junk", cards = { "QoL/Loot & Items:bagSpace", "QoL/Loot & Items:scrapMarker",
               "QoL/Loot & Items:Open Junk List", "QoL/Loot & Items:bankMarker" } },
           { name = "Restock", cards = { "QoL/Loot & Items:restock" } },
@@ -131,7 +132,7 @@ local CATEGORIES = {
       pages = {
           { name = "Dungeon Journal", cards = { "@Dungeon Journal", "Dungeon Journal/Journal", "Dungeon Journal/Map" } },
           { name = "Dungeon Quests", cards = { "Dungeon Journal/Quest Tracker" } },
-          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings", "QoL/Interface:undermineReal" } },
+          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings" } },
           { name = "Group Finder", cards = { "@Group Finder", "Group Finder/Settings", "QoL/Questing & Group:finderRoles",
               "QoL/Interface:chatZones" } },
           { name = "Group Tools", cards = { "@Group Inspect", "Group Inspect/Settings", "QoL/Questing & Group:groupButtons",

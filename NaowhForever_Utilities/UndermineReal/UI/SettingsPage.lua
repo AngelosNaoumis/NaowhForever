@@ -48,6 +48,7 @@ end
 Settings.Page(UR.PAGE):Card({
     id = "undermineReal", name = "Undermine Real Reminder", order = ORDER_UNDERMINE, switch = "enabled", store = S,
     help = TEXT_HELP,
+    search = "reals coin coins currency boss loot",
     summary = Summary,
     studio = { height = STAGE_H, states = STATES, new = NewPreview, paint = PaintPreview },
     rows = Rows,

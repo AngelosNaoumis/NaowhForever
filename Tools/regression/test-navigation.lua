@@ -1064,6 +1064,26 @@ do
     reload:Hide()
 end
 
+-- The Undermine Real Reminder sits on Bags, Loot & Mail > Loot, and what a player calls the coin finds it there.
+do
+    Load("NaowhForever_Utilities/UndermineReal/UndermineReal.lua")
+    Load("NaowhForever_Utilities/UndermineReal/Data/Bosses.lua")
+    ns.UndermineReal.Look = { New = function() end, Fill = function() end }
+    Load("NaowhForever_Utilities/UndermineReal/UI/SettingsPage.lua")
+    local card = "QoL/Interface:undermineReal"
+    local real
+    for _, query in ipairs({ "real", "reals", "undermine", "tarnished", "coin" }) do
+        real = nil
+        for _, t in ipairs(UI.Search.Find(UI.Search.Collect(), query)) do
+            if t.card == card then real = t break end
+        end
+        Check(real and real.page == "Bags, Loot & Mail > Loot", "'" .. query .. "' finds the Undermine Real Reminder on Loot")
+    end
+    ns.OpenOptionsWindow("Home"); Flush()
+    UI.GoToSetting(real.page, real.label, real.card); Flush()
+    Check(Text("Bags, Loot & Mail / Loot") and Head("Undermine Real Reminder"), "and its result opens the Loot page at the card")
+end
+
 print(cases .. " navigation checks passed")
 -- Available only to an offline renderer that loads this test environment.
 local capture = rawget(_G, "NAVIGATION_CAPTURE")
