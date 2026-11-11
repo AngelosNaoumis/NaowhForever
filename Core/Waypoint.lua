@@ -141,6 +141,14 @@ local function Flush()
     end
 end
 
+local function FlushClosed()
+    if not MapOpen() then Flush() end
+end
+
+local function FlushAfterClose()
+    C_Timer.After(0, FlushClosed)
+end
+
 local function DropPending()
     pending = nil
     held:UnregisterAllEvents()
@@ -152,7 +160,7 @@ local function Hold(change)
     if not held then
         held = CreateFrame("Frame")
         held:SetScript("OnEvent", DropPending)
-        WorldMapFrame:HookScript("OnHide", Flush)
+        WorldMapFrame:HookScript("OnHide", FlushAfterClose)
         preview = NewPreview()
     end
     held:RegisterEvent("USER_WAYPOINT_UPDATED")

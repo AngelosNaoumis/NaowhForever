@@ -812,7 +812,9 @@ local function TrackPlaced()
 end
 
 local function OnMapHide()
-    if trackOnMapClose then TrackPlaced() end
+    if not trackOnMapClose then return end
+    trackOnMapClose = false
+    C_Timer.After(0, TrackPlaced)
 end
 
 local function WatchPlaced()

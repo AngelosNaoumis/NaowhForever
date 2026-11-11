@@ -44,9 +44,19 @@ function canvas:AcquirePin()
     pins[#pins + 1] = pin
     return pin
 end
-local function CloseMap()
+local nextFrame = {}
+local function NextFrame()
+    local due = nextFrame
+    nextFrame = {}
+    for _, fn in ipairs(due) do fn() end
+end
+local function HideMap()
     mapOpen = false
     for _, fn in ipairs(hooks.OnHide or {}) do fn(WorldMapFrame) end
+end
+local function CloseMap()
+    HideMap()
+    NextFrame()
 end
 
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
@@ -65,7 +75,7 @@ local env = setmetatable({
     end,
     MapCanvasPinMixin = {},
     MapCanvasDataProviderMixin = { GetMap = function() return canvas end },
-    C_Timer = { After = function() end },
+    C_Timer = { After = function(delay, fn) if delay == 0 then nextFrame[#nextFrame + 1] = fn end end },
     C_Map = {
         CanSetUserWaypointOnMap = function() return true end,
         SetUserWaypoint = function(point)
@@ -115,9 +125,14 @@ shownMap = 1411
 providers[1]:RefreshAllData()
 Check(#pins == 0, "no preview on a map it is not on")
 shownMap = 1454
+HideMap()
+Check(calls.set == 1 and calls.track == 1, "nothing set inside the map's own close")
+mapOpen = true
+NextFrame()
+Check(calls.set == 1, "opened again before the next frame: still held")
 CloseMap()
-Check(#pins == 0, "the preview goes as the map closes")
-Check(calls.set == 2 and calls.track == 2, "set once as the map closes")
+Check(#pins == 0, "the preview goes once the map has closed")
+Check(calls.set == 2 and calls.track == 2, "set once, the frame after the map closes")
 Check(current.uiMapID == 1454 and current.position.x == 0.5 and ns.placedWaypoint.title == "Kaja"
     and ns.placedWaypoint.icon == 136248, "the latest spot, with its title and icon")
 CloseMap()
