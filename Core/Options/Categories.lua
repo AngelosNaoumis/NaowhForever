@@ -98,7 +98,8 @@ local CATEGORIES = {
       subtitle = "The Market, and what your items are worth.",
       pages = {
           { name = "The Market", cards = { "@The Market", "The Market/Settings" } },
-          { name = "Prices & Tooltips", cards = { "The Market/Settings:bags", "The Market/Settings:prices" } },
+          { name = "Prices & Tooltips", cards = { "QoL/Loot & Items:auctionPrices", "The Market/Settings:bags",
+              "The Market/Settings:prices" } },
       } },
     { name = "Bags, Loot & Mail", band = "WORLD", navIcon = "checklist",
       subtitle = "Looting, junk, vendors and mail.",
@@ -271,11 +272,16 @@ local function PageItems(page, mineOnly)
 end
 
 local function OverviewItems(cat)
-    local items = {}
+    local items, seen = {}, {}
     for _, page in ipairs(cat.pages) do
-        local list = page.sources and PageItems(page, true) or NONE
-        if #list > 0 then items[#items + 1] = page.heading end
-        for _, item in ipairs(list) do items[#items + 1] = item end
+        local heading = page.heading
+        for _, item in ipairs(page.sources and PageItems(page, true) or NONE) do
+            if not seen[item] then
+                if heading then Add(items, seen, heading) end
+                heading = nil
+                Add(items, seen, item)
+            end
+        end
     end
     return items
 end

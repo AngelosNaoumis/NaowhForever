@@ -497,7 +497,8 @@ HookReplicate()
 HookTooltip()
 
 ns.Shared.Settings.Page("QoL/Loot & Items", S):Card({
-    id = "auctionPrices", name = "Auction Prices", order = 30, into = "lootTrade",
+    id = "auctionPrices", name = "Auction Prices", order = 30,
+    help = "Auction house prices on item tooltips, from your own scans.",
     rows = {
         { key = "ahPrices", label = "Scan Prices Button", toggle = true, note = ScanLine,
           needs = ns.GamepadFree, why = ns.GamepadWhy,

@@ -224,6 +224,7 @@ Check("timeout during a read neither stops it nor reports no answer", t.Refreshe
 t = Setup(false, false, true)
 t.Fire("AUCTION_HOUSE_SHOW")
 Check("disabled defaults install no hook", t.ReplicateHooks() == 0 and not t.Listening())
+Check("Auction Prices is a card of its own, placed on Auction House", t.card.id == "auctionPrices" and t.card.into == nil)
 Check("crate prices sit under the item price", t.card.rows[2].key == "ahTooltip" and t.card.rows[3].key == "ahCrates")
 local capture = t.card.rows[4]
 Check("capture row always shown", capture.key == "ahCapture" and capture.label == "Capture Other Addons' Scans" and capture.hidden == nil)

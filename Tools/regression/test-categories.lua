@@ -133,4 +133,21 @@ Check(Holds(druid, "@Druid Mana") and Holds(druid, "QoL/Combat:stealthReminder")
 local overview = Compose(O.PAGES["Combat > Overview"])
 Check(Holds(overview, "@Druid Mana") and not Holds(overview, "@Blessings"), "the Overview lists only this class's")
 
+-- The Market off: its card once on the Overview, and Auction Prices (QoL's own) still on its page.
+loaded.NaowhForever_Market = false
+local function Count(items, uid)
+    local n = 0
+    for _, item in ipairs(items or {}) do
+        if item.uid == uid then n = n + 1 end
+    end
+    return n
+end
+local ahOverview = Compose(O.PAGES["Auction House > Overview"])
+Check(Count(ahOverview, "@The Market") == 1, "The Market off: its card shows once on the Overview")
+Check(Holds(ahOverview, "QoL/Loot & Items:auctionPrices"), "and Auction Prices stays on the Overview")
+local tooltips = Compose(O.PAGES["Auction House > Prices & Tooltips"])
+Check(Holds(tooltips, "QoL/Loot & Items:auctionPrices") and Holds(tooltips, "@The Market"),
+    "The Market off: Prices & Tooltips keeps Auction Prices, with The Market's card for its own settings")
+loaded.NaowhForever_Market = nil
+
 print("test-categories: " .. checks .. " checks passed")
