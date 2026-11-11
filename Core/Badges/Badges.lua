@@ -187,11 +187,11 @@ local function BuildRoster()
 end
 BuildRoster()
 
-local function EntryOf(guid, who, unit)
+local function EntryOf(guid, who, unit, offline)
     if not guid or Secret(guid) then return nil end
     if guid == previewGUID then return previewEntry end
     local entry = roster[guid]
-    if entry and entry.patron and not Confirm.Shows(guid, who, unit) then return nil end
+    if entry and entry.patron and not Confirm.Shows(guid, who, unit, offline) then return nil end
     return entry
 end
 
@@ -486,9 +486,9 @@ local function AddTooltipLine(tooltip, data)
     end
 end
 
-local function AddRosterPlate(_, guid, _, row, anchor)
+local function AddRosterPlate(_, guid, info, row, anchor)
     if not Setting("badgeTooltip") then return end
-    local entry = EntryOf(guid)
+    local entry = EntryOf(guid, nil, nil, info.presence == Enum.ClubMemberPresence.Offline)
     local tier = TierOf(entry)
     if tier then ShowPlate(anchor, guid, entry, tier, row) end
 end
@@ -678,7 +678,8 @@ end
 local function PaintRow(row)
     local info = listOn and row.memberInfo
     local guid = info and info.guid
-    local tier = guid and not Secret(guid) and TierOf(EntryOf(guid, info.name))
+    local offline = info and info.presence == Enum.ClubMemberPresence.Offline
+    local tier = guid and not Secret(guid) and TierOf(EntryOf(guid, info.name, nil, offline))
     local badge = listBadges[row]
     if not tier then
         if badge then badge:Hide() end

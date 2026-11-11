@@ -138,7 +138,8 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
   group) asks that character once a minute at most, ten asks per ten seconds, and only their
   client's yes within ten seconds counts. Answers are rate-limited the same way. The game vouches
   for who sent a whisper, so another character cannot answer for them. Nothing is sent while
-  addon chat is locked down.
+  addon chat is locked down, or to an offline guild member or friend: the game answers an addon
+  whisper to an offline character with a "No player named" error in chat.
 - The other faction cannot be whispered on Forever, so it sees patron badges as the list has
   them, unconfirmed. The team's badges are reviewed in a pull request and need no confirmation.
 - A supporter given a badge by hand is in Staff.lua under a patron tier: reviewed in the pull
