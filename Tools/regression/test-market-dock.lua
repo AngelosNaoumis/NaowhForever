@@ -67,7 +67,7 @@ local closes, resets = 0, 0
 local MODES = { Buy = {}, ItemBuy = {}, CommoditiesBuy = {}, WoWTokenBuy = {}, ItemSell = {}, CommoditiesSell = {},
     WoWTokenSell = {}, Auctions = {} }
 local ah = Frame()
-function ah:SetPostItem() end
+function ah:SetPostItem(location) location.locked = true end
 function ah:SetDisplayMode(mode) self.displayMode = mode end
 function ah:GetDisplayMode() return self.displayMode end
 function ah:Open() self:Show() end
@@ -132,6 +132,7 @@ Load("NaowhForever_Market/UI/Dock.lua", {
     AuctionHouseFrameDisplayMode = MODES,
     C_AddOns = { IsAddOnLoaded = function() return true end },
     C_AuctionHouse = { CloseAuctionHouse = function() closes = closes + 1 end },
+    C_Item = { UnlockItem = function(location) location.locked = false end },
     CreateFrame = function()
         local f = Frame()
         made[#made + 1] = f
@@ -192,6 +193,7 @@ check("My Auctions takes Sell's place", Pages.mine.shown and not Pages.sell.show
 local location = {}
 ah:SetPostItem(location)
 check("right-clicking a bag item picks it on Sell", Pages.sell.shown and Pages.sell.picked == location)
+check("and unlocks it, so Sell can post it", not location.locked)
 
 panel.close.scripts.OnClick()
 check("the X closes only the panel", not Dock.Shown() and ah.shown and closes == 0)

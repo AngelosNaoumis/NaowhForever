@@ -90,7 +90,9 @@ NaowhForever_Market/
 - Post With Keys and Bag Worth start off: Space posted an item without meaning to, and Bag Worth's numbers
   on their slots puzzled them. With Post With Keys off the panel takes no keys at all.
 - A right-click on a bag item at the auction house goes to Blizzard's `SetPostItem`. The Market hooks
-  it and picks that item on the panel's Sell page; Blizzard's own Sell tab takes it too.
+  it and picks that item on the panel's Sell page; Blizzard's own Sell tab takes it too. Blizzard's tab
+  locks the item with `C_Item.LockItem`, and Sell passes over locked slots, so the hook unlocks it.
+  Blizzard's auction house code never reads that lock.
 - `PostCommodity`, `PostItem` and their Confirm calls need a hardware event, so a post only ever runs
   from the Post button or from Space in the panel's OnKeyDown. The key is claimed with
   `SetPropagateKeyboardInput(false)` only for that press, out of combat, as the Dungeon Journal does.
@@ -360,7 +362,8 @@ In game, at an auctioneer, with The Market on:
    does the same; with it off, Space does nothing in the panel.
 4. With Post With Keys on, Up and Down step the price to just under the next listing; typing a price
    makes it yours.
-5. Right-clicking a bag item picks it on the panel's Sell, and Blizzard's Sell tab takes it too.
+5. Right-clicking a bag item picks it on the panel's Sell, and Blizzard's Sell tab takes it too. Post on the
+   panel posts it.
 6. The panel's X closes it, and The Market button above Blizzard's window brings it back. Leaving the
    auctioneer and coming back opens the panel again.
 7. Professions' Shopping List (and Search Favorites AH, Disenchant Deals) sits to the right of the

@@ -183,6 +183,7 @@ function ns.MarketAuctionWindow()
 end
 
 local function OnPostItem(_, location)
+    if Dock.Shown() then C_Item.UnlockItem(location) end
     Dock.Pick(location)
 end
 
