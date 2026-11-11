@@ -35,6 +35,14 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-4618-0111FC51   | Naowh    |
 | Player-6938-000B9D7E   | Naowh    |
 | Player-6946-0006F0BF   | Naowh    |
+| Player-6946-012BD0FC   | Naowh    |
+| Player-6946-01133D46   | Naowh    |
+| Player-6946-011990CB   | Naowh    |
+| Player-6946-012BFD33   | Naowh    |
+| Player-6946-01811BD3   | Naowh    |
+| Player-6940-013CDDE6   | Naowh    |
+| Player-6940-0143F878   | Naowh    |
+| Player-6940-0157C6E9   | Naowh    |
 | Player-4613-006EB819   | Dieman   |
 | Player-4620-0069A23D   | Glyalith |
 | Player-6796-006CA983   | Glyalith |
