@@ -262,6 +262,7 @@ function Parts.SearchBox(parent, hint, onSearch, columns)
     box:SetTextInsets(textLeft, SEARCH_TEXT_RIGHT, 0, 0)
     box.hint:ClearAllPoints()
     box.hint:SetPoint("LEFT", textLeft, 0)
+    box.hint:SetPoint("RIGHT", -SEARCH_TEXT_RIGHT, 0)
     Edge(box, BORDER_RGB)
     if not ns.foreverSkin then
         box:HookScript("OnEditFocusGained", SearchFocus)
