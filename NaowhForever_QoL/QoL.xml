@@ -65,6 +65,7 @@
     <Script file="Loot\FishingSounds.lua"/>
     <Script file="Loot\FoodBar.lua"/>
     <Script file="Loot\BagSpace.lua"/>
+    <Script file="Loot\DestroyCheapest.lua"/>
     <Script file="Loot\BagSpaceIgnore.lua"/>
     <Script file="Loot\ScrapMarker.lua"/>
     <Script file="Loot\BankMarker.lua"/>

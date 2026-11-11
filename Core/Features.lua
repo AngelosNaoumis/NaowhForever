@@ -78,6 +78,7 @@ ns.FEATURES = {
         foodBar = false,
         consumableBar = false,
         bagSpace = false,
+        destroyCheapest = false,
         scrapMarker = false,
         bankMarker = false,
         townMap = true,

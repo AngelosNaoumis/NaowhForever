@@ -143,6 +143,7 @@ local S = UI.ModuleSettings("qol", {
     consumableBarKeyOutside = false, consumableBarKeyX = 0, consumableBarKeyY = 0,
     consumableBarAnchor = "UIParent", consumableBarAnchorPoint = "CENTER", consumableBarAnchorRelPoint = "CENTER",
     consumableBarX = 0, consumableBarY = 0,
+    destroyCheapest = F.destroyCheapest,
     bagSpace = F.bagSpace, bagSpaceCount = 4, bagSpaceSize = 36, bagSpaceGrow = "RIGHT", bagSpaceReverse = false,
     bagSpaceMaxQuality = 2, bagSpaceJunkFirst = false, bagSpaceAuction = true,
     bagSpaceProtect = true, bagSpaceFreeBelow = 0, bagSpaceHideCombat = true,

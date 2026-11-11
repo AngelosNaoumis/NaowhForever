@@ -122,6 +122,7 @@ NaowhForever_QoL/
     AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
+    DestroyCheapest.lua when loot does not fit, offers the cheapest safe item to destroy
     BagSpaceIgnore.lua  Bag Space's Ignore List window (ns.ShowBagSpaceIgnoreList)
     Alts.lua            your characters per realm and faction (ns.AltRealm, ns.AltList, ns.OpenForgetAltMenu)
     LootFeed.lua        the Loot Feed, gold per hour and quick loot (ns.ResetLootFeedSession)
@@ -882,6 +883,28 @@ NaowhForever_QoL/
   under Lua 5.1's limit of 200 locals in one chunk. It reads the list and asks for a rescan
   through `ns.BagSpace`. Its search box is `ns.NewSearchBox` and its list scrolls in
   `UI.SlimScroll`, like the options window.
+
+### Destroy Cheapest Item
+- The switch is off until turned on. While it is off, nothing is registered and the popup is not
+  built. While it is on, the only standing event is `UI_ERROR_MESSAGE`. Bag, loot and item-data
+  events are registered only while the popup is open or a delete is waiting on the game.
+- A full-bag error opens the popup only while the loot window is open and every plain bag has no
+  free slot. A vendor, the mail, or a full profession bag does not open it, and neither does a
+  loot that still fits. It does not hook looting, so auto-loot is left alone.
+- The offer is the cheapest stack by vendor price times count, from plain bags only, cheapest
+  first. Left out: quest items and keys, recipes, bags, quivers and ammo, soulbound armor and
+  weapons, epic and better, item-set pieces, equipment-set items, BiS items, library books when
+  Discovery has loaded, profession tools and the hearthstone, anything with no vendor price, and
+  anything already on Bag Space's ignore list when that list exists. Bag Space does not have to
+  be on. Nothing is destroyed on its own.
+- A poor item is deleted from the Destroy button, the click the game accepts, and the addon says
+  it was destroyed only after a bag update shows that stack gone. Anything better is put on the
+  cursor for the game's own delete dialog. That dialog is never accepted here, and
+  `DeleteCursorItem` is not called for it, because that call skips the dialog. The slot is read
+  again at the click. If it changed, nothing is deleted.
+- After the stack is gone, the loot is taken only when its window is still open, the slot still
+  has the item, and the player is out of combat. Otherwise the message says to loot it again.
+  A bag change while the popup is open rebuilds the list.
 
 ### Trainer
 - Closing a non-profession trainer checks the current spellbook for lower ranks even without a learned-ability notification. The trainer type is captured while its window is open. A fresh visit drops the previous popup list; kept-only rank offers stay silent automatically but remain available through Check Bars. Combat deferral is unchanged.
