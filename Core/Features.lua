@@ -138,6 +138,7 @@ ns.FEATURES = {
         mapPanel = true,
         mapFactions = false,
         mapEntrances = false,
+        entranceJournal = false,
     },
     statWeights = {
         enabled = false,
