@@ -12,8 +12,9 @@ ns.Journal.AddDungeon("Kroldok", {
             { npc = 258972, name = "Twilight Commander Zarmok", encounters = { 3452 }, loot = { 274998, 274999, 275000 } },
             { npc = 259281, name = "War Handler Ashka", encounters = { 3453 }, loot = { 275001, 275002, 275003 } },
             { npc = 258964, name = "Nar'gurk", encounters = { 3449 }, loot = { 275004, 275005, 275006 } },
-            { npc = 258968, name = "Overlord Mugg", encounters = { 3451 }, loot = { 275007, 275008, 275009 } },
+            { npc = 258968, name = "Overlord Mugg", encounters = { 3451 }, loot = { 275007, 275008, 275009, 275010 } },
             { npc = 264773, name = "Bossman Toof", optional = true, loot = { 286428, 286429, 286430 } },
+            { npc = nil, name = "Trash", trash = true, loot = { 287013 } },
         } },
     },
 })

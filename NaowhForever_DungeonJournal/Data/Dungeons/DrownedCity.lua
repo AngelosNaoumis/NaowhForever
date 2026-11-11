@@ -16,6 +16,7 @@ ns.Journal.AddDungeon("DrownedCity", {
             { npc = 270887, name = "Primeval Elemental", encounters = { 3511 }, loot = { 274611, 274615, 274612, 271718 }, chance = { 38, 35, 26, 3 } },
             { npc = 270886, name = "Min'loth the Serpent", model = 142286, encounters = { 3479 }, loot = { 274608, 274609, 274610, 271718 }, chance = { 41, 39, 20, 5 } },
             { npc = 270888, name = "Gill", rare = true, loot = { 286646, 286649 } },
+            { npc = 264172, name = "Umbra", rare = true, loot = { 286658, 286662 } },
         } },
     },
 })
