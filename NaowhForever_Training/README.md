@@ -50,6 +50,9 @@ view files and the window share.
 
 ## Why
 
+- Followed builds use GUIDs in `trainingFollow` to separate same-name characters. Legacy
+  name-realm entries are copied only for a matching class and retained for other characters.
+  `false` marks a stopped or empty choice so migration cannot restore an old selection.
 - The on/off switches' defaults (`enabled`, `levelUpToast`, `trainerPanel`, `spellbook`, `demonBooks`) are read from
   `ns.FEATURES.training`; the Trainer Popup card's switch belongs to the QoL store, and QoL's `Questing/Trainer.lua` declares
   that card on this page, so it goes when QoL is off.

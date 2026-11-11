@@ -35,7 +35,8 @@ local function Fixture(o)
             Print = function(m) printed[#printed + 1] = m end,
             Confirm = o.confirm or function(_, yes) yes() end,
         },
-        UnitClass = function() return "Mage", "MAGE", 8 end,
+        UnitClass = function() return "Mage", "MAGE", o.class or 8 end,
+        UnitGUID = function() if o.guid ~= false then return o.guid or "Player-1-Me" end end,
         C_Spell = { GetSpellName = function(id) return SPELL_NAMES[id] or ("Talent " .. id) end },
         wipe = function(t) for k in pairs(t) do t[k] = nil end end,
         GetClassInfo = function(id) return ({ [1] = "Warrior", [8] = "Mage" })[id] end,
@@ -83,9 +84,16 @@ local function Fixture(o)
         end,
         Changed = function() changes = changes + 1 end,
         Apply = function() end,
-        CharKey = function() return "Me-Realm" end,
+        CharKey = function() return (o.name or "Me") .. "-Realm" end,
     }
-    env.ns.Training.Characters = env.ns.Training.Account
+    local unnamed = {}
+    env.ns.Training.Characters = function(key)
+        if o.name == "Unknown" then
+            unnamed[key] = unnamed[key] or {}
+            return unnamed[key]
+        end
+        return env.ns.Training.Account(key)
+    end
     env.NaowhForever = env.ns
     Load({ DIR .. "/Constants.lua", DIR .. "/Builds.lua" }, env)
     local training = env.ns.Training
@@ -191,6 +199,93 @@ Case("deleting a followed build stops following it, and nothing else takes its p
     local index = t.T.NewBuild(8, "Other")
     t.T.DeleteBuild(8, t.T.Builds(8)[index])
     assert(t.T.Followed() == first, "deleting another build leaves it")
+end)
+
+Case("same-name characters follow independent builds across logins", function()
+    local account = {}
+    local mage = Fixture({ account = account, guid = "Player-Mage" })
+    local warrior = Fixture({ account = account, guid = "Player-Warrior", class = 1 })
+    mage.T.Follow(8, TREE[8][1])
+    assert(warrior.T.Followed() == nil, "the warrior inherited the mage's build")
+    local index = warrior.T.NewBuild(1, "Warrior")
+    local build = warrior.T.Builds(1)[index]
+    warrior.T.Follow(1, build)
+    assert(mage.T.Followed() == TREE[8][1], "the warrior overwrote the mage")
+    assert(Fixture({ account = account, guid = "Player-Warrior", class = 1 }).T.Followed() == build,
+        "the warrior lost its build on login")
+    assert(Fixture({ account = account, guid = "Player-Mage" }).T.Followed() == TREE[8][1],
+        "the mage lost its build on login")
+end)
+
+Case("legacy built-in follows migrate only to the matching class and preserve reset history", function()
+    local legacy = { class = 8, key = "naowh1", spent = 5 }
+    local account = { trainingFollow = { ["Me-Realm"] = legacy } }
+    local warrior = Fixture({ account = account, guid = "Player-Warrior", class = 1 })
+    assert(warrior.T.Followed() == nil, "a warrior inherited a mage build")
+    local asked = 0
+    local mage = Fixture({ account = account, guid = "Player-Mage", config = 1,
+        confirm = function() asked = asked + 1 end })
+    assert(mage.T.Followed() == TREE[8][1], "the warrior consumed the mage's legacy selection")
+    local migrated = account.trainingFollow["Player-Mage"]
+    assert(migrated ~= legacy and migrated.spent == 5, "reset history was lost or shared")
+    mage.T.LearnFollowed()
+    assert(asked == 1 and migrated.spent == 0 and legacy.spent == 5, "reset history was ignored or shared")
+    local other = Fixture({ account = account, guid = "Player-OtherMage" })
+    assert(other.T.Followed() == TREE[8][1] and account.trainingFollow["Player-OtherMage"].spent == 5,
+        "a second same-name mage could not migrate independently")
+    assert(account.trainingFollow["Me-Realm"] == legacy, "the legacy entry was removed")
+end)
+
+Case("legacy saved builds migrate without changing their key or skipped spells", function()
+    local build = { name = "Old", spec = "Arcane", points = {}, rev = 2, saved = true, id = 42, skip = { [133] = true } }
+    local account = { trainingBuilds = { [8] = { build } },
+        trainingFollow = { ["Me-Realm"] = { class = 8, key = 42, spent = 3 } } }
+    local t = Fixture({ account = account })
+    assert(t.T.Followed() == build and build.skip[133], "the old saved build was lost")
+    assert(account.trainingFollow["Player-1-Me"].key == 42, "its stable key changed")
+end)
+
+Case("stopping a migrated build stays stopped on subsequent logins", function()
+    local account = { trainingFollow = { ["Me-Realm"] = { class = 8, key = "naowh1" } } }
+    local t = Fixture({ account = account })
+    assert(t.T.Followed() == TREE[8][1])
+    t.T.Follow(8, nil)
+    assert(Fixture({ account = account }).T.Followed() == nil, "the legacy choice returned")
+end)
+
+Case("existing GUID choices win over legacy choices, including an explicit stop", function()
+    local account = { trainingFollow = { ["Me-Realm"] = { class = 8, key = "naowh1" }, ["Player-1-Me"] = false } }
+    assert(Fixture({ account = account }).T.Followed() == nil, "an explicit stop was overwritten")
+    local t = Fixture({ account = account })
+    local index = t.T.NewBuild(8, "New")
+    local build = t.T.Builds(8)[index]
+    t.T.Follow(8, build)
+    assert(Fixture({ account = account }).T.Followed() == build, "a GUID choice was overwritten")
+end)
+
+Case("deletion clears GUID and legacy followers without reviving them", function()
+    local account = { trainingFollow = { ["Me-Realm"] = { class = 8, key = "naowh1" } } }
+    local t = Fixture({ account = account })
+    assert(t.T.Followed() == TREE[8][1])
+    t.T.DeleteBuild(8, TREE[8][1])
+    assert(Fixture({ account = account }).T.Followed() == nil, "the GUID choice survived")
+    assert(Fixture({ account = account, guid = "Player-Other" }).T.Followed() == nil, "the legacy choice survived")
+end)
+
+Case("early calls without a GUID or name never persist or consume legacy choices", function()
+    for _, o in ipairs({ { guid = false }, { name = "Unknown" } }) do
+        local legacy = { class = 8, key = "naowh1" }
+        o.account = { trainingFollow = { ["Me-Realm"] = legacy } }
+        local t = Fixture(o)
+        assert(t.T.Followed() == nil, "legacy data read before identity was ready")
+        t.T.Follow(8, TREE[8][1])
+        assert(t.T.Followed() == TREE[8][1], "early state should remain temporary")
+        assert(o.account.trainingFollow["Player-1-Me"] == nil and o.account.trainingFollow["Me-Realm"] == legacy,
+            "an early call saved character state")
+        o.guid, o.name = "Player-Ready", "Me"
+        assert(t.T.Followed() == TREE[8][1] and o.account.trainingFollow["Player-Ready"] ~= legacy,
+            "migration did not retry once identity was ready")
+    end
 end)
 
 Case("saving your talents lists them row by row, each up to its ranks", function()

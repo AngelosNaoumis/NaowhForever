@@ -40,6 +40,7 @@ local TEXT_LEARN_AGAIN, TEXT_STOP_FOLLOW = ns.L("Learn Again"), ns.L("Stop Follo
 
 local learning, asking = false, false
 local pruned = {}
+local pendingFollow = {}
 local MainSpec
 
 local function Saved(classID)
@@ -370,8 +371,22 @@ local function BuildKey(classID, build)
     end
 end
 
+local function FollowSlot()
+    local guid = UnitGUID("player")
+    if not guid then return pendingFollow, "player" end
+    local follows = Characters("trainingFollow")
+    if follows[guid] == nil then
+        local legacy = follows[CharKey()]
+        local _, _, classID = UnitClass("player")
+        follows[guid] = legacy and legacy.class == classID
+            and { class = legacy.class, key = legacy.key, spent = legacy.spent } or false
+    end
+    return follows, guid
+end
+
 function Training.Followed()
-    local followed = Characters("trainingFollow")[CharKey()]
+    local follows, key = FollowSlot()
+    local followed = follows[key]
     if not followed then return nil end
     for _, build in ipairs(Training.Builds(followed.class)) do
         if BuildKey(followed.class, build) == followed.key then return build, followed.class end
@@ -379,7 +394,8 @@ function Training.Followed()
 end
 
 function Training.Follow(classID, build)
-    Characters("trainingFollow")[CharKey()] = build and { class = classID, key = BuildKey(classID, build) } or nil
+    local follows, key = FollowSlot()
+    follows[key] = build and { class = classID, key = BuildKey(classID, build) } or false
     Training.Apply()
     Changed()
 end
@@ -404,7 +420,8 @@ end
 function Training.LearnFollowed()
     local build, classID = Training.Followed()
     if not build or asking or not ns.TrainingBuilds[classID] then return end
-    local followed = Characters("trainingFollow")[CharKey()]
+    local follows, key = FollowSlot()
+    local followed = follows[key]
     local now, before = Spent(classID), followed.spent
     if now then followed.spent = now end
     if now and before and now < before then
@@ -425,7 +442,7 @@ function Training.DeleteBuild(classID, build)
     local key = BuildKey(classID, build)
     local follows = Account("trainingFollow")
     for char, followed in pairs(follows) do
-        if followed.class == classID and followed.key == key then follows[char] = nil end
+        if followed and followed.class == classID and followed.key == key then follows[char] = false end
     end
     local saved = Saved(classID)
     for i, b in ipairs(saved) do
