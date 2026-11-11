@@ -37,6 +37,7 @@ ns.FEATURES = {
         cursorCooldown = false,
         hdr = false,
         consoleVariables = false,
+        pinnedCVars = false,
         globalCopy = false,
         badgeChat = true,
         badgeCard = true,

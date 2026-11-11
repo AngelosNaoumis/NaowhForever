@@ -61,6 +61,7 @@ local S = UI.ModuleSettings("qol", {
     cursorCooldown = F.cursorCooldown, cursorCooldownSize = 29, cursorCooldownTime = 0.75,
     hdr = F.hdr,
     consoleVariables = F.consoleVariables,
+    pinnedCVars = F.pinnedCVars,
     globalCopy = F.globalCopy, copyTooltipIds = true, copyModifier = "CTRL-SHIFT", copyKey = "C", copyShortcutSynced = false,
     badgeChat = F.badgeChat, badgeCard = F.badgeCard, badgeTooltip = F.badgeTooltip,
     badgeBanner = F.badgeBanner, badgeBannerSkipGuild = true,

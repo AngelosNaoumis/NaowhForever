@@ -4,8 +4,9 @@
 -- an import string is data only: malformed, oversized and wrong-version strings are refused whole, unknown names,
 -- console commands, secure, read-only or locked console variables and the ones that name this account, client or
 -- computer are left out, and nothing but C_CVar.SetCVar runs, after a confirmation that lists the changes. The
--- values are read once per open: a CVAR_UPDATE re-reads only its own, and search and tabs read none. Offline: no
--- client taint, rendering or real console.
+-- values are read once per open: a CVAR_UPDATE re-reads only its own, and search and tabs read none. Pinned ones,
+-- off by default, are kept account-wide and put back once per session from ns.Apply, after combat if need be, with
+-- one chat line only when any changed. Offline: no client taint, rendering or real console.
 rawset(_G, "C_AddOns", { DoesAddOnExist = function() return false end, GetAddOnEnableState = function() return 0 end })
 strmatch = string.match
 dofile("Libs/LibStub/LibStub.lua")
@@ -75,6 +76,7 @@ local settings = { consoleVariables = false }
 local S = { Get = function(k) return settings[k] end, Set = function(k, v) settings[k] = v end,
     Default = function() return false end }
 local printed, confirms, prompts, copies = {}, {}, {}, {}
+local account = {}
 local handedOff
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
     GamepadStandDown = function() return false end,
@@ -85,7 +87,7 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
         prompts[#prompts + 1] = { title = title, text = text, max = max, accept = onAccept }
     end,
     ShowCopyBox = function(title, text) copies[#copies + 1] = { title = title, text = text } end,
-    Apply = NOTHING, AccountSettings = function() return {} end,
+    Apply = NOTHING, AccountSettings = function() return account end,
     THEME = THEME,
     Color = function(_, text) return tostring(text) end,
     Font = function(parent)
@@ -540,6 +542,113 @@ window:Hide()
 local reopenReads = reads
 ns.OpenConsoleVariables()
 check("opening again reads each one again, once", reads - reopenReads == cvarCount)
+
+check("pinning is off by default, in Core/Features.lua", ns.FEATURES.qol.pinnedCVars == false)
+local pinnedTab = Find(function(f) return rawget(f, "key") == "pinned" and f.scripts.OnClick ~= nil end)
+search.onChange("camera")
+camera = RowOf("cameraDistanceMaxZoomFactor")
+check("off, no row has a pin and there is no Pinned tab", camera.pin.shown == false
+    and (pinnedTab == nil or pinnedTab.shown == false))
+local madeOff, setsOff = made, #sets
+ns.Apply()
+check("off, a login makes nothing and sets nothing", made == madeOff and #sets == setsOff and account.pinnedCVars == nil)
+
+S.Set("pinnedCVars", true)
+pinnedTab = Find(function(f) return rawget(f, "key") == "pinned" and f.scripts.OnClick ~= nil end)
+camera = RowOf("cameraDistanceMaxZoomFactor")
+check("on, the window gains a Pinned tab and a pin on each row", pinnedTab ~= nil and pinnedTab.shown ~= false
+    and camera.pin.shown ~= false and camera.pin.tip == "Pin")
+search.onChange("")
+pinnedTab.scripts.OnClick(pinnedTab)
+check("nothing pinned says how to pin", #Rows() == 0 and view.pools.note.used == 1)
+allTab.scripts.OnClick(allTab)
+search.onChange("camera")
+camera = RowOf("cameraDistanceMaxZoomFactor")
+camera.pin.scripts.OnClick(camera.pin)
+Flush()
+check("a pin keeps its current value, account-wide", account.pinnedCVars.cameraDistanceMaxZoomFactor == "2.6")
+camera = RowOf("cameraDistanceMaxZoomFactor")
+check("and the pin shows it", camera.pin.tip == "Unpin" and camera.pin.hint == "Pinned at 2.6.")
+search.onChange("spell")
+local spell = RowOf("SpellQueueWindow")
+spell.pin.scripts.OnClick(spell.pin)
+Flush()
+search.onChange("")
+pinnedTab.scripts.OnClick(pinnedTab)
+check("the Pinned tab lists only the pinned ones", #Rows() == 2 and RowOf("cameraDistanceMaxZoomFactor") ~= nil
+    and RowOf("SpellQueueWindow") ~= nil)
+spell = RowOf("SpellQueueWindow")
+spell.pin.scripts.OnClick(spell.pin)
+Flush()
+check("a second click unpins", account.pinnedCVars.SpellQueueWindow == nil and #Rows() == 1)
+camera = RowOf("cameraDistanceMaxZoomFactor")
+camera.scripts.OnClick(camera)
+prompts[#prompts].accept("3.1")
+check("a pinned one changed in the window keeps its new value", account.pinnedCVars.cameraDistanceMaxZoomFactor == "3.1")
+Import(Pack({ v = 1, cvars = { cameraDistanceMaxZoomFactor = "2.9" } }))
+confirms[#confirms].yes()
+check("and so does one an import changes", account.pinnedCVars.cameraDistanceMaxZoomFactor == "2.9")
+prompts[#prompts].accept("3.1")
+account.pinnedCVars.graphicsQuality = "7"
+search.onChange("graphics")
+allTab.scripts.OnClick(allTab)
+graphics = RowOf("graphicsQuality")
+graphics.scripts.OnClick(graphics)
+prompts[#prompts].accept("4")
+check("a value the game refuses leaves the pin as it was", account.pinnedCVars.graphicsQuality == "7")
+search.onChange("")
+
+account.pinnedCVars.autoLootDefault = "1"
+account.pinnedCVars.graphicsQuality = "2"
+account.pinnedCVars.secureThing = "9"
+account.pinnedCVars.goneThing = "1"
+cvars.cameraDistanceMaxZoomFactor.value = "1.9"
+cvars.autoLootDefault.value = "1"
+local setsBefore, said = #sets, #printed
+combat = true
+ns.Apply()
+local waiting = Find(function(f) return rawget(f, "events") and f.events.PLAYER_REGEN_ENABLED end)
+check("at login in combat nothing is set; it waits for the fight to end", #sets == setsBefore and waiting ~= nil)
+combat = false
+waiting.scripts.OnEvent(waiting, "PLAYER_REGEN_ENABLED")
+check("then it stops listening", waiting.events.PLAYER_REGEN_ENABLED == nil)
+check("a pinned value that drifted is put back", cvars.cameraDistanceMaxZoomFactor.value == "3.1")
+check("only what differs is set; unknown and secure ones are skipped", #sets == setsBefore + 2
+    and cvars.secureThing.value == "5")
+check("what the game refuses is named, and one line counts what was put back", #printed == said + 2
+    and printed[said + 1] == "The game did not take that value for graphicsQuality."
+    and printed[said + 2] == "Put back 1 pinned console variable.")
+cvars.cameraDistanceMaxZoomFactor.value = "1.9"
+local setsOnce = #sets
+ns.Apply()
+check("once a session: a later reapply sets nothing", #sets == setsOnce)
+
+local function NewSession()
+    ns.Shared.Settings.pages["QoL/Interface"].cards.consoleVariables = nil
+    Load({ FILE }, env)
+end
+account.pinnedCVars.graphicsQuality = nil
+cvars.cameraDistanceMaxZoomFactor.value = "3.1"
+NewSession()
+said, setsBefore = #printed, #sets
+ns.Apply()
+check("a login where nothing drifted says nothing", #printed == said and #sets == setsBefore)
+cvars.cameraDistanceMaxZoomFactor.value = "1.9"
+settings.consoleVariables = false
+NewSession()
+ns.Apply()
+check("with Console Variables off, pins are left alone", cvars.cameraDistanceMaxZoomFactor.value == "1.9")
+settings.consoleVariables = true
+settings.pinnedCVars = false
+NewSession()
+ns.Apply()
+check("with pinning off, pins are left alone and kept", cvars.cameraDistanceMaxZoomFactor.value == "1.9"
+    and account.pinnedCVars.cameraDistanceMaxZoomFactor == "3.1")
+settings.pinnedCVars = true
+NewSession()
+ns.Apply()
+check("turned back on, the next login puts them back", cvars.cameraDistanceMaxZoomFactor.value == "3.1"
+    and printed[#printed] == "Put back 1 pinned console variable.")
 
 S.Set("consoleVariables", false)
 check("turning the switch off closes the window", window.shown == false)
