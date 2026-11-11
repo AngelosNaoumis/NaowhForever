@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.2.27
+
+### Fixed
+- Buff Reminders: each elixir reminder's menu now lists only the elixirs of that stat, not every
+  elixir you carry.
 
 ## 1.2.26
 
