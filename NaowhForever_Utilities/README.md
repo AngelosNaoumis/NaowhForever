@@ -1,9 +1,9 @@
 # Utilities
 
-One addon, `NaowhForever_Utilities`, holding seven modules. Instance Tracker, Journeys, Macros, Group
+One addon, `NaowhForever_Utilities`, holding eight modules. Instance Tracker, Journeys, Macros, Group
 Inspect, and Action Bars used to ship as addons of their own. Racial and Class Tracking and Group
-Finder ship here from the start. Each keeps its own folder, its own XML, its own settings store and
-its own switch under Settings > Modules; only the AddOns list shows one line for all seven. It works as
+Finder ship here from the start, with the Undermine Real Reminder. Each keeps its own folder, its own XML, its own settings store and
+its own switch under Settings > Modules; only the AddOns list shows one line for all eight. It works as
 `NaowhForever_Combat` does (its README has the module switches, the AddOns list entry and the old
 folders); this file has what differs.
 
@@ -20,6 +20,7 @@ NaowhForever_Utilities/
   GroupFinder/                 Group Finder
   ActionBars/                  Action Bars
   TrackingReminder/            Racial and Class Tracking
+  UndermineReal/               Undermine Real Reminder
   README.md                    this file
 ```
 

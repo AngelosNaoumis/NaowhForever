@@ -213,6 +213,10 @@ local MODULES = {
       addon = "NaowhForever_TrackingReminder", host = "NaowhForever_Utilities",
       subtitle = "Shows an icon for each racial or class tracking you have not turned on.",
       tabs = {} },
+    { name = "Undermine Real Reminder", navIcon = "bell", settings = "UndermineRealSettings",
+      addon = "NaowhForever_UndermineReal", host = "NaowhForever_Utilities",
+      subtitle = "Blinks a Tarnished Undermine Real after a dungeon boss that drops one, until you loot it.",
+      tabs = {} },
 }
 
 local Options = {}

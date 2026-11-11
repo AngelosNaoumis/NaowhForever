@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <!-- UndermineReal.xml: the Undermine Real reminder's files, in load order. -->
+    <Script file="UndermineReal.lua"/>
+    <Script file="Data\Bosses.lua"/>
+    <Script file="UI\Reminder.lua"/>
+    <Script file="UI\SettingsPage.lua"/>
+</Ui>

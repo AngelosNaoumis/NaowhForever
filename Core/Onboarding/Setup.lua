@@ -66,6 +66,8 @@ Setup.ITEMS = {
         blurb = ns.L("The raid debuffs on your target.") },
     trackingReminder = { addon = "NaowhForever_TrackingReminder", db = "trackingReminder", key = "enabled",
         blurb = ns.L("Reminds you to turn on tracking.") },
+    undermineReal = { addon = "NaowhForever_UndermineReal", db = "undermineReal", key = "enabled",
+        blurb = ns.L("Reminds you to loot a Tarnished Undermine Real.") },
 }
 
 local byAddon = {}

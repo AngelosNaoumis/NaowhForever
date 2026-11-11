@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: |cff0091edNaowh|r Forever: Utilities
-## Notes: Instance Tracker, Journeys, Macros, Group Inspect, Group Finder, Action Bars, and Racial and Class Tracking, each with its own switch under Settings > Modules.
+## Notes: Instance Tracker, Journeys, Macros, Group Inspect, Group Finder, Action Bars, Racial and Class Tracking, and the Undermine Real Reminder, each with its own switch under Settings > Modules.
 ## Author: Naowh
 ## Version: 1.2.25
 ## Dependencies: NaowhForever

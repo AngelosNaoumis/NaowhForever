@@ -293,6 +293,9 @@ ns.FEATURES = {
         trackRacial = true,
         trackClass = true,
     },
+    undermineReal = {
+        enabled = false,
+    },
     groupFinder = {
         enabled = false,
         gameKey = false,

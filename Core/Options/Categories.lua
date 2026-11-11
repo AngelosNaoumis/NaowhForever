@@ -131,7 +131,7 @@ local CATEGORIES = {
       pages = {
           { name = "Dungeon Journal", cards = { "@Dungeon Journal", "Dungeon Journal/Journal", "Dungeon Journal/Map" } },
           { name = "Dungeon Quests", cards = { "Dungeon Journal/Quest Tracker" } },
-          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings" } },
+          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings", "QoL/Interface:undermineReal" } },
           { name = "Group Finder", cards = { "@Group Finder", "Group Finder/Settings", "QoL/Questing & Group:finderRoles",
               "QoL/Interface:chatZones" } },
           { name = "Group Tools", cards = { "@Group Inspect", "Group Inspect/Settings", "QoL/Questing & Group:groupButtons",
