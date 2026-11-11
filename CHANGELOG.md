@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.26
 
 ### Added
 - Dungeon Journal: 22 more boss drops for The Drowned City, Krol'dok Stronghold, Blackmaw Hold and
@@ -8,6 +8,25 @@
   Stronghold's Tome of Twilight and Ancient Gurubashi Secrets.
 - Dungeon Journal: drop chances for The Drowned City's bosses, Linken's Boots of Iron on the three
   bosses that drop it, and quest givers for five more dungeon quests.
+- Professions: an Enchanting recipe has an item slot. Pick the item and Create enchants it directly,
+  with no targeting cursor to click afterwards.
+- The Market: Sell and Buy draw a chart of the item's lowest price each day.
+- Undermine Real Reminder: after you kill a dungeon boss that can drop a Tarnished Undermine Real,
+  its icon blinks until you loot the boss. Turn it on under Settings > Modules.
+
+### Changed
+- The Market: the pages are tabs along the bottom (Buy, Sell, My Auctions, Farm, Reagents), and it
+  opens first on Buy at an auctioneer. Open at the Auctioneer off brings Blizzard's window back
+  first.
+- The Market: Buy lists the categories down the left, with the Shopping List above them.
+- The Market: the Last Run and Crafts pages are removed; Reagents shows what to craft or sell.
+
+### Fixed
+- Training Planner: characters sharing a first name now keep separate followed talent builds, with
+  automatic migration of existing selections.
+- Professions: corrected the skill required to learn 298 recipes, including the starting value shown
+  on their skill threshold bars and the corresponding Field Journal cooking entries.
+- Professions: reduced temporary allocations while comparing Skill-up Plan trainer alternatives.
 
 ## 1.2.25
 
