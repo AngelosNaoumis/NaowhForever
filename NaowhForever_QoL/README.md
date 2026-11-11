@@ -122,7 +122,7 @@ NaowhForever_QoL/
     AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
-    DestroyCheapest.lua when loot does not fit, offers the cheapest safe item to destroy
+    DestroyCheapest.lua when bags are full, offers the cheapest safe item to destroy
     BagSpaceIgnore.lua  Bag Space's Ignore List window (ns.ShowBagSpaceIgnoreList)
     Alts.lua            your characters per realm and faction (ns.AltRealm, ns.AltList, ns.OpenForgetAltMenu)
     LootFeed.lua        the Loot Feed, gold per hour and quick loot (ns.ResetLootFeedSession)
@@ -888,23 +888,56 @@ NaowhForever_QoL/
 - The switch is off until turned on. While it is off, nothing is registered and the popup is not
   built. While it is on, the only standing event is `UI_ERROR_MESSAGE`. Bag, loot and item-data
   events are registered only while the popup is open or a delete is waiting on the game.
-- A full-bag error opens the popup only while the loot window is open and every plain bag has no
-  free slot. A vendor, the mail, or a full profession bag does not open it, and neither does a
-  loot that still fits. It does not hook looting, so auto-loot is left alone.
-- The offer is the cheapest stack by vendor price times count, from plain bags only, cheapest
-  first. Left out: quest items and keys, recipes, bags, quivers and ammo, soulbound armor and
-  weapons, epic and better, item-set pieces, equipment-set items, BiS items, library books when
-  Discovery has loaded, profession tools and the hearthstone, anything with no vendor price, and
-  anything already on Bag Space's ignore list when that list exists. Bag Space does not have to
-  be on. Nothing is destroyed on its own.
-- A poor item is deleted from the Destroy button, the click the game accepts, and the addon says
-  it was destroyed only after a bag update shows that stack gone. Anything better is put on the
-  cursor for the game's own delete dialog. That dialog is never accepted here, and
-  `DeleteCursorItem` is not called for it, because that call skips the dialog. The slot is read
-  again at the click. If it changed, nothing is deleted.
+- A full-bag error opens the popup while the loot window is open and every plain bag has no free
+  slot. Bank, mail, trade, vendor and quest-reward transfers do the same only when Bank and Other
+  Transfers is on, so loot detection stays on by itself. A full profession bag does not open it,
+  and neither does a loot that still fits. It does not hook looting, so auto-loot is left alone.
+- The offer is the cheapest stack by vendor price times count, from plain bags. Market Prices,
+  off until turned on, also shows the auction house price from the last scan or the release's
+  prices. No price leaves that line off. A price older than seven days is shown muted and is not
+  used to choose the item. Rank by Market Value, also off, counts a fresh auction price when it
+  is higher than the vendor price. Destroy Anyway, off until turned on, adds a smaller button
+  next to the not-worth warning. It still takes a click, and the same second click and delete
+  window as Destroy. A bag that reports
+  no family is treated as plain, which is how the backpack is counted when that return is missing.
+  Each quality has its own switch: Poor through Rare start on, and Epic, Legendary, Artifact and
+  Heirloom start off. Several can be on at once. Left out, whatever the quality: quest items and
+  keys, recipes, quivers and ammo, soulbound armor and weapons, item-set pieces,
+  equipment-set items, BiS items, library books when Discovery has loaded, profession tools and
+  the hearthstone, anything with no vendor price other than a consumable while Consumables is
+  on, and anything on this feature's ignore list. Bags, consumables, reagents, trade goods,
+  miscellaneous items and unbound gear are offered when their quality is on and they have a
+  vendor price. Consumables
+  starts on and also offers ones a vendor will not buy. All Items starts off. While it is on,
+  every item in your bags is offered except ones on this ignore list. An item whose price is not
+  loaded yet is asked for once and added when it arrives. Bag Space does not have to be on.
+  Nothing is destroyed on its own.
+- Poor and common stacks are deleted from the Destroy button, the click the game accepts.
+  Uncommon and better ask for a second click on that same button, then the same delete: on this
+  client `DeleteCursorItem` only runs from that hardware click, and a later confirm button cannot
+  run it. If the game still opens its own delete window, it is left for the player and never
+  accepted or typed for here. If the delete does not take and no window is open, the item is put
+  back in its slot, so it is not left on the cursor. The addon says it was destroyed only after a
+  bag update shows that stack gone and the count dropped by that stack. The slot is read again at
+  the click. If it changed, nothing is deleted.
 - After the stack is gone, the loot is taken only when its window is still open, the slot still
-  has the item, and the player is out of combat. Otherwise the message says to loot it again.
-  A bag change while the popup is open rebuilds the list.
+  has the item, and the player is out of combat. Otherwise the message says to loot it again. A
+  bank, mail, trade, vendor or quest window says "Loot it again after making room." on the
+  popup, because that item has to be clicked again. A loot window that closed before the delete
+  finished has nothing left to loot; the message says room was made. A bag change while the
+  popup is open rebuilds the list.
+- Closing the loot window closes the popup and drops the loot it was holding, unless a delete is
+  still waiting on the game or a transfer window is still open. The You get card is drawn only
+  when an item is waiting in that window, so it is never an empty section. Closing the bank,
+  mail, trade, vendor or quest window closes the popup when loot is not open and no delete is
+  waiting. Those closes are the frames' own hide events, not a timer.
+- Ignore Item is the red pass icon in the corner of the Destroy card. It stores that item id
+  on this feature's own list and refreshes the candidates. The list is viewed, searched and
+  cleared on the same card. The popup anchors to the
+  chosen side of the loot window (Top, Right, Bottom or Left) with a gap, and moves when that
+  window moves. Dragging is off until Movable is on. A dragged place is kept with the profile
+  until Reset Position, and it wins over the side until then. While a transfer or a delete keeps
+  an undragged popup up with no loot window, it sits in the middle of the screen.
 
 ### Trainer
 - Closing a non-profession trainer checks the current spellbook for lower ranks even without a learned-ability notification. The trainer type is captured while its window is open. A fresh visit drops the previous popup list; kept-only rank offers stay silent automatically but remain available through Check Bars. Combat deferral is unchanged.
