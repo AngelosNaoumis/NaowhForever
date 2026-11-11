@@ -69,7 +69,7 @@ local TEXT = {
     WAITING = ns.L("Waiting for the bags to update."),
     DIALOG = ns.L("Confirm the delete in the game window. Cancel puts it back."),
     STUCK = ns.L("That item is still on your cursor. Click its bag slot to put it back."),
-    NOT_WORTH = ns.L("Not worth it: this loot sells for less than the item that would be destroyed."),
+    NOT_WORTH = ns.L("Not worth it: this loot is worth less than the item that would be destroyed."),
     NONE = ns.L("Nothing here is safe to destroy. Quest items, books, recipes, tools, set pieces and turned-off qualities stay."),
     HOLDING = ns.L("put down what you are holding first."),
     MOVED = ns.L("that item changed in your bags. The list has been refreshed."),
@@ -278,6 +278,20 @@ local function Quote(itemID)
     return price, age, age <= STALE
 end
 
+local function ApplyMarket(e, itemID, count)
+    e.market, e.marketAge, e.marketFresh, e.marketChecked = nil, nil, nil, nil
+    if not (RankMarket() and itemID) then return end
+    e.marketChecked = true
+    local price, age, fresh = Quote(itemID)
+    if not price then return end
+    e.market, e.marketAge, e.marketFresh = price * (count or 1), age, fresh
+end
+
+local function RankValue(e)
+    if RankMarket() and e.marketFresh and e.market then return e.market end
+    return e.value
+end
+
 local function Cheaper(a, b)
     local ar, br = a.rank or a.value, b.rank or b.value
     if ar ~= br then return ar < br end
@@ -371,16 +385,8 @@ local function ScanSlot(bag, slot)
     e.bag, e.slot, e.itemID = bag, slot, info.itemID
     e.link, e.icon, e.name = info.hyperlink, info.iconFileID, name
     e.count, e.quality, e.value = count, quality, vendor * count
-    e.rank = e.value
-    e.market, e.marketAge, e.marketFresh, e.marketChecked = nil, nil, nil, nil
-    if RankMarket() then
-        e.marketChecked = true
-        local price, age, fresh = Quote(info.itemID)
-        if price then
-            e.market, e.marketAge, e.marketFresh = price * count, age, fresh
-            if fresh and e.market > e.rank then e.rank = e.market end
-        end
-    end
+    ApplyMarket(e, info.itemID, count)
+    e.rank = RankValue(e)
     picks[#picks + 1] = e
 end
 
@@ -462,7 +468,7 @@ local function ReadLoot()
                 e.quest = (isQuest or questID) and true or false
                 e.vendor = vendor
                 e.value = vendor and vendor > 0 and vendor * e.count or nil
-                e.market, e.marketAge, e.marketFresh, e.marketChecked = nil, nil, nil, nil
+                ApplyMarket(e, e.itemID, e.count)
                 loots[#loots + 1] = e
                 if e.slot == keepSlot then lootIndex = #loots end
             end
@@ -471,8 +477,16 @@ local function ReadLoot()
 end
 
 local function WorthIt(pick, loot)
-    if not loot or loot.quest or not loot.vendor or loot.vendor <= 0 then return true end
-    return loot.vendor * loot.count >= pick.value
+    if not loot or loot.quest then return true end
+    if not RankMarket() then
+        if not loot.vendor or loot.vendor <= 0 then return true end
+        return loot.vendor * loot.count >= pick.value
+    end
+    local offer = RankValue(pick) or 0
+    if offer <= 0 then return true end
+    local gain = RankValue(loot)
+    if not gain or gain <= 0 then return true end
+    return gain >= offer
 end
 
 local function Opened()
@@ -1128,6 +1142,7 @@ local function SettingChanged(key)
         Apply()
         return
     end
+    if key == "destroyCheapestMarketRank" and not pending then index = 0 end
     if not Opened() then return end
     if key == "destroyCheapestSide" or key == "destroyCheapestPos" then
         Place()
@@ -1354,7 +1369,7 @@ Settings.Page("QoL/Loot & Items", S):Card({
         { key = "destroyCheapestMarket", label = "Market Prices", toggle = true,
           help = "Shows the auction house price next to the vendor price when one is known." },
         { key = "destroyCheapestMarketRank", label = "Rank by Market Value", toggle = true,
-          help = "Counts an auction price from the last seven days when it is higher than the vendor price." },
+          help = "Sorts by auction price times stack from the last seven days, cheapest first, and uses the vendor price when that price is missing or older." },
         Settings.Group("Full Bags"),
         { key = "destroyCheapestTransfers", label = "Bank and Other Transfers", toggle = true,
           help = "Also opens when the bank, mail, a trade, a vendor or a quest reward will not fit." },
