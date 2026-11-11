@@ -67,7 +67,7 @@ end
 
 local function Build()
     local stats = CharacterStatsPaneScrollBox
-    badge = CP.ScoreCard(stats)
+    badge = CP.ScoreCard(stats, nil, true)
     badge:SetIgnoreParentAlpha(true)
     if PaperDollFrame and PaperDollFrame.TopBackgroundStripHost then
         badge:SetPoint("TOP", PaperDollSidebarTabs, "TOP", 0, -PANE_DROP)

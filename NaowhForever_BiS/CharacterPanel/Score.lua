@@ -1,4 +1,4 @@
--- Score.lua: the Gear Score card: the score big, a bar to its share of the best, and the best under it (CP.ScoreCard).
+-- Score.lua: the Gear Score card: the score big, a bar to its share of the best, and the best under it, or in its place on a bare card (CP.ScoreCard).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -13,6 +13,7 @@ local SHADOW_ALPHA, SHADOW_X = C.SHADOW_ALPHA, C.SHADOW_X
 local BAR_TOP, BAR_H = 46, 6
 local LEGEND_GAP, LEGEND_SIZE = 4, C.SMALL_SIZE
 local LEGEND_BOTTOM = 2
+local BARE_H = BAR_TOP + LEGEND_SIZE + LEGEND_BOTTOM
 local TRACK_GREY = C.TRACK_GREY
 local GOAL_RGB, BLACK_RGB = C.GOLD_RGB, C.BLACK_RGB
 local TICK_W, TICK_OUT = 2, 3
@@ -118,7 +119,7 @@ function CP.SizeScoreCard(card, width)
     end
 end
 
-function CP.ScoreCard(parent, width)
+function CP.ScoreCard(parent, width, bare)
     local card = CreateFrame("Button", nil, parent)
     card:SetHeight(CP.BADGE_H)
     local kicker = ns.Font(card, KICKER_SIZE, nil, T.accentSoft)
@@ -131,5 +132,11 @@ function CP.ScoreCard(parent, width)
     card.value:SetShadowOffset(SHADOW_X, -SHADOW_X)
     card.bar = Bar(card)
     CP.SizeScoreCard(card, width or CARD_W)
+    if bare then
+        card.bar:Hide()
+        card.best:ClearAllPoints()
+        card.best:SetPoint("TOPRIGHT", card.bar, "TOPRIGHT")
+        card:SetHeight(BARE_H)
+    end
     return card
 end

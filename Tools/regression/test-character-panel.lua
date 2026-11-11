@@ -414,21 +414,28 @@ check("your Gear Score big under your level, shown", badge and badge.parent == s
 check("on the game's stats list, its fade for your spec's stats not its own", badge.ignoreParentAlpha == true)
 badge.scripts.OnShow(badge)
 check("painted with your score, in its grade's color, as the panel opens", badge.value.text == "|cff1eff008.3|r")
-check("only the score: its bar's legend the best it is graded against", badge.best.text == "Best 58.8"
-    and badge.rest.shown ~= false)
+check("only the score and the best it is graded against, in the bar's place: no bar on your own card",
+    badge.best.text == "Best 58.8" and badge.bar.shown == false and badge.best.points.TOPRIGHT == badge.bar
+    and badge.h == 58)
 
--- Grade Against Both (the default): your level's goal as a gold tick on the bar, with no label
--- (the tooltip names it), while it is short of the best in the game; with Best in the Game, no tick.
+-- Grade Against Both (the default): on a card with a bar (the inspect windows'), the level's goal
+-- as a gold tick on it, with no label (the tooltip names it), while it is short of the best in the
+-- game; with Best in the Game, no tick.
 do
     local Score = ns.NaowhScore
     local best = Score.Best
+    local full = CP.ScoreCard(statsList)
+    check("a card with a bar keeps it, the best under it", full.bar.shown ~= false and full.h == 68
+        and full.best.points.TOPRIGHT == full.bar)
     Score.Best = function(level) return level and 24.4 or 58.8 end
     S.Set("naowhScoreCompare", "both")
-    check("Both: your level's goal ticked on the bar", badge.goal.shown == true
-        and badge.goal.points.CENTER == badge.bar)
-    check("no label for it, only the best's", badge.goalLabel == nil and badge.best.text == "Best 58.8")
+    CP.PaintScoreCard(full, 8.3, 20)
+    check("Both: the level's goal ticked on the bar", full.goal.shown == true
+        and full.goal.points.CENTER == full.bar and full.rest.shown ~= false)
+    check("no label for it, only the best's", full.goalLabel == nil and full.best.text == "Best 58.8")
     S.Set("naowhScoreCompare", "max")
-    check("Best in the Game: no goal on the bar", badge.goal.shown == false)
+    CP.PaintScoreCard(full, 8.3, 20)
+    check("Best in the Game: no goal on the bar", full.goal.shown == false)
     Score.Best = best
     S.Set("naowhScoreCompare", nil)
 end
@@ -715,8 +722,8 @@ check("All Stats again: the game's list back", spec.shown == false and statsList
 S.Set("characterPanelScore", true)
 statsList.hooks.OnShow(statsList)
 -- With the score: the list down by what it needs beyond the room the game leaves
--- (10 under your level, the card 46 + 6 + 4 + 10 + 2, less 20).
-check("score on: the game's list down under your score", statsList.drop == 58)
+-- (10 under your level, the card 46 + 10 + 2 with no bar, less 20).
+check("score on: the game's list down under your score, 10 higher without the bar", statsList.drop == 48)
 local card = CP.badge
 card.bottom, stoneArt.bottom = 300, 340
 statsList.hooks.OnShow(statsList)

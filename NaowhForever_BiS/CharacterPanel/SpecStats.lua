@@ -86,7 +86,7 @@ end
 local function Under(badge)
     local cardBottom = badge:GetBottom()
     local stoneBottom = CharacterFrameRightPaneHostStoneBg:GetBottom()
-    if not (cardBottom and stoneBottom) then return CP.BADGE_GAP + CP.BADGE_H - ROOM end
+    if not (cardBottom and stoneBottom) then return CP.BADGE_GAP + badge:GetHeight() - ROOM end
     return stoneBottom - cardBottom + CP.BADGE_GAP
 end
 
