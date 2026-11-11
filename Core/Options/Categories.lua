@@ -58,7 +58,7 @@ local CATEGORIES = {
       pages = {
           { name = "Buff Reminders", cards = { "@AuraBuffs", "AuraBuffs/Settings:buffs", "AuraBuffs/Settings:lowHealth",
               "QoL/Interface:buffThanks" } },
-          { name = "Consumable Bars", cards = { "@Consumable Bar", "Consumable Bar/Settings" } },
+          { name = "Consumable Bars", cards = { "@Consumable Bar", "Consumable Bar/Settings", "QoL/Loot & Items:foodBar" } },
           { name = "Campfire", cards = { "AuraBuffs/Settings:campfire", "AuraBuffs/Settings:campNearby" } },
       } },
     { name = "Quests & Exploration", band = "WORLD", navIcon = "compass",
@@ -153,6 +153,13 @@ local placed, whole, firstOf, moduleHome = {}, {}, {}, {}
 local windows, classPages = {}, {}
 local moduleCards = {}
 local otherClasses = { heading = TEXT_OTHER_CLASSES }
+local lent, lenders, lentHome = {}, {}, {}
+for _, mod in ipairs(MODULES) do
+    for _, uid in ipairs(mod.cards or NONE) do
+        lent[#lent + 1] = uid
+        lenders[uid] = mod
+    end
+end
 
 local function ModuleNamed(name)
     for _, mod in ipairs(MODULES) do
@@ -201,6 +208,8 @@ local function Place(page, source)
         return AddModule(page, mod)
     end
     local pageKey = source:match(CARD_UID)
+    local lender = lenders[source]
+    if lender then lentHome[lender] = lentHome[lender] or key end
     local map = pageKey and placed or whole
     pageKey = pageKey or source
     assert(PAGES[pageKey] and PAGES[pageKey].module, ERROR_NO_PAGE .. source)
@@ -245,11 +254,21 @@ local function AddSource(items, seen, source)
     local name = source:match(MODULE_CARD)
     if name then return Add(items, seen, ModuleCard(ModuleNamed(name))) end
     local pageKey = source:match(CARD_UID) or source
-    local mod = PAGES[pageKey].module
+    local mod = lenders[source] or PAGES[pageKey].module
     if not Loaded(mod) then return Add(items, seen, ModuleCard(mod)) end
     local page = ns.Shared.Settings.pages[pageKey]
     for _, item in ipairs(page and page.items or NONE) do
-        if item.uid == source or (pageKey == source and not placed[item.uid]) then Add(items, seen, item) end
+        local lender = lenders[item.uid]
+        if item.uid == source or (pageKey == source and not placed[item.uid] and (not lender or Loaded(lender))) then
+            Add(items, seen, item)
+        end
+    end
+    if pageKey ~= source then return end
+    for _, uid in ipairs(lent) do
+        local lender = lenders[uid]
+        if uid:match(CARD_UID) == pageKey and not placed[uid] and not Loaded(lender) then
+            Add(items, seen, ModuleCard(lender))
+        end
     end
 end
 
@@ -298,6 +317,7 @@ local function ModuleHome(mod)
         local key = PageFor(tab.key)
         if key then return key end
     end
+    return lentHome[mod]
 end
 
 for _, cat in ipairs(CATEGORIES) do AddCategory(cat) end
@@ -328,6 +348,17 @@ function O.NavPage(name)
             if tab.name == name then return PageFor(tab.key) end
         end
     end
+end
+
+function O.OffCards()
+    local list = {}
+    for _, uid in ipairs(lent) do
+        local mod = lenders[uid]
+        if not Loaded(mod) and Loaded(PAGES[uid:match(CARD_UID)].module) and PageFor(uid) then
+            list[#list + 1] = { uid = uid, module = mod }
+        end
+    end
+    return list
 end
 
 function O.ModuleCardUid(mod)

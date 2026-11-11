@@ -117,10 +117,77 @@ end
 -- A plural finds what is named in the singular.
 Check(#Find(list, "minimap buttons") > 0 and #Find(list, "reminders") > 0, "a plural finds the singular")
 
--- Every module off: the generated index, one result per setting, on the page it is placed on.
-local index = assert(loadstring(dofile("Tools/build/search_index.lua"), "SearchIndex.lua"))
+-- A card one module declares on another's page: the module lists it, and with that module off the page
+-- shows the module's own card in its place and search finds the card's settings there.
+local built, declaredBy = dofile("Tools/build/search_index.lua")
+local index = assert(loadstring(built, "SearchIndex.lua"))
 setfenv(index, env)
 index()
+
+local function ModuleOf(path)
+    local best, bestLen
+    for _, mod in ipairs(O.MODULES) do
+        if mod.addon then
+            local folder = mod.host and (mod.host .. "/" .. mod.addon:gsub("^NaowhForever_", "") .. "/") or (mod.addon .. "/")
+            if path:sub(1, #folder) == folder and (not bestLen or #folder > bestLen) then best, bestLen = mod, #folder end
+        end
+    end
+    return best
+end
+
+local listed = {}
+for _, mod in ipairs(O.MODULES) do
+    for _, uid in ipairs(mod.cards or {}) do listed[uid] = mod end
+end
+local lentCount = 0
+for uid, path in pairs(declaredBy) do
+    local pageKey = uid:match("^(.-):[^:]+$")
+    local owner, by = pageKey and O.PAGES[pageKey] and O.PAGES[pageKey].module, ModuleOf(path)
+    if owner and by and owner ~= by then
+        lentCount = lentCount + 1
+        Check(listed[uid] == by, uid .. " is declared by " .. by.name .. " on " .. owner.name
+            .. "'s page: list it in that module's cards in Core/Options/Modules.lua")
+    end
+end
+Check(lentCount >= 3, "cards declared on another module's page are found, " .. lentCount)
+
+local function Holds(items, uid)
+    for _, item in ipairs(items or {}) do
+        if item.uid == uid then return true end
+    end
+    return false
+end
+
+for uid, mod in pairs(listed) do
+    local pageKey, id = uid:match("^(.-):([^:]+)$")
+    local page = O.NavPage(uid)
+    Check(page ~= nil, uid .. " is placed on no page")
+    off[mod.host or mod.addon] = true
+    local composed
+    local Compose = Settings.Compose
+    Settings.Compose = function(key, items) if key == page then composed = items end return Compose(key, items) end
+    O.Compose(O.PAGES[page])
+    Settings.Compose = Compose
+    Check(Holds(composed, O.ModuleCardUid(mod)) and not Holds(composed, uid),
+        uid .. ": with " .. mod.name .. " off, " .. tostring(page) .. " shows its module card instead")
+    Check(#mod.tabs > 0 or O.NavPage(mod.name) == page, mod.name .. ": its name opens " .. tostring(page))
+    list = UI.Search.Collect()
+    local labels = 0
+    for _, e in ipairs(ns.SEARCH_INDEX[pageKey] or {}) do
+        if e[1] == id then
+            labels = labels + 1
+            local label, found = e[2] or e[4], false
+            for _, m in ipairs(Find(list, label)) do
+                found = found or (m.page == page and m.card == O.ModuleCardUid(mod) and m.label == label)
+            end
+            Check(found, "'" .. label .. "' of " .. uid .. ", " .. mod.name .. " off, is not found on " .. tostring(page))
+        end
+    end
+    Check(labels > 0, uid .. " has settings in the index")
+    off[mod.host or mod.addon] = nil
+end
+
+-- Every module off: the generated index, one result per setting, on the page it is placed on.
 for _, mod in ipairs(O.MODULES) do
     if mod.addon then off[mod.host or mod.addon] = true end
 end

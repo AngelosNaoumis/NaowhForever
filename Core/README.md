@@ -251,6 +251,10 @@ Categories
 - AuraBuffs shows as Buff Reminders and Journeys as Route Planner (Journeys), through `label` in
   `MODULES`: `name` stays the key for saved window sizes, minimap buttons and key bindings. The
   Glimmer and Scout cards are named for what they do, their own names after it.
+- A card one module declares on another module's page (the Undermine Real and Tracking Reminders on QoL's,
+  the Food & Drink Bar on the Consumable Bar's) is listed in its module's `cards` in `MODULES`. While that
+  module is off the card is never declared, so the page shows the module's own card in its place and the
+  search reads the card from the generated index. `test-search-audit.lua` fails on one that is not listed.
 
 Settings and profiles
 - Profiles are account-wide with a per-character active pointer (name-realm). Forever returns

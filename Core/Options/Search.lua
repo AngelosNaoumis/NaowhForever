@@ -9,6 +9,7 @@ local NOT_LETTERS, LETTER, WORD = "[^%w\128-\255]+", "[%w\128-\255]", "()([%w\12
 local FUZZY_MIN, FUZZY_SHARE, MAX_CAPTURES = 3, 0.5, 32
 local PLURALS, STEM_MIN = { "^(.-)s$", "^(.-)es$" }, 3
 local CARD_UID = "^(.-):[^:]+$"
+local CARD_PARTS = "^(.-):([^:]+)$"
 local TEXT_RESULT_GROUP = "%s / %s"
 local TEXT_RESULT_OWNER = "%s (%s)"
 local RESULTS = { width = 390, rows = 7, rowH = 46, pad = 12, gap = 6, footer = 26,
@@ -79,16 +80,15 @@ local function PageTarget(list, page)
     return tag, words
 end
 
-local function IndexOff(list, tab)
+local function IndexOff(list, mod, pageKey, id)
     local O = ns.Options
-    local mod = tab.module
     local card, name = O.ModuleCardUid(mod), O.DisplayName(mod)
-    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[tab.key] or NONE) do
-        local page = O.PAGES[O.NavPage(tab.key .. ":" .. e[1])]
+    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[pageKey] or NONE) do
+        local page = (not id or e[1] == id) and O.PAGES[O.NavPage(pageKey .. ":" .. e[1])]
         if page then
             local tag, trail = Place(page)
             local scope = Words(tag .. " " .. trail .. " " .. name)
-            list[#list + 1] = Entry(page, card, e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], scope, tab.key)
+            list[#list + 1] = Entry(page, card, e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], scope, pageKey)
         end
     end
 end
@@ -171,9 +171,13 @@ local function Collect()
             end
         end
     end
-    local off = UI.SearchOffPages()
-    if off[1] and not ns.SEARCH_INDEX then C_AddOns.LoadAddOn(INDEX_ADDON) end
-    for _, tab in ipairs(off) do IndexOff(list, tab) end
+    local off, offCards = UI.SearchOffPages(), UI.SearchOffCards()
+    if (off[1] or offCards[1]) and not ns.SEARCH_INDEX then C_AddOns.LoadAddOn(INDEX_ADDON) end
+    for _, tab in ipairs(off) do IndexOff(list, tab.module, tab.key) end
+    for _, lent in ipairs(offCards) do
+        local pageKey, id = lent.uid:match(CARD_PARTS)
+        IndexOff(list, lent.module, pageKey, id)
+    end
     return Tidy(list)
 end
 

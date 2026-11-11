@@ -277,6 +277,10 @@ function UI.SearchOffPages()
     return pages
 end
 
+function UI.SearchOffCards()
+    return O.OffCards()
+end
+
 function UI.HighlightSetting(row)
     if not row then return end
     if not row.settingHighlight then

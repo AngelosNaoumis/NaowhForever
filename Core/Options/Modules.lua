@@ -26,7 +26,7 @@ local SYSTEM_PAGES = {
 
 local MODULES = {
     { name = "QoL", label = "Quality of Life", navIcon = "checklist", settings = "QoLSettings",
-      addon = "NaowhForever_QoL",
+      addon = "NaowhForever_QoL", cards = { "Consumable Bar/Settings:foodBar" },
       subtitle = "Naowh's quality of life tweaks, trimmed to what Forever has.",
       tabs = {
           { name = "Interface", reuse = true },
@@ -210,11 +210,11 @@ local MODULES = {
           { name = "Settings", reuse = true },
       } },
     { name = "Racial and Class Tracking", navIcon = "search", settings = "TrackingReminderSettings",
-      addon = "NaowhForever_TrackingReminder", host = "NaowhForever_Utilities",
+      addon = "NaowhForever_TrackingReminder", host = "NaowhForever_Utilities", cards = { "QoL/Interface:tracking" },
       subtitle = "Shows an icon for each racial or class tracking you have not turned on.",
       tabs = {} },
     { name = "Undermine Real Reminder", navIcon = "bell", settings = "UndermineRealSettings",
-      addon = "NaowhForever_UndermineReal", host = "NaowhForever_Utilities",
+      addon = "NaowhForever_UndermineReal", host = "NaowhForever_Utilities", cards = { "QoL/Interface:undermineReal" },
       subtitle = "Blinks a Tarnished Undermine Real after a dungeon boss that drops one, until you loot it.",
       tabs = {} },
 }

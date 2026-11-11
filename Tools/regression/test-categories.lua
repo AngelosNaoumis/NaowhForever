@@ -116,6 +116,10 @@ local topBar = Compose(O.PAGES["Interface > Top Bar"])
 Check(#topBar == 1 and topBar[1].uid == "@QoL", "QoL off: its card stands in for the Top Bar")
 loaded.NaowhForever_QoL = nil
 
+-- The Food & Drink Bar declares itself on the Loot page while the Consumable Bar is off, and is drawn beside it.
+Check(O.NavPage("QoL/Loot & Items:foodBar") == O.NavPage("Consumable Bar/Settings:foodBar"),
+    "the Food & Drink Bar is on the Consumable Bars page wherever it declares itself")
+
 -- Your Class: this class's cards first, the others under a heading of their own.
 local yours = O.PAGES["Combat > Your Class"]
 class = "PALADIN"
