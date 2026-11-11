@@ -96,6 +96,7 @@ ns.FEATURES = {
         blessings = true,
         durability = false,
         talentPoints = false,
+        legacyPoints = false,
         buffThanks = false,
         combatAlert = true,
         hideErrors = false,

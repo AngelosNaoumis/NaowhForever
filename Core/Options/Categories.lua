@@ -41,7 +41,7 @@ local CATEGORIES = {
       pages = {
           { name = "Experience", cards = { "QoL/XP:xpBar", "QoL/XP:xpTicker", "QoL/XP:groupXP" } },
           { name = "Spells & Talents", cards = { "@Training Planner", "Training Planner/Settings", "QoL/XP:trainer",
-              "QoL/XP:talentPoints" } },
+              "QoL/XP:talentPoints", "QoL/XP:legacyPoints" } },
       } },
     { name = "Action Bars & Macros", band = "CHARACTER", navIcon = "grid",
       subtitle = "Your action bars saved by name, and macros that keep themselves current.",

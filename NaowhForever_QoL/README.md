@@ -100,6 +100,7 @@ NaowhForever_QoL/
     QuestProgress.lua   Announce Quest Progress, your quest objective updates said in party chat
     FinderRoles.lua     Group Finder Roles, the role buttons on the Group Finder
     TalentPoints.lua    the unspent talent points reminder
+    LegacyPoints.lua    the optional unspent Legacy points reminder
     QuestAutomation.lua accept, hand in and share quests, saved reward picks (ns.QuestRewards)
     RewardList.lua      the Saved Quest Rewards window (ns.OpenQuestRewards)
     PlayerHistory.lua   Player History (ns.PlayerHistory), read by the Naowh Inspect panel
@@ -356,8 +357,19 @@ NaowhForever_QoL/
   `EditBoxOnTextChanged` check is run straight after, which enables Yes when the text matches.
 - The delete dialog sizes itself to its text only on show, and the box sits under the text, so
   it is resized after the item link is added.
-- The Alerts group (Camp Nearby, Talent Points, Durability, Restock, Pet Tracker) is in the core
+- The Alerts group (Camp Nearby, Talent Points, Legacy Points, Durability, Restock, Pet Tracker) is in the core
   (`Core/AlertStack.lua`, see Core's README), since Aura Buffs' Camp Nearby uses it too.
+- Unspent Legacy Points is off by default, beside Talent Points in Leveling & Training > Spells & Talents
+  (the QoL/XP page), with its own look settings. Its frame and
+  event listener are built on first enable; disabling it unregisters every event. It uses the existing
+  core Apply lifecycle for login and reload, with no polling or startup event frame of its own.
+- Legacy's three trees share one balance. The reminder reads the Professions tree's config and finds
+  `LEGACY_POINTS_TRAIT_CURRENCY_ID` in `C_Traits.GetTreeCurrencyInfo`, once per update. It includes staged
+  changes so the number agrees with the Legacy window while allocating or refunding points.
+- A missing Legacy config or currency row hides the reminder until a trait or world event refreshes
+  it. The reward-track renown must be positive, matching the game's Legacy unlock check; renown
+  changes refresh it too. Combat hides it before any trait API reads; leaving combat refreshes the balance. HUD Editor
+  shows a two-point preview. `STACK_ORDER` 2.5 places it between Talent Points (2) and Durability (3).
 - The Pet Tracker skips Pet Missing for a hunter with Lone Wolf. `LONE_WOLF` (415370) is the
   talent node spell in the talent data; `LONE_WOLF_TAUGHT` (409979) is the spell it teaches,
   the one seen known in the Forever client. Either counts.

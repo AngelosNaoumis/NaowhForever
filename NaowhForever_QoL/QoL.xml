@@ -11,6 +11,7 @@
     <Script file="Loot\Lockboxes.lua"/>
     <Script file="Loot\Durability.lua"/>
     <Script file="Questing\TalentPoints.lua"/>
+    <Script file="Questing\LegacyPoints.lua"/>
     <Script file="Questing\BuffThanks.lua"/>
     <Script file="Combat\CombatAlert.lua"/>
     <Script file="Questing\QuestAutomation.lua"/>
