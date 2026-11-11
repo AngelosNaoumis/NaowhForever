@@ -5,7 +5,7 @@ local Market = ns.Market
 local S = Market.Settings
 local Settings = ns.Shared.Settings
 
-local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_KEYS = 10, 20, 30, 80
+local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_WATCH, ORDER_KEYS = 10, 20, 30, 40, 80
 local TEXT_OFF = ns.L("Turn on The Market")
 local TEXT_PROFESSIONS_OFF = "Turn on Professions"
 local TEXT_NEEDS_TOOLTIP = ns.L("Needs Tooltip Lines")
@@ -116,6 +116,16 @@ page:Card({
     help = "Disenchant Deals, the same settings as on Professions.",
     search = "disenchant deals enchanting",
     rows = PriceRows,
+})
+
+page:Card({
+    id = "watch", name = "Watch List", order = ORDER_WATCH,
+    help = "Items you watch on the Buy tab beside the auction house, and when you hear about them.",
+    search = "watch list price alert cheap below under",
+    rows = {
+        { key = "watchAlerts", label = "Watch Alerts", toggle = true, needs = On, why = Why,
+          help = "A chat line after each scan for every watched item at or under your price." },
+    },
 })
 
 page:Card({

@@ -1,4 +1,4 @@
--- Tabs.lua: a tab bar for The Market's window and the panel beside the auction house, with Sell's and My Auctions' counts (Market.Tabs).
+-- Tabs.lua: a tab bar for The Market's window and the panel beside the auction house, with Buy's, Sell's and My Auctions' counts (Market.Tabs).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -12,6 +12,11 @@ local Tabs = {}
 Market.Tabs = Tabs
 
 local function Count(key)
+    if key == "buy" then
+        local under = Market.Watch.UnderCount()
+        if under > 0 then return under, St.HAVE_RGB end
+        return nil
+    end
     if key == "sell" then
         local left = Market.Sell.Left()
         return left > 0 and left or nil

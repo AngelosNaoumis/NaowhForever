@@ -1,5 +1,5 @@
 -- Run with Lua 5.1 from the repository root: The Market's tab bars: one per window, each painting its picked page,
--- with Sell's and My Auctions' counts.
+-- with Buy's, Sell's and My Auctions' counts.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -10,9 +10,10 @@ local function Button(key)
     return b
 end
 
-local left, undercut = 3, 0
+local left, undercut, under = 3, 0, 0
 local painted = {}
 local WARN = { r = 1, g = 0.5, b = 0 }
+local HAVE = { r = 0, g = 1, b = 0 }
 local ns = {
     THEME = { muted = { r = 1, g = 1, b = 1 } },
     Shared = { Parts = {
@@ -25,7 +26,8 @@ local ns = {
     } },
 }
 ns.Market = {
-    Style = { WARN_RGB = WARN },
+    Style = { WARN_RGB = WARN, HAVE_RGB = HAVE },
+    Watch = { UnderCount = function() return under end },
     Sell = { Left = function() return left end },
     Auctions = { Counts = function() return undercut end, list = { 1, 2, 3, 4, 5 } },
 }
@@ -36,19 +38,24 @@ ns.Font = function(button) return button.count end
 fn()
 
 local Tabs = ns.Market.Tabs
-local dock = Tabs.Build({}, 360, { { key = "sell" }, { key = "mine" } }, function() end)
+local dock = Tabs.Build({}, 360, { { key = "buy" }, { key = "sell" }, { key = "mine" } }, function() end)
 local window = Tabs.Build({}, 450, { { key = "farm" }, { key = "reagents" }, { key = "prices" } }, function() end)
 local by = {}
 for _, bar in ipairs({ dock, window }) do
     for _, b in ipairs(bar.buttons) do by[b.key] = b end
 end
-check("each bar has a button per page, at its own width", #dock.buttons == 2 and #window.buttons == 3
+check("each bar has a button per page, at its own width", #dock.buttons == 3 and #window.buttons == 3
     and dock.width == 360 and window.width == 450)
 
 Tabs.Paint(dock, "sell")
 check("the picked page is painted on its own bar", painted[dock] == "sell" and painted[window] == nil)
 check("Sell shows what is left to post", by.sell.counted == 3)
 check("My Auctions shows its total", by.mine.counted == 5)
+check("Buy shows nothing while no watched item is at or under your price", by.buy.counted == "")
+under = 2
+Tabs.Paint(dock, "sell")
+check("Buy counts the watched items at or under your price, in green", by.buy.counted == 2 and by.buy.color[1] == HAVE.r)
+under = 0
 
 Tabs.Paint(window, "prices")
 check("Farm, Reagents and Prices show no count", by.farm.counted == "" and by.reagents.counted == ""

@@ -1,6 +1,7 @@
 -- Run with Lua 5.1 from the repository root: The Market at an auctioneer. Blizzard's window is left as it is and
--- The Market's panel docks to its right with Sell first; its X closes only the panel, a button above Blizzard's window
--- brings it back, and leaving the auctioneer closes it. Post With Keys and Bag Worth start off.
+-- The Market's panel docks to its right with Buy first, and follows Blizzard's Buy, Sell and Auctions tabs; its X closes
+-- only the panel, a button above Blizzard's window brings it back, and leaving the auctioneer closes it. Post With Keys
+-- and Bag Worth start off.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -44,6 +45,9 @@ local function Frame()
         self.scripts[name] = function(...) if old then old(...) end; fn(...) end
     end
     function f:SetWidth() end
+    function f:SetHeight() end
+    function f:SetShown(on) if on then self:Show() else self:Hide() end end
+    function f:SetText(text) self.text = text end
     function f:SetScale(s) self.scale = s end
     function f:GetScale() return 1 end
     function f:SetFrameStrata(s) self.strata = s end
@@ -60,8 +64,12 @@ local settings = { postKeys = false }
 local marketOn = true
 local closes, resets = 0, 0
 
+local MODES = { Buy = {}, ItemBuy = {}, CommoditiesBuy = {}, WoWTokenBuy = {}, ItemSell = {}, CommoditiesSell = {},
+    WoWTokenSell = {}, Auctions = {} }
 local ah = Frame()
 function ah:SetPostItem() end
+function ah:SetDisplayMode(mode) self.displayMode = mode end
+function ah:GetDisplayMode() return self.displayMode end
 function ah:Open() self:Show() end
 function ah:Close() self:Hide() end
 
@@ -74,14 +82,17 @@ local function Page()
     return page
 end
 
-local pickTab, back, panel, coin, opened
+local pickTab, back, panel, coin, opened, listAsked
+local under = 0
+local made = {}
 local ns = {
     Market = {
         Settings = { Get = function(k) return settings[k] end, OnChange = function() end },
         On = function() return marketOn end,
         Sell = { Reset = function() resets = resets + 1 end },
-        Style = { COINS = "coins", BAR_GAP = 8 },
-        Pages = { sell = Page(), mine = Page() },
+        Style = { COINS = "coins", BAR_GAP = 8, TEXT_SIZE = 12, HAVE_RGB = {}, DOCK_W = 380, DOCK_PAD = 10 },
+        Pages = { buy = Page(), sell = Page(), mine = Page() },
+        Watch = { UnderCount = function() return under end },
         Tabs = {
             Build = function(_, _, _, onPick)
                 pickTab = onPick
@@ -89,7 +100,7 @@ local ns = {
             end,
             Paint = function() end,
         },
-        Window = { Open = function() opened = true end },
+        Window = { Open = function(page) opened = page or true end },
     },
     Shared = { Parts = {
         Panel = function()
@@ -105,6 +116,7 @@ local ns = {
         end,
     } },
     L = function(text) return text end,
+    Font = function() return Frame() end,
     Button = function(_, _, _, _, onClick)
         back = Frame()
         back.click = onClick
@@ -113,12 +125,18 @@ local ns = {
     Apply = function() end,
 }
 local Pages = ns.Market.Pages
+function Pages.buy.ShowList() listAsked = true end
 
 Load("NaowhForever_Market/UI/Dock.lua", {
     _G = { NaowhForever = ns, AuctionHouseFrame = ah },
+    AuctionHouseFrameDisplayMode = MODES,
     C_AddOns = { IsAddOnLoaded = function() return true end },
     C_AuctionHouse = { CloseAuctionHouse = function() closes = closes + 1 end },
-    CreateFrame = function() return Frame() end,
+    CreateFrame = function()
+        local f = Frame()
+        made[#made + 1] = f
+        return f
+    end,
     InCombatLockdown = function() return false end,
     hooksecurefunc = function(t, name, fn)
         local old = t[name]
@@ -134,9 +152,36 @@ check("Blizzard's window is left as it is", ah.shown and ah.alpha == 1)
 check("The Market's panel shows beside it", Dock.Shown() and panel.points.TOPLEFT[1] == ah
     and panel.points.TOPLEFT[2] == "TOPRIGHT" and panel.points.BOTTOMLEFT[2] == "BOTTOMRIGHT")
 check("on Blizzard's strata", panel.strata == "MEDIUM")
-check("with Sell first", Pages.sell.shown and not Pages.mine.shown)
+check("with Buy first, as Blizzard's window opens on Buy", Pages.buy.shown and not Pages.sell.shown
+    and not Pages.mine.shown)
 check("Professions' panels sit beside the panel", ns.MarketAuctionWindow() == panel)
 check("with Post With Keys off, the panel takes no keys", panel.keys == false)
+
+local watchLine = made[1]
+check("with nothing on your watch list under your price, no watch line", watchLine.text and not watchLine.shown)
+under = 2
+Dock.Refresh()
+check("on Buy, the watch list itself shows them, so no line", not watchLine.shown)
+pickTab("sell")
+check("on another tab, items under your price show a line on the panel", watchLine.shown
+    and watchLine.text.text == "2 on your watch list are at or under your price")
+watchLine.scripts.OnClick()
+check("clicking it opens the panel's Buy tab on the watch list", listAsked and Pages.buy.shown
+    and not Pages.sell.shown and not opened and not watchLine.shown)
+under = 0
+pickTab("sell")
+check("the line goes when none are under", not watchLine.shown)
+
+ah:SetDisplayMode(MODES.ItemSell)
+check("Blizzard's Sell tab brings the panel to Sell", Pages.sell.shown and not Pages.buy.shown)
+ah:SetDisplayMode(MODES.Auctions)
+check("Blizzard's Auctions tab brings it to My Auctions", Pages.mine.shown and not Pages.sell.shown)
+ah:SetDisplayMode(MODES.CommoditiesBuy)
+check("and Blizzard's Buy, a commodity's page too, to Buy", Pages.buy.shown and not Pages.mine.shown)
+pickTab("sell")
+ah:SetDisplayMode(MODES.CommoditiesBuy)
+check("a tab you pick on the panel stays while Blizzard's stays where it was", Pages.sell.shown)
+pickTab("buy")
 
 coin.click()
 check("the coin button opens The Market's window", opened)
@@ -157,13 +202,17 @@ check("Professions' panels go back beside Blizzard's window", ns.MarketAuctionWi
 back.click()
 check("the button opens the panel again", Dock.Shown() and not back.shown and Pages.sell.shown)
 
+pickTab("mine")
 panel.close.scripts.OnClick()
 ah:Close()
 check("leaving the auctioneer hides the button", not back.shown and not Dock.Shown())
 check("and forgets what you posted", resets == 1)
 
+ah:SetDisplayMode(MODES.Buy)
 ah:Open()
 check("the next visit opens the panel again", Dock.Shown())
+check("on the tab Blizzard's window opens on, even the same one as last visit", Pages.buy.shown
+    and not Pages.mine.shown)
 
 ah:Close()
 settings.postKeys = true

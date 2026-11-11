@@ -1,4 +1,4 @@
--- Dock.lua: The Market's panel docked beside Blizzard's auction house, with Sell and My Auctions, and the way to The Market's window (Market.Dock).
+-- Dock.lua: The Market's panel docked beside Blizzard's auction house, with Buy, Sell and My Auctions, and the way to The Market's window (Market.Dock).
 local ns = _G.NaowhForever
 
 local Market = ns.Market
@@ -7,24 +7,35 @@ local St = Market.Style
 local Parts = ns.Shared.Parts
 
 local AH_ADDON = "Blizzard_AuctionHouseUI"
-local DOCK_W, DOCK_GAP, PAD, HEAD_H = 380, 4, 10, 34
+local DOCK_W, PAD = St.DOCK_W, St.DOCK_PAD
+local DOCK_GAP, HEAD_H = 4, 34
 local BACK_W, BACK_H, BACK_GAP = 120, 22, 4
 local NEXT_FRAME = 0
+local WATCH_H = 20
 local TEXT_TITLE = "The Market"
 local TEXT_OPEN = ns.L("Farm, Reagents and Prices")
 local TEXT_OPEN_TIP = ns.L("Opens The Market's own window.")
+local TEXT_WATCH_ONE = ns.L("%d on your watch list is at or under your price")
+local TEXT_WATCH_MANY = ns.L("%d on your watch list are at or under your price")
 local PAGES = {
+    { key = "buy", label = "Buy", tip = "Your watch list: the items you want, and when they are at or under your price." },
     { key = "sell", label = "Sell", tip = "Your bags, most valuable first, priced and posted." },
     { key = "mine", label = "My Auctions", tip = "Your auctions, and the ones someone is selling for less." },
 }
 
-local dock, body, tabs, back, events, ah
-local shown = "sell"
+local BLIZZARD_PAGES = { Buy = "buy", ItemBuy = "buy", CommoditiesBuy = "buy", WoWTokenBuy = "buy",
+    ItemSell = "sell", CommoditiesSell = "sell", WoWTokenSell = "sell", Auctions = "mine" }
+
+local dock, body, tabs, back, events, ah, watchLine
+local shown = "buy"
+local blizzardPage
 local built = {}
 local closed = false
 
 local Dock = {}
 Market.Dock = Dock
+
+local PaintWatch
 
 local function ShowPage(key)
     if built[shown] and shown ~= key then Market.Pages[shown].Hide() end
@@ -36,6 +47,7 @@ local function ShowPage(key)
         built[key] = true
     end
     page.Show()
+    PaintWatch()
 end
 
 local function PassKeysOn()
@@ -57,6 +69,18 @@ end
 
 local function OpenWindow()
     Market.Window.Open()
+end
+
+local function OpenWatch()
+    Market.Pages.buy.ShowList()
+    ShowPage("buy")
+end
+
+function PaintWatch()
+    local n = shown ~= "buy" and Market.Watch.UnderCount() or 0
+    watchLine:SetShown(n > 0)
+    watchLine.text:SetText((n == 1 and TEXT_WATCH_ONE or TEXT_WATCH_MANY):format(n))
+    body:SetPoint("TOPLEFT", n > 0 and watchLine or tabs, "BOTTOMLEFT", 0, -PAD)
 end
 
 local Activate
@@ -89,8 +113,14 @@ local function Build()
     dock.title:SetPoint("RIGHT", open, "LEFT", -St.BAR_GAP, 0)
     tabs = Market.Tabs.Build(dock, DOCK_W - PAD * 2, PAGES, ShowPage)
     tabs:SetPoint("TOPLEFT", PAD, -HEAD_H)
+    watchLine = CreateFrame("Button", nil, dock)
+    watchLine:SetPoint("TOPLEFT", tabs, "BOTTOMLEFT", 0, -PAD)
+    watchLine:SetPoint("RIGHT", -PAD, 0)
+    watchLine:SetHeight(WATCH_H)
+    watchLine.text = ns.Font(watchLine, St.TEXT_SIZE, nil, St.HAVE_RGB)
+    watchLine.text:SetPoint("LEFT")
+    watchLine:SetScript("OnClick", OpenWatch)
     body = CreateFrame("Frame", nil, dock)
-    body:SetPoint("TOPLEFT", tabs, "BOTTOMLEFT", 0, -PAD)
     body:SetPoint("BOTTOMRIGHT", -PAD, PAD)
 end
 
@@ -125,6 +155,7 @@ end
 
 local function OnBlizzardHide()
     closed = false
+    blizzardPage = nil
     Deactivate()
     Market.Sell.Reset()
 end
@@ -141,6 +172,7 @@ end
 
 function Dock.Refresh()
     if not Dock.Shown() then return end
+    PaintWatch()
     Market.Tabs.Paint(tabs, shown)
     local page = Market.Pages[shown]
     if page.Refresh then page.Refresh() else page.Show() end
@@ -154,11 +186,29 @@ local function OnPostItem(_, location)
     Dock.Pick(location)
 end
 
+local function PageOf(mode)
+    for name, key in pairs(BLIZZARD_PAGES) do
+        if AuctionHouseFrameDisplayMode[name] == mode then return key end
+    end
+end
+
+local function OnDisplayMode()
+    local key = PageOf(ah:GetDisplayMode())
+    if not key or key == blizzardPage then return end
+    blizzardPage = key
+    if Dock.Shown() then
+        ShowPage(key)
+    else
+        shown = key
+    end
+end
+
 local function Hook()
     ah = _G.AuctionHouseFrame
     ah:HookScript("OnShow", OnBlizzardShow)
     ah:HookScript("OnHide", OnBlizzardHide)
     hooksecurefunc(ah, "SetPostItem", OnPostItem)
+    hooksecurefunc(ah, "SetDisplayMode", OnDisplayMode)
 end
 
 local function OnEvent(_, _, name)

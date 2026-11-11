@@ -126,6 +126,7 @@ end
 function ns.MarketRefresh()
     if Market.On() then
         Market.History.Record()
+        Market.Watch.Scanned()
         Market.BagWorth.Changed()
         Market.Crafts.Changed()
         Market.Farm.Changed()

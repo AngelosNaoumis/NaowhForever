@@ -10,7 +10,7 @@ local S = ns.UI.ModuleSettings("market", { enabled = F.enabled,
     bagWorth = false,
     tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipBest = false,
     farmHerbs = true, farmVeins = true, farmSkins = true, farmFish = true, farmLocked = false,
-    sortRun = "", sortCrafts = "", sortMine = "", undercut = "step" })
+    sortRun = "", sortCrafts = "", sortMine = "", undercut = "step", watchAlerts = true })
 ns.MarketSettings = S
 
 local Market = { Settings = S }

@@ -66,6 +66,7 @@ end
 
 local function Listed(n)
     Listings.count, Listings.state = n, "listed"
+    Market.Watch.Listed(wanted.itemID, (Listings.Cheapest()))
     Changed()
 end
 

@@ -1,7 +1,8 @@
 # The Market
 
 At the auction house The Market is a panel docked to the right of Blizzard's own window, which stays
-exactly as the game draws it. The panel has two tabs. Sell lists your bags most valuable first, puts the
+exactly as the game draws it. The panel has three tabs, and follows Blizzard's own. Buy is your Watch List:
+search your scans for an item, give it a price, and each scan tells you in chat when it is at or under it. Sell lists your bags most valuable first, puts the
 item in front of you at a price one step under the cheapest listing that is not yours, says how it
 compares, and posts it with the Post button, or with Space (post), S (skip) and Up and Down (the next
 price step) once Post With Keys is on. My Auctions checks each of your auctions against the listings,
@@ -32,6 +33,7 @@ NaowhForever_Market/
   Sales.lua          what you sold, from your sold auctions, per realm and faction (Market.Sales)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
+  Watch.lua          the items you watch for a price, and the chat line when one is at or under it (Market.Watch)
   Worth.lua          what your bags would fetch, their most valuable items, and the best way to sell an item (Market.Worth)
   Crafts.lua         your characters' known recipes priced at their best outlet, and what your bags make (Market.Crafts)
   Runs.lua           your gathering runs, what each node yields on average, and the pools you fish from (Market.Runs)
@@ -43,14 +45,16 @@ NaowhForever_Market/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Spark.lua        an item's last two weeks of prices as a small line, for Farm (Market.Spark)
     Chart.lua        an item's lowest price each day as a chart you can hover, for Prices (Market.Chart)
+    Finder.lua       an item list searched by name across your scans, and the Watch price box, for Buy and Prices (Market.Finder)
   UI/
     Window.lua       The Market's window: title bar, scan line, and the Farm, Reagents and Prices pages (Market.Window)
     Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
-    Tabs.lua         a tab bar for the window and the panel, with Sell's and My Auctions' counts (Market.Tabs)
+    Tabs.lua         a tab bar for the window and the panel, with Buy's, Sell's and My Auctions' counts (Market.Tabs)
     Sell.lua         the panel's Sell page: the item, its price against the listings, the post line, Up Next
     Auctions.lua     the panel's My Auctions page: your auctions, undercut first, Cancel and Cancel Undercut
     Reagents.lua     the Reagents page: Professions' Reagents list under a search
     Prices.lua       the Prices page: any item in your scans by name, or from your bags, and its price chart
+    Buy.lua          the panel's Buy page: your Watch List, and any item in your scans to add to it
     Dock.lua         the panel docked beside Blizzard's auction house, and the button that brings it back (Market.Dock)
     BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
     Tooltip.lua      The Market's lines on item tooltips
@@ -73,8 +77,8 @@ NaowhForever_Market/
 - While the panel shows, `ns.MarketAuctionWindow` hands it to Professions, whose panels at the auction
   house (Search Favorites AH, Disenchant Deals, the Shopping List) then sit to its right instead of on
   top of it; the panel tells it each time it shows or hides (`ns.AuctionWindowChanged`).
-- Sell and My Auctions need the auction house, so they live only in the panel; the window has the pages
-  that work anywhere.
+- Buy, Sell and My Auctions belong at the auction house, so they live only in the panel; the window has the
+  pages that work anywhere.
 - Sell and My Auctions both read one item's listings at a time (`Market.Listings`), so only the tab shown
   searches; the other stops when you leave it.
 - The panel is `DOCK_W` (380) wide: Blizzard's window is 800 wide and sits at the left of the screen, so
@@ -321,6 +325,22 @@ NaowhForever_Market/
   the verdict count what you keep after the cut, so near a tie the verdict can pick a way whose line
   reads a little lower than Auction's.
 
+- The Watch List is the account's (`marketWatch`, item ID to a price in copper), so your alts watch the same items,
+  and it holds at most `MAX_ITEMS` (100). It reads the lowest price of the realm and faction you are on from your
+  scans (`ns.AuctionPrice`), so it only knows a price after a scan there.
+- The Watch List lives on the panel's Buy tab, beside Blizzard's Buy, because you watch an item to buy it. Prices
+  keeps a Watch box for the item it shows; both use `Market.Finder`, the one search list and price box.
+- Each finished scan (`ns.MarketRefresh`) prints one chat line for every watched item at or under your price, while
+  Watch Alerts is on. A listing search on the panel tells you too, once for each price it sees. The Market never
+  searches Blizzard's window for you: it names the item and its price, and you buy it there. A chat line cannot
+  open anything, since the addon has no clickable chat links.
+- The panel's line counts the watched items at or under your price at the last scan, and opens the Buy tab on the
+  Watch List. It hides on Buy, where the list and the tab's green count already show them.
+- The panel follows Blizzard's tabs through a post-hook on `AuctionHouseFrame:SetDisplayMode`, reading
+  `GetDisplayMode` against `AuctionHouseFrameDisplayMode`: Buy (and an item's or commodity's buy page) to Buy, Sell
+  to Sell, Auctions to My Auctions. It moves only when Blizzard's tab changes, so a tab you pick on the panel
+  stays; each visit starts over, on the tab Blizzard's window opens on.
+
 ## Checking
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
@@ -348,7 +368,8 @@ In game, at an auctioneer, with The Market on:
 8. My Auctions lists your auctions, undercut first, checks each item, and marks the undercut ones; a
    commodity auction's price is the price for one (check against Blizzard's Auctions tab).
 9. Cancel asks first and cancels; Cancel Undercut cancels one per press; the list reads again.
-10. Sell and My Auctions show their counts on their tabs; My Auctions turns orange when one is undercut.
+10. Sell and My Auctions show their counts on their tabs; My Auctions turns orange when one is undercut. Buy shows,
+    in green, how many watched items are at or under your price.
 11. A piece of gear on Sell, with someone else's listed, is priced a whole silver under theirs and its
     price box has no copper; it posts without "Internal auction error". A commodity still steps a copper.
 12. Set Selling's Undercut to Match the Cheapest: Sell prices at the cheapest listing that is not yours
@@ -417,3 +438,16 @@ Away from the auction house:
     change over the week top right. Hovering it names the day and its price.
 44. Typing two letters or more in Prices' search lists the items in your scans with that in their name;
     picking one draws its chart. Clearing the search lists your bags again.
+
+Back at an auctioneer:
+
+45. The panel opens on Buy as Blizzard's window does. Clicking Blizzard's Sell or Auctions tab moves the panel to
+    Sell or My Auctions, and Buy back to Buy; a tab picked on the panel stays until Blizzard's tab changes.
+46. On Buy, type two letters of an item in your scans, pick it, set a price and press Watch: it joins the list,
+    marked in blue. With the search empty, the list shows only watched items, at or under your price first in green.
+47. A watched row's x and the Stop Watching button take it off the list.
+48. With a watched item at or under your price, on Sell the panel shows the green line; clicking it opens Buy.
+
+Away from it again:
+
+49. Prices still has the Watch box for the item it shows, and its list is your bags, not the Watch List.
