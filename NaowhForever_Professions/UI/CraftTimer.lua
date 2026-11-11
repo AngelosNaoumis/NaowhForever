@@ -13,7 +13,7 @@ local Parts = ns.Shared.Parts
 local ROUND = 0.5
 local WIDTH, TRACK_H, PIN, NAME_SIZE, ICON = 420, 20, 18, 14, 30
 local SIDE_GAP = 10
-local PIP_W, PIP_MIN_GAP = 3, 8
+local PIP_MIN_GAP = 8
 local TIME_LARGER = 4
 local LABEL_GAP = 4
 local LABEL_SHARE = 0.47
@@ -126,8 +126,7 @@ function Look.Pips(frame, count, done, At)
     for i = 1, shown do
         local pip = frame.pips[i]
         if not pip then
-            pip = ns.Solid(frame.track, "OVERLAY")
-            pip:SetWidth(PIP_W)
+            pip = ns.Hairline(ns.Solid(frame.track, "OVERLAY"), "v")
             frame.pips[i] = pip
         end
         local x = At(i) * WIDTH
