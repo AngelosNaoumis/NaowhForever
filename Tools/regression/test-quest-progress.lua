@@ -1,7 +1,8 @@
 -- Run with Lua 5.1 from the repository root: Announce Quest Progress.
 -- Off it listens to nothing; on, the game's own quest objective messages are said in party chat, or
 -- instance chat in an instance group, word for word. Other info messages, "Objective Complete.", a
--- raid, no group and locked chat say nothing, and a secret type or line is never read.
+-- raid, no group and locked chat say nothing, and a secret type or line is never read. With Only Finished
+-- Objectives on, a counted line is said only once its count is full.
 local NOTHING = function() end
 local SECRET = {}
 local frames = {}
@@ -151,6 +152,44 @@ Case("a secret type or line: never read, nothing said", function()
     Say(SECRET, "Mottled Boar slain: 10/10")
     Say(KILL, SECRET)
     assert(#sent == 0)
+end)
+
+Case("the Only Finished Objectives row sits on the card, off by default", function()
+    assert(card.rows and card.rows[1].key == "questProgressFinished" and card.rows[1].toggle)
+    assert(not settings.questProgressFinished)
+end)
+
+Case("Only Finished Objectives: steps on the way are not said", function()
+    settings.questProgressFinished = true
+    Say(KILL, "Mottled Boar slain: 3/8")
+    Say(ITEM, "Scorpid Worker Tail: 9/10")
+    Say(PLAYERS, "Players slain: 2/5")
+    assert(#sent == 0)
+end)
+
+Case("Only Finished Objectives: the step that finishes it is said, word for word", function()
+    local lines = {
+        { KILL, "Mottled Boar slain: 8/8" }, { ITEM, "Scorpid Worker Tail: 10/10" },
+        { FOUND, "Tainted Note: 1/1" }, { PLAYERS, "Players slain: 5/5" },
+    }
+    for _, line in ipairs(lines) do Say(line[1], line[2]) end
+    assert(#sent == #lines)
+    for i, line in ipairs(lines) do assert(sent[i].text == line[2], line[2]) end
+end)
+
+Case("Only Finished Objectives: a name with a number reads only the count", function()
+    Say(KILL, "Defias 2 slain: 1/12")
+    assert(#sent == 0)
+    Say(KILL, "Defias 2 slain: 12/12")
+    assert(#sent == 1)
+end)
+
+Case("Only Finished Objectives: a named objective's (Complete) is said, the rest stays as before", function()
+    Say(DONE, "Scout the Gold Mine (Complete)")
+    Say(UNKNOWN, "Objective Complete.")
+    Say(EXPLORED, "Discovered: Valley of Trials")
+    assert(#sent == 1 and sent[1].text == "Scout the Gold Mine (Complete)")
+    settings.questProgressFinished = false
 end)
 
 Case("switched off: events dropped", function()

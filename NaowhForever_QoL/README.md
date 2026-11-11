@@ -1547,6 +1547,10 @@ NaowhForever_QoL/
 - The line said is the game's own objective message (`UI_INFO_MESSAGE`), in your client's language. Its
   type is matched by name through `GetGameMessageInfo` (`PROGRESS`), never by its text.
 - "Objective Complete." (`ERR_QUEST_UNKNOWN_COMPLETE`) is left out: it does not say which objective.
+- Only Finished Objectives reads the count from the line itself: the last two numbers, equal once the
+  objective is done, in whatever order the language puts them. `UI_INFO_MESSAGE` carries no quest ID to look
+  the objective up with. A named objective's "(Complete)" line (`ERR_QUEST_OBJECTIVE_COMPLETE_S`) has no
+  count and is always said.
 - Raids are left alone: party chat there reaches only your subgroup.
 - Nothing is said while `C_ChatInfo.InChatMessagingLockdown()` is true.
 - The type and the line are checked with `issecretvalue` before anything reads them: `GetGameMessageInfo`

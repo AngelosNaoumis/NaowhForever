@@ -37,7 +37,7 @@ local S = UI.ModuleSettings("qol", {
     layerTracker = F.layerTracker, layerTrackerFont = "", layerTrackerFontSize = 14, layerTrackerOutline = "OUTLINE",
     layerTrackerBackground = "none", layerTrackerCountdown = true, layerTrackerChat = true,
     layerRequests = F.layerRequests, layerRequestsHost = true, layerRequestsLeave = true,
-    questProgress = F.questProgress,
+    questProgress = F.questProgress, questProgressFinished = false,
     questShare = F.questShare,
     combatTimer = F.combatTimer, combatTimerInstanceOnly = false, combatTimerChat = true,
     combatTimerSticky = false, combatTimerHidePrefix = false, combatTimerBackground = "none",
