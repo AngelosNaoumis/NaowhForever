@@ -93,7 +93,7 @@ NaowhForever_DungeonJournal/
     EntrancePins.xml   loads EntrancePins.lua, then the pin's template
     EntrancePins.lua   the dungeon and raid entrances as pins on the world map
     Popup.lua          Boss Loot at Cursor (a key binding)
-    QuestTracker.lua   a dungeon's quests in a small window, one line each
+    QuestTracker.lua   a dungeon's quests in a small window, one row each
     GameTrackerFade.lua Hide the Game's Quest Tracker
     TrackerAuto.lua    Open Tracker in Dungeons and Show Outside Dungeons
     MapView.lua        a dungeon's map drawn into a frame: art, pins, entrance, floor switch (J.DungeonMap)
@@ -634,6 +634,10 @@ in the pull request it opens.
   (`ManagedFrameContainerMixin:AnimInManagedFrames`, run whenever UIParent is shown again), so
   `Show` and `SetAlpha` are both hooked; `GetAlpha` stops the hook from re-entering itself.
 - The quest tracker scrolls past 70% of the screen's height at its scale, and 420 at the least.
+- The quest tracker is 290 wide, set rather than fitted to its longest quest name: fitted, it
+  reached 640 and covered too much of the screen. A name takes up to two lines in its smaller
+  font, 12, before it is cut short, and ends where its count does when that count (21/29) is
+  wider than its column.
   After a `/reload` its auto-open runs inside that loading screen's `PLAYER_ENTERING_WORLD`, too
   late to hear it, so it also looks where you are as it is switched on.
 - `/nf mapcheck` asks the client for each floor's first tile: `SetTexture` answers true either

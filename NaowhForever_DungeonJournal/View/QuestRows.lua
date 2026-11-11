@@ -21,6 +21,7 @@ local QUEST_TOP, QUEST_LINE_GAP, QUEST_BOTTOM = St.QUEST_TOP, St.QUEST_LINE_GAP,
 local MARK, CHAIN_SLOT, WAYPOINT_SLOT = St.MARK, St.CHAIN_SLOT, St.WAYPOINT_SLOT
 local ROW_LEFT, QUEST_RIGHT = St.ROW_LEFT, St.QUEST_RIGHT
 local SMALL_SIZE, TITLE_SIZE, TIP_X = St.SMALL_SIZE, St.HEADING_SIZE, St.CURSOR_TIP_X
+local TRACKER_TITLE_SIZE, TRACKER_LINES = 12, 2
 
 local MARK_GAP, TITLE_GAP = 4, 6
 local MARK_LEFT = ROW_LEFT + WAYPOINT_SLOT + MARK_GAP
@@ -31,6 +32,7 @@ local RIGHT_W = CHAIN_RIGHT + CHAIN_SLOT
 local PIN_MARGIN, CHAIN_MARGIN = 4, 2
 local CHAIN_CELLS, PARTY_CELLS = 5, 2
 local CELL_GAP = 3
+local CHAIN_ROOM = CHAIN_SLOT - St.ACTION + CHAIN_MARGIN - CELL_GAP
 local MARK_HIT_PAD = 4
 local NAME_LIFT, NAME_PAD = 2, 4
 local ROLE_ICON = 14
@@ -539,11 +541,12 @@ local function NewMark(row)
     row.markHit:SetScript("OnMouseUp", NameClicked)
 end
 
-local function NewText(row)
-    row.title = ns.Font(row, TITLE_SIZE, nil, T.fg)
+local function NewText(row, tracker)
+    row.title = ns.Font(row, tracker and TRACKER_TITLE_SIZE or TITLE_SIZE, nil, T.fg)
     row.title:SetPoint("TOPLEFT", TITLE_LEFT, -QUEST_TOP)
     row.title:SetJustifyH("LEFT")
-    row.title:SetWordWrap(false)
+    row.title:SetWordWrap(tracker == true)
+    if tracker then row.title:SetMaxLines(TRACKER_LINES) end
     row.where = ns.Font(row, SMALL_SIZE, nil, T.muted)
     row.where:SetPoint("TOPLEFT", row.title, "BOTTOMLEFT", 0, -QUEST_LINE_GAP)
     row.where:SetJustifyH("LEFT")
@@ -575,7 +578,9 @@ end
 local function SetSlots(row, entry)
     local chain = row.chain
     if entry.turnin then SetHandIn(chain, entry) else SetChain(chain, entry) end
-    chain:SetShown(entry.turnin ~= nil or chain.chained)
+    local shown = entry.turnin ~= nil or chain.chained
+    chain:SetShown(shown)
+    row.spill = shown and math.max(0, chain.label.width - CHAIN_ROOM) or 0
     PaintChain(chain)
     row.party.count = entry.party
     row.party.label:SetText(entry.party)
@@ -627,7 +632,7 @@ Kinds.quest = {
         row:SetScript("OnEnter", RowEnter)
         row:SetScript("OnLeave", RowLeave)
         row:SetScript("OnMouseUp", QuestMouseUp)
-        NewText(row)
+        NewText(row, view.tracker)
         return row
     end,
     Set = function(row, entry, index)
@@ -640,7 +645,7 @@ Kinds.quest = {
         local view = row:GetParent()
         local tight = view.tight
         local compact = view.compact and not tight
-        local width = row:GetWidth() - TITLE_LEFT - RIGHT_W - GAP * 2
+        local width = row:GetWidth() - TITLE_LEFT - RIGHT_W - GAP * 2 - row.spill
         SetTitle(row, entry, width, compact, tight)
         local height = QUEST_TOP + math.ceil(row.title:GetStringHeight()) + QUEST_BOTTOM
         if not tight then height = height + QUEST_LINE_GAP + math.ceil(row.where:GetStringHeight()) end
@@ -648,7 +653,3 @@ Kinds.quest = {
         return height
     end,
 }
-
-function View.QuestRowWidth(titleWidth)
-    return TITLE_LEFT + titleWidth + RIGHT_W + GAP * 2
-end
