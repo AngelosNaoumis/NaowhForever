@@ -8,6 +8,10 @@ local STORE = "undermineReal"
 local S = ns.UI.ModuleSettings("undermineReal", {
     enabled = F.enabled,
     iconSize = 40,
+    undermineRealFont = "",
+    undermineRealFontSize = 16,
+    undermineRealOutline = "OUTLINE",
+    undermineRealTextPos = "BOTTOM",
     undermineRealPos = nil,
 })
 ns.UndermineRealSettings = S

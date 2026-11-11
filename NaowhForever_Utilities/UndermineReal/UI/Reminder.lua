@@ -4,12 +4,19 @@ local ns = _G.NaowhForever
 local T = ns.THEME
 local UI = ns.UI
 local St = ns.Shared.Style
+local Parts = ns.Shared.Parts
 
 local UR = ns.UndermineReal
 local S = UR.Settings
 
 local CROP = St.ICON_CROP
-local LABEL_SIZE, LABEL_GAP = 13, 4
+local LABEL_GAP = 4
+local ANCHORS = {
+    BOTTOM = { "TOP", "BOTTOM", 0, -LABEL_GAP },
+    TOP = { "BOTTOM", "TOP", 0, LABEL_GAP },
+    LEFT = { "RIGHT", "LEFT", -LABEL_GAP, 0 },
+    RIGHT = { "LEFT", "RIGHT", LABEL_GAP, 0 },
+}
 local BLINK_LOW, BLINK_TIME = 0.25, 0.5
 local HOME_X, HOME_Y = 0, 200
 local FRAME_NAME = "NaowhForeverUndermineReal"
@@ -18,7 +25,7 @@ local CARD = UR.PAGE .. ":undermineReal"
 local EVENTS = { "ENCOUNTER_END", "LOOT_OPENED", "PLAYER_ENTERING_WORLD" }
 local OBJECT_ID_FIELD = 6
 local TEXT_ITEM = ns.L("Tarnished Undermine Real")
-local TEXT_LOOT = ns.L("Loot %s for a %s")
+local TEXT_LOOT = ns.L("Loot Real")
 local TEXT_TIP = ns.L("Click to hide it until your next boss.")
 
 local frame, unlocked
@@ -32,14 +39,18 @@ function Look.New(f)
     f.icon:SetAllPoints()
     f.icon:SetTexCoord(CROP, 1 - CROP, CROP, 1 - CROP)
     ns.Border(f, St.BORDER_RGB)
-    f.label = ns.Font(f, LABEL_SIZE, "OUTLINE", T.accentSoft)
-    f.label:SetPoint("TOP", f, "BOTTOM", 0, -LABEL_GAP)
+    f.label = ns.Font(f, S.Get("undermineRealFontSize"), "OUTLINE", T.accentSoft)
 end
 
-function Look.Fill(f, size, boss)
+function Look.Fill(f)
+    local size = S.Get("iconSize")
     f:SetSize(size, size)
     f.icon:SetTexture(C_Item.GetItemIconByID(UR.ITEM))
-    f.label:SetText(TEXT_LOOT:format(boss, C_Item.GetItemNameByID(UR.ITEM) or TEXT_ITEM))
+    Parts.HudFont(f.label, S.Get("undermineRealFont"), S.Get("undermineRealFontSize"), S.Get("undermineRealOutline"))
+    local at = ANCHORS[S.Get("undermineRealTextPos")] or ANCHORS.BOTTOM
+    f.label:ClearAllPoints()
+    f.label:SetPoint(at[1], f, at[2], at[3], at[4])
+    f.label:SetText(TEXT_LOOT)
 end
 
 local function Place()
@@ -76,9 +87,8 @@ local function Build()
 end
 
 local function Update()
-    local boss = UR.Name()
-    if boss or unlocked then
-        Look.Fill(frame, S.Get("iconSize"), boss or TEXT_ITEM)
+    if UR.Name() or unlocked then
+        Look.Fill(frame)
         frame:Show()
         frame.blink:Play()
     else
@@ -122,10 +132,6 @@ local function Apply()
     Update()
 end
 
-local function OnSettingChanged(key)
-    if key == "enabled" or key == "iconSize" or key == "undermineRealPos" then Apply() end
-end
-
 local function OnUnlock()
     unlocked = UR.Enabled()
     Apply()
@@ -137,7 +143,7 @@ local function OnLock()
 end
 
 events:SetScript("OnEvent", OnEvent)
-S.OnChange(OnSettingChanged)
+S.OnChange(Apply)
 hooksecurefunc(ns, "Apply", Apply)
 hooksecurefunc(ns, "ShowUnlockMode", OnUnlock)
 hooksecurefunc(ns, "HideUnlockMode", OnLock)
