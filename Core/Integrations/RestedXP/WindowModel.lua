@@ -36,6 +36,15 @@ local function Heading(rxp, guide)
     return range and (place .. " " .. ns.RXPWindowTint("accent", range)) or place
 end
 
+local function Subheading(rxp, guide)
+    if guide.title or not guide.subgroup then return nil end
+    local name = Run("WindowGuideName", rxp.GetGuideName, guide) or guide.name
+    if type(name) ~= "string" then return nil end
+    name = Plain(name)
+    if name == "" or name == guide.subgroup then return nil end
+    return name
+end
+
 local function Counted(element, shown)
     local tag = element.tag
     if type(tag) == "string" and tag:find("^buy") and type(element.id) == "number"
@@ -148,7 +157,8 @@ function ns.RXPWindowRead()
     local rxp = _G.RXP
     local guide = rxp.currentGuide
     if not guide or guide.empty then return nil end
-    local model = { heading = Heading(rxp, guide), steps = {}, current = {}, guide = guide }
+    local model = { heading = Heading(rxp, guide), subheading = Subheading(rxp, guide), steps = {}, current = {},
+        guide = guide }
     local step = Run("WindowProgress", rxp.GetGuideProgress)
     local total = #guide.steps
     if step and total > 0 then

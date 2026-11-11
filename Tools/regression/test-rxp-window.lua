@@ -392,6 +392,30 @@ do
     Check(w.ns.RXPWindowSteps() == 12 and account.rxpWindowSteps == 12, "and the most is held to its range")
 end
 
+-- a guide in a group: the group is the title and the guide a muted line under it
+do
+    local w = Start({ rxpWindow = true })
+    local f = Window(w)
+    local plain = f.height
+    Check(f.subtitle.shown == false, "a guide in no group has no second line")
+    local guide = w.rxp.currentGuide
+    guide.subgroup, guide.name = "Speedrun Guide 30-40", "35-37 Northern Stranglethorn"
+    w.ns.RXPWindowRefresh()
+    Flush(w)
+    Check(f.title.text:find("^Speedrun Guide ") and f.subtitle.shown
+        and f.subtitle.text == "35-37 Northern Stranglethorn", "the group is the title and the guide the line under it")
+    Check(f.subtitle.points[1][2] == f.title and f.subtitle.width < f.width, "under the title, inside the window")
+    Check(f.height > plain, "the window is taller by the line")
+    guide.name = "|cff00ff00Speedrun Guide 30-40|r"
+    w.ns.RXPWindowRefresh()
+    Flush(w)
+    Check(f.subtitle.shown == false and f.height == plain, "a name the same as the group is not shown twice")
+    guide.name, guide.title = "35-37 Northern Stranglethorn", "Fishing"
+    w.ns.RXPWindowRefresh()
+    Flush(w)
+    Check(f.title.text == "Fishing" and f.subtitle.shown == false, "a guide with a title of its own has one line")
+end
+
 -- every text of the window is in the Addon Font
 do
     local w = Start({ rxpWindow = true })
