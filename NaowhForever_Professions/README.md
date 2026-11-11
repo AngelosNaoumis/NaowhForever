@@ -212,6 +212,8 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   or reaches less far. The plan is tried again without each one it uses until none can go; a recipe's
   training is counted once. Recipes on a cooldown are never planned. The plan stops early, and says so,
   where nothing you know or can train gives a skill-up.
+- The trainer comparisons reuse one scratch plan and its steps within each calculation. The winning
+  plan stays separate, so trying more alternatives does not allocate a new set of tables each time.
 - The plan is worked out when the pane opens and again only when the skill, the cap, the recipes, the
   last price scan or Plan Recipes You Can Train Later changes, not on every draw: it is a few thousand
   chance sums. Queue Plan queues each step through the Crafting Queue (with its prerequisites and

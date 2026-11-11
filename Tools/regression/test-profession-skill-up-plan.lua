@@ -196,6 +196,29 @@ Learn(99)
 plan = Fresh()
 Check("a recipe on a cooldown is never planned", not Ids(plan):find("99"))
 
+Reset()
+Recipe(61, 1, 40, 60, 100)
+Learn(61)
+unlearned[1] = Recipe(62, 20, 35, 45, 1)
+unlearned[2] = Recipe(63, 20, 45, 60, 10)
+unlearned[3] = Recipe(64, 20, 60, 80, 20)
+unlearned[4] = Recipe(65, 20, 60, 80, 5)
+train[62], train[63], train[64], train[65] = 10000, 10000, 50, 100000
+plan = Fresh()
+Check("trying several expensive trainers keeps only the winning steps", Ids(plan) == "64"
+    and #plan.steps == 1 and plan.total == 450 and plan.crafts == 20)
+local trained = 0
+for c in pairs(plan.trained) do
+    trained = trained + 1
+    Check("discarded alternatives leave no training entries", c.id == 64)
+end
+Check("the winning recipe's training is counted once", trained == 1)
+net[64] = nil
+local rebuilt = Fresh()
+Check("a new calculation can return to a learned recipe", Ids(rebuilt) == "61"
+    and rebuilt.steps[1].r == nil and not Plan.NeedsTraining(rebuilt))
+Check("rebuilding leaves the previously returned plan intact", Ids(plan) == "64" and plan.total == 450)
+
 prof.skill = 50
 plan = Fresh()
 Check("at the cap there is nothing to plan", plan.atCap and #plan.steps == 0)

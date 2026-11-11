@@ -5,9 +5,13 @@ writing them into RecipeData's unknown recipes. Offline, made-up pages. From the
     python -m unittest discover -s Tools/tests
 """
 import json
+import contextlib
+import io
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import paths  # noqa: E402,F401
@@ -141,6 +145,81 @@ class Fill(unittest.TestCase):
         data = json.loads(fc.OUT.read_text(encoding="utf-8"))
         text = fc.RECIPES.read_bytes().decode("ascii")
         self.assertEqual(fc.fill(text, data["recipes"], data["areas"]), text)
+
+
+class Learn(unittest.TestCase):
+    def test_trainer_recipes_without_formula_are_included(self):
+        data = '{"spell":3852,"id":4318,"learn":105,"formula":null,"source":null}'
+        self.assertEqual(fc.trade_learns(data), {3852: 105})
+
+    def test_missing_or_null_learn_values_are_not_guessed(self):
+        data = '{"spell":1,"id":2,"learn":null},{"spell":3,"id":4}'
+        self.assertEqual(fc.trade_learns(data), {})
+
+    def test_invalid_and_conflicting_values_fail(self):
+        for value in (-1, True, '105', 1.5):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                fc.trade_learns(json.dumps({"spell": 1, "id": 2, "learn": value}, separators=(',', ':')))
+        with self.assertRaises(ValueError):
+            fc.trade_learns('{"spell":1,"id":2,"learn":5},{"spell":1,"id":2,"learn":6}')
+
+    def test_only_the_skill_number_changes(self):
+        self.assertEqual(fc.fill_learns(RECIPES, {2: 7, 99: 1}), RECIPES.replace('skill = 10', 'skill = 7'))
+
+    def test_zero_is_preserved_and_update_is_idempotent(self):
+        once = fc.fill_learns(RECIPES, {2: 0})
+        self.assertIn('skill = 0, yellow = 15, grey = 20', once)
+        self.assertEqual(fc.fill_learns(once, {2: 0}), once)
+
+    def test_learn_at_or_above_yellow_keeps_the_existing_orange_range(self):
+        row = '    { spell = 1244431, item = 118, skill = 1, yellow = 55, grey = 95 },\r\n'
+        for learn in (55, 60):
+            with self.subTest(learn=learn):
+                self.assertEqual(fc.fill_learns(row, {1244431: learn}), row)
+
+    def test_learn_above_grey_is_skipped_even_when_it_decreases(self):
+        row = '    { spell = 1, skill = 175, yellow = 145, grey = 145 },\r\n'
+        self.assertEqual(fc.fill_learns(row, {1: 150}), row)
+
+    def test_other_increases_need_trainer_confirmation(self):
+        row = '    { spell = 24801, skill = 285, yellow = 325, grey = 365 },\r\n'
+        self.assertEqual(fc.fill_learns(row, {24801: 300}), row)
+
+    def test_preview_reports_skips_and_keeps_valid_decreases(self):
+        rows = ('    { spell = 1, skill = 1, yellow = 55, grey = 95 },\r\n'
+                '    { spell = 2, skill = 145, yellow = 145, grey = 145 },\r\n'
+                '    { spell = 3, skill = 285, yellow = 325, grey = 365 },\r\n'
+                '    { spell = 3852, skill = 130, yellow = 125, grey = 155 },\r\n')
+        log = io.StringIO()
+        with contextlib.redirect_stdout(log):
+            result = fc.preview_learns(rows, {1: 55, 2: 150, 3: 300, 3852: 105})
+        self.assertEqual(result, rows.replace('skill = 130', 'skill = 105'))
+        self.assertIn('at or above yellow 55', log.getvalue())
+        self.assertIn('above grey 145', log.getvalue())
+        self.assertIn('increase needs trainer confirmation', log.getvalue())
+        self.assertIn('3 values skipped; 1 learn requirements differ', log.getvalue())
+
+    def test_preview_does_not_write_recipe_or_cache(self):
+        with tempfile.TemporaryDirectory() as folder:
+            recipes, cache, report = (Path(folder) / name for name in ('RecipeData.lua', 'cache.json', 'learn.diff'))
+            recipes.write_bytes(RECIPES.encode('ascii'))
+            cache.write_text('{}', encoding='ascii')
+            with patch.object(fc, 'RECIPES', recipes), patch.object(fc, 'OUT', cache):
+                with patch.object(fc, 'read_learns', return_value={2: 7}), contextlib.redirect_stdout(io.StringIO()):
+                    fc.main(['--learn', '--check', '--report', str(report)])
+            self.assertEqual(recipes.read_bytes(), RECIPES.encode('ascii'))
+            self.assertEqual(cache.read_text(), '{}')
+            self.assertIn('skill = 7, yellow = 15, grey = 20', report.read_text())
+
+    def test_failed_later_page_leaves_recipe_unchanged(self):
+        valid = push('{"spell":2,"id":12,"learn":7}')
+        with tempfile.TemporaryDirectory() as folder:
+            recipes = Path(folder) / 'RecipeData.lua'
+            recipes.write_bytes(RECIPES.encode('ascii'))
+            with patch.object(fc, 'RECIPES', recipes), patch.object(fc, 'fetch', side_effect=[valid, '<html>blocked</html>']):
+                with patch.object(fc.time, 'sleep'), contextlib.redirect_stdout(io.StringIO()), self.assertRaises(ValueError):
+                    fc.main(['--learn', '--check', '--profession', 'tailoring', '--profession', 'alchemy'])
+            self.assertEqual(recipes.read_bytes(), RECIPES.encode('ascii'))
 
 
 if __name__ == "__main__":

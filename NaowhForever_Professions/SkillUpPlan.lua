@@ -62,21 +62,26 @@ local function Pick(skill, base, excluded, current)
     return best, bestChance
 end
 
-local function Run(from, to, modifier, excluded)
-    local run = { steps = {}, reach = from, crafts = 0, total = 0, priced = true, trained = {} }
-    local step
+local function Run(from, to, modifier, excluded, run)
+    run = run or { steps = {}, trained = {} }
+    run.reach, run.crafts, run.total, run.priced = from, 0, 0, true
+    wipe(run.trained)
+    local step, count = nil, 0
     for skill = from, to - 1 do
         local c, chance = Pick(skill + modifier, skill, excluded, step and step.c)
         if not c then break end
         if not step or step.c ~= c then
             local _, band = SkillUps.Chance(skill + modifier, c.yellow, c.grey)
-            step = { c = c, from = skill, expected = 0, band = band }
-            run.steps[#run.steps + 1] = step
+            count = count + 1
+            step = run.steps[count] or {}
+            step.c, step.from, step.expected, step.band = c, skill, 0, band
+            run.steps[count] = step
         end
         step.expected = step.expected + 1 / chance
         step.to = skill + 1
         run.reach = skill + 1
     end
+    for i = #run.steps, count + 1, -1 do run.steps[i] = nil end
     for _, s in ipairs(run.steps) do
         s.count = math.ceil(s.expected)
         s.info, s.r, s.trainAt = s.c.info, s.c.r, s.c.trainAt
@@ -101,16 +106,18 @@ end
 local function Optimise(from, to, modifier)
     local excluded = {}
     local best = Run(from, to, modifier, excluded)
+    local scratch
     local changed = true
     while changed do
         changed = false
         for c in pairs(best.trained) do
             excluded[c] = true
-            local without = Run(from, to, modifier, excluded)
+            local without = Run(from, to, modifier, excluded, scratch)
             if Beats(without, best) then
-                best, changed = without, true
+                scratch, best, changed = best, without, true
                 break
             end
+            scratch = without
             excluded[c] = nil
         end
     end
