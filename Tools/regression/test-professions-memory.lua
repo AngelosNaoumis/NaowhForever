@@ -303,6 +303,7 @@ local ns, logoPage, launcher
 ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower, MEDIA = dofile("Tools/regression/core_media.lua"),
     RegisterMinimapFeature = function(feature) launcher = feature end,
     GamepadStandDown = function() return false end,
+    TownCapitals = { [1458] = true },
     Shared = { CharacterData = function(key, create)
         local all = account[key]
         if type(all) ~= "table" then
@@ -1219,6 +1220,15 @@ check("a recipe its trainer teaches for nothing", Learn({ source = "trainer", co
 loaded[RECIPE_ITEM] = nil
 check("a recipe item still loading is called a recipe",
     Learn({ source = "drop", recipe = RECIPE_ITEM, bosses = {} }) == "Recipe\nDrops from:")
+
+-- Off-continent trainers all tie on distance; a capital's trainer wins before the name order.
+do
+    local horde = env.UnitFactionGroup
+    env.UnitFactionGroup = function() return "Horde" end
+    local picked = RF.Nearest({ { 2399, "Daryl Stack", "H", 1424, 63.4, 20.8 }, { 4576, "Josef Gregorian", "H", 1458, 70.4, 30.4 } }, 1)
+    check("an unreachable capital trainer is picked before a town trainer", picked[1][2] == "Josef Gregorian")
+    env.UnitFactionGroup = horde
+end
 
 if #failures > 0 then
     for _, label in ipairs(failures) do print("  FAIL " .. label) end
