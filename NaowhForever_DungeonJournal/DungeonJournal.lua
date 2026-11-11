@@ -45,6 +45,7 @@ local S = ns.UI.ModuleSettings("journal", {
     mapPanel = F.mapPanel,
     mapFactions = F.mapFactions,
     mapEntrances = F.mapEntrances,
+    entranceJournal = F.entranceJournal,
     mapEntranceScale = 1,
     usableOnly = true,
     myRecipes = true,
@@ -71,7 +72,6 @@ local S = ns.UI.ModuleSettings("journal", {
     trackerAuto = true,
     hideGameTracker = false,
     trackerOutside = false,
-    entranceJournal = true,
 })
 ns.JournalSettings = S
 
