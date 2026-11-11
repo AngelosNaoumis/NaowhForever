@@ -23,6 +23,8 @@ local TEXT_RAID = ns.L("Raid, %d players")
 local TEXT_DUNGEON = ns.L("Dungeon")
 local TEXT_KIND_LEVELS = "%s, %s"
 local TEXT_CLICK = ns.L("Click for a waypoint (again to remove it).")
+local TEXT_RIGHT = ns.L("Right-click: open its map.")
+local TEXT_RIGHT_MANY = ns.L("Right-click: choose one and open its map.")
 local TEXT_ENTRANCE = ns.L(" (entrance)")
 
 local provider, added, events
@@ -90,6 +92,29 @@ local function GroupName(dungeons, fallback)
     return #dungeons == 1 and dungeons[1].name or dungeons[1].zone or fallback
 end
 
+local function OpenDungeon(dungeon, group)
+    GameTooltip:Hide()
+    if not (WorldMapFrame and WorldMapFrame:IsShown()) then return end
+    if J.ShowDungeonBesideMap and J.ShowDungeonBesideMap(dungeon, group) then return end
+    if J.Maps[dungeon.key] then J.ShowMapOnWorldMap(dungeon) end
+end
+
+local function OpenJournal(pin)
+    local dungeons = pin.group.dungeons
+    if not dungeons[1] then return end
+    if not dungeons[2] then
+        OpenDungeon(dungeons[1], dungeons)
+        return
+    end
+    ns.ContextMenu(pin, function(_, root)
+        root:CreateTitle(GroupName(dungeons, TEXT_ENTRANCE_NAME))
+        for i = 1, #dungeons do
+            local dungeon = dungeons[i]
+            root:CreateButton(dungeon.name, function() OpenDungeon(dungeon, dungeons) end)
+        end
+    end)
+end
+
 local function MakePinMixin()
     NaowhForeverEntrancePinMixin = CreateFromMixins(MapCanvasPinMixin)
     local Pin = NaowhForeverEntrancePinMixin
@@ -97,6 +122,7 @@ local function MakePinMixin()
 
     function Pin:OnLoad()
         self:UseFrameLevelType(FRAME_LEVEL)
+        self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     end
 
     function Pin:CheckMouseButtonPassthrough() end
@@ -126,6 +152,9 @@ local function MakePinMixin()
         end
         local c = ns.ThemeTint("accentSoft", nil) or HINT_RGB
         GameTooltip:AddLine(TEXT_CLICK, c.r, c.g, c.b)
+        if S.Get("entranceJournal") then
+            GameTooltip:AddLine(#dungeons > 1 and TEXT_RIGHT_MANY or TEXT_RIGHT, c.r, c.g, c.b)
+        end
         GameTooltip:Show()
     end
 
@@ -134,6 +163,10 @@ local function MakePinMixin()
     end
 
     function Pin:OnClick(button)
+        if button == "RightButton" then
+            if S.Get("entranceJournal") then OpenJournal(self) end
+            return
+        end
         if button ~= "LeftButton" then return end
         local dungeons = self.group.dungeons
         local entrance = dungeons[1].entrance

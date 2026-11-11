@@ -301,6 +301,7 @@ end
 
 local function BuildFrame()
     window = J.View.Parts.Panel("", true)
+    window:Hide()
     window:SetSize(PAGE_W + PANEL_PAD * 2, PANEL_HEADER + MAP_SHOWN_H + PANEL_PAD)
     window.backdrop:Card(CARD_INSET, PANEL_HEADER, CARD_INSET, CARD_INSET)
     window.title:SetTextColor(T.accentSoft.r, T.accentSoft.g, T.accentSoft.b)
@@ -435,7 +436,7 @@ function Map.RedrawPlacing()
 end
 
 function J.OpenDungeonMap(dungeon, from)
-    if not J.Maps[dungeon.key] then return end
+    if not (dungeon and J.Maps[dungeon.key]) then return end
     local owner = from and Owner(from)
     if owner and owner.onWorldMap then return J.ShowMapOnWorldMap(dungeon) end
     if not window then Build() end

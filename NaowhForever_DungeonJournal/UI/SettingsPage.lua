@@ -13,7 +13,7 @@ local TO_ENTRANCE_SCALE = 1 / ns.Shared.Style.PIN_SIZE_DEFAULT
 local TO_FRACTION = J.Style.PERCENT_SCALE
 local PERCENT = J.C.PERCENT
 local ROUND_HALF = J.C.ROUND_HALF
-local ORDER_FIRST, ORDER_THIRD, ORDER_FOURTH, ORDER_LAST = 10, 20, 30, 90
+local ORDER_FIRST, ORDER_OPEN, ORDER_THIRD, ORDER_FOURTH, ORDER_LAST = 10, 15, 20, 30, 90
 
 local TEXT_JOURNAL_OFF = ns.L("Turn on the Dungeon Journal")
 local TEXT_BIS_OFF = ns.L("Needs the BiS List")
@@ -251,6 +251,17 @@ local function DeclareMap()
         },
     })
     map:Card({
+        id = "open", name = "Opening the Map", order = ORDER_OPEN,
+        help = "Right-click on a dungeon entrance.",
+        search = "right click entrance",
+        rows = {
+            Toggle("entranceJournal", "Right-click entrance to open the dungeon map",
+                "Right-click a dungeon or raid entrance to show its map and dungeon journal on the world map, "
+                    .. "the same ones as Bosses and Loot in Dungeons.",
+                "right click entrance"),
+        },
+    })
+    map:Card({
         id = "lootkey", name = "Boss Loot at Cursor", order = ORDER_THIRD,
         help = "A key that shows a boss's loot at your cursor.",
         rows = {
@@ -262,13 +273,19 @@ end
 
 local function DeclareMapPins()
     local entrances = Toggle("mapEntrances", "Dungeon and Raid Entrances", "A door on each dungeon and raid "
-        .. "entrance on the world map, for the sides the Journal lists. Hover it for the levels, click it for a "
-        .. "waypoint.")
+        .. "entrance on the world map, for the sides the Journal lists. Hover it for the levels, left-click for "
+        .. "a waypoint, and right-click for its map and journal when that is on.")
     entrances.store, entrances.always = S, true
+    local entranceJournal = Toggle("entranceJournal", "Right-click entrance to open the dungeon map",
+        "Right-click a dungeon or raid entrance to show its map and dungeon journal on the world map, "
+            .. "the same ones as Bosses and Loot in Dungeons.")
+    entranceJournal.store, entranceJournal.always = S, true
+    entranceJournal.needs, entranceJournal.why = EntrancesOn, TEXT_ENTRANCES_OFF
     table.insert(ns.Shared.MapPins, {
         title = ns.L("Dungeons & Raids"), store = S, switch = "mapEntrances",
         rows = {
             entrances,
+            entranceJournal,
             { key = "mapEntranceScale", label = "Entrance Icon Size", slider = PIN_SIZE_RANGE,
               scale = TO_ENTRANCE_SCALE, store = S, always = true, needs = EntrancesOn,
               why = TEXT_ENTRANCES_OFF, help = "How big the entrance icons are. They are largest on a zone's map, "

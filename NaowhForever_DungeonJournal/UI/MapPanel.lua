@@ -30,6 +30,7 @@ local panel, view
 local hooked, waitingForMap = false, false
 local placeQueued = false
 local pages, pagesAreFactions, shownIndex = nil, false, 1
+local chosen
 local factionsHere = {}
 local shownBoss
 local folder
@@ -142,6 +143,10 @@ end
 local function Pick()
     pages, pagesAreFactions = nil, false
     if not (On() and WorldMapFrame:IsShown()) then return end
+    if chosen and S.Get("mapPanel") then
+        pages = chosen
+        return
+    end
     local here = S.Get("mapPanel") and J.Current()
     if here then
         pages = here
@@ -168,7 +173,7 @@ local function Refresh()
 end
 
 local function Hide()
-    shownBoss = nil
+    chosen, shownBoss = nil, nil
     if panel then panel:Hide() end
     J.ShowMapOnWorldMap(nil)
 end
@@ -276,6 +281,20 @@ local function SettingChanged(key)
         PaintButtons()
         view:Redraw()
     end
+end
+
+function J.ShowDungeonBesideMap(dungeon, with)
+    if not (dungeon and S.Get("enabled") and S.Get("mapPanel") and not ns.GamepadStandDown()) then return end
+    if not (WorldMapFrame and WorldMapFrame:IsShown()) then return end
+    local list = { dungeon }
+    if with then
+        for i = 1, #with do
+            if with[i] ~= dungeon then list[#list + 1] = with[i] end
+        end
+    end
+    chosen, shownBoss, shownIndex = list, nil, 1
+    Refresh()
+    return true
 end
 
 function J.ShowBossBesideMap(boss)
