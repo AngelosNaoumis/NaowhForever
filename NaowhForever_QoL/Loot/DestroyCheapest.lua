@@ -22,7 +22,7 @@ local BUTTON_H, NOTE_H, ANYWAY_H = 24, 40, 18
 local PASS_ICON = "Interface\\Buttons\\UI-GroupLoot-Pass-Up"
 local PASS_GLOW = "Interface\\Buttons\\UI-GroupLoot-Pass-Highlight"
 local STALE_DAYS = 7
-local STALE = ns.QoLConstants.SECONDS_PER_DAY * STALE_DAYS
+local STALE_RANGE = { 1, 30, 1 }
 local HOME_Y, OVER_LOOT = 140, 20
 local PLAIN = ns.QoLConstants.PLAIN_BAG
 local SELL = ns.QoLConstants.SELL_PRICE
@@ -268,14 +268,28 @@ local function RankMarket()
     return S.Get("destroyCheapestMarketRank") == true
 end
 
+local function StaleOn()
+    return S.Get("destroyCheapestMarketStale") == true
+end
+
+local function StaleLimit()
+    local days = S.Get("destroyCheapestMarketDays")
+    if type(days) ~= "number" or days < 1 then days = STALE_DAYS end
+    return ns.QoLConstants.SECONDS_PER_DAY * days
+end
+
 local function Quote(itemID)
     if not (itemID and ns.AuctionPrice) then return end
     local price, at = ns.AuctionPrice(itemID)
     if type(price) ~= "number" or price <= 0 then return end
-    if type(at) ~= "number" then return price, nil, false end
-    local age = GetServerTime() - at
-    if age < 0 then age = 0 end
-    return price, age, age <= STALE
+    local age
+    if type(at) == "number" then
+        age = GetServerTime() - at
+        if age < 0 then age = 0 end
+    end
+    if not StaleOn() then return price, age, true end
+    if not age then return price, nil, false end
+    return price, age, age <= StaleLimit()
 end
 
 local function ApplyMarket(e, itemID, count)
@@ -1142,7 +1156,10 @@ local function SettingChanged(key)
         Apply()
         return
     end
-    if key == "destroyCheapestMarketRank" and not pending then index = 0 end
+    if not pending and (key == "destroyCheapestMarketRank"
+        or key == "destroyCheapestMarketStale" or key == "destroyCheapestMarketDays") then
+        index = 0
+    end
     if not Opened() then return end
     if key == "destroyCheapestSide" or key == "destroyCheapestPos" then
         Place()
@@ -1369,7 +1386,12 @@ Settings.Page("QoL/Loot & Items", S):Card({
         { key = "destroyCheapestMarket", label = "Market Prices", toggle = true,
           help = "Shows the auction house price next to the vendor price when one is known." },
         { key = "destroyCheapestMarketRank", label = "Rank by Market Value", toggle = true,
-          help = "Sorts by auction price times stack from the last seven days, cheapest first, and uses the vendor price when that price is missing or older." },
+          help = "Sorts by auction price times stack, cheapest first, and uses the vendor price when no auction price is known." },
+        { key = "destroyCheapestMarketStale", label = "Ignore Old Scans", toggle = true,
+          help = "An auction price older than Older Than is left out, and the vendor price is used." },
+        { key = "destroyCheapestMarketDays", label = "Older Than (days)", slider = STALE_RANGE,
+          needs = "destroyCheapestMarketStale",
+          help = "How many days an auction price can be before it is left out." },
         Settings.Group("Full Bags"),
         { key = "destroyCheapestTransfers", label = "Bank and Other Transfers", toggle = true,
           help = "Also opens when the bank, mail, a trade, a vendor or a quest reward will not fit." },

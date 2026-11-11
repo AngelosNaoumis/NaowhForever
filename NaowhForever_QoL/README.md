@@ -894,10 +894,12 @@ NaowhForever_QoL/
   and neither does a loot that still fits. It does not hook looting, so auto-loot is left alone.
 - The offer is the cheapest stack by vendor price times count, from plain bags. Market Prices,
   off until turned on, also shows the auction house price from the last scan or the release's
-  prices. No price leaves that line off. A price older than seven days is shown muted. Rank by
-  Market Value, also off, sorts by a fresh auction price times the stack, cheapest first. A
-  missing or older price stays on the vendor total, and that total orders the list, picks the
-  item, and decides the not-worth warning. Turning the rank on or off rebuilds the list at once.
+  prices. No price leaves that line off. Rank by Market Value, also off, sorts by auction price
+  times the stack, cheapest first. A missing auction price stays on the vendor total, and that
+  total orders the list, picks the item, and decides the not-worth warning. Ignore Old Scans
+  starts off. While it is on, a price older than Older Than is shown muted and left out of that
+  order, and Older Than starts at seven days. With it off, an old price is still used. Turning
+  the rank or the age on or off rebuilds the list at once.
   Destroy Anyway, off until turned on, adds a smaller button
   next to the not-worth warning. It still takes a click, and the same second click and delete
   window as Destroy. A bag that reports

@@ -150,6 +150,7 @@ local S = UI.ModuleSettings("qol", {
     destroyCheapestArtifact = false, destroyCheapestHeirloom = false,
     destroyCheapestSide = "top", destroyCheapestMovable = false, destroyCheapestTransfers = false,
     destroyCheapestMarket = false, destroyCheapestMarketRank = false, destroyCheapestAnyway = false,
+    destroyCheapestMarketStale = false, destroyCheapestMarketDays = 7,
     destroyCheapestConsumable = true, destroyCheapestAll = false,
     bagSpace = F.bagSpace, bagSpaceCount = 4, bagSpaceSize = 36, bagSpaceGrow = "RIGHT", bagSpaceReverse = false,
     bagSpaceMaxQuality = 2, bagSpaceJunkFirst = false, bagSpaceAuction = true,
