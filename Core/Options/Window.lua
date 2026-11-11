@@ -292,10 +292,10 @@ function UI.HighlightSetting(row)
     end)
 end
 
-local function ScrollToSetting(key, label, card)
+local function ScrollToSetting(key, label, card, group)
     local Settings = ns.Shared.Settings
     if not (card and wrappers[key]) then return end
-    local row, top = Settings.FindRow(wrappers[key], label, card)
+    local row, top = Settings.FindRow(wrappers[key], label, card, group)
     if not top then return end
     UI.HighlightSetting(row)
     scrollFrame:UpdateScrollChildRect()
@@ -303,7 +303,7 @@ local function ScrollToSetting(key, label, card)
     scrollFrame:SetVerticalScroll(math.min(scrollFrame:GetVerticalScrollRange(), math.max(0, y)))
 end
 
-function UI.GoToSetting(key, label, card)
+function UI.GoToSetting(key, label, card, group)
     key = O.NavPage(card or key) or O.NavPage(key)
     if not (window and key) then return end
     if O.IsModuleCard(card) then label = nil end
@@ -315,7 +315,7 @@ function UI.GoToSetting(key, label, card)
     if card then ns.Shared.Settings.Reveal(card, label) end
     if wrappers[key] then wrappers[key]._dirty = true end
     ShowPage(key)
-    ScrollToSetting(key, label, card)
+    ScrollToSetting(key, label, card, group)
 end
 
 local function ShowModulePage(win, key)

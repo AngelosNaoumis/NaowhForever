@@ -656,6 +656,29 @@ do
     Click(Button("Combat")); Flush()
     Check(not Text("Out of Stealth Color"), "a jump away does not leave the search's cards open on the page it left")
 
+    -- The same setting name under two groups of one card: two results, told apart by their group,
+    -- and each lands on its own row.
+    input:SetText(""); Flush()
+    local glowA = { label = "Glow Twice", buttonText = "Go", button = function() end }
+    local glowB = { label = "Glow Twice", buttonText = "Go", button = function() end }
+    local joined = Settings.CardOf("QoL/Combat:coTank")
+    local joinedParts, joinedRows = joined.parts, joined.rows
+    Settings.Page("QoL/Combat", S):Card({ id = "glowA", into = "coTank", name = "Glow Part A", rows = { glowA } })
+    Settings.Page("QoL/Combat", S):Card({ id = "glowB", into = "coTank", name = "Glow Part B", rows = { glowB } })
+    input:SetText("glow twice"); Flush()
+    local popup
+    for _, f in ipairs(frames) do if f.rows and f.footer then popup = f end end
+    local second = popup.rows[2]
+    Check(popup.rows[1].entry and second.entry and popup.rows[1].trail.text ~= second.trail.text
+        and second.trail.text:find("Glow Part B", 1, true), "a name used twice in a card shows each with its group")
+    local lit, highlight = nil, UI.HighlightSetting
+    UI.HighlightSetting = function(shown) lit = shown end
+    second.scripts.OnClick(second); Flush()
+    UI.HighlightSetting = highlight
+    Check(UI.filter == nil and lit and lit.setting == glowB, "and a click lands on the one picked")
+    joined.parts, joined.rows = joinedParts, joinedRows
+    UI:RefreshPage(true); Flush()
+
     -- A page its own builder draws can carry a declared settings page, as Profiles carries the
     -- Setups card: typing what only that card has lands on the page, counts it there, and the
     -- page draws the card with the typed words lit; cleared, the page is whole again.
