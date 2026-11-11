@@ -168,6 +168,7 @@ local S = UI.ModuleSettings("qol", {
     zoneInfoPinned = 0, zoneInfoScale = 1,
     zoneInfoPos = { point = "TOPRIGHT", relPoint = "TOPRIGHT", x = -24, y = -220 },
     mapSkyborne = F.mapSkyborne, mapSkyborneSize = 20,
+    mapQuestTint = F.mapQuestTint, mapQuestTintColor = "blue", mapQuestTintFill = 0.4,
     mapSizePercent = 100, mapSizePos = false,
     gearSets = F.gearSets, gearBarVisible = F.gearBarVisible, trinketBar = F.trinketBar, trinketSize = 36, trinketSpacing = 4, trinketGrow = "RIGHT", gearBarSize = 32, gearBarGrow = "RIGHT", gearMounted = "", gearResting = "",
     gearBarSpacing = 4, gearBarShow = "always",

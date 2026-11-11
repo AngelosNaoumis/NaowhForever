@@ -79,6 +79,7 @@
     <Script file="Interface\MapSize.lua"/>
     <Script file="Interface\MapOverlays.lua"/>
     <Include file="Interface\Unexplored.xml"/>
+    <Script file="Interface\QuestAreaTint.lua"/>
     <Script file="Interface\ZoneLevelsData.lua"/>
     <Script file="Interface\FishingLevelsData.lua"/>
     <Script file="Interface\ZoneLevels.lua"/>

@@ -87,6 +87,7 @@ ns.FEATURES = {
         zoneInfoTravel = false, zoneInfoGathering = false, zoneInfoHideCombat = false, zoneInfoOnlyProfessions = false,
         mapFishing = false,
         mapSkyborne = false,
+        mapQuestTint = false,
         gearSets = true,
         gearBarVisible = true,
         trinketBar = false,
