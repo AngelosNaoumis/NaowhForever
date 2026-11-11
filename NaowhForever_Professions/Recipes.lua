@@ -94,14 +94,15 @@ end
 local function OutputItem(recipeID)
     local cached = outputCache[recipeID]
     if cached ~= nil then
-        if cached then return cached[1], cached[2] end
+        if cached then return cached[1], cached[2], cached[3] end
         return
     end
     local ok, schematic = pcall(C_TradeSkillUI.GetRecipeSchematic, recipeID, false)
     local id = ok and schematic and schematic.outputItemID
     if id and id > NO_ITEM then
-        outputCache[recipeID] = { id, math.max(1, schematic.quantityMin or 1) }
-        return outputCache[recipeID][1], outputCache[recipeID][2]
+        local made = math.max(1, schematic.quantityMin or 1)
+        outputCache[recipeID] = { id, made, math.max(made, schematic.quantityMax or made) }
+        return id, outputCache[recipeID][2], outputCache[recipeID][3]
     end
     local okData, data = pcall(C_TradeSkillUI.GetRecipeOutputItemData, recipeID)
     id = okData and type(data) == "table" and data.itemID
