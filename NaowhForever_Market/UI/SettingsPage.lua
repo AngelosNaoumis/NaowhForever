@@ -104,8 +104,6 @@ page:Card({
     help = "How The Market posts your items at an auctioneer.",
     summary = DurationSummary,
     rows = {
-        { key = "openAtAuctioneer", label = "Open at the Auctioneer", toggle = true, needs = On, why = Why,
-          help = "Talking to an auctioneer opens The Market instead of Blizzard's window." },
         { key = "postKeys", label = "Post With Keys", toggle = true, needs = On, why = Why,
           help = "Space posts the item in front of you, S skips it, Up and Down step its price." },
         { key = "duration", label = "Duration", choice = DURATIONS, needs = On, why = Why,

@@ -1,16 +1,17 @@
 # The Market
 
-Naowh's own auction house window. At an auctioneer ours opens over Blizzard's, with the same tabs in
-the same order (Open at the Auctioneer off opens Blizzard's first, with a The Market button above it): your bags
-most valuable first, the item in front of you with the auction house's live listings, a price one step
-under the cheapest of someone else's, and a post line you work through with the Post button, or with
-Space (post), S (skip) and Up and Down (the next price step) once Post With Keys is on. Blizzard's own
-window is one button away until you leave the auctioneer. Away from it, `/market` (or `/nfmarket`) or its key binding opens the same window on Farm: the zones
-where your Herbalism and Mining gather the most, a zone's map with every herb and vein priced, and a
-loop through it you can follow by waypoint. The pages are tabs along the bottom, Blizzard's Buy, Sell and
-My Auctions first, then Farm and Reagents. What you gather is recorded, and what you really gather
-prices Farm's nodes. Reagents shows what each reagent in your bags goes into, in every profession, and whether
-crafting it beats selling it. Bag Worth, once on, puts what your
+At the auction house The Market is a panel docked to the right of Blizzard's own window, which stays
+exactly as the game draws it. The panel has two tabs. Sell lists your bags most valuable first, puts the
+item in front of you at a price one step under the cheapest listing that is not yours, says how it
+compares, and posts it with the Post button, or with Space (post), S (skip) and Up and Down (the next
+price step) once Post With Keys is on. My Auctions checks each of your auctions against the listings,
+undercut ones first, and cancels them one press at a time. The panel's coin button, `/market` (or
+`/nfmarket`) or its key binding open The Market's own window, anywhere, with three tabs along the
+bottom: Farm, the zones where your Herbalism and Mining gather the most, a zone's map with every herb
+and vein priced, and a loop through it you can follow by waypoint; Reagents, what each reagent in your
+bags goes into, in every profession, and whether crafting it beats selling it; and Prices, any item in
+your scans, found by name or picked from your bags, with its lowest price each day over two weeks. What
+you gather is recorded, and what you really gather prices Farm's nodes. Bag Worth, once on, puts what your
 bags would fetch on your bags, and item tooltips gain The Market's lines: your stack's worth, the
 price over the past week, disenchanting, who makes it, what it crafts into and, if you ask, the best way
 to sell it. A Compact style keeps only the auction, vendor and disenchant prices.
@@ -30,7 +31,6 @@ NaowhForever_Market/
   Sell.lua           the sell queue, each item's price from its listings, what you posted (Market.Sell)
   Sales.lua          what you sold, from your sold auctions, per realm and faction (Market.Sales)
   Auctions.lua       your auctions, each checked against the listings, and cancelling (Market.Auctions)
-  Buy.lua            the name and category search, the cost of a quantity, and buying (Market.Buy)
   History.lua        each item's lowest price per day from your scans, two weeks of them (Market.History)
   Worth.lua          what your bags would fetch, their most valuable items, and the best way to sell an item (Market.Worth)
   Crafts.lua         your characters' known recipes priced at their best outlet, and what your bags make (Market.Crafts)
@@ -41,18 +41,17 @@ NaowhForever_Market/
     Fishing.lua      what each zone's water catches, and the fishing pools, from Tools/build/market_gather.py
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
-    Ladder.lua       an item's listings as a ladder, its bars and lit rungs, for Sell and Buy (Market.Ladder)
     Spark.lua        an item's last two weeks of prices as a small line, for Farm (Market.Spark)
-    Chart.lua        an item's lowest price each day as a chart you can hover, for Sell and Buy (Market.Chart)
+    Chart.lua        an item's lowest price each day as a chart you can hover, for Prices (Market.Chart)
   UI/
-    Window.lua       the window: title bar, scan line, pages, Blizzard's button (Market.Window)
+    Window.lua       The Market's window: title bar, scan line, and the Farm, Reagents and Prices pages (Market.Window)
     Farm.lua         the Farm page: the zone list, the zone's map, its loop and the picked item
-    Tabs.lua         the tab bar along the bottom, with each page's count (Market.Tabs)
-    Sell.lua         the Sell page: the item, its listings, the post line, Up Next
-    Buy.lua          the Buy page: the category list with the Shopping List above it, the search, the listings, the buy button
-    Auctions.lua     the My Auctions page: your auctions, their status, Cancel and Cancel Undercut
+    Tabs.lua         a tab bar for the window and the panel, with Sell's and My Auctions' counts (Market.Tabs)
+    Sell.lua         the panel's Sell page: the item, its price against the listings, the post line, Up Next
+    Auctions.lua     the panel's My Auctions page: your auctions, undercut first, Cancel and Cancel Undercut
     Reagents.lua     the Reagents page: Professions' Reagents list under a search
-    Takeover.lua     covering Blizzard's auction house, and the way back to it
+    Prices.lua       the Prices page: any item in your scans by name, or from your bags, and its price chart
+    Dock.lua         the panel docked beside Blizzard's auction house, and the button that brings it back (Market.Dock)
     BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
     Tooltip.lua      The Market's lines on item tooltips
     SettingsPage.lua the settings page, declared as cards
@@ -60,39 +59,36 @@ NaowhForever_Market/
 
 ## Why
 
-- Blizzard's auction house window is covered, never hidden: its OnHide calls
-  `C_AuctionHouse.CloseAuctionHouse`, which would end the visit. It stays shown at alpha 0 under ours,
-  set from its own OnShow so it never shows for a frame. Ours is one strata above it and at least its
-  size, anchored to its top left, so nothing of Blizzard's can be clicked through ours. Blizzard's tabs,
-  and QoL's Scan Prices button beside them, hang under its bottom edge, so ours reaches
-  `BLIZZARD_TABS` further down to cover them too.
-- The Market button that comes back from Blizzard's window sits above its top right corner, not beside
-  its tabs: another addon's tabs push Scan Prices and its scan line along that row into the corner.
-- At an auctioneer ours does not move: Blizzard's window is placed by the panel manager and cannot be
-  dragged either, and moving it from addon code would fight that placing. Away from one it opens where
-  you last dragged it (`marketWindow`, placed by the shared `Parts.Place`), one strata up (`HIGH`), and
-  drags. A scan finishing redraws the page shown, but never a Sell, Buy or My Auctions tab away from the
-  auctioneer, and Bag Worth's rows pick an item on Sell only at the auctioneer.
-- While ours covers Blizzard's window, `ns.MarketAuctionWindow` hands it to Professions, whose panels
-  at the auction house (Search Favorites AH, Disenchant Deals, the Shopping List) then sit beside ours
-  instead of on top of it; Takeover tells it each time ours covers or steps aside
-  (`ns.AuctionWindowChanged`).
-- Sell, Buy and My Auctions need the auction house, so away from it their tabs show a short "At an
-  auctioneer" note instead; `/market` opens on Farm. Opening it while Blizzard's window is showing
-  at an auctioneer steps back into ours instead.
+- Blizzard's auction house window is left as the game draws it. The Market used to cover it with its own
+  window, until players said they wanted the game's window and its flow, with The Market's extras beside
+  it. The panel is anchored to the right edge of Blizzard's window, top to bottom, on its strata and
+  scale, so it follows wherever the panel manager places it; Blizzard's frames are never anchored to it.
+- The panel's X closes only the panel. A The Market button above the top right corner of Blizzard's
+  window brings it back until you leave the auctioneer, and the next visit opens it again. The button sits
+  above the corner, not beside the tabs: another addon's tabs push Scan Prices and its scan line along
+  that row into the corner.
+- The Market's window opens where you last dragged it (`marketWindow`, placed by the shared
+  `Parts.Place`), one strata up (`HIGH`), at an auctioneer or away from one. A scan finishing redraws
+  the page shown in it and in the panel.
+- While the panel shows, `ns.MarketAuctionWindow` hands it to Professions, whose panels at the auction
+  house (Search Favorites AH, Disenchant Deals, the Shopping List) then sit to its right instead of on
+  top of it; the panel tells it each time it shows or hides (`ns.AuctionWindowChanged`).
+- Sell and My Auctions need the auction house, so they live only in the panel; the window has the pages
+  that work anywhere.
+- Sell and My Auctions both read one item's listings at a time (`Market.Listings`), so only the tab shown
+  searches; the other stops when you leave it.
+- The panel is `DOCK_W` (380) wide: Blizzard's window is 800 wide and sits at the left of the screen, so
+  the panel fits beside it on a 16:9 screen at the default UI scale. Its pages drop the old full-size
+  Sell page's listings ladder and chart for that; the chart moved to Prices.
 - With the Forever look, only about 27 of a rail row's 36 pixels of art are visible. A page name in the
   heading font with that note under it is as tall as that and sat high, so the name ran over the top
   edge. Those rows are `FOREVER_ROW_H` (48) tall, and the two lines sit `FOREVER_DROP` (3) lower.
 - Post With Keys and Bag Worth start off: Space posted an item without meaning to, and Bag Worth's numbers
-  on their slots puzzled them. Open at the Auctioneer starts on again (#1053 turned it off) now that
-  the window follows Blizzard's own tabs and flow: Buy, Sell, My Auctions, then ours.
-- With Open at the Auctioneer off, closing ours (its X or Escape) steps back to Blizzard's window. With
-  it on, closing ours closes the auction house with `C_AuctionHouse.CloseAuctionHouse`, so the visit
-  ends as Blizzard's own close does.
+  on their slots puzzled them. With Post With Keys off the panel takes no keys at all.
 - A right-click on a bag item at the auction house goes to Blizzard's `SetPostItem`. The Market hooks
-  it and picks that item on its Sell page; Blizzard's window still takes it too, out of sight.
+  it and picks that item on the panel's Sell page; Blizzard's own Sell tab takes it too.
 - `PostCommodity`, `PostItem` and their Confirm calls need a hardware event, so a post only ever runs
-  from the Post button or from Space in the window's OnKeyDown. The key is claimed with
+  from the Post button or from Space in the panel's OnKeyDown. The key is claimed with
   `SetPropagateKeyboardInput(false)` only for that press, out of combat, as the Dungeon Journal does.
 - A post's duration is the index `PostItem` and `PostCommodity` take, 1 to 3, labelled with the game's
   own `AUCTION_DURATION_ONE` to `_THREE` as Blizzard's sell frame does. On Forever they read 2, 8 and
@@ -130,12 +126,11 @@ NaowhForever_Market/
   vendor price times `DEFAULT_AUCTION_PRICE_MULTIPLIER`, rounded up to a silver.
 - An item is the vendor's when a vendor pays at least what it makes on the auction house after the 5%
   cut (`AH_CUT`).
-- The scan prices that order the queue come from QoL's Auction Prices (`ns.AuctionPrice`); its
-  Scan Prices button sits under Blizzard's covered window, so The Market's title bar has its own,
-  which runs the same scan (`ns.AuctionScan`) and redraws when it finishes (`ns.MarketRefresh`).
+- The scan prices that order the queue come from QoL's Auction Prices (`ns.AuctionPrice`). Its Scan
+  Prices button is on Blizzard's window, and a scan finishing redraws The Market (`ns.MarketRefresh`).
 - Items the client has not loaded have an unknown commodity status; they are asked for and the queue
   is read again when they arrive.
-- It steps aside when the gamepad interface style is on, like every window that covers Blizzard's.
+- It steps aside when the gamepad interface style is on.
 - My Auctions asks for your auctions (`QueryOwnedAuctions`) each time it opens and after each cancel
   (`AUCTION_CANCELED`), then checks one item at a time through the same listings search as Sell, so the
   throttle is never flooded. A commodity is checked once by item ID for all your auctions of it; any
@@ -150,30 +145,6 @@ NaowhForever_Market/
   A check's answer is kept under the item it was asked for, since the auctions are read again (and
   their tables reused) whenever the game sends them. Cancelled items come
   back by mail, so a cancelled auction cannot be posted again from here.
-- Buy searches by name with `SendBrowseQuery`, sorted by price then name, as Blizzard's browse does;
-  a picked item's listings come through the same search as Sell. Its categories are Blizzard's own
-  (`AuctionCategories`, from Blizzard_AuctionHouseUI, which is loaded whenever Buy can be used), so
-  they match the game's auction house on every client language; a picked one's `filters` go in as
-  `itemClassFilters`, alone or with a name. The WoW Token category is left out: it is bought another way.
-  A list longer than the game's first page asks for the next one (`RequestMoreBrowseResults`) when
-  scrolled within `MORE_ROWS` of its end, as Blizzard's list does, and the page arrives with
-  `AUCTION_HOUSE_BROWSE_RESULTS_ADDED`. A result row's tooltip is the item from
-  `GetItemKeySampleLink`, or `SetItemKey` when there is no sample, as Blizzard's own auction house does
-  on Forever; Shopping List and Favourites rows show the plain item. The throttle freeing, another item's
-  data arriving or an error while not buying redraw nothing: the page rebuilds Professions' whole
-  shopping plan on each draw, and the throttle frees after every message, Blizzard's own included.
-- A commodity is bought in two presses, each a hardware event: the first asks the game for a price
-  (`StartCommoditiesPurchase`, which answers with `COMMODITY_PRICE_UPDATED`), the second confirms it
-  (`ConfirmCommoditiesPurchase`). A quote over `QUOTE_SLACK` (5%) above the listings' average is flagged,
-  the margin Blizzard's own buy dialog refuses at. Picking something else cancels an open quote, through
-  `pcall` as Professions' Buyer does: the game can drop the quote first.
-- Gear buys the cheapest auction that is not yours at its buyout with `PlaceBid`, as Blizzard's buyout
-  does, and answers with `AUCTION_HOUSE_PURCHASE_COMPLETED` for that auction or `AUCTION_HOUSE_SHOW_ERROR`.
-- The Shopping List is Professions' (`ns.Professions.Shopping`), read only when Professions is loaded.
-  A commodity bought here is taken off it with its own `Shopping.Bought`, as its Buy button does.
-  Buy listens to `Shopping.OnChange` from its first show and redraws the list only while it is
-  shown, since a listener cannot be removed; without it, a craft added at the auctioneer stayed off
-  the list until the tab was opened again.
 - An owned auction's item key info (`GetItemKeyInfo`) can be missing until
   `ITEM_KEY_ITEM_INFO_RECEIVED`; until then it shows as Checking and is checked when it arrives.
 - Price history keeps each item's lowest price per day from QoL's scans (`ns.AuctionPriceList`), for
@@ -184,15 +155,19 @@ NaowhForever_Market/
   roughly halves what thousands of items take in saved data and loads far faster than a table.
 - A price change compares today's lowest with the oldest day within `CHANGE_DAYS` (7) that has one, and
   says how many days back that is: with a scan only yesterday it reads "Since yesterday", never "7 days".
-- The price chart on Sell and Buy draws that history: a point for each day with a price, joined across
+- The price chart on Prices draws that history: a point for each day with a price, joined across
   days without one, between the lowest and highest price of the two weeks, with the same change the
   tooltip shows. A price that never moved is one line across the middle. It keeps a point a day, not one
   a scan: a full scan prices thousands of items, and one allowed every 15 minutes would fill the saved
   data. Its right edge is the day of the last scan or release prices, so each day is named from the real
   today back and a last scan two days old never reads "Today". An axis price of a gold or more drops its
   copper to fit `PLOT_LEFT`. The hover runs an OnUpdate only while the mouse is over the plot, and names
-  the nearest day that has a price. On Sell it fills the room between the price row and the deposit
-  lines (`POST_H`, 32, their height); on Buy it takes `CHART_W` (280) of the listings' width.
+  the nearest day that has a price.
+- Prices finds an item by name among the items in your scans (`ns.AuctionPriceList`), from
+  `MIN_LETTERS` (2) letters typed, and only among the items the client already holds data for
+  (`C_Item.IsItemDataCachedByID`): asking for thousands of names at once would flood the game with
+  item loads. It lists at most `MAX_RESULTS` (50). With nothing typed it lists the items in your bags
+  that have a scan price, most valuable first.
 - Bag Worth counts an item at what it makes on the auction house after the cut when that beats its
   vendor price, and at the vendor price otherwise; bound items count at the vendor price. Its card sits
   above the combined bags or EllesmereUI's bags, and left of the backpack when bags open one by one,
@@ -229,8 +204,7 @@ NaowhForever_Market/
 - Crafts reads its recipes when the page shows after a scan or a bag change (`Crafts.Changed`), not on
   every draw.
 - Add to Queue goes to Professions' Craft Queue with `CraftQueue.AddWithShopping`, as its own Add does,
-  only for your own recipes and while its Craft Queue is on. At an auctioneer, Buy opens the Buy page on
-  the first material you are short of.
+  only for your own recipes and while its Craft Queue is on.
 - An alt's row has Add to List instead, while Professions' Shopping List is on: the Craft Queue is for
   crafting, which the alt does, but a bank character can buy the alt's materials. It goes through
   `Shopping.Add`, one craft a click as the profession window's Add to List starts at. It reads the recipe's
@@ -302,16 +276,9 @@ NaowhForever_Market/
   Blizzard's own auctions list shows a sold row at its buyout. It is dated by the time its gold still
   has to arrive (`timeLeftSeconds` within `SALE_DELIVERY`), else when it was read. My Auctions sums the
   last `SALES_WINDOW_DAYS` (7); tooltips show your last sale of the item.
-- Favourites are account-wide (`marketFavourites`), starred from Buy's detail with the item key's item
-  level and suffix, so a piece of gear is searched as the one you starred. They are listed by name and
-  drawn when Buy opens, when one is starred, and when a favourite's item data arrives
-  (`GET_ITEM_INFO_RECEIVED`). The detail's name runs to the star when there is no price line to draw.
-- Saved searches are account-wide too (`marketSearches`), newest first, listed above the starred items
-  under Favourites. The star beside the search box saves the name in the box with the picked category,
-  and lights when that search is saved. A category is kept as its place in `AuctionCategories` ("3.2"),
-  the indices Blizzard's own `FindDeepestCategory` reads, so a saved search works on every client
-  language. The same name in another letter case with the same category is the same search. At most
-  `SEARCHES_KEEP` (10) are kept: saving another drops the oldest.
+- Buy, with its Favourites and saved searches, is gone: Blizzard's own Buy tab is what players use. Their
+  saved data (`marketFavourites`, `marketSearches`, `sortBuy`) and the old Open at the Auctioneer
+  setting (`openAtAuctioneer`) are left as they were, unread.
 - The tooltip lines are added at PLAYER_LOGIN, after QoL's Auction Price line, so they follow it.
   A stack's size is read from the bag slot the tooltip is over; elsewhere it counts one, and the line
   is left out. Disenchanting is priced with Professions' `DisenchantValues`, read only when Professions
@@ -357,113 +324,96 @@ NaowhForever_Market/
 ## Checking
 
 `lua5.1 Tools/regression/test-market-sell.lua` covers the queue, the prices and posting offline,
-`test-market-auctions.lua` My Auctions, `test-market-buy.lua` Buy, `test-market-worth.lua` the price
-history, Bag Worth and Best Way to Sell's verdict, `test-market-tooltip.lua` the tooltip lines,
-`test-market-chart.lua` the price chart, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm,
-`test-market-runs.lua` gathering runs, `test-market-extras.lua` sales and favourites; all load the rules
-through
-`Tools/regression/market_world.lua`. `test-market-takeover.lua` checks which window an auctioneer opens
-and what closing ours does.
+`test-market-auctions.lua` My Auctions, `test-market-worth.lua` the price history, Bag Worth and Best
+Way to Sell's verdict, `test-market-tooltip.lua` the tooltip lines, `test-market-chart.lua` the price
+chart, `test-market-crafts.lua` Crafts, `test-market-farm.lua` Farm, `test-market-runs.lua` gathering
+runs, `test-market-extras.lua` sales; all load the rules through `Tools/regression/market_world.lua`.
+`test-market-dock.lua` checks the panel beside Blizzard's window, and `test-market-tabs.lua` the tab bars.
 In game, at an auctioneer, with The Market on:
 
-1. Blizzard's window opens, with The Market button above it; the button opens The Market over it with
-   your bags in Up Next, most valuable first.
-2. The first item's listings fill in, and its price is one step under the cheapest that is not yours.
+1. Blizzard's window opens as the game draws it, with The Market's panel docked to its right, top to
+   bottom, on Sell with your bags in Up Next, most valuable first. Blizzard's Buy, Sell and Auctions
+   tabs all work as without The Market.
+2. The first item's listing count fills in top right, and its price is one step under the cheapest that
+   is not yours; the line under the item says how far under, or that yours is already the cheapest.
 3. Post posts it, the next item comes up, and the bar's total counts up. With Post With Keys on, Space
-   does the same; with it off, Space does nothing in The Market.
-4. Up and Down step the price to just under the next listing; typing a price makes it yours.
-5. Right-clicking a bag item picks it.
-6. The eye button shows Blizzard's window; The Market button above it comes back. Professions' Shopping
-   List (and Search Favorites AH, Disenchant Deals) sits beside whichever window shows, never on top of ours.
-7. At an auctioneer The Market opens first on Buy, and Escape or the X closes the auction house. With Open
-   at the Auctioneer off, Blizzard's window opens first and Escape or the X goes back to it.
-8. My Auctions lists your auctions, checks each item, and marks the undercut ones; a commodity
-   auction's price is the price for one (check against Blizzard's Auctions tab).
+   does the same; with it off, Space does nothing in the panel.
+4. With Post With Keys on, Up and Down step the price to just under the next listing; typing a price
+   makes it yours.
+5. Right-clicking a bag item picks it on the panel's Sell, and Blizzard's Sell tab takes it too.
+6. The panel's X closes it, and The Market button above Blizzard's window brings it back. Leaving the
+   auctioneer and coming back opens the panel again.
+7. Professions' Shopping List (and Search Favorites AH, Disenchant Deals) sits to the right of the
+   panel, never on top of it; with the panel closed, beside Blizzard's window.
+8. My Auctions lists your auctions, undercut first, checks each item, and marks the undercut ones; a
+   commodity auction's price is the price for one (check against Blizzard's Auctions tab).
 9. Cancel asks first and cancels; Cancel Undercut cancels one per press; the list reads again.
-10. Buy: a name and Enter lists results; picking one shows its listings and what you would take.
-11. A commodity: Buy gets the price, Confirm buys it, and the Shopping List counts it.
-12. Gear: Buy buys the cheapest auction that is not yours.
+10. Sell and My Auctions show their counts on their tabs; My Auctions turns orange when one is undercut.
+11. A piece of gear on Sell, with someone else's listed, is priced a whole silver under theirs and its
+    price box has no copper; it posts without "Internal auction error". A commodity still steps a copper.
+12. Set Selling's Undercut to Match the Cheapest: Sell prices at the cheapest listing that is not yours
+    and says it matches it. One Silver puts a commodity a silver under, and gear a silver under as before.
+13. The panel fits the auction house's height at your UI scale, with Up Next showing several items.
 
 Away from the auction house:
 
-13. With Bag Worth on, opening your bags shows it above them: the total, and the five most valuable items; the
-    same five are numbered on their slots, in Blizzard's bags and in EllesmereUI's.
-14. Selling or looting changes the card and the numbers.
-15. At the auction house, clicking a Bag Worth row picks it on the Sell page.
-16. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
-17. A green or blue weapon or armour shows a Disenchant line with Professions loaded.
-18. `/market` and `/nfmarket` open The Market on Farm; Sell, Buy and My Auctions say to visit an auctioneer. It drags,
-    and opens where you left it.
-19. The tabs run along the bottom: Buy, Sell, My Auctions, then Farm and Reagents. Away from an auctioneer
-    the first three are dimmed.
-20. Sell and My Auctions show their counts on their tabs; My Auctions turns orange when one is undercut.
-21. Log in on an alt with The Market on and open its profession: its recipes show under its name.
-22. A crafted item's tooltip shows Made by and its materials' cost; a material's shows Crafts into.
-23. Farm lists the zones for your Herbalism and Mining, richest first, each with its best items.
-24. Picking a zone draws its map with every herb and vein: bigger pins for more gold, a gold line for
+14. With Bag Worth on, opening your bags shows it above them: the total, and the five most valuable
+    items; the same five are numbered on their slots, in Blizzard's bags and in EllesmereUI's.
+15. Selling or looting changes the card and the numbers.
+16. At the auction house, clicking a Bag Worth row picks it on the panel's Sell page.
+17. A stack's tooltip shows Stack of N with its worth; after scans on two days, the change line shows.
+18. A green or blue weapon or armour shows a Disenchant line with Professions loaded.
+19. `/market`, `/nfmarket` and the panel's coin button open The Market's window on Farm, with Farm,
+    Reagents and Prices along the bottom. It drags, and opens where you left it.
+20. Log in on an alt with The Market on and open its profession: its recipes show under its name.
+21. A crafted item's tooltip shows Made by and its materials' cost; a material's shows Crafts into.
+22. Farm lists the zones for your Herbalism and Mining, richest first, each with its best items.
+23. Picking a zone draws its map with every herb and vein: bigger pins for more gold, a gold line for
     the loop, faded pins for nodes you gathered in the last ten minutes.
-25. Herbs, Veins and Nodes I Can't Gather Yet change the map, the loop and the list.
-26. Start Loop places a waypoint at the nearest stop and the next as you reach each.
-27. Clicking a pin shows its item in the strip: price, the last 14 days, what you hold. At an
-    auctioneer, Sell picks it on the Sell page.
-28. Gather a few herbs or veins: Farm's picked item shows what you hold of it.
-29. Farm's list head reads your Herbalism, Mining, Skinning and Fishing skill.
-30. Ten minutes without gathering, then another gather, starts a new run that counts toward Farm's learned yields.
-31. After three of a node, its pins on Farm are priced from what you gathered; after a five-minute run
+24. Herbs, Veins and Nodes I Can't Gather Yet change the map, the loop and the list.
+25. Start Loop places a waypoint at the nearest stop and the next as you reach each.
+26. Clicking a pin shows its item in the strip: price, the last 14 days, what you hold. With the panel
+    open at an auctioneer, Sell picks it on the panel's Sell page.
+27. Gather a few herbs or veins: Farm's picked item shows what you hold of it.
+28. Farm's list head reads your Herbalism, Mining, Skinning and Fishing skill.
+29. Ten minutes without gathering, then another gather, starts a new run that counts toward Farm's
+    learned yields.
+30. After three of a node, its pins on Farm are priced from what you gathered; after a five-minute run
     the zone reads "you made ... an hour".
-32. After an auction sells, My Auctions' line adds what you sold in the last 7 days, and the item's
+31. After an auction sells, My Auctions' line adds what you sold in the last 7 days, and the item's
     tooltip shows "You sold N" with the price and when.
-33. On Buy, the star beside a picked item keeps it under Favourites; clicking a favourite picks it.
-34. Farm's strip draws the item's last 14 days once two days have scans.
-35. With Fishing learned, Farm lists fishing rows (the Fishing icon first, then the best catches) beside
+32. Farm's strip draws the item's last 14 days once two days have scans.
+33. With Fishing learned, Farm lists fishing rows (the Fishing icon first, then the best catches) beside
     the gathering rows, and the Fishing filter takes them out. A fish row's map says to fish anywhere
     until a pool is learned; its strip shows the best catch and what A catch is worth.
-36. Fish from a school (Oily Blackmouth, Firefin Snapper, Floating Wreckage): a pool pin appears where
+34. Fish from a school (Oily Blackmouth, Firefin Snapper, Floating Wreckage): a pool pin appears where
     you stood. Unverified: that a pool's catch names the pool as its loot source (`GetLootSourceInfo`).
     If it names the bobber instead, no pool is ever recorded.
-37. With Buy open at an auctioneer, add a craft to Professions' Shopping List: its materials show under
-    Shopping List at once.
-38. Buy's left list has the game's categories (Weapons, Armor, Containers, ...); clicking one lists what is
-    for sale there without a name and opens its subcategories, clicking the picked one again steps back to its parent (or clears a top one), and a
-    name then searches only that category. The Shopping List is the entry above them: it opens and closes,
-    and its count shows when something is on it.
-39. A big category (Armor, Trade Goods) lists more as you scroll to its end.
-40. Hovering a Buy result, a Shopping List row or a Favourite shows the item's tooltip, with Shift comparing
-    gear to what you wear.
-41. Reagents, away from an auctioneer too: each reagent in your bags, with Craft beside the ones worth crafting; a click
-    opens every recipe it goes into, and an unlearned one's click sets a waypoint to where you learn it.
-42. Typing in Reagents' search finds any reagent by name, carried or not.
-43. A piece of gear on Sell, with someone else's listed, is priced a whole silver under theirs and its
-    price box has no copper; it posts without "Internal auction error". A commodity still steps a copper.
-44. Set Selling's Undercut to Match the Cheapest: Sell prices at the cheapest listing that is not yours and
-    says it matches it; Up and Down step between the listings' prices. One Silver puts a commodity a silver
-    under, and gear a silver under as before.
-45. On Sell, hovering a listing other than your post lights it; clicking it moves your price to that
-    listing's rung (where Up and Down would land) and your post onto the ladder beside it.
-46. With Professions on and a scan taken, each Crafts row shows Sell, Disenchant or Vendor under Sells
+35. Reagents, away from an auctioneer too: each reagent in your bags, with Craft beside the ones worth
+    crafting; a click opens every recipe it goes into, and an unlearned one's click sets a waypoint to
+    where you learn it.
+36. Typing in Reagents' search finds any reagent by name, carried or not.
+37. With Professions on and a scan taken, each Crafts row shows Sell, Disenchant or Vendor under Sells
     for. A green your characters craft that disenchants for more than it sells shows Disenchant, at its
     tooltip's Disenchant line times what it makes, and sorts by that profit; the Disenchant tab lists
     only those, and the green's tooltip reads "profit ... (Disenchant)".
-47. On Buy, type a name, pick a category and click the star beside the search box: the search shows at the
-    top of Favourites with its category, and the star lights. Clicking the row runs it again, name and
-    category included; its X, or the lit star, removes it. It is still there after /reload and on an alt.
-48. Tooltip Style on Compact: a stack of cloth in your bags shows Auction and Vendor, one line each, with
+38. Tooltip Style on Compact: a stack of cloth in your bags shows Auction and Vendor, one line each, with
     no The Market header and no Market Price line above them; a green adds Disenchant. Back on
     Detailed, the tooltip is as it was.
-49. Stack Prices on the same stack: Each Item, Whole Stack and Both change Compact's Auction and Vendor
+39. Stack Prices on the same stack: Each Item, Whole Stack and Both change Compact's Auction and Vendor
     lines. Whole Stack and Both read "Auction x20" on the left with the stack's price on the right; Each
     Item reads "Auction" with no count. On Detailed, Whole Stack shows Stack of N and no Market Price
     line, Each Item the Market Price line and no Stack of N, and Both the two.
-50. Best Way to Sell on: the cloth reads Best: Auction (or Vendor, when a vendor pays more after the cut)
+40. Best Way to Sell on: the cloth reads Best: Auction (or Vendor, when a vendor pays more after the cut)
     and by how much. A green reads Best: Disenchant on an enchanter who can disenchant it when its
     materials fetch more, never on a character without Enchanting; an item with no scan price reads
     Better: and names only what it beat.
-51. The Market's settings page has Prices & Deals: QoL's four Auction Prices rows and Professions'
+41. The Market's settings page has Prices & Deals: QoL's four Auction Prices rows and Professions'
     Disenchant Deals rows (with Professions on). Turning one on there turns it on in QoL or Professions too.
-52. The Market's settings page has Key Binding: set a key there and it shows the same in the game's Key
-    Bindings menu (Open The Market). Away from an auctioneer the key opens The Market and a second press
-    closes it; at an auctioneer the second press does what the window's X does.
-53. On Sell, under the price and duration, and on Buy beside a picked item's listings, a chart draws the
-    item's lowest price each day once two days have scans: its highest and lowest price on the left, the
-    change over the week top right. Hovering it names the day and its price. With one day or none it says
-    its prices show after scans on two days. On Sell it clears the deposit lines and the Post button.
+42. The Market's settings page has Key Binding: set a key there and it shows the same in the game's Key
+    Bindings menu (Open The Market). The key opens The Market's window and a second press closes it.
+43. Prices lists the items in your bags that have a scan price, most valuable first, and draws the first
+    one's lowest price each day once two days have scans: its highest and lowest price on the left, the
+    change over the week top right. Hovering it names the day and its price.
+44. Typing two letters or more in Prices' search lists the items in your scans with that in their name;
+    picking one draws its chart. Clearing the search lists your bags again.

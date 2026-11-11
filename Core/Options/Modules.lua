@@ -125,7 +125,7 @@ local MODULES = {
       addon = "NaowhForever_Market",
       open = "ToggleMarketWindow",
       command = "market", bare = true, short = "Market", icon = "Interface\\Icons\\INV_Misc_Coin_02",
-      subtitle = "Naowh's own auction house window: your bags priced from live listings, posted a key press at a time.",
+      subtitle = "A panel beside the auction house to sell and check your auctions, and a window for farming, reagents and prices.",
       tabs = {
           { name = "Settings", reuse = true },
       } },

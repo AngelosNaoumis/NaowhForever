@@ -8,7 +8,7 @@ local Load = dofile("Tools/regression/load_files.lua")
 local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
 local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
     "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
-    "NaowhForever_Market/Sales.lua", "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/Buy.lua", "NaowhForever_Market/History.lua",
+    "NaowhForever_Market/Sales.lua", "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/History.lua",
     "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua",
     "NaowhForever_Market/Runs.lua", "NaowhForever_Market/Farm.lua" }
 

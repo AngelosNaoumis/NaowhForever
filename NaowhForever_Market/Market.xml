@@ -8,7 +8,6 @@
     <Script file="Sell.lua"/>
     <Script file="Sales.lua"/>
     <Script file="Auctions.lua"/>
-    <Script file="Buy.lua"/>
     <Script file="History.lua"/>
     <Script file="Worth.lua"/>
     <Script file="Crafts.lua"/>
@@ -17,7 +16,6 @@
     <Script file="Data\Fishing.lua"/>
     <Script file="Farm.lua"/>
     <Script file="View\Style.lua"/>
-    <Script file="View\Ladder.lua"/>
     <Script file="View\Spark.lua"/>
     <Script file="View\Chart.lua"/>
     <Script file="View\Columns.lua"/>
@@ -25,10 +23,10 @@
     <Script file="UI\Window.lua"/>
     <Script file="UI\Farm.lua"/>
     <Script file="UI\Sell.lua"/>
-    <Script file="UI\Buy.lua"/>
     <Script file="UI\Auctions.lua"/>
     <Script file="UI\Reagents.lua"/>
-    <Script file="UI\Takeover.lua"/>
+    <Script file="UI\Prices.lua"/>
+    <Script file="UI\Dock.lua"/>
     <Script file="UI\BagWorth.lua"/>
     <Script file="UI\Tooltip.lua"/>
     <Script file="UI\SettingsPage.lua"/>

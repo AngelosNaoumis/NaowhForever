@@ -43,5 +43,4 @@ ns.Market.C = {
     SALES_WINDOW_DAYS = 7,
     SALE_DELIVERY = 3600,
     SALE_SEEN_SECONDS = 172800,
-    SEARCHES_KEEP = 10,
 }

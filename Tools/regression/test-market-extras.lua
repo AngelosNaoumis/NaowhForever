@@ -1,4 +1,4 @@
--- Run with Lua 5.1 from the repository root: The Market's sales log and Buy's favourites.
+-- Run with Lua 5.1 from the repository root: The Market's sales log.
 local World = dofile("Tools/regression/market_world.lua")
 
 local checks = 0
@@ -6,7 +6,7 @@ local function Check(label, value) assert(value, label); checks = checks + 1 end
 
 local DAY = 86400
 local t = World.Setup({ keyInfo = { [2770] = { isCommodity = true } } })
-local Sales, Buy = t.M.Sales, t.M.Buy
+local Sales = t.M.Sales
 
 Check("no sales yet", Sales.Since(7 * DAY) == 0 and Sales.Last(2770) == nil)
 t.now = 10 * DAY
@@ -58,18 +58,5 @@ t.ns.MarketSettings.Set("enabled", false)
 t.ns.Apply()
 t.Fire("AUCTION_HOUSE_SHOW")
 Check("nothing is asked with The Market off", t.queries == queries + 1)
-
-Check("nothing is a favourite at first", not Buy.IsFavourite(2589) and #Buy.Favourites({}) == 0)
-Buy.ToggleFavourite({ itemID = 2770, itemLevel = 0, itemSuffix = 0, battlePetSpeciesID = 0 })
-Buy.ToggleFavourite({ itemID = 9999, itemLevel = 30, itemSuffix = 7, battlePetSpeciesID = 0 })
-Buy.ToggleFavourite({ itemID = 2589, itemLevel = 0, itemSuffix = 0, battlePetSpeciesID = 0 })
-local list = Buy.Favourites({})
-Check("starring keeps an item, listed by name", Buy.IsFavourite(2589) and #list == 3 and list[1] == 2589
-    and list[2] == 2770 and list[3] == 9999)
-local key = Buy.FavouriteKey(9999)
-Check("gear is kept with its own item level and suffix", key.itemID == 9999 and key.itemLevel == 30
-    and key.itemSuffix == 7)
-Buy.ToggleFavourite({ itemID = 2589, itemLevel = 0, itemSuffix = 0, battlePetSpeciesID = 0 })
-Check("starring again lets it go", not Buy.IsFavourite(2589) and #Buy.Favourites(list) == 2)
 
 print("market extras: " .. checks .. " checks passed")

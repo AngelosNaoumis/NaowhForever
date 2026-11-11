@@ -317,8 +317,7 @@ function Page.DrawStrip()
     strip.node:SetText(Parts.Coins(value, true))
     strip.node.key:SetText(TEXT_A[kind] or TEXT_A_NODE)
     strip.spark:Paint(item)
-    local atAuction = Market.Window.AtAuction()
-    strip.sell:SetShown(atAuction and have > 0)
+    strip.sell:SetShown(Market.Dock.Shown() and have > 0)
     ns.SetButtonText(strip.sell, TEXT_SELL:format(have))
     strip.sell.item = item
 end
@@ -384,9 +383,8 @@ local function LoopClicked()
 end
 
 local function SellClicked(button)
-    Market.Window.ShowPage("sell")
     local entry = Market.Bags.Get(button.item)
-    if entry then Market.Pages.sell.PickLocation(Market.Bags.Location(entry, true)) end
+    if entry then Market.Dock.Pick(Market.Bags.Location(entry, true)) end
 end
 
 local function PaintFilter(filter)

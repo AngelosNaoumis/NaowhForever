@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: |cff0091edNaowh|r Forever: The Market
-## Notes: Naowh's own auction house window: your bags posted in a few key presses, priced from live listings.
+## Notes: A panel beside the auction house to post your bags and check your auctions, and a window for farming, reagents and prices.
 ## Author: Naowh
 ## Version: 1.2.27
 ## Dependencies: NaowhForever
