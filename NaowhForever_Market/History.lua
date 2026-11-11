@@ -83,7 +83,7 @@ function History.Series(itemID, out)
         out[i] = price or false
         if price then found = found + 1 end
     end
-    return out, found
+    return out, found, today
 end
 
 local boot = CreateFrame("Frame")

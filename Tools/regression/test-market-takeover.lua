@@ -1,6 +1,6 @@
--- Run with Lua 5.1 from the repository root: The Market at an auctioneer. Blizzard's auction house opens
--- first with The Market button above it, unless Open at the Auctioneer is on; closing ours steps back to
--- Blizzard's window, or ends the visit when ours opened first. Post With Keys and Bag Worth start off.
+-- Run with Lua 5.1 from the repository root: The Market at an auctioneer. Ours opens first, unless Open at
+-- the Auctioneer is off, when Blizzard's window opens with The Market button above it; closing ours ends the
+-- visit when ours opened first, or steps back to Blizzard's window. Post With Keys and Bag Worth start off.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -18,7 +18,7 @@ Load("NaowhForever_Market/Market.lua", {
     } },
     C_CVar = { GetCVarDefault = function() return "2" end },
 })
-check("Open at the Auctioneer starts off", defaults.openAtAuctioneer == false)
+check("Open at the Auctioneer starts on", defaults.openAtAuctioneer == true)
 check("Post With Keys starts off", defaults.postKeys == false)
 check("Bag Worth starts off", defaults.bagWorth == false)
 

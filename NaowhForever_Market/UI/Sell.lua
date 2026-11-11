@@ -10,7 +10,7 @@ local C = Market.C
 local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Sell, Listings, Post, Ladder = Market.Sell, Market.Listings, Market.Post, Market.Ladder
+local Sell, Listings, Post, Ladder, Chart = Market.Sell, Market.Listings, Market.Post, Market.Ladder, Market.Chart
 
 local GAP, TEXT_SIZE, SMALL_SIZE = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE
 local BORDER_RGB, QUEUE_W, BUTTON_H = St.BORDER_RGB, St.QUEUE_W, St.BUTTON_H
@@ -22,7 +22,7 @@ local REASON_H, INFO_SIZE, INFO_GAP = 20, 14, 6
 local FIELD_LABEL_H, FIELD_GAP, FORM_H = 16, 28, 42
 local QTY_BOX_W, QTY_LETTERS, OF_GAP = 60, 5, 6
 local DURATION_W = 270
-local POST_W, SKIP_W, POST_GAP = 260, 90, 8
+local POST_W, SKIP_W, POST_GAP, POST_H = 260, 90, 8, 32
 local BAR_H, PROGRESS_H, PROGRESS_GAP, HINT_W = 26, 4, 12, 300
 local QUEUE_HEAD_H, QUEUE_ROW_H, QUEUE_ICON, SECTION_H = 46, 42, 28, 24
 local ROW_IN, ROW_TEXT_GAP, ROW_LINE_IN = 8, 8, 4
@@ -81,7 +81,7 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_MONEY", 
 local THROTTLE_EVENTS = { AUCTION_HOUSE_THROTTLED_SYSTEM_READY = true, AUCTION_HOUSE_THROTTLED_MESSAGE_SENT = true }
 
 local page, pane, content, message, queuePane, scroll, list, bar
-local head, ladder, reason, money, quantity, quantityOf, durations, depositText, netText, skip, post
+local head, ladder, reason, money, quantity, quantityOf, durations, depositText, netText, skip, post, chart, form
 local queueRows, lines, display = {}, {}, {}
 local events
 local active, loading, failed, reread = false, false, false, false
@@ -217,6 +217,7 @@ local function DrawFocus()
     DrawLadder(entry, price, count)
     reason.text:SetText(Reason(entry, price, why, ref))
     DrawForm(entry, price)
+    chart:Paint(entry.itemID)
     DrawPost(entry, price)
 end
 
@@ -515,7 +516,7 @@ local function BuildReason()
 end
 
 local function BuildForm()
-    local form = CreateFrame("Frame", nil, content)
+    form = CreateFrame("Frame", nil, content)
     form:SetPoint("TOPLEFT", reason, "BOTTOMLEFT", 0, -SECTION_GAP)
     form:SetPoint("RIGHT")
     form:SetHeight(FORM_H)
@@ -544,6 +545,12 @@ local function BuildForm()
     local label = ns.Font(form, SMALL_SIZE, nil, T.muted)
     label:SetPoint("TOPLEFT", durations, "TOPLEFT", 0, FIELD_LABEL_H)
     label:SetText(TEXT_DURATION)
+end
+
+local function BuildChart()
+    chart = Chart.New(content)
+    chart:SetPoint("TOPLEFT", form, "BOTTOMLEFT", 0, -SECTION_GAP)
+    chart:SetPoint("BOTTOMRIGHT", 0, POST_H + SECTION_GAP)
 end
 
 local function BuildPostRow()
@@ -624,6 +631,7 @@ function Page.Build(parent)
     BuildLadder()
     BuildReason()
     BuildForm()
+    BuildChart()
     BuildPostRow()
     BuildMessage()
     Post.onDone = Posted

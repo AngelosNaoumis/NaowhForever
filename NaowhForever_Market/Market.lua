@@ -6,7 +6,7 @@ local REALM_JOIN = "-"
 local DURATION_CVAR = "auctionHouseDurationDropdown"
 
 local S = ns.UI.ModuleSettings("market", { enabled = F.enabled,
-    duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), openAtAuctioneer = false, postKeys = false,
+    duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), openAtAuctioneer = true, postKeys = false,
     bagWorth = false,
     tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipBest = false,
     farmHerbs = true, farmVeins = true, farmSkins = true, farmFish = true, farmLocked = false,

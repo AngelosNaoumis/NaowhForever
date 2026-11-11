@@ -3,8 +3,7 @@ local ns = _G.NaowhForever
 
 ns.Market.Style = setmetatable({
     WINDOW_W = 1144,
-    WINDOW_H = 600,
-    RAIL_W = 204,
+    WINDOW_H = 650,
     TITLE_SIZE = 16,
     COINS = "Interface\\AddOns\\NaowhForever\\Core\\Media\\Navigation\\coins.tga",
     QUEUE_W = 290,

@@ -1,4 +1,4 @@
--- Spark.lua: an item's lowest price over the past two weeks as a small gold line, for Farm and Buy (Market.Spark).
+-- Spark.lua: an item's lowest price over the past two weeks as a small gold line, for Farm (Market.Spark).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -49,16 +49,12 @@ local function Paint(spark, itemID)
     return found
 end
 
-function Spark.New(parent, width, height, labelLeft)
+function Spark.New(parent, width, height)
     local spark = CreateFrame("Frame", nil, parent)
     spark:SetSize(width, height)
     spark.lines, spark.series = {}, {}
     spark.label = ns.Font(parent, St.SMALL_SIZE, nil, T.muted)
-    if labelLeft then
-        spark.label:SetPoint("RIGHT", spark, "LEFT", -LABEL_GAP, 0)
-    else
-        spark.label:SetPoint("BOTTOMLEFT", spark, "TOPLEFT", 0, LABEL_GAP)
-    end
+    spark.label:SetPoint("BOTTOMLEFT", spark, "TOPLEFT", 0, LABEL_GAP)
     spark.label:SetText(TEXT_DAYS)
     spark.Paint = Paint
     return spark

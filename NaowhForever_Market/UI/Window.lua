@@ -7,6 +7,8 @@ local St = Market.Style
 
 local W, H = St.WINDOW_W, St.WINDOW_H
 local HEADER, PAD, FOOTER, BAR_GAP = St.WINDOW_HEADER, St.WINDOW_PAD, St.WINDOW_FOOTER, St.BAR_GAP
+local TABS_BOTTOM = FOOTER + PAD / 2
+local BODY_BOTTOM = TABS_BOTTOM + St.TAB_H + PAD
 local SCAN_TICK = 60
 local SECONDS_PER_MINUTE = 60
 local FRESH = 3600
@@ -33,21 +35,17 @@ local TEXT_AWAY = ns.L("At an auctioneer")
 local TEXT_AWAY_BODY = ns.L("Sell, Buy and My Auctions open over the auction house. Talk to an auctioneer to use them.")
 local TEXT_OFF = ns.L("Turn on The Market in its settings to open it.")
 local PAGES = {
-    { key = "farm", label = "Farm", icon = "map", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
-    { key = "run", label = "Last Run", icon = "bars", tip = "Your last gathering run: its gold over time and its haul." },
-    { key = "sell", label = "Sell", icon = "coins", tip = "Your bags, most valuable first, priced and posted.",
-      auction = true },
-    { key = "crafts", label = "Crafts", icon = "hammer", tip = "What your characters' recipes make from your bags, priced from your last scan." },
-    { key = "buy", label = "Buy", icon = "search", tip = "Search by name or category, or pick from your Shopping List, and buy it.", auction = true },
-    { key = "mine", label = "My Auctions", icon = "notes", tip = "Your auctions, and the ones someone is selling for less.",
-      auction = true },
-    { key = "reagents", label = "Reagents", icon = "grid", tip = "What the reagents in your bags make, and whether to craft or sell them." },
+    { key = "buy", label = "Buy", tip = "Search by name or category, or pick from your Shopping List, and buy it.", auction = true },
+    { key = "sell", label = "Sell", tip = "Your bags, most valuable first, priced and posted.", auction = true },
+    { key = "mine", label = "My Auctions", tip = "Your auctions, and the ones someone is selling for less.", auction = true },
+    { key = "farm", label = "Farm", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
+    { key = "reagents", label = "Reagents", tip = "What the reagents in your bags make, and whether to craft or sell them." },
 }
 local AUCTION_ONLY = {}
 for _, page in ipairs(PAGES) do AUCTION_ONLY[page.key] = page.auction == true end
 
 local window, body, ticker, away
-local shown = "sell"
+local shown = "buy"
 local atAuction = false
 local built = {}
 
@@ -73,7 +71,7 @@ end
 local function ShowPage(key)
     if built[shown] and shown ~= key then Market.Pages[shown].Hide() end
     shown = key
-    Market.Rail.Paint(key, atAuction)
+    Market.Tabs.Paint(key, atAuction)
     local blocked = AUCTION_ONLY[key] and not atAuction
     away:SetShown(blocked)
     if blocked then
@@ -169,12 +167,11 @@ local function Build()
     window.dot:SetSize(DOT, DOT)
     window.dot:SetPoint("RIGHT", window.status, "LEFT", -DOT_GAP, 0)
     window.subtitle:SetPoint("RIGHT", window.dot, "LEFT", -BAR_GAP, 0)
-    local rail = Market.Rail.Build(window, PAGES, ShowPage)
-    rail:SetPoint("TOPLEFT", 0, -HEADER)
-    rail:SetPoint("BOTTOMLEFT", 0, FOOTER)
+    local tabs = Market.Tabs.Build(window, PAGES, ShowPage)
+    tabs:SetPoint("BOTTOMLEFT", PAD, TABS_BOTTOM)
     body = CreateFrame("Frame", nil, window)
-    body:SetPoint("TOPLEFT", rail, "TOPRIGHT", PAD, -PAD)
-    body:SetPoint("BOTTOMRIGHT", -PAD, FOOTER + PAD)
+    body:SetPoint("TOPLEFT", PAD, -(HEADER + PAD))
+    body:SetPoint("BOTTOMRIGHT", -PAD, BODY_BOTTOM)
     BuildAway()
     Parts.FooterBrand(window, PAGE)
 end
@@ -249,7 +246,7 @@ end
 function Window.Refresh()
     if not Window.Shown() then return end
     ScanLine()
-    Market.Rail.Paint(shown, atAuction)
+    Market.Tabs.Paint(shown, atAuction)
     if AUCTION_ONLY[shown] and not atAuction then return end
     local page = Market.Pages[shown]
     if page.Refresh then page.Refresh() else page.Show() end

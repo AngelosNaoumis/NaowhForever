@@ -36,9 +36,10 @@ change, days = H.Change(2770, 7)
 Check("a week later it is the change over the week", days == 7 and math.abs(change + 50) < 0.001)
 Check("an item missing today has no change", H.Change(2589, 7) == nil)
 
-local series, found = H.Series(2770, {})
+local series, found, last = H.Series(2770, {})
 Check("the series is two weeks, oldest first, with gaps", #series == 14 and found == 3 and series[14] == 45
     and series[7] == 90 and series[8] == 99 and series[9] == false)
+Check("and says which day its last one is", last == 20007)
 
 t.scan, t.scanAt = { [2770] = 50 }, START + 14 * DAY
 H.Record()
