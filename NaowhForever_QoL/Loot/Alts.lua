@@ -21,6 +21,7 @@ local APPLY_KEYS = { enabled = true, altCounts = true, mailAlts = true, mailExpi
     lootFeedBank = true }
 
 local realmKey, me, bankOpen, mailPending
+local here = ItemLocation:CreateEmpty()
 
 local function CountsOn()
     return S.Get("enabled") and S.Get("altCounts")
@@ -102,9 +103,10 @@ end
 local function Count(into, first, last)
     for bag = first, last do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
-            local info = C_Container.GetContainerItemInfo(bag, slot)
-            if info and info.itemID then
-                into[info.itemID] = (into[info.itemID] or 0) + (info.stackCount or 1)
+            local itemID = C_Container.GetContainerItemID(bag, slot)
+            if itemID then
+                here:SetBagAndSlot(bag, slot)
+                into[itemID] = (into[itemID] or 0) + C_Item.GetStackCount(here)
             end
         end
     end

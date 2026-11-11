@@ -464,6 +464,8 @@ NaowhForever_QoL/
 - The Forever bank is the character bank tabs; a tab not bought has no slots.
 - The bank is scanned while Alt Item Counts or the Loot Feed's Count Bank Items is on, the bags only for
   Alt Item Counts: the Loot Feed counts the bags itself.
+- The bag and bank counts read each slot's item ID and stack count through one reused item location,
+  not `C_Container.GetContainerItemInfo`, which builds a new table per slot on every bag change.
 - The mail scan (attachments, letters waiting, the soonest expiry) waits a second for a burst of
   `MAIL_INBOX_UPDATE` to end, as Open All fires one per letter.
 - Alt Item Counts are added to a tooltip only when some of the item is somewhere other than the
@@ -832,6 +834,9 @@ NaowhForever_QoL/
   settings a scan reads for every slot are read once at its start. Scan entries are pooled and
   reused; a scan runs after every loot and must not leave tables behind. The row's buttons point
   into those pooled entries, so a scan always redraws the row too.
+- Bag Space reads each slot through one reused item location (`C_Item.IsLocked`, `GetStackCount`,
+  `GetItemQuality`, `GetItemIcon`) into one reused table, not `C_Container.GetContainerItemInfo`, which
+  builds a new table per slot: with full bags, the scan after every craft made about 50 KB of garbage.
 - Never offered, whatever they are worth: reagents (class reagents such as Flash Powder and
   candles), projectiles, quivers, quest items and keys (item classes 5, 6, 11, 12 and 13), items
   in an equipment set and BiS items. You need them, or they free no bag space.
