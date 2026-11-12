@@ -50,6 +50,8 @@ local TEXT_TAMEABLE = ns.L("Tameable")
 local TEXT_UNTAMEABLE = ns.L("Untameable")
 local TEXT_UNTIL = ns.L("Untameable until level %d")
 local TEXT_NOT_YET = ns.L("Untameable at your level")
+local TEXT_SPEED = ns.L("Attack speed")
+local TEXT_SPEED_VALUE = "%.2f"
 local TEXT_HINT = ns.L("Hold %s for ability details")
 local TEXT_INSTANT = ns.L("Instant")
 local TEXT_CAST = ns.L("%ss cast")
@@ -79,7 +81,7 @@ local function Load()
     if type(flat) ~= "table" or type(tame) ~= "table" then return false end
     abilities, tameable = {}, {}
     for i = 1, #flat, 2 do abilities[flat[i]] = flat[i + 1] end
-    for _, npc in ipairs(tame[2]) do tameable[npc] = true end
+    for i = 1, #tame, 2 do tameable[tame[i]] = tame[i + 1] end
     ns.ScoutAbilitiesPacked, ns.ScoutTameablePacked = nil, nil
     return true
 end
@@ -280,6 +282,11 @@ local function AddFamily(tooltip, unit, npc)
         text, color = TEXT_UNTIL:format(level), UNTAME_RGB
     end
     tooltip:AddDoubleLine(TEXT_FAMILY, family .. SEP .. text, T.muted.r, T.muted.g, T.muted.b, color.r, color.g, color.b)
+    local speed = tameable[npc]
+    if speed and speed > 0 then
+        tooltip:AddDoubleLine(TEXT_SPEED, TEXT_SPEED_VALUE:format(speed / MS_PER_SECOND), T.muted.r, T.muted.g, T.muted.b,
+            GOLD.r, GOLD.g, GOLD.b)
+    end
 end
 
 local function OnUnit(tooltip, data)

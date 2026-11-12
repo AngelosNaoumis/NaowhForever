@@ -7356,6 +7356,7 @@ L["The game's own sparkle on every quest item, kept on through graphics presets.
 L["The macros the addon writes and keeps up to date for you, out of combat. Switch one on here, or take it to your bars from the Smart Macros tab."] = "Макросы, которые аддон пишет и обновляет для вас вне боя. Включите здесь или перетащите на панели с вкладки «Умные макросы»."
 L["Your physical damage"] = "Ваш физический урон"
 L["Pet family"] = "Семейство питомцев"
+L["Attack speed"] = "Скорость атаки"
 L["Tameable"] = "Можно приручить"
 L["Untameable"] = "Нельзя приручить"
 L["Untameable until level %d"] = "Нельзя приручить до %d уровня"

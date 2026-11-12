@@ -7416,6 +7416,7 @@ L["The game's own sparkle on every quest item, kept on through graphics presets.
 L["The macros the addon writes and keeps up to date for you, out of combat. Switch one on here, or take it to your bars from the Smart Macros tab."] = true
 L["Your physical damage"] = true
 L["Pet family"] = true
+L["Attack speed"] = true
 L["Tameable"] = true
 L["Untameable"] = true
 L["Untameable until level %d"] = true

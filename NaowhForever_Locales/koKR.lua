@@ -7356,6 +7356,7 @@ L["The game's own sparkle on every quest item, kept on through graphics presets.
 L["The macros the addon writes and keeps up to date for you, out of combat. Switch one on here, or take it to your bars from the Smart Macros tab."] = "전투 중이 아닐 때 애드온이 작성하고 최신 상태로 유지하는 매크로. 여기서 켜거나 스마트 매크로 탭에서 단축바로 가져가세요."
 L["Your physical damage"] = "내 물리 피해"
 L["Pet family"] = "소환수 계열"
+L["Attack speed"] = "공격 속도"
 L["Tameable"] = "길들이기 가능"
 L["Untameable"] = "길들이기 불가"
 L["Untameable until level %d"] = "%d레벨까지 길들이기 불가"

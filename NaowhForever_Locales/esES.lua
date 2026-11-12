@@ -7356,6 +7356,7 @@ L["The game's own sparkle on every quest item, kept on through graphics presets.
 L["The macros the addon writes and keeps up to date for you, out of combat. Switch one on here, or take it to your bars from the Smart Macros tab."] = "Las macros que el addon escribe y mantiene al día por ti, fuera de combate. Activa una aquí o llévala a tus barras desde la pestaña Macros inteligentes."
 L["Your physical damage"] = "Tu daño físico"
 L["Pet family"] = "Familia de mascota"
+L["Attack speed"] = "Velocidad de ataque"
 L["Tameable"] = "Domesticable"
 L["Untameable"] = "No domesticable"
 L["Untameable until level %d"] = "No domesticable hasta el nivel %d"
