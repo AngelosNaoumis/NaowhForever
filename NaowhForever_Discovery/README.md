@@ -56,7 +56,9 @@ keep their names for the rest of the addon.
 
 ## The data
 
-- `ns.LibraryBooks`: the 40 library books on WoW Forever. Positions from
+- `ns.LibraryBooks`: the 40 library books on WoW Forever. On load, each book's item id is
+  copied onto `ns.LibraryBookItems` (Shared) so another module can exclude those items without
+  reading this list. Positions from
   foreverchanges.pro/library-books (2026-09-24, build 1.60.1.70009), cross-checked with
   zockify.com and Wowhead Forever; the turn-in quest IDs from Wowhead Forever's quests. Ataeric's
   spot and Magma or Lava?'s are their objects' spawns on Wowhead Forever (410299, 463206), and the

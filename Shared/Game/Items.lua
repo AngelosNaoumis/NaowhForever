@@ -87,6 +87,13 @@ function Items.YourLoot(text, handed)
     return link, tonumber(id)
 end
 
+local libraryBooks = {}
+ns.LibraryBookItems = libraryBooks
+
+function ns.IsLibraryBook(itemID)
+    return libraryBooks[itemID] == true
+end
+
 function Items.OnLoaded(ids, fn)
     local queued
     local function Run()

@@ -122,7 +122,10 @@ NaowhForever_QoL/
     AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
-    DestroyCheapest.lua when bags are full, offers the cheapest safe item to destroy
+    DestroyCheapest.lua the bags-full offer, the state the scan, the popup and the delete share (ns.DestroyCheapest)
+    DestroyCheapestScan.lua which bag and loot items are safe to offer, and what they are worth
+    DestroyCheapestDestroy.lua the click that picks a bag item up and deletes it
+    DestroyCheapestPopup.lua the bags-full popup, its ignore list and its settings card
     BagSpaceIgnore.lua  Bag Space's Ignore List window (ns.ShowBagSpaceIgnoreList)
     Alts.lua            your characters per realm and faction (ns.AltRealm, ns.AltList, ns.OpenForgetAltMenu)
     LootFeed.lua        the Loot Feed, gold per hour and quick loot (ns.ResetLootFeedSession)
@@ -907,7 +910,7 @@ NaowhForever_QoL/
   Each quality has its own switch: Poor through Rare start on, and Epic, Legendary, Artifact and
   Heirloom start off. Several can be on at once. Left out, whatever the quality: quest items and
   keys, recipes, quivers and ammo, soulbound armor and weapons, item-set pieces,
-  equipment-set items, BiS items, library books when Discovery has loaded, profession tools and
+  equipment-set items, BiS items, library books (item ids Discovery copies onto ns.LibraryBookItems), profession tools and
   the hearthstone, anything with no vendor price other than a consumable while Consumables is
   on, and anything on this feature's ignore list. Bags, consumables, reagents, trade goods,
   miscellaneous items and unbound gear are offered when their quality is on and they have a
@@ -916,8 +919,10 @@ NaowhForever_QoL/
   every item in your bags is offered except ones on this ignore list. An item whose price is not
   loaded yet is asked for once and added when it arrives. Bag Space does not have to be on.
   Nothing is destroyed on its own.
-- Poor and common stacks are deleted from the Destroy button, the click the game accepts.
-  Uncommon and better ask for a second click on that same button, then the same delete: on this
+- Every quality, including poor and common, asks for a second click on that same button. The
+  first click prepares the delete and the button names that item ("Click again to destroy"
+  plus its link). A different item, or moving to another one, clears that confirmation. The
+  second click is the one the game accepts: on this
   client `DeleteCursorItem` only runs from that hardware click, and a later confirm button cannot
   run it. If the game still opens its own delete window, it is left for the player and never
   accepted or typed for here. If the delete does not take and no window is open, the item is put

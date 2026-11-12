@@ -27,8 +27,9 @@ Shared/
                    without its short forms, deflated and printable (Encode.String): Action Bars' Export
                    to Website
   Game/Items.lua   item helpers: an ID from a link or URL, its name and quality color, In Bag and In Bank,
-                   your loot lines, waiting on item data, the items the server would not send, and the
-                   Cozy Sleeping Bag's item ID (Items.SLEEPING_BAG)
+                   your loot lines, waiting on item data, the items the server would not send, the
+                   Cozy Sleeping Bag's item ID (Items.SLEEPING_BAG), and the library-book ids
+                   (ns.LibraryBookItems, ns.IsLibraryBook) Discovery fills when it loads
   Game/Gear.lua    gear helpers on Shared.Items: gear slots, what fits where, what you wear, weapons in
                    short ("1h Sword"), what a class can use (ns.ClassCanUse)
   Game/Bags.lua    the item buttons in your bags, the game's, EllesmereUI's and Baganator's, for

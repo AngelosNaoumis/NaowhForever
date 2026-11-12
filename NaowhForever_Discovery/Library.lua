@@ -15,6 +15,14 @@ local Library = {}
 ns.Library = Library
 Discovery.Library = Library
 
+local bookItems = ns.LibraryBookItems
+if bookItems and ns.LibraryBooks then
+    for i = 1, #ns.LibraryBooks do
+        local id = ns.LibraryBooks[i].item
+        if id then bookItems[id] = true end
+    end
+end
+
 local function State(book)
     if Library.Done(book) then return "done" end
     if C_Item.GetItemCount(book.item, true) > 0 then return "carried" end
