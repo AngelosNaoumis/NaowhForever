@@ -77,6 +77,8 @@ RELEASE_CHORES = ("chore(release)", "chore: start the next changelog")
 PRICES_NOTE = "- Auction house prices, from Blizzard's auction data of this hour."
 # A Discord embed's description holds 4096 characters; the purple of the release posts.
 DISCORD_LIMIT, DISCORD_COLOR = 4096, 10181046
+# The server's "Naowh Forever Addon" role, pinged once per release.
+DISCORD_ROLE = "1566588361194610938"
 # A hard-wrapped list item's next line: indented, and not a new item.
 CONTINUED = re.compile(r" +[^ -]")
 
@@ -457,9 +459,12 @@ def discord_payloads(changelog, tag, limit=DISCORD_LIMIT):
     posts.append(post)
 
     title = f"Naowh Forever {tag}"
-    return [{"embeds": [{"title": title if len(posts) == 1 else f"{title} ({i}/{len(posts)})",
-                         "description": "\n".join(post), "color": DISCORD_COLOR}]}
-            for i, post in enumerate(posts, 1)]
+    payloads = [{"embeds": [{"title": title if len(posts) == 1 else f"{title} ({i}/{len(posts)})",
+                             "description": "\n".join(post), "color": DISCORD_COLOR}]}
+                for i, post in enumerate(posts, 1)]
+    payloads[0]["content"] = f"<@&{DISCORD_ROLE}>"
+    payloads[0]["allowed_mentions"] = {"roles": [DISCORD_ROLE]}
+    return payloads
 
 
 def pending(root, fetch_body=pr_body):
