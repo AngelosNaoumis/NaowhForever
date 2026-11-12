@@ -6,10 +6,13 @@
 local Load = dofile("Tools/regression/load_files.lua")
 
 local COMMODITY, ITEM, UNKNOWN = 2, 1, 0
-local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Bags.lua",
-    "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Sell.lua",
+local FILES = { "NaowhForever_Market/Market.lua", "NaowhForever_Market/Constants.lua", "NaowhForever_Market/Houses.lua",
+    "NaowhForever_Market/Bags.lua",
+    "NaowhForever_Market/Listings.lua", "NaowhForever_Market/Post.lua", "NaowhForever_Market/Purchase.lua",
+    "NaowhForever_Market/Sell.lua",
     "NaowhForever_Market/Sales.lua", "NaowhForever_Market/Auctions.lua", "NaowhForever_Market/History.lua",
-    "NaowhForever_Market/Watch.lua", "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Crafts.lua",
+    "NaowhForever_Market/Watch.lua", "NaowhForever_Market/Worth.lua", "NaowhForever_Market/Bank.lua",
+    "NaowhForever_Market/Crafts.lua",
     "NaowhForever_Market/Runs.lua", "NaowhForever_Market/Farm.lua" }
 
 local function Noop() end
@@ -38,6 +41,9 @@ local function Setup(opts)
         registry[event] = registry[event] or {}
         registry[event][self] = true
     end
+    function frameMethods:UnregisterEvent(event)
+        if registry[event] then registry[event][self] = nil end
+    end
     function frameMethods:UnregisterAllEvents()
         for _, set in pairs(registry) do set[self] = nil end
     end
@@ -47,6 +53,9 @@ local function Setup(opts)
         local list = {}
         for frame in pairs(registry[event] or {}) do list[#list + 1] = frame end
         for _, frame in ipairs(list) do frame.onEvent(frame, event, ...) end
+    end
+    function t.Listening(event)
+        return next(registry[event] or {}) ~= nil
     end
     function t.RunTimers()
         local pending = t.timers
@@ -66,6 +75,9 @@ local function Setup(opts)
         GamepadStandDown = function() return false end,
         AuctionPrice = function(itemID) return t.scan[itemID], 0 end,
         AuctionPriceList = function() if t.scanAt then return t.scan, t.scanAt end end,
+        AuctionListed = function(itemID) return t.listed and t.listed[itemID] end,
+        AuctionOtherPrice = function(itemID) return t.other and t.other[itemID], t.otherAt, t.otherKnown ~= false end,
+        AuctionOtherHouse = function() return t.otherHouse or "Blackwater" end,
         AccountSettings = function() return t.account end,
         L = dofile("Tools/regression/locale_stub.lua").L,
         Apply = Noop,
@@ -85,7 +97,8 @@ local function Setup(opts)
         AuctionCategories = opts.categories or {},
         Enum = { ItemCommodityStatus = { Unknown = UNKNOWN, Item = ITEM, Commodity = COMMODITY },
             AuctionHouseSortOrder = { Price = 0, Name = 1, Buyout = 4, Bid = 3 },
-            AuctionStatus = { Active = 0, Sold = 1 } },
+            AuctionStatus = { Active = 0, Sold = 1 }, ItemClass = { Consumable = 0, Tradegoods = 7, Recipe = 9 },
+            BagIndex = { CharacterBankTab_1 = 6, CharacterBankTab_9 = 14 } },
         Constants = { AuctionConstants = { DEFAULT_AUCTION_PRICE_MULTIPLIER = 1.5 } },
         C_CVar = { GetCVarDefault = function(name) return name == "auctionHouseDurationDropdown" and "2" or nil end },
         ItemLocation = { CreateEmpty = function() return Location() end,
@@ -107,7 +120,11 @@ local function Setup(opts)
             IsEquippableItem = function(id) return opts.equippable and opts.equippable[id] or false end,
             RequestLoadItemData = function() t.loads = t.loads + 1 end,
             GetItemCount = function(id) return t.counts[id] or 0 end,
-            GetItemInfoInstant = function(link) return tonumber(tostring(link):match("(%d+)")) end,
+            GetItemInfoInstant = function(link)
+                local id = tonumber(tostring(link):match("(%d+)"))
+                return id, nil, nil, nil, nil, (t.info[id] or {}).class
+            end,
+            GetItemClassInfo = function(class) return "Class " .. class end,
             GetItemNameByID = function(id) return "Item " .. id end,
             GetItemIconByID = function(id) return id end,
         },
@@ -140,7 +157,9 @@ local function Setup(opts)
             ConfirmPostCommodity = function(loc, duration, quantity, price)
                 t.confirms[#t.confirms + 1] = { loc = loc, duration = duration, quantity = quantity, price = price }
             end,
-            ConfirmPostItem = Noop,
+            ConfirmPostItem = function(loc, duration, quantity, bid, price)
+                t.confirms[#t.confirms + 1] = { loc = loc, duration = duration, quantity = quantity, bid = bid, price = price }
+            end,
             CalculateCommodityDeposit = function(_, duration, quantity) return 15 * quantity * duration end,
             CalculateItemDeposit = function(_, duration, quantity) return 101 * quantity * duration end,
             QueryOwnedAuctions = function() t.queries = t.queries + 1 end,
@@ -173,9 +192,10 @@ local function Setup(opts)
         GetLootSlotInfo = function(slot) return nil, nil, t.loot[slot].qty end,
         IsFishingLoot = function() return t.fishing end,
         GetRealmName = function() return "Realm" end,
-        UnitFactionGroup = function() return "Horde" end,
+        UnitFactionGroup = function() return "Horde", "The Horde" end,
         UnitGUID = function() return "Player-1" end,
         time = function() return t.now or 0 end,
+        GetServerTime = function() return t.now or 0 end,
         C_Map = {
             GetMapWorldSize = function() return 1000, 1000 end,
             GetMapInfo = function(map) return { name = "Map " .. map } end,

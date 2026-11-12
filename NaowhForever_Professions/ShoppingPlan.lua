@@ -16,6 +16,7 @@ local TEXT_ESTIMATE = ns.L("About %s at your last scan%s%s")
 local TEXT_AGO = ns.L(" ago")
 local TEXT_NO_SCAN = ns.L(" (none yet)")
 local TEXT_MISSING = ", %d %s"
+local LEGACY_JOIN = "-"
 
 local EMPTY = {}
 local waiting = {}
@@ -25,6 +26,7 @@ local trials = {}
 for depth = 0, MAX_DEPTH do trials[depth] = { left = {}, made = {} } end
 local materialList, materialPool, vendorList, vendorPool = {}, {}, {}, {}
 local listeners = {}
+local owner, ownerLegacy
 
 local Shopping = { waiting = waiting }
 P.Shopping = Shopping
@@ -38,7 +40,19 @@ local function ItemName(item)
     return name
 end
 
+local function Theirs(name)
+    local account = ns.AccountSettings()
+    if type(account[name]) ~= "table" then account[name] = {} end
+    local all = account[name]
+    if type(all[owner]) ~= "table" then
+        local legacy = all[ownerLegacy]
+        all[owner] = type(legacy) == "table" and CopyTable(legacy) or {}
+    end
+    return all[owner]
+end
+
 local function Mine(name)
+    if owner then return Theirs(name) end
     return P.CharacterData(name, true) or {}
 end
 
@@ -87,6 +101,7 @@ local function Reach()
 end
 
 local function Changed()
+    if owner then return end
     for i = 1, #listeners do listeners[i]() end
 end
 
@@ -394,6 +409,38 @@ local function Bought(item, qty)
     end
 end
 
+local function Stored(store, guid, legacy)
+    local all = ns.AccountSettings()[store]
+    if type(all) ~= "table" then return false end
+    local theirs = all[guid]
+    if theirs == nil then theirs = all[legacy] end
+    return type(theirs) == "table" and next(theirs) ~= nil
+end
+
+local function HasList(guid, name)
+    local legacy = name .. LEGACY_JOIN .. GetRealmName()
+    return Stored("profShopping", guid, legacy) or Stored("profShopItems", guid, legacy)
+end
+
+local function Restore(ok, ...)
+    owner, ownerLegacy = nil, nil
+    if not ok then error((...), 0) end
+    return ...
+end
+
+local function As(guid, name, fn, ...)
+    owner, ownerLegacy = guid, name .. LEGACY_JOIN .. GetRealmName()
+    return Restore(pcall(fn, ...))
+end
+
+local function MaterialsOf(guid, name)
+    return As(guid, name, Materials)
+end
+
+local function BoughtFor(guid, name, item, qty)
+    As(guid, name, Bought, item, qty)
+end
+
 local function OnChange(fn)
     listeners[#listeners + 1] = fn
 end
@@ -504,6 +551,9 @@ Shopping.Materials = Materials
 Shopping.VendorMaterials = VendorMaterials
 Shopping.Drop = Drop
 Shopping.Bought = Bought
+Shopping.HasList = HasList
+Shopping.MaterialsOf = MaterialsOf
+Shopping.BoughtFor = BoughtFor
 Shopping.Learn = Learn
 Shopping.Estimate = Estimate
 Shopping.HasNeeds = HasNeeds

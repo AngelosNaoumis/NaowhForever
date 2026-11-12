@@ -1,4 +1,4 @@
--- Buy.lua: the panel's Buy page: your watch list, and any item in your scans to add to it.
+-- Buy.lua: the panel's Buy page: your watch list with any item in your scans to add to it, or your saved searches.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -14,8 +14,14 @@ local TEXT_LIST = ns.L("Watch List: %d, %d at or under your price")
 local TEXT_EMPTY = ns.L("Nothing on your watch list. Search an item to watch it.")
 local TEXT_SCAN_SUB = ns.L("Your last scan: %s each")
 local TEXT_NO_SCAN_SUB = ns.L("Not in your scans yet")
+local WIDTH = St.DOCK_W - St.DOCK_PAD * 2
+local VIEWS = {
+    { key = "watch", label = "Watch List", tip = "Your watch list: the items you want, and when they are at or under your price." },
+    { key = "searches", label = "Searches", tip = "Your saved searches, run in the auction house's own Buy tab." },
+}
 
-local page, head, watch, finder
+local page, views, head, watch, finder, searches
+local view = "watch"
 local watched = {}
 
 local Page = {}
@@ -41,14 +47,15 @@ local function DrawHead(itemID)
 end
 
 function Page.Draw()
+    if view ~= "watch" then return Market.SearchView.Draw() end
     Finder.Draw(finder)
     DrawHead(finder.picked)
 end
 
 local function BuildHead()
     head = CreateFrame("Frame", nil, page)
-    head:SetPoint("TOPLEFT")
-    head:SetPoint("TOPRIGHT")
+    head:SetPoint("TOPLEFT", views, "BOTTOMLEFT", 0, -GAP)
+    head:SetPoint("RIGHT")
     head:SetHeight(HEAD_H)
     head.icon = Parts.ItemIcon(head, HEAD_ICON)
     head.icon:SetPoint("LEFT")
@@ -64,13 +71,35 @@ local function BuildHead()
     watch:SetPoint("RIGHT")
 end
 
+local function ShowView(key)
+    view = key
+    Parts.PaintTabs(views, key)
+    local watching = key == "watch"
+    if not watching then
+        head:Hide()
+        watch:Hide()
+    end
+    finder.frame:SetShown(watching)
+    if not (watching or searches) then
+        searches = Market.SearchView.Build(page, WIDTH)
+        searches:SetPoint("TOPLEFT", views, "BOTTOMLEFT", 0, -GAP)
+        searches:SetPoint("BOTTOMRIGHT")
+    end
+    if searches then searches:SetShown(not watching) end
+    Page.Draw()
+end
+
 function Page.Build(parent)
     page = CreateFrame("Frame", nil, parent)
     page:SetAllPoints()
+    views = Parts.Tabs(page, WIDTH, VIEWS, ShowView, true)
+    views:SetPoint("TOPLEFT")
+    Parts.PaintTabs(views, view)
     BuildHead()
-    finder = Finder.New(page, St.DOCK_W - St.DOCK_PAD * 2, FromList, Page.Draw, true)
+    finder = Finder.New(page, WIDTH, FromList, Page.Draw, true)
     finder.frame:SetPoint("TOPLEFT", watch, "BOTTOMLEFT", 0, -GAP)
     finder.frame:SetPoint("BOTTOMRIGHT")
+    Market.Searches.Watch()
 end
 
 function Page.Show()
@@ -84,9 +113,11 @@ end
 
 function Page.ShowList()
     if not finder then return end
+    if view ~= "watch" then ShowView("watch") end
     Finder.Reset(finder)
 end
 
 function Page.Hide()
     page:Hide()
+    Market.Searches.Stop()
 end

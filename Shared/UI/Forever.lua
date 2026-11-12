@@ -316,7 +316,9 @@ local function Close(chrome, window, onClose)
 end
 
 local function DragStart(strip)
-    strip.window:StartMoving()
+    local window = strip.window
+    local start = window:GetScript("OnDragStart")
+    if start then start(window) else window:StartMoving() end
 end
 
 local function DragStop(strip)

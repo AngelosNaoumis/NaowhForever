@@ -409,9 +409,9 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   answering after its timeout still went through. A live price 25% over the last scan is warned
   about. Skip and Cancel are off while a purchase pays, or it would be spent but not counted.
 - Search Favorites AH, Disenchant Deals and the Shopping List stack beside the auction house from one
-  edge (`P.AH.Edge`): Blizzard's window, or The Market's panel docked to its right while it shows
-  (`ns.MarketAuctionWindow`), so panels on Blizzard's edge do not sit on top of it. The Market calls
-  `ns.AuctionWindowChanged` when its panel shows or hides.
+  edge (`P.AH.Edge`): Blizzard's window, or The Market's panel or window docked to its right while one
+  shows (`ns.MarketAuctionWindow`), so panels on Blizzard's edge do not sit on top of it. The Market calls
+  `ns.AuctionWindowChanged` when either shows or hides.
 - At a merchant only plain gold purchases are bought, never extended costs; items sold several to a
   purchase round up to whole purchases, and limited stock caps the amount.
 - Walking up to an anvil changes whether a recipe's requirements are met: SPELL_UPDATE_USABLE is
@@ -475,6 +475,11 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   bought as they are, never made from parts; what was bought counts against them. Shift-click, a drag
   from the bags, an ID or an exact name adds one; the window is built on first open and listens to bag
   changes only while it shows.
+- The Market's Shopping List tab reads another character's list (`Shopping.MaterialsOf`) and counts a purchase
+  on it (`Shopping.BoughtFor`) by that character's GUID, with this character's listeners left untold. An alt
+  whose list is still under its name and realm, from before lists were kept by GUID, has it copied under its
+  GUID the first time, as logging in on it would; the old one stays. A list under the GUID is the only one read
+  once it exists, so the two are never added together.
 - The Crafting Queue starts off and creates no frames or hooks until first use. Adding a recipe queues its
   cheaper prerequisites before the final craft and puts its missing auction-house materials on the
   Shopping List. Start Queue only selects the next ready entry, and each Craft Next hardware click starts

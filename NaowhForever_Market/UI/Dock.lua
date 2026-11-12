@@ -1,4 +1,4 @@
--- Dock.lua: The Market's panel docked beside Blizzard's auction house, with Buy, Sell and My Auctions, and the way to The Market's window (Market.Dock).
+-- Dock.lua: The Market at Blizzard's auction house: its panel docked to the right with Buy, Sell, My Auctions and Shopping List, and the Farm, Price Graph and Reagents tabs that dock The Market's window there instead (Market.Dock).
 local ns = _G.NaowhForever
 
 local Market = ns.Market
@@ -7,28 +7,29 @@ local St = Market.Style
 local Parts = ns.Shared.Parts
 
 local AH_ADDON = "Blizzard_AuctionHouseUI"
+local AH_TABS = "LibAHTab-1-0"
 local DOCK_W, PAD = St.DOCK_W, St.DOCK_PAD
 local DOCK_GAP, HEAD_H = 4, 34
-local BACK_W, BACK_H, BACK_GAP = 120, 22, 4
 local NEXT_FRAME = 0
 local WATCH_H = 20
+local DRAG_BUTTON = "LeftButton"
 local TEXT_TITLE = "The Market"
-local TEXT_OPEN = ns.L("Farm, Reagents and Prices")
-local TEXT_OPEN_TIP = ns.L("Opens The Market's own window.")
 local TEXT_WATCH_ONE = ns.L("%d on your watch list is at or under your price")
 local TEXT_WATCH_MANY = ns.L("%d on your watch list are at or under your price")
 local PAGES = {
     { key = "buy", label = "Buy", tip = "Your watch list: the items you want, and when they are at or under your price." },
     { key = "sell", label = "Sell", tip = "Your bags, most valuable first, priced and posted." },
     { key = "mine", label = "My Auctions", tip = "Your auctions, and the ones someone is selling for less." },
+    { key = "shop", label = "Shopping List", tip = "What your Shopping List and your alts' still need.", shopping = true },
 }
+local WINDOW_PAGES = { "farm", "prices", "reagents" }
 
 local BLIZZARD_PAGES = { Buy = "buy", ItemBuy = "buy", CommoditiesBuy = "buy", WoWTokenBuy = "buy",
     ItemSell = "sell", CommoditiesSell = "sell", WoWTokenSell = "sell", Auctions = "mine" }
 
-local dock, body, tabs, back, events, ah, watchLine
+local dock, body, tabs, events, ah, watchLine, row
 local shown = "buy"
-local blizzardPage
+local blizzardPage, docked
 local built = {}
 local closed = false
 
@@ -67,10 +68,6 @@ local function OnHidden()
     if built[shown] then Market.Pages[shown].Hide() end
 end
 
-local function OpenWindow()
-    Market.Window.Open()
-end
-
 local function OpenWatch()
     Market.Pages.buy.ShowList()
     ShowPage("buy")
@@ -85,20 +82,19 @@ end
 
 local Activate
 
-local function Reopen()
-    closed = false
-    Activate()
+local function Changed()
+    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
 end
 
 local function Close()
     closed = true
     dock:Hide()
-    if not back then
-        back = ns.Button(ah, TEXT_TITLE, BACK_W, BACK_H, Reopen)
-        back:SetPoint("BOTTOMRIGHT", ah, "TOPRIGHT", 0, BACK_GAP)
-    end
-    back:Show()
-    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
+    Changed()
+end
+
+local function HasShopping()
+    local P = ns.Professions
+    return P ~= nil and P.Shopping ~= nil
 end
 
 local function Build()
@@ -108,10 +104,14 @@ local function Build()
     dock.close:SetScript("OnClick", Close)
     dock:SetScript("OnKeyDown", OnKeyDown)
     dock:HookScript("OnHide", OnHidden)
-    local open = Parts.BarButton(dock, St.COINS, TEXT_OPEN, TEXT_OPEN_TIP, OpenWindow)
-    open:SetPoint("RIGHT", dock.close, "LEFT", -St.BAR_GAP, 0)
-    dock.title:SetPoint("RIGHT", open, "LEFT", -St.BAR_GAP, 0)
-    tabs = Market.Tabs.Build(dock, DOCK_W - PAD * 2, PAGES, ShowPage)
+    dock:RegisterForDrag(DRAG_BUTTON)
+    dock:SetScript("OnDragStart", Market.Move.Start)
+    dock:SetScript("OnDragStop", Market.Move.Stop)
+    local pages = {}
+    for _, page in ipairs(PAGES) do
+        if not page.shopping or HasShopping() then pages[#pages + 1] = page end
+    end
+    tabs = Market.Tabs.Build(dock, DOCK_W - PAD * 2, pages, ShowPage)
     tabs:SetPoint("TOPLEFT", PAD, -HEAD_H)
     watchLine = CreateFrame("Button", nil, dock)
     watchLine:SetPoint("TOPLEFT", tabs, "BOTTOMLEFT", 0, -PAD)
@@ -124,8 +124,56 @@ local function Build()
     body:SetPoint("BOTTOMRIGHT", -PAD, PAD)
 end
 
+local function WindowPicked(key)
+    docked = key
+    Market.HouseTabs.Paint(row, key)
+end
+
+local function WindowClosed()
+    docked, closed = nil, false
+    Market.HouseTabs.Paint(row, nil)
+    Activate()
+end
+
+local function TabClicked(key)
+    if key == docked then return Market.Window.Hide() end
+    docked = key
+    if dock then dock:Hide() end
+    Market.Window.DockTo(ah, key, DOCK_GAP, WindowPicked, WindowClosed)
+    Changed()
+end
+
+local function LastTab()
+    local lib = LibStub and LibStub(AH_TABS, true)
+    local added = lib and lib.internalState and lib.internalState.Tabs
+    if added and #added > 0 then return added[#added] end
+    return ah.AuctionsTab
+end
+
+local function StyleRow()
+    if not (row and row:IsShown()) then return end
+    Market.HouseTabs.Style(row, LastTab(), ah.Tabs)
+    Market.HouseTabs.Paint(row, docked)
+end
+
+local function ShowRow()
+    if not row then
+        local pages = {}
+        for i, key in ipairs(WINDOW_PAGES) do
+            for _, page in ipairs(Market.Window.PAGES) do
+                if page.key == key then pages[i] = page end
+            end
+        end
+        row = Market.HouseTabs.New(ah, pages, TabClicked)
+    end
+    row:Show()
+    StyleRow()
+end
+
 function Activate()
-    if closed or not (Market.On() and ah and ah:IsShown()) then return end
+    if not (Market.On() and ah and ah:IsShown()) then return end
+    ShowRow()
+    if closed or docked then return end
     if not dock then Build() end
     dock:SetScale(ah:GetScale())
     dock:SetFrameStrata(ah:GetFrameStrata())
@@ -136,26 +184,29 @@ function Activate()
         dock:EnableKeyboard(S.Get("postKeys"))
         dock:SetPropagateKeyboardInput(true)
     end
-    if back then back:Hide() end
     dock:Show()
     ShowPage(shown)
-    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
+    Changed()
 end
 
 local function Deactivate()
     if dock then dock:Hide() end
-    if back then back:Hide() end
-    if ns.AuctionWindowChanged then ns.AuctionWindowChanged() end
+    docked = nil
+    Market.Window.Undock()
+    if row then row:Hide() end
+    Changed()
 end
 
 local function OnBlizzardShow()
     closed = false
     Activate()
+    C_Timer.After(NEXT_FRAME, StyleRow)
 end
 
 local function OnBlizzardHide()
     closed = false
     blizzardPage = nil
+    Market.Move.Stop()
     Deactivate()
     Market.Sell.Reset()
 end
@@ -164,8 +215,13 @@ function Dock.Shown()
     return dock ~= nil and dock:IsShown()
 end
 
+function Dock.AtAuction()
+    return Dock.Shown() or docked ~= nil
+end
+
 function Dock.Pick(location)
-    if not Dock.Shown() then return end
+    if not Dock.AtAuction() then return end
+    if docked then Market.Window.Hide() end
     ShowPage("sell")
     Market.Pages.sell.PickLocation(location)
 end
@@ -180,10 +236,15 @@ end
 
 function ns.MarketAuctionWindow()
     if Dock.Shown() then return dock end
+    return Market.Window.Docked()
+end
+
+function ns.MarketAuctionTabs()
+    if row and row:IsShown() then return row.buttons[#row.buttons] end
 end
 
 local function OnPostItem(_, location)
-    if Dock.Shown() then C_Item.UnlockItem(location) end
+    if Dock.AtAuction() then C_Item.UnlockItem(location) end
     Dock.Pick(location)
 end
 
@@ -210,6 +271,7 @@ local function Hook()
     ah:HookScript("OnHide", OnBlizzardHide)
     hooksecurefunc(ah, "SetPostItem", OnPostItem)
     hooksecurefunc(ah, "SetDisplayMode", OnDisplayMode)
+    Market.Move.Hook(ah)
 end
 
 local function OnEvent(_, _, name)

@@ -5,7 +5,6 @@ ns.Market.Style = setmetatable({
     WINDOW_W = 1144,
     WINDOW_H = 650,
     TITLE_SIZE = 16,
-    COINS = "Interface\\AddOns\\NaowhForever\\Core\\Media\\Navigation\\coins.tga",
     QUEUE_W = 290,
     DOCK_W = 380,
     DOCK_PAD = 10,

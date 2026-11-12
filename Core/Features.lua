@@ -50,6 +50,7 @@ ns.FEATURES = {
         fastLoot = true,
         ahPrices = true,
         ahCapture = false,
+        ahAutoScan = false,
         ahTooltip = true,
         ahCrates = false,
         ahWrits = false,

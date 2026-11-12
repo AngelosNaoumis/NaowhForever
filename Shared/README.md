@@ -696,6 +696,8 @@ What a comment in the code used to say, in short. The house rules behind it are 
   Its seventh, `asButtons`, is for a choice of value rather than of page (The Market's durations):
   Naowh draws it as the same segments, the Forever skin as red buttons.
 - Tab labels shorten only when their strip has no room, and show the full label on hover.
+  An item's optional `note` is drawn after its label and measured with it (The Market's counts), so a
+  count never covers the label; the caller sets it and calls `Parts.SetTabs` again.
   Changing the tab list repaints reused buttons so a previous selection cannot stay lit.
 - `Settings.Reset` and `Settings.ResetRow` retain one session-only undo, exposed through
   `CanUndoReset(card)` and `UndoReset(card)`. Undo copies raw values back through each store,
@@ -751,7 +753,9 @@ What a comment in the code used to say, in short. The house rules behind it are 
   laid round the window: `FOREVER_TITLE_H` above it for the title bar, `FOREVER_SIDE` out on the
   other sides, so nothing inside the window moves. Its name is the addon's, in gold, centred on the
   bar; the Naowh logo sits in the portrait, which takes the old logo's click, and the window's own
-  close button gives way to the game's red one. The title bar drags the window. Drawn, it is a rim of
+  close button gives way to the game's red one. The title bar drags the window, through the window's own
+  `OnDragStart` and `OnDragStop` when it has them (The Market's docked window turns a drag into moving the
+  auction house). Drawn, it is a rim of
   black, dark bronze, bronze, deep bronze and black with a ring round the portrait.
 - The logo fills the portrait as the game's own portraits do (`PORTRAIT_ART.logo` of the disc: the
   logo's hexagon is as wide as its file, so its corners stay inside the ring), on a deep blue disc with

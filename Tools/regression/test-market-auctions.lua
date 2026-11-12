@@ -92,4 +92,52 @@ t.M.Auctions.Stop()
 t.Fire("AUCTION_HOUSE_THROTTLED_SYSTEM_READY")
 Check("closing the page stops listening", t.queries == 1)
 
+t = World.Setup({
+    owned = {
+        { auctionID = 1, itemKey = Key(2770), quantity = 20, buyoutAmount = 60, status = 0 },
+        { auctionID = 2, itemKey = Key(2770), quantity = 5, buyoutAmount = 56, status = 0 },
+        { auctionID = 3, itemKey = Key(9999, 30, 7), itemLink = "item:9999", quantity = 1, buyoutAmount = 5000,
+          status = 0 },
+        { auctionID = 4, itemKey = Key(2589), quantity = 5, buyoutAmount = 10, status = 0 },
+    },
+    keyInfo = { [2770] = { isCommodity = true }, [9999] = { isCommodity = false }, [2589] = { isCommodity = true } },
+})
+A = t.M.Auctions
+A.Start()
+t.Fire("OWNED_AUCTIONS_UPDATED")
+list = A.list
+Check("before its check an auction has nothing ahead of it", list[1].ahead == 0)
+t.results.commodity[2770] = { { unitPrice = 50, quantity = 5, numOwnerItems = 2 },
+    { unitPrice = 55, quantity = 7, numOwnerItems = 0 }, { unitPrice = 56, quantity = 5, numOwnerItems = 5 },
+    { unitPrice = 60, quantity = 30, numOwnerItems = 20 }, { unitPrice = 70, quantity = 9, numOwnerItems = 0 } }
+t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
+Check("the items ahead are every cheaper one that is not yours", list[1].ahead == 3 + 7)
+Check("listings at your own price are not ahead", list[2].ahead == 3 + 7 and A.Status(list[1]) == "undercut")
+t.results.item[9999] = { { buyoutAmount = 4000, quantity = 1, containsOwnerItem = false },
+    { buyoutAmount = 4000, quantity = 1, containsOwnerItem = false },
+    { buyoutAmount = 4500, quantity = 1, containsOwnerItem = true },
+    { buyoutAmount = 5000, quantity = 1, containsOwnerItem = true } }
+t.Fire("ITEM_SEARCH_RESULTS_UPDATED", Key(9999, 30, 7))
+Check("an item counts each cheaper auction that is not yours", list[3].ahead == 2 and A.Status(list[3]) == "undercut")
+Check("with none allowed ahead, every one of them is undercut", (A.Counts()) == 3)
+
+local S = t.M.Settings
+S.Set("aheadAllowed", 2)
+Check("an auction with no more ahead than you allow is not undercut", A.Status(list[3]) == "ahead"
+    and A.Status(list[1]) == "undercut" and (A.Counts()) == 2)
+S.Set("aheadAllowed", 10)
+Check("it takes more than that many", A.Status(list[1]) == "ahead" and A.Status(list[2]) == "ahead"
+    and (A.Counts()) == 0 and A.NextUndercut() == nil)
+S.Set("aheadAllowed", 9)
+Check("one more ahead and it is undercut again", A.Status(list[1]) == "undercut" and A.NextUndercut() == list[1])
+Check("Cancel Undercut can be kept to some auctions", A.NextUndercut(function(auction) return auction == list[2] end)
+    == list[2] and A.NextUndercut(function() return false end) == nil)
+t.RunTimers()
+Check("a check with no answer leaves nothing ahead", A.Status(list[4]) == "noanswer" and list[4].ahead == 0)
+A.Stop()
+A.Start()
+t.Fire("OWNED_AUCTIONS_UPDATED")
+Check("opening the page again checks afresh", A.list[1].ahead == 0 and A.Status(A.list[1]) == "checking")
+A.Stop()
+
 print("market auctions: " .. checks .. " checks passed")

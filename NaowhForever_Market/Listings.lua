@@ -22,13 +22,14 @@ local function Changed()
     if Listings.onChange then Listings.onChange() end
 end
 
-local function Row(n, price, quantity, own, auctionID)
+local function Row(n, price, quantity, own, auctionID, ownID, link, ownLink)
     local row = rows[n]
     if not row then
         row = {}
         rows[n] = row
     end
-    row.price, row.quantity, row.own, row.auctionID = price, quantity, own, auctionID
+    row.price, row.quantity, row.own, row.auctionID, row.ownID = price, quantity, own, auctionID, ownID
+    row.link, row.ownLink = link, ownLink
 end
 
 local function ReadCommodities(itemID)
@@ -37,7 +38,8 @@ local function ReadCommodities(itemID)
         local result = C_AuctionHouse.GetCommoditySearchResultInfo(itemID, i)
         if result then
             n = n + 1
-            Row(n, result.unitPrice, result.quantity, result.numOwnerItems)
+            Row(n, result.unitPrice, result.quantity, result.numOwnerItems, nil,
+                result.numOwnerItems > 0 and result.auctionID or nil)
         end
     end
     return n
@@ -51,13 +53,15 @@ local function ReadItems(itemKey)
         if price then
             local own = result.containsOwnerItem and result.quantity or 0
             local other = not result.containsOwnerItem and result.auctionID or nil
+            local mine = result.containsOwnerItem and result.auctionID or nil
             local last = rows[n]
             if n > 0 and last.price == price then
                 last.quantity, last.own = last.quantity + result.quantity, last.own + own
-                last.auctionID = last.auctionID or other
+                if other and not last.auctionID then last.auctionID, last.link = other, result.itemLink end
+                if mine and not last.ownID then last.ownID, last.ownLink = mine, result.itemLink end
             else
                 n = n + 1
-                Row(n, price, result.quantity, own, other)
+                Row(n, price, result.quantity, own, other, mine, other and result.itemLink, mine and result.itemLink)
             end
         end
     end
@@ -154,6 +158,15 @@ function Listings.Cheapest()
         if other and own then break end
     end
     return other, own
+end
+
+function Listings.Others(last)
+    local count, cost = 0, 0
+    for i = 1, math.min(last, Listings.count) do
+        local others = rows[i].quantity - rows[i].own
+        count, cost = count + others, cost + others * rows[i].price
+    end
+    return count, cost
 end
 
 function Listings.Again()

@@ -2,15 +2,19 @@
     <!-- Market.xml: The Market's files, in load order. -->
     <Script file="Market.lua"/>
     <Script file="Constants.lua"/>
+    <Script file="Houses.lua"/>
     <Script file="Bags.lua"/>
     <Script file="Listings.lua"/>
     <Script file="Post.lua"/>
+    <Script file="Purchase.lua"/>
     <Script file="Sell.lua"/>
     <Script file="Sales.lua"/>
     <Script file="Auctions.lua"/>
     <Script file="History.lua"/>
     <Script file="Watch.lua"/>
+    <Script file="Searches.lua"/>
     <Script file="Worth.lua"/>
+    <Script file="Bank.lua"/>
     <Script file="Crafts.lua"/>
     <Script file="Runs.lua"/>
     <Script file="Data\Skinning.lua"/>
@@ -21,6 +25,8 @@
     <Script file="View\Spark.lua"/>
     <Script file="View\Chart.lua"/>
     <Script file="View\Finder.lua"/>
+    <Script file="View\Listed.lua"/>
+    <Script file="View\Quantity.lua"/>
     <Script file="View\Columns.lua"/>
     <Script file="UI\Tabs.lua"/>
     <Script file="UI\Window.lua"/>
@@ -29,9 +35,14 @@
     <Script file="UI\Auctions.lua"/>
     <Script file="UI\Reagents.lua"/>
     <Script file="UI\Prices.lua"/>
+    <Script file="UI\Searches.lua"/>
     <Script file="UI\Buy.lua"/>
+    <Script file="UI\Shopping.lua"/>
+    <Script file="UI\Move.lua"/>
+    <Script file="UI\HouseTabs.lua"/>
     <Script file="UI\Dock.lua"/>
     <Script file="UI\BagWorth.lua"/>
     <Script file="UI\Tooltip.lua"/>
+    <Script file="UI\Mail.lua"/>
     <Script file="UI\SettingsPage.lua"/>
 </Ui>

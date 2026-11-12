@@ -1,4 +1,4 @@
--- Chart.lua: an item's lowest price each day over the past two weeks as a chart you can hover, for the Prices page (Market.Chart).
+-- Chart.lua: an item's lowest price each day over the past two weeks as a chart you can hover for the day's price and how many were listed, for Price Graph (Market.Chart).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -21,6 +21,7 @@ local TEXT_AGO = ns.L("%d days ago")
 local TEXT_DAY = ns.L("Since yesterday")
 local TEXT_DAYS = ns.L("Over %d days")
 local TEXT_CHANGE = "%s  %+.0f%%"
+local TEXT_LISTED = ns.L("%s listed")
 
 local Chart = {}
 Market.Chart = Chart
@@ -117,7 +118,7 @@ end
 
 local function Paint(chart, itemID)
     chart.item = itemID
-    local series, found, today = History.Series(itemID, chart.series)
+    local series, found, today = History.Series(itemID, chart.series, chart.listed)
     local drawn = found > 1
     chart.plot:SetShown(drawn)
     chart.note:SetShown(not drawn)
@@ -162,6 +163,8 @@ local function PlotUpdate(plot)
     GameTooltip:SetOwner(plot, "ANCHOR_CURSOR")
     GameTooltip:SetText(DayText(chart, i), 1, 1, 1)
     GameTooltip:AddLine(Parts.Coins(chart.series[i]), 1, 1, 1)
+    local listed = chart.listed[i]
+    if listed then GameTooltip:AddLine(TEXT_LISTED:format(BreakUpLargeNumbers(listed)), T.muted.r, T.muted.g, T.muted.b) end
     GameTooltip:Show()
 end
 
@@ -194,6 +197,7 @@ function Chart.New(parent)
     plot:SetPoint("BOTTOMRIGHT", -PLOT_RIGHT, PLOT_BOTTOM)
     plot.chart, chart.plot = chart, plot
     chart.lines, chart.dots, chart.series, chart.grid, chart.prices = {}, {}, {}, {}, {}
+    chart.listed = {}
     for i = 0, GRID_LINES do
         local line = plot:CreateLine(nil, "BACKGROUND")
         line:SetThickness(1)

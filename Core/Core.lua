@@ -995,7 +995,7 @@ local function DialogButton(UI, panel, key, text, w, onClick, x)
     return button
 end
 
-function ns.PromptText(title, text, maxLetters, onAccept)
+function ns.PromptText(title, text, maxLetters, onAccept, acceptText)
     local UI = ns.UI
     local dimmer, panel = ns.MakeModal(PROMPT_W, PROMPT_H, "promptText")
     local head = UI.KeepFont(panel, "head", DIALOG_HEAD_SIZE, "OUTLINE")
@@ -1015,7 +1015,7 @@ function ns.PromptText(title, text, maxLetters, onAccept)
         onAccept(value)
     end
     local function Cancel() dimmer:Hide() end
-    DialogButton(UI, panel, "save", "Save", DIALOG_BUTTON_W, Accept, -DIALOG_BUTTON_SHIFT)
+    DialogButton(UI, panel, "save", acceptText or "Save", DIALOG_BUTTON_W, Accept, -DIALOG_BUTTON_SHIFT)
     DialogButton(UI, panel, "cancel", "Cancel", DIALOG_BUTTON_W, Cancel, DIALOG_BUTTON_SHIFT)
     box:SetScript("OnEnterPressed", Accept)
     box:SetScript("OnEscapePressed", Cancel)

@@ -8,15 +8,18 @@ local St = Market.Style
 local C = Market.C
 local History = Market.History
 local Worth = Market.Worth
+local Houses = Market.Houses
 
 local COIN_SIZE = 12
 local VENDOR_PRICE = 11
 local COMPACT, EACH, STACK = "compact", "each", "stack"
+local SWAPPED = { [EACH] = STACK, [STACK] = EACH }
 local TEXT_HEAD = "The Market"
 local TEXT_STACK = ns.L("Stack of %d")
 local TEXT_DAYS = ns.L("Over %d days")
 local TEXT_DAY = ns.L("Since yesterday")
 local TEXT_CHANGE = "%+.0f%%"
+local TEXT_AVERAGE = ns.L("%d-day average")
 local TEXT_DISENCHANT = ns.L("Disenchant")
 local TEXT_ABOUT = ns.L("about %s")
 local TEXT_AUCTION = ns.L("Auction")
@@ -54,6 +57,12 @@ end
 
 local function Coins(copper)
     return C_CurrencyInfo.GetCoinTextureString(copper, COIN_SIZE)
+end
+
+local function StackPrices()
+    local how = S.Get("tooltipStack")
+    if S.Get("tooltipShift") and IsShiftKeyDown() then return SWAPPED[how] or how end
+    return how
 end
 
 local function Add(left, right, color, leftColor)
@@ -107,7 +116,7 @@ local function AddBest(info, each, vendor, disenchant, required, stack)
     if P and required then yours = P.DisenchantDeals.MeetsSkill(required) and disenchant end
     local best, margin, second, complete = Worth.Best(vendor, auction, yours)
     if not best then return end
-    if stack > 1 and S.Get("tooltipStack") ~= EACH then margin = margin * stack end
+    if stack > 1 and StackPrices() ~= EACH then margin = margin * stack end
     local right = margin < 0 and TEXT_UNDER_MARGIN:format(Coins(-margin)) or TEXT_MARGIN[second]:format(Coins(margin))
     Add((complete and TEXT_BEST or TEXT_BETTER)[best], right, St.HAVE_RGB, T.accent)
 end
@@ -146,20 +155,36 @@ local function CraftLines(itemID)
     end
 end
 
-local function CompactLines(each, vendor, disenchant, stack)
-    local how = S.Get("tooltipStack")
+local function OtherLine(itemID, stack)
+    if not S.Get("tooltipOther") then return end
+    local price = Houses.Price(itemID)
+    if price then Add(Houses.Name(), Price(price, stack, StackPrices())) end
+end
+
+local function AverageLine(itemID)
+    if not S.Get("tooltipAverage") then return end
+    local average = History.Average(itemID, C.CHANGE_DAYS)
+    if average then Add(TEXT_AVERAGE:format(C.CHANGE_DAYS), Coins(average)) end
+end
+
+local function CompactLines(itemID, each, vendor, disenchant, stack)
+    local how = StackPrices()
     if each then Add(Counted(TEXT_AUCTION, stack, how), Price(each, stack, how)) end
+    OtherLine(itemID, stack)
+    AverageLine(itemID)
     if vendor and vendor > 0 then Add(Counted(TEXT_VENDOR, stack, how), Price(vendor, stack, how)) end
     if disenchant then Add(TEXT_DISENCHANT, TEXT_ABOUT:format(Coins(disenchant))) end
 end
 
 local function DetailedLines(itemID, each, disenchant, stack)
-    if each and stack > 1 and S.Get("tooltipStack") ~= EACH then Add(TEXT_STACK:format(stack), Coins(each * stack)) end
+    if each and stack > 1 and StackPrices() ~= EACH then Add(TEXT_STACK:format(stack), Coins(each * stack)) end
+    OtherLine(itemID, stack)
     local change, days = History.Change(itemID, C.CHANGE_DAYS)
     if change then
         Add(days == 1 and TEXT_DAY or TEXT_DAYS:format(days), TEXT_CHANGE:format(change),
             change >= 0 and St.HAVE_RGB or St.RED_RGB)
     end
+    AverageLine(itemID)
     if disenchant then Add(TEXT_DISENCHANT, TEXT_ABOUT:format(Coins(disenchant))) end
     CraftLines(itemID)
     local sale = Market.Sales.Last(itemID)
@@ -175,7 +200,7 @@ local function Collect(tooltip, itemID, link)
     local compact, best = S.Get("tooltipStyle") == COMPACT, S.Get("tooltipBest")
     local vendor = (compact or best) and select(VENDOR_PRICE, C_Item.GetItemInfo(link))
     if best then AddBest(info, each, vendor, disenchant, required, stack) end
-    if compact then return CompactLines(each, vendor, disenchant, stack) end
+    if compact then return CompactLines(itemID, each, vendor, disenchant, stack) end
     DetailedLines(itemID, each, disenchant, stack)
 end
 
@@ -203,7 +228,7 @@ end
 function Market.ShowsPrice(tooltip, itemID)
     if not (hooked and On() and select(2, TooltipUtil.GetDisplayedItem(tooltip))) then return false end
     if S.Get("tooltipStyle") == COMPACT then return true end
-    return S.Get("tooltipStack") == STACK and StackSize(tooltip, itemID) > 1
+    return StackPrices() == STACK and StackSize(tooltip, itemID) > 1
 end
 
 local function Apply()

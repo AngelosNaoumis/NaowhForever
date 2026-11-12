@@ -6,7 +6,7 @@ local Market = ns.Market
 local St = Market.Style
 local Parts = ns.Shared.Parts
 
-local COUNT_SIZE, COUNT_IN = 12, 8
+local COUNT_GAP = " "
 
 local Tabs = {}
 Market.Tabs = Tabs
@@ -31,19 +31,15 @@ end
 
 function Tabs.Build(parent, width, pages, onPick)
     local bar = Parts.Tabs(parent, width, pages, onPick, true)
-    for _, button in ipairs(bar.buttons) do
-        button.count = ns.Font(button, COUNT_SIZE, nil, T.muted)
-        button.count:SetPoint("RIGHT", -COUNT_IN, 0)
-    end
+    bar.pages = pages
     return bar
 end
 
 function Tabs.Paint(bar, key)
-    Parts.PaintTabs(bar, key)
-    for _, button in ipairs(bar.buttons) do
-        local count, color = Count(button.key)
-        local c = color or T.muted
-        button.count:SetTextColor(c.r, c.g, c.b)
-        button.count:SetText(count or "")
+    for _, page in ipairs(bar.pages) do
+        local count, color = Count(page.key)
+        page.note = count and COUNT_GAP .. ns.Color(color or T.muted, count) or nil
     end
+    bar.shown = key
+    Parts.SetTabs(bar, bar.pages)
 end
