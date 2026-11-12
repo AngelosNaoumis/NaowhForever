@@ -445,6 +445,7 @@ local function Restyle()
 end
 
 local function OnSettingChanged(key)
+    if key == "foodBarConjuredFirst" then RefreshSmart() end
     if not key:find("^consumableBar") then return end
     if key == "consumableBarAskNew" then
         if not S.Get(key) then CB.StopAsking() end

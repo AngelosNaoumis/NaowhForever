@@ -442,6 +442,11 @@ NaowhForever_QoL/
 - `ns.BestFoodAndDrink` (the bar's buttons and the Macros module's NF Food) and `ns.HEALTHSTONES`
   and `ns.HEALING_POTIONS` (NF Health and Aura Buffs' low health reminder) are in
   `Shared/Game/Consumables.lua`, so each works with QoL off.
+- Conjured First (`foodBarConjuredFirst`, on by default) ranks conjured food and drink above
+  everything else, or with it off below everything else. It is one setting for the bar, the
+  Consumable Bar's Food & Drink buttons and NF Food / NF Drink, shown on this card and on the
+  Macros page; the card's row stays usable while the bar is off or its buttons are on the
+  Consumable Bar.
 - The bar was on the Macros page until 0.5.24; a profile's settings for it move here once.
 - The Food & Drink buttons are secure, so the bar is built, shown, hidden and pointed at items
   only out of combat. Its key bindings (Bindings.xml) work once the bar is switched on, as that is

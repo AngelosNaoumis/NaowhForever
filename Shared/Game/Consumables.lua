@@ -67,15 +67,16 @@ function ns.ConsumableLevelAllowed(id)
     return type(required) == "number" and type(level) == "number" and level > 0 and required <= level, required
 end
 
-local function Score(id, bonus)
+local function Score(id, bonus, conjured)
     local allowed, required = ns.ConsumableLevelAllowed(id)
-    if allowed then return (CONJURED[id] and CONJURED_BONUS or 0) + bonus + required end
+    if allowed then return (CONJURED[id] and conjured or 0) + bonus + required end
 end
 
 local function BestFoodAndDrink()
     local foodName, drinkName = C_Spell.GetSpellName(FOOD_SPELL), C_Spell.GetSpellName(DRINK_SPELL)
     local nutritiousFood, nutritiousDrink = C_Spell.GetSpellName(NUTRITIOUS_FOOD), C_Spell.GetSpellName(NUTRITIOUS_DRINK)
     local bothBonus = ns.UsesMana() and FOOD_AND_DRINK_BONUS or 0
+    local conjured = ns.QoLSettings.Get("foodBarConjuredFirst") and CONJURED_BONUS or -CONJURED_BONUS
     local food, drink, foodScore, drinkScore
     for bag = 0, NUM_BAG_SLOTS do
         for slot = 1, C_Container.GetContainerNumSlots(bag) do
@@ -86,7 +87,7 @@ local function BestFoodAndDrink()
             local isFood = both or (spell and (spell == foodName or spell == nutritiousFood))
             local isDrink = both or (spell and (spell == drinkName or spell == nutritiousDrink))
             local bonus = (both and bothBonus or 0) - (nutritious and NUTRITIOUS_PENALTY or 0)
-            local s = (isFood or isDrink) and not C_Item.IsEquippableItem(id) and Score(id, bonus)
+            local s = (isFood or isDrink) and not C_Item.IsEquippableItem(id) and Score(id, bonus, conjured)
             if s and isFood and (not foodScore or s > foodScore) then food, foodScore = id, s end
             if s and isDrink and (not drinkScore or s > drinkScore) then drink, drinkScore = id, s end
         end
