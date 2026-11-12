@@ -92,6 +92,7 @@ NaowhForever_Professions/
     ReagentList.lua    the Reagents list the Reagents window and The Market share (P.ReagentList)
     ReagentsWindow.lua the Reagents window and its title bar button (ns.ToggleReagents)
     Alts.lua           the Alts title bar button and its menu of your other characters' professions
+    Link.lua           the Link title bar button and its menu that posts your profession's trade link in chat
     CraftQueue.lua     the standalone Crafting Queue window (ns.ToggleCraftQueue)
     TrainFavorites.lua Train Favorites beside the trainer
     FavoriteMarks.lua  stars beside favorite unlearned recipes at trainers and merchants
@@ -289,7 +290,7 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   your skill in it instead of the open window's. For a profession you do not have, its cap is taken as
   unlimited so no next-rank step shows. Clicking the recipe sets a waypoint to the first place in that
   text that is on a map, which is the nearest trainer, seller or quest giver.
-- The title-bar buttons (Disenchant, Shopping List, Reagents, Crafting Queue, Skill-up Plan) are lined up by `UI/TitleButtons.lua`
+- The title-bar buttons (Disenchant, Shopping List, Reagents, Crafting Queue, Skill-up Plan, Alts, Link) are lined up by `UI/TitleButtons.lua`
   rather than each placing itself: each shown one takes the next place left of the close button, in a
   set order, so any mix of features never overlaps and a hidden button leaves no gap. Each re-lines
   them when it shows or hides, so the features need not know about each other.

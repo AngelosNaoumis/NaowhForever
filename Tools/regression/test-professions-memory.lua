@@ -471,6 +471,7 @@ env = {
         GetRecipeOutputItemData = function() return nil end,
         IsTradeSkillLinked = function() return false end,
         IsTradeSkillGuild = function() return false end,
+        CanTradeSkillListLink = function() return true end,
         IsNPCCrafting = function() return false end,
         GetRecipeDescription = function() Count("detail"); return "A recipe." end,
         GetRecipeRequirements = function() return requirements end,
