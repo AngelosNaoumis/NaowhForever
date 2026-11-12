@@ -41,7 +41,7 @@ local CATEGORIES = {
       pages = {
           { name = "Experience", cards = { "QoL/XP:xpBar", "QoL/XP:xpTicker", "QoL/XP:groupXP" } },
           { name = "Spells & Talents", cards = { "@Training Planner", "Training Planner/Settings", "QoL/XP:trainer",
-              "QoL/XP:talentPoints" } },
+              "QoL/XP:talentPoints", "QoL/XP:legacyPoints" } },
       } },
     { name = "Action Bars & Macros", band = "CHARACTER", navIcon = "grid",
       subtitle = "Your action bars saved by name, and macros that keep themselves current.",
@@ -58,7 +58,7 @@ local CATEGORIES = {
       pages = {
           { name = "Buff Reminders", cards = { "@AuraBuffs", "AuraBuffs/Settings:buffs", "AuraBuffs/Settings:lowHealth",
               "QoL/Interface:buffThanks" } },
-          { name = "Consumable Bars", cards = { "@Consumable Bar", "Consumable Bar/Settings" } },
+          { name = "Consumable Bars", cards = { "@Consumable Bar", "Consumable Bar/Settings", "QoL/Loot & Items:foodBar" } },
           { name = "Campfire", cards = { "AuraBuffs/Settings:campfire", "AuraBuffs/Settings:campNearby" } },
       } },
     { name = "Quests & Exploration", band = "WORLD", navIcon = "compass",
@@ -90,7 +90,8 @@ local CATEGORIES = {
           { name = "Materials & Profit", cards = { "Professions/Settings:buying" } },
           { name = "Gathering", cards = { "Professions/Settings:gather", "Professions/Settings:nodeIcons",
               "Professions/Settings:nodeToast" } },
-          { name = "Fishing", cards = { "QoL/Loot & Items:fishingKey", "QoL/Loot & Items:fishingSounds" } },
+          { name = "Fishing", cards = { "QoL/Loot & Items:fishingKey", "QoL/Loot & Items:fishingSounds",
+              "QoL/Loot & Items:fishingAutoLoot" } },
           { name = "Enchanting", cards = { "Professions/Settings:disenchant", "Professions/Settings:tradeEnchants",
               "Professions/Settings:disenchantDeals" } },
       } },
@@ -98,12 +99,14 @@ local CATEGORIES = {
       subtitle = "The Market, and what your items are worth.",
       pages = {
           { name = "The Market", cards = { "@The Market", "The Market/Settings" } },
-          { name = "Prices & Tooltips", cards = { "The Market/Settings:bags", "The Market/Settings:prices" } },
+          { name = "Prices & Tooltips", cards = { "QoL/Loot & Items:auctionPrices", "The Market/Settings:bags",
+              "The Market/Settings:prices" } },
       } },
     { name = "Bags, Loot & Mail", band = "WORLD", navIcon = "checklist",
       subtitle = "Looting, junk, vendors and mail.",
       pages = {
-          { name = "Loot", cards = { "QoL/Loot & Items:lootFeed", "QoL/Loot & Items:lootTrade" } },
+          { name = "Loot", cards = { "QoL/Loot & Items:lootFeed", "QoL/Loot & Items:lootTrade",
+              "QoL/Interface:undermineReal" } },
           { name = "Bags & Junk", cards = { "QoL/Loot & Items:bagSpace", "QoL/Loot & Items:destroyCheapest",
               "QoL/Loot & Items:scrapMarker",
               "QoL/Loot & Items:Open Junk List", "QoL/Loot & Items:bankMarker" } },
@@ -132,7 +135,7 @@ local CATEGORIES = {
       pages = {
           { name = "Dungeon Journal", cards = { "@Dungeon Journal", "Dungeon Journal/Journal", "Dungeon Journal/Map" } },
           { name = "Dungeon Quests", cards = { "Dungeon Journal/Quest Tracker" } },
-          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings", "QoL/Interface:undermineReal" } },
+          { name = "Instance Tracker", cards = { "@Instance Tracker", "Instance Tracker/Settings" } },
           { name = "Group Finder", cards = { "@Group Finder", "Group Finder/Settings", "QoL/Questing & Group:finderRoles",
               "QoL/Interface:chatZones" } },
           { name = "Group Tools", cards = { "@Group Inspect", "Group Inspect/Settings", "QoL/Questing & Group:groupButtons",
@@ -152,6 +155,13 @@ local placed, whole, firstOf, moduleHome = {}, {}, {}, {}
 local windows, classPages = {}, {}
 local moduleCards = {}
 local otherClasses = { heading = TEXT_OTHER_CLASSES }
+local lent, lenders, lentHome = {}, {}, {}
+for _, mod in ipairs(MODULES) do
+    for _, uid in ipairs(mod.cards or NONE) do
+        lent[#lent + 1] = uid
+        lenders[uid] = mod
+    end
+end
 
 local function ModuleNamed(name)
     for _, mod in ipairs(MODULES) do
@@ -200,6 +210,8 @@ local function Place(page, source)
         return AddModule(page, mod)
     end
     local pageKey = source:match(CARD_UID)
+    local lender = lenders[source]
+    if lender then lentHome[lender] = lentHome[lender] or key end
     local map = pageKey and placed or whole
     pageKey = pageKey or source
     assert(PAGES[pageKey] and PAGES[pageKey].module, ERROR_NO_PAGE .. source)
@@ -244,11 +256,21 @@ local function AddSource(items, seen, source)
     local name = source:match(MODULE_CARD)
     if name then return Add(items, seen, ModuleCard(ModuleNamed(name))) end
     local pageKey = source:match(CARD_UID) or source
-    local mod = PAGES[pageKey].module
+    local mod = lenders[source] or PAGES[pageKey].module
     if not Loaded(mod) then return Add(items, seen, ModuleCard(mod)) end
     local page = ns.Shared.Settings.pages[pageKey]
     for _, item in ipairs(page and page.items or NONE) do
-        if item.uid == source or (pageKey == source and not placed[item.uid]) then Add(items, seen, item) end
+        local lender = lenders[item.uid]
+        if item.uid == source or (pageKey == source and not placed[item.uid] and (not lender or Loaded(lender))) then
+            Add(items, seen, item)
+        end
+    end
+    if pageKey ~= source then return end
+    for _, uid in ipairs(lent) do
+        local lender = lenders[uid]
+        if uid:match(CARD_UID) == pageKey and not placed[uid] and not Loaded(lender) then
+            Add(items, seen, ModuleCard(lender))
+        end
     end
 end
 
@@ -271,11 +293,16 @@ local function PageItems(page, mineOnly)
 end
 
 local function OverviewItems(cat)
-    local items = {}
+    local items, seen = {}, {}
     for _, page in ipairs(cat.pages) do
-        local list = page.sources and PageItems(page, true) or NONE
-        if #list > 0 then items[#items + 1] = page.heading end
-        for _, item in ipairs(list) do items[#items + 1] = item end
+        local heading = page.heading
+        for _, item in ipairs(page.sources and PageItems(page, true) or NONE) do
+            if not seen[item] then
+                if heading then Add(items, seen, heading) end
+                heading = nil
+                Add(items, seen, item)
+            end
+        end
     end
     return items
 end
@@ -292,6 +319,7 @@ local function ModuleHome(mod)
         local key = PageFor(tab.key)
         if key then return key end
     end
+    return lentHome[mod]
 end
 
 for _, cat in ipairs(CATEGORIES) do AddCategory(cat) end
@@ -322,6 +350,17 @@ function O.NavPage(name)
             if tab.name == name then return PageFor(tab.key) end
         end
     end
+end
+
+function O.OffCards()
+    local list = {}
+    for _, uid in ipairs(lent) do
+        local mod = lenders[uid]
+        if not Loaded(mod) and Loaded(PAGES[uid:match(CARD_UID)].module) and PageFor(uid) then
+            list[#list + 1] = { uid = uid, module = mod }
+        end
+    end
+    return list
 end
 
 function O.ModuleCardUid(mod)

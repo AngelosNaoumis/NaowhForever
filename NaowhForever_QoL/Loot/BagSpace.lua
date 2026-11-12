@@ -1,7 +1,7 @@
 -- BagSpace.lua: Bag Space, the cheapest things in your bags on a card, to delete, sell or ignore.
 local ns = _G.NaowhForever
 
-local GetContainerItemInfo = C_Container.GetContainerItemInfo
+local GetContainerItemID = C_Container.GetContainerItemID
 local GetContainerNumSlots = C_Container.GetContainerNumSlots
 local GetContainerNumFreeSlots = C_Container.GetContainerNumFreeSlots
 local GetItemInfo = C_Item.GetItemInfo
@@ -110,6 +110,7 @@ local free, total, fullUntil = 0, 0, 0
 local scrapSlots = 0
 local setItems, setsDirty = {}, true
 local partial, stackSaves = {}, 0
+local slotInfo = { location = ItemLocation:CreateEmpty() }
 local merging, mergeSteps, mergeStartFree
 
 local function On()
@@ -257,9 +258,16 @@ local function Offer(n, bag, slot, info, quality, classID, name, minLevel, vendo
 end
 
 local function ScanSlot(n, bag, slot)
-    local info = GetContainerItemInfo(bag, slot)
-    if info and info.isLocked then anyLocked = true end
-    if not (info and info.itemID and not info.isLocked) then return n end
+    local itemID = GetContainerItemID(bag, slot)
+    if not itemID then return n end
+    local info, here = slotInfo, slotInfo.location
+    here:SetBagAndSlot(bag, slot)
+    if C_Item.IsLocked(here) then
+        anyLocked = true
+        return n
+    end
+    info.itemID, info.stackCount, info.quality = itemID, C_Item.GetStackCount(here), C_Item.GetItemQuality(here)
+    info.iconFileID, info.hyperlink = C_Item.GetItemIcon(here), C_Container.GetContainerItemLink(bag, slot)
     local _, _, _, _, _, classID = GetItemInfoInstant(info.itemID)
     local quality = info.quality or 1
     local name, _, _, _, minLevel, _, _, maxStack, _, _, vendor = GetItemInfo(info.itemID)

@@ -18,7 +18,7 @@ local CONTINENT_ORDER = { CONTINENTS[0], CONTINENTS[1], ELSEWHERE }
 local EVENTS = { "QUEST_TURNED_IN", "QUEST_ACCEPTED", "QUEST_REMOVED", "PLAYER_LEVEL_UP", "SKILL_LINES_CHANGED",
     "LEARNED_SPELL_IN_SKILL_LINE" }
 local NO_EVENTS = {}
-local SEARCH_HINT = { quests = "Search quests or quest givers", rares = ns.L("Search rares") }
+local SEARCH_HINT = { quests = ns.L("Search quests or quest givers"), rares = ns.L("Search rares") }
 local TEXT_ALL_ZONES = ns.L("All zones")
 local TEXT_KILLED_PERCENT = ns.L("%d%% killed")
 local TEXT_DONE_PERCENT = ns.L("%d%% done")

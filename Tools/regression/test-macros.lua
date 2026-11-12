@@ -420,6 +420,27 @@ do
     Check("conjured food first, no drink", t.Body("NF Food"), "#showtooltip\n/use item:5349")
 end
 
+-- Conjured First off: conjured food and drink wait until nothing else is left, and switching it re-points at once.
+do
+    local t = Fixture({ settings = { food = true, drink = true }, qol = { foodBar = true },
+        bags = { 5349, 4540, 8079, 1179 } })
+    t.Fire("PLAYER_ENTERING_WORLD")
+    Check("conjured first by default", t.Body("NF Food"), "#showtooltip\n/use item:5349\n/use item:8079")
+    t.SetQoL("foodBarConjuredFirst", false)
+    Check("bought food and drink first", t.Body("NF Food"), "#showtooltip\n/use item:4540\n/use item:1179")
+    Check("NF Drink follows", t.Body("NF Drink"), "#showtooltip\n/use item:1179")
+    Check("bar's food follows", t.FoodBar().buttons[1].attrs.item1, "item:4540")
+    Check("bar's drink follows", t.FoodBar().buttons[2].attrs.item1, "item:1179")
+    t.Bags({ 5349, 8079 })
+    t.Fire("BAG_UPDATE_DELAYED")
+    Check("conjured once nothing else is left", t.Body("NF Food"), "#showtooltip\n/use item:5349\n/use item:8079")
+    t.Bags({ 5349, 4540, 8079, 1179 })
+    t.Fire("BAG_UPDATE_DELAYED")
+    t.SetQoL("foodBarConjuredFirst", true)
+    Check("switched back on", t.Body("NF Food"), "#showtooltip\n/use item:5349\n/use item:8079")
+    Check("bar switched back", t.FoodBar().buttons[1].attrs.item1, "item:5349")
+end
+
 -- A food that is also a drink fills both, used once by NF Food, over food and drink of its level.
 do
     local t = Fixture({ settings = { food = true, drink = true }, qol = { foodBar = true },

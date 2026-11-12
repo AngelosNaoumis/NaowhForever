@@ -4491,7 +4491,7 @@ ns.RecipeData = {
         },
         ranks = {
             { cap = 150, skill = 50, spell = 3909, name = "Journeyman Tailoring", cost = 500, t = { 2, 3, 5, 6, 8, 9, 12, 13, 15, 16, 17, 19, 22, 23, 24, 25 } },
-            { cap = 225, skill = 125, spell = 3910, name = "Expert Tailoring", cost = 5000, t = { 2, 3, 5, 15, 22, 23 } },
+            { cap = 225, skill = 125, spell = 3910, name = "Expert Tailoring", cost = 5000, t = { 2, 3, 15, 22, 23 } },
             { cap = 300, skill = 200, spell = 12180, name = "Artisan Tailoring", cost = 50000, t = { 5, 22 } },
         },
         recipes = {

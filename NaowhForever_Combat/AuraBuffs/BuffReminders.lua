@@ -260,7 +260,7 @@ local function Elixirs(list, buffs, last, carriedItems)
             local before = #list
             Consumable(list, buffs, group, item, nil, last, true)
             if #list > before then
-                list[#list].items, list[#list].key = carriedItems, "battle"
+                list[#list].items, list[#list].key = group.items, "battle"
                 shown = shown + 1
                 if shown == MAX_ELIXIRS then return end
             end

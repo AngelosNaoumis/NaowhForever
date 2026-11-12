@@ -7,6 +7,11 @@ local INDEX_ADDON = "NaowhForever_SearchIndex"
 local NONE = {}
 local NOT_LETTERS, LETTER, WORD = "[^%w\128-\255]+", "[%w\128-\255]", "()([%w\128-\255]+)"
 local FUZZY_MIN, FUZZY_SHARE, MAX_CAPTURES = 3, 0.5, 32
+local PLURALS, STEM_MIN = { "^(.-)s$", "^(.-)es$" }, 3
+local CARD_UID = "^(.-):[^:]+$"
+local CARD_PARTS = "^(.-):([^:]+)$"
+local TEXT_RESULT_GROUP = "%s / %s"
+local TEXT_RESULT_OWNER = "%s (%s)"
 local RESULTS = { width = 390, rows = 7, rowH = 46, pad = 12, gap = 6, footer = 26,
     titleSize = 13, trailSize = 11, titleY = 8, trailY = 26, fillAlpha = 0.12, raise = 20 }
 local TEXT_RESULTS = ns.L("%d-%d of %d results")
@@ -40,16 +45,16 @@ local function Place(page, cardName)
     return ns.L(cat and cat.name or page.title or page.name), table.concat(parts, " / ")
 end
 
-local function Entry(page, card, label, help, cardName, group, scope)
+local function Entry(page, card, label, help, cardName, group, scope, owner)
     local t, where = Place(page, cardName)
-    return { page = page.key, card = card, label = label, tag = t, trail = where,
+    return { page = page.key, card = card, label = label, tag = t, trail = where, group = group, owner = owner,
         isCard = cardName == nil, scope = scope, name = Words(Both(label or cardName)),
         words = Words(table.concat({ Both(label), Both(help), Both(group), Both(cardName) }, " ")) }
 end
 
 local function IndexInto(list, page, scope, Settings, settingsKey)
     Settings.Index(settingsKey, function(card, label, help, cardName, group)
-        list[#list + 1] = Entry(page, card, label, help, cardName, group, scope)
+        list[#list + 1] = Entry(page, card, label, help, cardName, group, scope, card and card:match(CARD_UID))
     end)
 end
 
@@ -70,26 +75,87 @@ end
 
 local function PageTarget(list, page)
     local tag, trail = Place(page)
-    local pageWords, names = Words(tag .. " " .. trail), ModuleNames(page)
-    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = pageWords, words = pageWords }
-    if names == "" then return tag, pageWords end
-    local moduleWords = Words(names)
-    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = moduleWords, words = moduleWords }
-    return tag, Words(tag .. " " .. trail .. " " .. names)
+    local words = Words(tag .. " " .. trail .. " " .. ModuleNames(page))
+    list[#list + 1] = { page = page.key, tag = tag, trail = trail, name = words, words = words }
+    return tag, words
 end
 
-local function IndexOff(list, tab)
+local function IndexOff(list, mod, pageKey, id)
     local O = ns.Options
-    local mod = tab.module
     local card, name = O.ModuleCardUid(mod), O.DisplayName(mod)
-    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[tab.key] or NONE) do
-        local page = O.PAGES[O.NavPage(tab.key .. ":" .. e[1])]
+    for _, e in ipairs(ns.SEARCH_INDEX and ns.SEARCH_INDEX[pageKey] or NONE) do
+        local page = (not id or e[1] == id) and O.PAGES[O.NavPage(pageKey .. ":" .. e[1])]
         if page then
             local tag, trail = Place(page)
             local scope = Words(tag .. " " .. trail .. " " .. name)
-            list[#list + 1] = Entry(page, card, e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], scope)
+            list[#list + 1] = Entry(page, card, e[2] or e[4], e[3], e[2] and e[4] or nil, e[5], scope, pageKey)
         end
     end
+end
+
+local function Key(...)
+    local parts = { ... }
+    for i = 1, select("#", ...) do parts[i] = tostring(parts[i] or "") end
+    return table.concat(parts, "\n")
+end
+
+local function Shown(t)
+    return Key(ns.L(t.label or t.tag), t.tag, t.trail)
+end
+
+local function OwnerName(t, others)
+    local page = ns.Options.PAGES[t.owner]
+    if not page then return nil end
+    local mod = page.module
+    for _, other in ipairs(others) do
+        local them = ns.Options.PAGES[other.owner]
+        if them and them.module == mod then return ns.L(page.name) end
+    end
+    return mod and ns.Options.DisplayName(mod) or ns.L(page.name)
+end
+
+local function Tidy(list)
+    local kept, seen, groups = {}, {}, {}
+    for _, t in ipairs(list) do
+        local key = Key(t.page, t.card, t.label, t.group, t.trail)
+        if not seen[key] then
+            seen[key] = true
+            kept[#kept + 1] = t
+            if t.label and t.group then
+                local row = Key(t.page, t.card, t.label, t.trail)
+                groups[row] = (groups[row] or 0) + 1
+            end
+        end
+    end
+    local carded = {}
+    for _, t in ipairs(kept) do
+        if t.label and t.group and groups[Key(t.page, t.card, t.label, t.trail)] > 1 then
+            t.trail, t.inGroup = TEXT_RESULT_GROUP:format(t.trail, ns.L(t.group)), t.group
+        end
+        if t.card then carded[Key(t.page, Shown(t))] = true end
+    end
+    local out, clashes = {}, {}
+    for _, t in ipairs(kept) do
+        if t.card or not carded[Key(t.page, Shown(t))] then
+            out[#out + 1] = t
+            local shown = Shown(t)
+            clashes[shown] = clashes[shown] or {}
+            table.insert(clashes[shown], t)
+        end
+    end
+    for _, same in pairs(clashes) do
+        if #same > 1 then
+            for _, t in ipairs(same) do
+                local others = {}
+                for _, other in ipairs(same) do
+                    if other ~= t and other.owner ~= t.owner then others[#others + 1] = other end
+                end
+                local name = others[1] and OwnerName(t, others)
+                if name then t.trail = TEXT_RESULT_OWNER:format(t.trail, name) end
+            end
+        end
+    end
+    return out
 end
 
 local function Collect()
@@ -105,10 +171,14 @@ local function Collect()
             end
         end
     end
-    local off = UI.SearchOffPages()
-    if off[1] and not ns.SEARCH_INDEX then C_AddOns.LoadAddOn(INDEX_ADDON) end
-    for _, tab in ipairs(off) do IndexOff(list, tab) end
-    return list
+    local off, offCards = UI.SearchOffPages(), UI.SearchOffCards()
+    if (off[1] or offCards[1]) and not ns.SEARCH_INDEX then C_AddOns.LoadAddOn(INDEX_ADDON) end
+    for _, tab in ipairs(off) do IndexOff(list, tab.module, tab.key) end
+    for _, lent in ipairs(offCards) do
+        local pageKey, id = lent.uid:match(CARD_PARTS)
+        IndexOff(list, lent.module, pageKey, id)
+    end
+    return Tidy(list)
 end
 
 local function Spread(word)
@@ -140,22 +210,43 @@ local function Fuzzy(word, target)
     return best
 end
 
+local function Has(text, word, stemmed)
+    if not text then return false end
+    if not stemmed then return text:find(" " .. word, 1, true) ~= nil end
+    for _, plural in ipairs(PLURALS) do
+        local stem = word:match(plural)
+        if stem and #stem >= STEM_MIN and text:find(" " .. stem, 1, true) then return true end
+    end
+    return false
+end
+
+local function Own(target, word)
+    if Has(target.words, word) then return true end
+    if Has(target.scope, word) then return false end
+    if Has(target.words, word, true) then return true end
+    if Has(target.scope, word, true) then return false end
+end
+
 local function Matched(target, typed)
-    local own, fuzzy, score = false, 0, 0
+    local own, fuzzy, score, named = false, 0, 0, true
     for _, word in ipairs(typed) do
-        local start = " " .. word
-        if target.words:find(start, 1, true) then
+        local mine = Own(target, word)
+        if mine then
             own = true
-        elseif not (target.scope and target.scope:find(start, 1, true)) then
+            named = named and (Has(target.name, word) or Has(target.name, word, true))
+        elseif mine == false then
+            named = false
+        else
             local s = Fuzzy(word, target)
             if not s then return false end
             own, fuzzy, score = true, fuzzy + 1, score + s
         end
     end
-    return own, fuzzy, score
+    return own, fuzzy, score, named and (#typed == #(target.nameWords or NameWords(target)) and 2 or 1) or 0
 end
 
 local function Better(a, b)
+    if a.named ~= b.named then return a.named > b.named end
     if a.fuzzy ~= b.fuzzy then return a.fuzzy < b.fuzzy end
     if a.score ~= b.score then return a.score > b.score end
     return a.at < b.at
@@ -164,16 +255,14 @@ end
 local function Matches(list, typed)
     local out = {}
     if #typed == 0 then return out end
-    local anyFuzzy = false
     for i, target in ipairs(list) do
-        local own, fuzzy, score = Matched(target, typed)
+        local own, fuzzy, score, named = Matched(target, typed)
         if own then
-            target.fuzzy, target.score, target.at = fuzzy, score, i
+            target.fuzzy, target.score, target.at, target.named = fuzzy, score, i, named
             out[#out + 1] = target
-            anyFuzzy = anyFuzzy or fuzzy > 0
         end
     end
-    if anyFuzzy then table.sort(out, Better) end
+    table.sort(out, Better)
     return out
 end
 
@@ -226,18 +315,27 @@ local function LitClose(lower, word, lit)
     return lit
 end
 
+local function LitWord(lower, word, lit)
+    local from, found = 1, false
+    while true do
+        local s, e = lower:find(word, from, true)
+        if not s then break end
+        if StartsWord(lower, s) then
+            lit, found = lit or {}, true
+            for i = s, e do lit[i] = true end
+        end
+        from = s + 1
+    end
+    return lit, found
+end
+
 local function LitLetters(filter, lower)
-    local lit
+    local lit, found
     for _, word in ipairs(filter.typed) do
-        local from, found = 1, false
-        while true do
-            local s, e = lower:find(word, from, true)
-            if not s then break end
-            if StartsWord(lower, s) then
-                lit, found = lit or {}, true
-                for i = s, e do lit[i] = true end
-            end
-            from = s + 1
+        lit, found = LitWord(lower, word, lit)
+        for _, plural in ipairs(PLURALS) do
+            local stem = not found and word:match(plural)
+            if stem and #stem >= STEM_MIN then lit, found = LitWord(lower, stem, lit) end
         end
         if not found then lit = LitClose(lower, word, lit) end
     end
@@ -294,9 +392,8 @@ local resultOffset, selectedResult = 0, 1
 local function PickResult(button)
     local entry = button.entry
     if not entry then return end
-    local page, label, card = entry.page, entry.label, entry.card
     results:Hide()
-    UI.GoToSetting(page, label, card)
+    UI.GoToSetting(entry.page, entry.label, entry.card, entry.inGroup)
 end
 
 local function ResultEnter(button)

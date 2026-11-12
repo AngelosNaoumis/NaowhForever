@@ -2,8 +2,9 @@
 -- it hooks and builds nothing. On, a creature's tooltip gets its abilities with range and cast time, its armor and the
 -- cut of your physical damage at your level, and a hint naming the details key. Holding that key shows Scout's own
 -- details box under the tooltip or the full spell tooltips beside it, and letting go hides them: the creature's
--- tooltip is never redrawn. Hunters see a beast's family and whether they can tame it yet. A hidden creature ID adds
--- nothing, a spell the client does not know is left out, instances can be left out, and the data waits for combat.
+-- tooltip is never redrawn. Hunters see a beast's family, whether they can tame it yet and its attack speed. A hidden
+-- creature ID adds nothing, a spell the client does not know is left out, instances can be left out, and the data
+-- waits for combat.
 -- A creature's own armor is used, the level's expected armor (with a ~) when it has none; what it is immune to and
 -- resists is listed.
 local checks = 0
@@ -63,7 +64,7 @@ local function Fixture(settings)
     local packed = {
         abilities = { HOGGER, { 6016, 6268, 6730, MYSTERY }, RAGNAROS, { 20565 }, TOOTH, { 6016 }, BOAR, {},
             1001, { 7000 } },
-        tameable = { 0, { TOOTH } },
+        tameable = { TOOTH, 1000, 1003, 0 },
         stats = { HOGGER, { 538, 0, 0, 0, 0, 0, 0, 0, 0 }, RAGNAROS, { 4691, 4, 116097015, 0, 0, 0, 0, 0, 0 },
             TOOTH, { 1593, 0, 0, 0, 0, 0, 0, 0, 0 }, 1001, { 100, 0, 0, 0, 60, 0, 20, 0, 0 },
             1002, { 500, 1, 0, 0, 0, 0, 0, 0, 0 } },
@@ -339,8 +340,12 @@ do
     s.Hover(TOOTH, { level = 37, family = "Cat" })
     family = s.Find("Pet family")
     check("at or above it: green, tameable", family.right == "Cat . Tameable" and family.rr == 0.3)
+    check("and its attack speed", s.Find("Attack speed").right == "1.00")
+    s.Hover(1003, { level = 5, family = "Cat" })
+    check("no attack speed for a beast the database lacks", s.Find("Pet family") and not s.Find("Attack speed"))
     s.Hover(BOAR, { level = 5, family = "Boar" })
-    check("a beast no hunter can tame says so", s.Find("Pet family").right == "Boar . Untameable")
+    check("a beast no hunter can tame says so, with no attack speed",
+        s.Find("Pet family").right == "Boar . Untameable" and not s.Find("Attack speed"))
     s.S.Set("scoutFamily", false)
     s.Hover(TOOTH, { level = 37, family = "Cat" })
     check("Pet Family off: no line", not s.Find("Pet family"))

@@ -1,15 +1,12 @@
--- QuestTracker.lua: a dungeon's quests in a small window, one line each (J.QuestTracker).
+-- QuestTracker.lua: a dungeon's quests in a small window, one row each (J.QuestTracker).
 local ns = _G.NaowhForever
 
 local T = ns.THEME
 local J = ns.Journal
 local S = J.Settings
 local Parts = ns.Shared.Parts
-local ID = J.C.QUEST.ID
-local St = J.Style
-local PANEL_PAD, HEADING_SIZE, SMALL_SIZE = St.PANEL_PAD, St.HEADING_SIZE, St.SMALL_SIZE
 
-local MIN_W, MAX_W = 420, 640
+local WIDTH = 290
 local MIN_MAX_H, SCREEN_SHARE = 420, 0.7
 local SHARE_W, SHARE_H = 70, 20
 local SHARE_GAP = 4
@@ -34,7 +31,6 @@ local TEXT_RANGE = "%s  %s"
 local panel, view
 local shown
 local lastHere
-local measured, measurePool = {}, {}
 
 local Tracker = {}
 J.QuestTracker = Tracker
@@ -57,27 +53,6 @@ local function LoadPosition()
     if type(saved) == "table" then return saved[1], saved[2], saved[3], saved[4] end
 end
 
-local function NameWidth(entry)
-    local name = entry.name
-    if entry.quest and Parts.IsForever("quests", entry.quest[ID]) then
-        name = name .. Parts.ForeverInline(SMALL_SIZE, Parts.CARD_DROP)
-    end
-    panel.measure:SetText(name)
-    local w = panel.measure.GetUnboundedStringWidth and panel.measure:GetUnboundedStringWidth()
-        or panel.measure:GetStringWidth()
-    return math.ceil(w) + 1
-end
-
-local function WidthFor(dungeon)
-    local widest = 0
-    if dungeon.quests then
-        for _, entry in ipairs(J.Quests.List(dungeon.quests, measured, measurePool)) do
-            widest = math.max(widest, NameWidth(entry))
-        end
-    end
-    return math.max(MIN_W, math.min(MAX_W, J.View.QuestRowWidth(widest) + PANEL_PAD * 2 + panel:ScrollGap()))
-end
-
 local function Labels()
     for _, dungeon in ipairs(J.Dungeons()) do
         local range = J.ColoredLevelRange(dungeon)
@@ -89,7 +64,7 @@ local function Draw(dungeon)
     shown = dungeon
     Labels()
     panel.picker._refreshLabel()
-    panel:SetTrackerWidth(WidthFor(dungeon))
+    panel:SetTrackerWidth(WIDTH)
     view:DrawTracker(dungeon)
 end
 
@@ -191,7 +166,7 @@ end
 local function Build()
     local values, order = DungeonsWithQuests()
     panel = Parts.TrackerPanel(TEXT_TITLE, {
-        width = MIN_W, titleRoom = SHARE_W + SHARE_GAP, maxHeight = MaxH,
+        width = WIDTH, titleRoom = SHARE_W + SHARE_GAP, maxHeight = MaxH,
         onTitle = OpenSettings, titleTip = TEXT_TITLE_TIP, titleHint = TEXT_TITLE_HINT,
         picker = { values = values, order = order, get = PickedKey, set = Pick, menuHeight = MenuHeight },
         newBody = NewView,
@@ -202,8 +177,6 @@ local function Build()
     view.onResize = Fit
     panel.dungeonNames = values
     BuildShare()
-    panel.measure = ns.Font(panel, HEADING_SIZE)
-    panel.measure:Hide()
     panel:SetScript("OnEvent", OnEvent)
     panel:SetScript("OnShow", OnShow)
     panel:SetScript("OnHide", OnHide)

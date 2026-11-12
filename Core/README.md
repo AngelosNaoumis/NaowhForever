@@ -251,6 +251,10 @@ Categories
 - AuraBuffs shows as Buff Reminders and Journeys as Route Planner (Journeys), through `label` in
   `MODULES`: `name` stays the key for saved window sizes, minimap buttons and key bindings. The
   Glimmer and Scout cards are named for what they do, their own names after it.
+- A card one module declares on another module's page (the Undermine Real and Tracking Reminders on QoL's,
+  the Food & Drink Bar on the Consumable Bar's) is listed in its module's `cards` in `MODULES`. While that
+  module is off the card is never declared, so the page shows the module's own card in its place and the
+  search reads the card from the generated index. `test-search-audit.lua` fails on one that is not listed.
 
 Settings and profiles
 - Profiles are account-wide with a per-character active pointer (name-realm). Forever returns
@@ -419,7 +423,11 @@ Waypoints
 - With Journeys on, a guide destination becomes a journey whose steps all carry that context; clearing the guide waypoint ends the journey too. On a journey the pin names the step's own title, not the guide's.
 - The game redraws the world map's waypoint pin inside every change to its waypoint, so while that
   map is open a change waits for it to close: made from addon code it would taint the pin and the
-  game would block its Share.
+  game would block its Share. It is made the frame after the map closes, not in the map's OnHide:
+  in the Gamepad interface style the controller closes the map from secure code that then changes
+  the gamepad bindings, and a waypoint or quest tracked from Naowh inside that close tainted it
+  (`SetPreferredGamepadInteractTarget` blocked, and "Interface action failed" until a reload).
+  Reopened within that frame, the change keeps waiting.
 - `ns.ToggleWaypoint` is a map pin's click: a second click on the pin whose waypoint is up removes
   it (TomTom's arrow too). A spot still waiting for the map to close is just dropped, so its preview
   goes at once; a placed waypoint waits for the map to close like any other change. A waypoint on

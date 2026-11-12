@@ -1,5 +1,5 @@
--- Run with Lua 5.1 from the repository root: the Undermine Real reminder: the boss list, the daily first kill, and
--- what clears the reminder.
+-- Run with Lua 5.1 from the repository root: the Undermine Real reminder: the boss list, the daily first kill,
+-- what clears the reminder, and how its text is drawn.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -11,7 +11,11 @@ end
 
 local ns = {
     FEATURES = { undermineReal = { enabled = false } },
-    UI = { ModuleSettings = function(_, defaults) return { Get = function(key) return defaults[key] end } end },
+    UI = { ModuleSettings = function(_, defaults)
+        local saved = {}
+        return { Get = function(key) if saved[key] ~= nil then return saved[key] end return defaults[key] end,
+            Set = function(key, value) saved[key] = value end, OnChange = function() end }
+    end },
     Shared = {},
 }
 local mine = {}
@@ -77,5 +81,59 @@ check("an old day's kills are dropped", next(mine.got) == 234 and mine.got[234] 
 
 check("looting another boss leaves the reminder", UR.Looted(npcs[9017] and 9017 or 0) == false and UR.Name() ~= nil)
 check("looting the boss ends it", UR.Looted(UR.BOSSES[234]) == true and UR.Name() == nil)
+
+-- The text: "Loot Real", its font from the card, and the side of the icon it sits on.
+local function Frame()
+    local f = { points = {} }
+    function f.SetPoint(self, ...) self.points[#self.points + 1] = { ... } end
+    function f.ClearAllPoints(self) self.points = {} end
+    function f.SetSize(self, w, h) self.w, self.h = w, h end
+    function f.SetAllPoints() end
+    function f.SetTexCoord() end
+    function f.SetTexture(self, t) self.texture = t end
+    function f.SetText(self, t) self.text = t end
+    function f.CreateTexture() return Frame() end
+    function f.RegisterEvent() end
+    function f.UnregisterAllEvents() end
+    function f.SetScript() end
+    return f
+end
+local fonts = {}
+ns.THEME = { accentSoft = {} }
+ns.L = function(text) return text end
+ns.Border = function() end
+ns.Font = function() return Frame() end
+ns.Shared.Style = { ICON_CROP = 0.07 }
+ns.Shared.Parts = { HudFont = function(fs, font, size, outline) fonts[fs] = { font, size, outline } end }
+env.CreateFrame = Frame
+env.hooksecurefunc = function() end
+env.C_Item = { GetItemIconByID = function(id) return "icon" .. id end }
+Load("NaowhForever_Utilities/UndermineReal/UI/Reminder.lua")
+
+local S, Look = UR.Settings, UR.Look
+local shot = Frame()
+Look.New(shot)
+Look.Fill(shot)
+check("the text is Loot Real", shot.label.text == "Loot Real")
+check("the icon is the real's", shot.icon.texture == "icon" .. UR.ITEM)
+check("the icon takes its size", shot.w == S.Get("iconSize") and shot.h == S.Get("iconSize"))
+check("the text is a size larger than it was", S.Get("undermineRealFontSize") == 16)
+local font = fonts[shot.label]
+check("the font, size and outline come from the card", font[1] == "" and font[2] == 16 and font[3] == "OUTLINE")
+local at = shot.label.points[1]
+check("by default the text sits below the icon", #shot.label.points == 1 and at[1] == "TOP" and at[3] == "BOTTOM"
+    and at[5] < 0)
+
+local SIDES = { TOP = { "BOTTOM", "TOP" }, LEFT = { "RIGHT", "LEFT" }, RIGHT = { "LEFT", "RIGHT" } }
+for side, want in pairs(SIDES) do
+    S.Set("undermineRealTextPos", side)
+    Look.Fill(shot)
+    at = shot.label.points[1]
+    check("the text moves to " .. side, #shot.label.points == 1 and at[1] == want[1] and at[3] == want[2])
+end
+S.Set("undermineRealFontSize", 20)
+S.Set("undermineRealOutline", "NONE")
+Look.Fill(shot)
+check("a new size and outline take", fonts[shot.label][2] == 20 and fonts[shot.label][3] == "NONE")
 
 print(("test-undermine-real: %d checks passed"):format(checks))

@@ -202,6 +202,7 @@ local ns = { GamepadStandDown = function() return false end, L = dofile("Tools/r
     StashOptionsWindow = NOTHING, OpenOptionsWindow = NOTHING, Apply = NOTHING,
     DB = function() return { utilityReminders = { classMacros = packMacros } } end,
     HEALTHSTONES = { 5509 }, HEALING_POTIONS = { 13446 }, BestFoodAndDrink = NOTHING,
+    QoLSettings = { Get = NOTHING, Set = NOTHING },
 }
 local lastPrompt
 local vault = {}

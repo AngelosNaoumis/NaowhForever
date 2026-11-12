@@ -48,6 +48,10 @@ local TEXT_NOTHING_AFFORD = ns.L("Nothing You Can Afford")
 local TEXT_LEARNED_ONE = ns.L("Learned %d spell. Nothing else to train here for now.")
 local TEXT_LEARNED = ns.L("Learned %d spells. Nothing else to train here for now.")
 local TEXT_NOTHING = ns.L("Nothing to train here for now.")
+local TEXT_ASK_ONE = ns.L("Learn %d spell for %s?")
+local TEXT_ASK = ns.L("Learn %d spells for %s?")
+local TEXT_YES = ns.L("Learn")
+local TEXT_CANCEL = ns.L("Cancel")
 
 local panel
 local unpicked = {}
@@ -123,6 +127,13 @@ local function LearnAll()
         end
     end
     Render()
+end
+
+local function AskLearn()
+    local buy, cost = Affordable(panel.offers), 0
+    for _, offer in ipairs(buy) do cost = cost + offer.cost end
+    ns.Confirm((#buy == 1 and TEXT_ASK_ONE or TEXT_ASK):format(#buy, Training.Coins(cost)), LearnAll, nil,
+        TEXT_YES, TEXT_CANCEL)
 end
 
 local function CheckPaint(row)
@@ -217,7 +228,7 @@ local function BuildFooter()
     panel.total:SetPoint("TOPLEFT", PANEL_PAD, -TOTAL_DROP)
     panel.note = ns.Font(panel.footer, FONT, nil, T.muted)
     panel.note:SetPoint("TOPRIGHT", -PANEL_PAD, -TOTAL_DROP)
-    panel.learn = ns.AccentBorder(ns.Button(panel.footer, TEXT_LEARN, PANEL_W - 2 * PANEL_PAD, LEARN_H, LearnAll))
+    panel.learn = ns.AccentBorder(ns.Button(panel.footer, TEXT_LEARN, PANEL_W - 2 * PANEL_PAD, LEARN_H, AskLearn))
     panel.learn:SetPoint("BOTTOMLEFT", PANEL_PAD, PANEL_PAD)
     panel.bars = ns.Button(panel.footer, TEXT_BARS, PANEL_W - 2 * PANEL_PAD, BARS_BUTTON_H, RankCheck)
 end

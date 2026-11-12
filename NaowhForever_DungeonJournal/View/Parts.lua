@@ -1,4 +1,4 @@
--- Parts.lua: the Dungeon Journal's own small parts: a fight's length, a row's band to its card's edges, its side panels (J.View.Parts).
+-- Parts.lua: the Dungeon Journal's own small parts: a fight's length, a boss's level, a row's band to its card's edges, its side panels (J.View.Parts).
 local ns = _G.NaowhForever
 
 local J = ns.Journal
@@ -12,6 +12,10 @@ local SECONDS_PER_MINUTE = J.C.SECONDS_PER_MINUTE
 local EDGE_INSET = 1
 local FIGHT_LENGTH = "%d:%02d"
 local FULL_OPACITY = 1
+local INFO_LOW, INFO_HIGH = 1, 2
+
+local TEXT_UNKNOWN_LEVEL = "??"
+local TEXT_RANGE = "%s-%s"
 
 local function Opacity()
     return FULL_OPACITY
@@ -19,6 +23,14 @@ end
 
 function Parts.FightLength(seconds)
     return FIGHT_LENGTH:format(math.floor(seconds / SECONDS_PER_MINUTE), seconds % SECONDS_PER_MINUTE)
+end
+
+function Parts.BossLevel(info)
+    local low, high = info[INFO_LOW], info[INFO_HIGH]
+    if not low then return nil end
+    if low < 0 or high < 0 then return TEXT_UNKNOWN_LEVEL end
+    if low == high then return tostring(low) end
+    return TEXT_RANGE:format(low, high)
 end
 
 function Parts.CardBand(row, alpha)

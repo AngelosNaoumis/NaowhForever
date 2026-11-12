@@ -656,6 +656,29 @@ do
     Click(Button("Combat")); Flush()
     Check(not Text("Out of Stealth Color"), "a jump away does not leave the search's cards open on the page it left")
 
+    -- The same setting name under two groups of one card: two results, told apart by their group,
+    -- and each lands on its own row.
+    input:SetText(""); Flush()
+    local glowA = { label = "Glow Twice", buttonText = "Go", button = function() end }
+    local glowB = { label = "Glow Twice", buttonText = "Go", button = function() end }
+    local joined = Settings.CardOf("QoL/Combat:coTank")
+    local joinedParts, joinedRows = joined.parts, joined.rows
+    Settings.Page("QoL/Combat", S):Card({ id = "glowA", into = "coTank", name = "Glow Part A", rows = { glowA } })
+    Settings.Page("QoL/Combat", S):Card({ id = "glowB", into = "coTank", name = "Glow Part B", rows = { glowB } })
+    input:SetText("glow twice"); Flush()
+    local popup
+    for _, f in ipairs(frames) do if f.rows and f.footer then popup = f end end
+    local second = popup.rows[2]
+    Check(popup.rows[1].entry and second.entry and popup.rows[1].trail.text ~= second.trail.text
+        and second.trail.text:find("Glow Part B", 1, true), "a name used twice in a card shows each with its group")
+    local lit, highlight = nil, UI.HighlightSetting
+    UI.HighlightSetting = function(shown) lit = shown end
+    second.scripts.OnClick(second); Flush()
+    UI.HighlightSetting = highlight
+    Check(UI.filter == nil and lit and lit.setting == glowB, "and a click lands on the one picked")
+    joined.parts, joined.rows = joinedParts, joinedRows
+    UI:RefreshPage(true); Flush()
+
     -- A page its own builder draws can carry a declared settings page, as Profiles carries the
     -- Setups card: typing what only that card has lands on the page, counts it there, and the
     -- page draws the card with the typed words lit; cleared, the page is whole again.
@@ -1039,6 +1062,26 @@ do
     Check(reload.label.text == "Reload UI *" and reload._tipBody() == "Changed the skin",
         "new reload buttons inherit the pending reason")
     reload:Hide()
+end
+
+-- The Undermine Real Reminder sits on Bags, Loot & Mail > Loot, and what a player calls the coin finds it there.
+do
+    Load("NaowhForever_Utilities/UndermineReal/UndermineReal.lua")
+    Load("NaowhForever_Utilities/UndermineReal/Data/Bosses.lua")
+    ns.UndermineReal.Look = { New = function() end, Fill = function() end }
+    Load("NaowhForever_Utilities/UndermineReal/UI/SettingsPage.lua")
+    local card = "QoL/Interface:undermineReal"
+    local real
+    for _, query in ipairs({ "real", "reals", "undermine", "tarnished", "coin" }) do
+        real = nil
+        for _, t in ipairs(UI.Search.Find(UI.Search.Collect(), query)) do
+            if t.card == card then real = t break end
+        end
+        Check(real and real.page == "Bags, Loot & Mail > Loot", "'" .. query .. "' finds the Undermine Real Reminder on Loot")
+    end
+    ns.OpenOptionsWindow("Home"); Flush()
+    UI.GoToSetting(real.page, real.label, real.card); Flush()
+    Check(Text("Bags, Loot & Mail / Loot") and Head("Undermine Real Reminder"), "and its result opens the Loot page at the card")
 end
 
 print(cases .. " navigation checks passed")

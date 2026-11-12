@@ -35,6 +35,14 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-4618-0111FC51   | Naowh    |
 | Player-6938-000B9D7E   | Naowh    |
 | Player-6946-0006F0BF   | Naowh    |
+| Player-6946-012BD0FC   | Naowh    |
+| Player-6946-01133D46   | Naowh    |
+| Player-6946-011990CB   | Naowh    |
+| Player-6946-012BFD33   | Naowh    |
+| Player-6946-01811BD3   | Naowh    |
+| Player-6940-013CDDE6   | Naowh    |
+| Player-6940-0143F878   | Naowh    |
+| Player-6940-0157C6E9   | Naowh    |
 | Player-4613-006EB819   | Dieman   |
 | Player-4620-0069A23D   | Glyalith |
 | Player-6796-006CA983   | Glyalith |
@@ -50,6 +58,7 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-6948-003D9C6A   | Ns       |
 | Player-6940-006C8853   | Grim     |
 | Player-6940-007D2D74   | Grim     |
+| Player-6951-00F8F72C   | Pastor_Carbonara |
 | Player-6931-0061A63C   | Mulk     |
 | Player-6931-0061A6B9   | Mulk     |
 | Player-4618-00D9A04C   | Mulk     |
@@ -76,6 +85,8 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
 | Player-6925-0040FF87   | Eilah    |
 | Player-6925-0048D638   | Eilah    |
 | Player-6948-001ED6D0   | Krz      |
+| Player-6796-00576E9D   | Blu      |
+| Player-6796-005783D6   | Blu      |
 
 ## Why
 
@@ -127,7 +138,8 @@ add: "90:Player-4613-006EB819" goes under `[90]`. A staff entry wins over a patr
   group) asks that character once a minute at most, ten asks per ten seconds, and only their
   client's yes within ten seconds counts. Answers are rate-limited the same way. The game vouches
   for who sent a whisper, so another character cannot answer for them. Nothing is sent while
-  addon chat is locked down.
+  addon chat is locked down, or to an offline guild member or friend: the game answers an addon
+  whisper to an offline character with a "No player named" error in chat.
 - The other faction cannot be whispered on Forever, so it sees patron badges as the list has
   them, unconfirmed. The team's badges are reviewed in a pull request and need no confirmation.
 - A supporter given a badge by hand is in Staff.lua under a patron tier: reviewed in the pull

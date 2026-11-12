@@ -141,7 +141,7 @@ function ns.Lower(text)
     return (text:lower():gsub(LATIN_CAPITAL, LatinLower))
 end
 
-ns.CODE_BUILD = "1.2.26"
+ns.CODE_BUILD = "1.2.27"
 
 ns.THEME = {
     bg     = { r = 0x19 / 255, g = 0x1b / 255, b = 0x1d / 255 },
@@ -972,6 +972,9 @@ function ns.NewSearchBox(parent, hint, onChange)
     local box = ns.NewEditBox(parent)
     box.hint = ns.Font(box, SEARCH_HINT_SIZE, nil, T.muted)
     box.hint:SetPoint("LEFT", EDIT_INSET, 0)
+    box.hint:SetPoint("RIGHT", -SEARCH_CLEAR_ROOM, 0)
+    box.hint:SetJustifyH("LEFT")
+    box.hint:SetWordWrap(false)
     box.hint:SetText(ns.L(hint))
     box:SetTextInsets(EDIT_INSET, SEARCH_CLEAR_ROOM, 0, 0)
     local clear = SearchClearButton(box, T)

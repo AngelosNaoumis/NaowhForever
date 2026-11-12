@@ -32,7 +32,7 @@ local TEXT_FLYING = ns.L("While flying")
 local TEXT_CAMP = ns.L("At the campfire")
 local TEXT_BY_HAND = ns.L("Only when you open it")
 
-local quiz, deck, current
+local quiz, deck, seen, current
 local openedFor
 local atCamp
 local asked, correct, streak = 0, 0, 0
@@ -42,14 +42,33 @@ local function Best()
     return ns.AccountSettings().quizBest or 0
 end
 
+local function Shuffle(list)
+    for i = #list, 2, -1 do
+        local j = math.random(i)
+        list[i], list[j] = list[j], list[i]
+    end
+    return list
+end
+
 local function Shuffled(n)
     local out = {}
     for i = 1, n do out[i] = i end
-    for i = n, 2, -1 do
-        local j = math.random(i)
-        out[i], out[j] = out[j], out[i]
+    return Shuffle(out)
+end
+
+local function NewDeck(bank)
+    local account = ns.AccountSettings()
+    seen = account.quizSeen or {}
+    local out = {}
+    for i, q in ipairs(bank) do
+        if not seen[q.q] then out[#out + 1] = i end
     end
-    return out
+    if #out == 0 then
+        seen = {}
+        for i = 1, #bank do out[i] = i end
+    end
+    account.quizSeen = seen
+    return Shuffle(out)
 end
 
 local function UpdateScore()
@@ -58,8 +77,9 @@ end
 
 local function NextQuestion()
     local bank = ns.QUIZ_QUESTIONS
-    if not deck or #deck == 0 then deck = Shuffled(#bank) end
+    if not deck or #deck == 0 then deck = NewDeck(bank) end
     local q = bank[table.remove(deck)]
+    seen[q.q] = true
     local order = Shuffled(#q.a)
     current = { answer = nil }
     quiz.question:SetText(q.q)

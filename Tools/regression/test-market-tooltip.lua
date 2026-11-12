@@ -112,6 +112,10 @@ S.Set("tooltipStyle", "detailed")
 S.Set("tooltipStack", "both")
 Check("Detailed puts the verdict under the header, then today's lines",
     Hover(CLOTH, 1) == "The Market\nBest: Auction | +1700c over Vendor\nStack of 20 | 2000c")
+S.Set("tooltipBestMargin", 100)
+Check("under the Auction Margin the vendor is best, and the line says what the auction house adds",
+    Hover(CLOTH, 1) == "The Market\nBest: Vendor | Auction only +1700c\nStack of 20 | 2000c")
+S.Set("tooltipBestMargin", 0)
 S.Set("tooltipBest", false)
 Check("and back to today's lines with it off", Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c")
 

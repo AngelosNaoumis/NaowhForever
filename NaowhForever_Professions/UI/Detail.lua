@@ -18,6 +18,7 @@ local SetColor = Widgets.SetColor
 local EnableButton = Widgets.EnableButton
 
 local ICON = 44
+local MADE_INSET = 2
 local STAR_GAP = 10
 local NAME_GAP = Style.ICON_NAME_GAP
 local SEARCH_W, SEARCH_H = 84, 22
@@ -145,9 +146,14 @@ local function ShowCraftOrOrder(info, output, made)
     P.Lines.RenderProfit(d.profit, info.recipeID, output, made)
 end
 
-local function FillHeader(info, output)
+local function FillHeader(info, output, made, most)
     local d = win.detail
     d.icon:SetTexture(info.icon)
+    if most and most > made then
+        d.made:SetText(made .. "-" .. most)
+    else
+        d.made:SetText(made and made > 1 and made or "")
+    end
     d.name:SetText(info.name)
     d.fav:SetShown(not W.linked)
     Widgets.Star(d.fav.tex, Favorites.Is(info))
@@ -216,8 +222,8 @@ function Detail.Render()
     d:SetShown(info ~= nil)
     win.empty:SetShown(info == nil)
     if not info then return end
-    local output, made = R.OutputItem(info.recipeID)
-    FillHeader(info, output)
+    local output, made, most = R.OutputItem(info.recipeID)
+    FillHeader(info, output, made, most)
     ShowCraftOrOrder(info, output, made)
     local unmet = Describe(info, output, made)
     local sold = FillSold(info)
@@ -293,6 +299,8 @@ local function BuildHeader(d)
     iconBtn:SetPoint("TOPLEFT", Style.PANE_EDGE, -Style.PANE_EDGE)
     d.icon = Widgets.Crop(iconBtn:CreateTexture(nil, "ARTWORK"))
     d.icon:SetAllPoints()
+    d.made = ns.Font(iconBtn, Style.FONT_HEAD, "OUTLINE")
+    d.made:SetPoint("BOTTOMRIGHT", -MADE_INSET, MADE_INSET)
     iconBtn:SetScript("OnEnter", OnIconEnter)
     iconBtn:SetScript("OnLeave", GameTooltip_Hide)
     d.fav = Widgets.StarButton(d)

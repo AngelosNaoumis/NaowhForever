@@ -1,4 +1,4 @@
--- Sell.lua: the Sell page: the item in front of you with its listings and price, the post line, and what comes after it.
+-- Sell.lua: the dock's Sell page: the item in front of you, its price against the cheapest listing, the post line, and what comes after it.
 local ns = _G.NaowhForever
 
 local GetItemInfo = C_Item.GetItemInfo
@@ -10,31 +10,27 @@ local C = Market.C
 local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Sell, Listings, Post, Ladder, Chart = Market.Sell, Market.Listings, Market.Post, Market.Ladder, Market.Chart
+local Sell, Listings, Post = Market.Sell, Market.Listings, Market.Post
 
 local GAP, TEXT_SIZE, SMALL_SIZE = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE
-local BORDER_RGB, QUEUE_W, BUTTON_H = St.BORDER_RGB, St.QUEUE_W, St.BUTTON_H
-local PANE_GAP = 12
-local HEAD_ICON, NAME_SIZE, HEAD_H, NAME_GAP, SUB_GAP = 40, 18, 44, 10, 4
-local SECTION_GAP = 12
-local LADDER_ROWS = Ladder.ROWS
-local REASON_H, INFO_SIZE, INFO_GAP = 20, 14, 6
-local FIELD_LABEL_H, FIELD_GAP, FORM_H = 16, 28, 42
-local QTY_BOX_W, QTY_LETTERS, OF_GAP = 60, 5, 6
-local DURATION_W = 270
-local POST_W, SKIP_W, POST_GAP, POST_H = 260, 90, 8, 32
-local BAR_H, PROGRESS_H, PROGRESS_GAP, HINT_W = 26, 4, 12, 300
-local QUEUE_HEAD_H, QUEUE_ROW_H, QUEUE_ICON, SECTION_H = 46, 42, 28, 24
-local ROW_IN, ROW_TEXT_GAP, ROW_LINE_IN = 8, 8, 4
+local BORDER_RGB, BUTTON_H = St.BORDER_RGB, St.BUTTON_H
+local HEAD_ICON, NAME_SIZE, HEAD_H, NAME_GAP, SUB_GAP = 32, 14, 36, 8, 3
+local SECTION_GAP = 8
+local REASON_H, INFO_SIZE, INFO_GAP = 30, 14, 6
+local FIELD_GAP, FORM_H = 16, 40
+local QTY_BOX_W, QTY_LETTERS, OF_GAP = 50, 5, 6
+local DURATION_W = 250
+local SKIP_W, POST_GAP, NET_GAP, NET_H = 70, 8, 6, 14
+local FOCUS_H = HEAD_H + REASON_H + FORM_H + St.TAB_H + BUTTON_H + NET_GAP + NET_H + SECTION_GAP * 4
+local BAR_H, PROGRESS_H, PROGRESS_GAP = 16, 4, 10
+local QUEUE_HEAD_H, QUEUE_ROW_H, QUEUE_ICON, SECTION_H = 34, 34, 24, 22
+local ROW_IN, ROW_TEXT_GAP, ROW_LINE_IN = 6, 6, 3
 local MARKER_W, SCROLL_IN = 2, 4
-local EMPTY_SIZE, EMPTY_GAP = 16, 6
+local EMPTY_SIZE, EMPTY_GAP = 14, 6
 local NEXT_FRAME = 0
-local TEXT_LADDER = ns.L("Listings now, cheapest first")
 local TEXT_SEARCHING = ns.L("Searching")
 local TEXT_NONE = ns.L("Nobody is selling this")
 local TEXT_LISTED = ns.L("%s listed")
-local TEXT_YOURS = ns.L(" yours")
-local TEXT_YOUR_POST = ns.L(" your post")
 local TEXT_POST = ns.L("Post %d for %s")
 local TEXT_POSTING = ns.L("Posting")
 local TEXT_SKIP = ns.L("Skip")
@@ -42,7 +38,6 @@ local TEXT_PRICE = ns.L("Price Each")
 local TEXT_QUANTITY = ns.L("Quantity")
 local TEXT_OF = ns.L("of %d")
 local TEXT_DURATION = ns.L("Duration")
-local TEXT_DEPOSIT = ns.L("Deposit %s, back if it sells.")
 local TEXT_NET = ns.L("You get %s after the 5%% cut.")
 local TEXT_SHORT = ns.L("You need %s for the deposit.")
 local TEXT_UP_NEXT = ns.L("Up Next")
@@ -55,7 +50,6 @@ local TEXT_POSTED_EACH = ns.L("Posted %d at %s each")
 local TEXT_VENDOR_EACH = ns.L("A vendor pays %s each")
 local TEXT_NO_PRICE = ns.L("No price yet")
 local TEXT_TOTAL = ns.L("%s posted of %s")
-local TEXT_KEYS = ns.L("Space Post   S Skip   Up/Down Price step")
 local TEXT_SCAN_SUB = ns.L("Your last scan: %s each")
 local TEXT_NO_SCAN_SUB = ns.L("Not in your scans yet")
 local TEXT_COUNT = "%s x%d"
@@ -80,9 +74,9 @@ local EVENTS = { "BAG_UPDATE_DELAYED", "ITEM_DATA_LOAD_RESULT", "PLAYER_MONEY", 
     "AUCTION_HOUSE_THROTTLED_MESSAGE_SENT" }
 local THROTTLE_EVENTS = { AUCTION_HOUSE_THROTTLED_SYSTEM_READY = true, AUCTION_HOUSE_THROTTLED_MESSAGE_SENT = true }
 
-local page, pane, content, message, queuePane, scroll, list, bar
-local head, ladder, reason, money, quantity, quantityOf, durations, depositText, netText, skip, post, chart, form
-local queueRows, lines, display = {}, {}, {}
+local page, focusPane, content, message, queuePane, scroll, list, bar
+local head, reason, money, quantity, quantityOf, durations, netText, skip, post
+local queueRows, lines = {}, {}
 local events
 local active, loading, failed, reread = false, false, false, false
 
@@ -95,10 +89,6 @@ end
 
 local function ItemName(entry)
     return GetItemInfo(entry.link) or Items.Name(entry.itemID)
-end
-
-local function QualityColor(entry)
-    return Items.QualityColor(entry.itemID) or T.fg
 end
 
 local Enable = St.Enable
@@ -137,42 +127,13 @@ local function Reason(entry, price, why, ref)
     return REASONS[why]:format(Coins(ref))
 end
 
-local function Fill(n, price, count, own, mine, listing)
-    local rung = Ladder.Rung(display, n)
-    rung.price, rung.count, rung.lit, rung.pick = price, count, mine, listing
-    rung.label = mine and TEXT_YOUR_POST or (own > 0 and TEXT_YOURS or nil)
-end
-
-local function LadderRows(price, count)
-    local n, placed = 0, false
-    for i = 1, Listings.count do
-        local row = Listings.rows[i]
-        if not placed and price <= row.price and n < LADDER_ROWS then
-            n = n + 1
-            Fill(n, price, count, 0, true)
-            placed = true
-        end
-        if n >= LADDER_ROWS then break end
-        n = n + 1
-        Fill(n, row.price, row.quantity, row.own, false, i)
-    end
-    if not placed then
-        n = math.min(n, LADDER_ROWS - 1) + 1
-        Fill(n, price, count, 0, true)
-    end
-    return n
-end
-
-local function DrawLadder(entry, price, count)
+local function ListedText()
     local state = Listings.state
+    if state == "noanswer" then return "" end
+    if state ~= "listed" then return TEXT_SEARCHING end
     local total = 0
     for i = 1, Listings.count do total = total + Listings.rows[i].quantity end
-    if state == "listed" then
-        ladder:SetStatus(total > 0 and TEXT_LISTED:format(BreakUpLargeNumbers(total)) or TEXT_NONE)
-    else
-        ladder:SetStatus(state == "noanswer" and "" or TEXT_SEARCHING)
-    end
-    ladder:Paint(display, entry.vendorBetter and 0 or LadderRows(price, count))
+    return total > 0 and TEXT_LISTED:format(BreakUpLargeNumbers(total)) or TEXT_NONE
 end
 
 local function DrawForm(entry, price)
@@ -187,11 +148,10 @@ local function DrawPost(entry, price)
     local count = Sell.Quantity(entry)
     local deposit = Post.Deposit(entry, count, Sell.Duration())
     if deposit and deposit > GetMoney() then
-        depositText:SetText(TEXT_SHORT:format(Coins(deposit)))
+        netText:SetText(TEXT_SHORT:format(Coins(deposit)))
     else
-        depositText:SetText(deposit and TEXT_DEPOSIT:format(Coins(deposit)) or "")
+        netText:SetText(TEXT_NET:format(Coins(Market.AfterCut(price * count))))
     end
-    netText:SetText(TEXT_NET:format(Coins(Market.AfterCut(price * count))))
     ns.SetButtonText(post, Post.Waiting() and TEXT_POSTING or TEXT_POST:format(count, Coins(price * count)))
     Enable(post, CanPost(entry))
 end
@@ -207,17 +167,15 @@ local function DrawFocus()
         return
     end
     local price, why, ref = Sell.Price(entry)
-    local count = Sell.Quantity(entry)
     head.icon.texture:SetTexture(entry.icon)
     head.link = entry.link
-    local color = QualityColor(entry)
+    local color = Items.QualityColor(entry.itemID) or T.fg
     head.name:SetTextColor(color.r, color.g, color.b)
     head.name:SetText(TEXT_COUNT:format(ItemName(entry), entry.count))
     head.sub:SetText(entry.scan and TEXT_SCAN_SUB:format(Coins(entry.scan)) or TEXT_NO_SCAN_SUB)
-    DrawLadder(entry, price, count)
+    head.listed:SetText(entry.vendorBetter and "" or ListedText())
     reason.text:SetText(Reason(entry, price, why, ref))
     DrawForm(entry, price)
-    chart:Paint(entry.itemID)
     DrawPost(entry, price)
 end
 
@@ -428,13 +386,6 @@ local function PriceDown()
     if entry and Sell.StepPrice(entry, false) then Page.Draw() end
 end
 
-local function ListingPicked(i)
-    local entry = Sell.Focus()
-    if not entry then return end
-    Sell.PriceAt(entry, i)
-    Page.Draw()
-end
-
 local function Posted(key, count, price, ok)
     if not ok then
         failed = true
@@ -467,9 +418,9 @@ local function DurationPicked(key)
     Page.Draw()
 end
 
-local function Label(parent, text, anchor)
+local function Label(parent, text)
     local label = ns.Font(parent, SMALL_SIZE, nil, T.muted)
-    label:SetPoint("TOPLEFT", anchor, "TOPLEFT", 0, 0)
+    label:SetPoint("TOPLEFT")
     label:SetText(text)
     return label
 end
@@ -484,49 +435,46 @@ local function BuildHead()
     head.icon:EnableMouse(true)
     head.icon:SetScript("OnEnter", function() ShowTip(head) end)
     head.icon:SetScript("OnLeave", GameTooltip_Hide)
+    head.listed = ns.Font(head, SMALL_SIZE, nil, T.muted)
+    head.listed:SetPoint("TOPRIGHT", 0, -SUB_GAP)
     head.name = ns.Font(head, NAME_SIZE, nil, T.fg, true)
     head.name:SetPoint("TOPLEFT", head.icon, "TOPRIGHT", NAME_GAP, 0)
-    head.name:SetPoint("RIGHT")
+    head.name:SetPoint("RIGHT", head.listed, "LEFT", -GAP, 0)
     head.name:SetJustifyH("LEFT")
     head.name:SetWordWrap(false)
     head.sub = ns.Font(head, SMALL_SIZE, nil, T.muted)
     head.sub:SetPoint("TOPLEFT", head.name, "BOTTOMLEFT", 0, -SUB_GAP)
 end
 
-local function BuildLadder()
-    ladder = Ladder.New(content, TEXT_LADDER, ListingPicked)
-    ladder:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SECTION_GAP)
-    ladder:SetPoint("RIGHT")
-end
-
 local function BuildReason()
     reason = CreateFrame("Frame", nil, content)
-    reason:SetPoint("TOPLEFT", ladder, "BOTTOMLEFT", 0, -SECTION_GAP)
+    reason:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SECTION_GAP)
     reason:SetPoint("RIGHT")
     reason:SetHeight(REASON_H)
     local icon = reason:CreateTexture(nil, "ARTWORK")
     icon:SetTexture(St.INFO, nil, nil, "TRILINEAR")
     icon:SetSize(INFO_SIZE, INFO_SIZE)
-    icon:SetPoint("LEFT")
+    icon:SetPoint("TOPLEFT")
     icon:SetVertexColor(T.accent.r, T.accent.g, T.accent.b, 1)
-    reason.text = ns.Font(reason, TEXT_SIZE, nil, T.fg)
-    reason.text:SetPoint("LEFT", icon, "RIGHT", INFO_GAP, 0)
+    reason.text = ns.Font(reason, SMALL_SIZE, nil, T.fg)
+    reason.text:SetPoint("TOPLEFT", icon, "TOPRIGHT", INFO_GAP, 0)
     reason.text:SetPoint("RIGHT")
     reason.text:SetJustifyH("LEFT")
+    reason.text:SetJustifyV("TOP")
 end
 
 local function BuildForm()
-    form = CreateFrame("Frame", nil, content)
+    local form = CreateFrame("Frame", nil, content)
     form:SetPoint("TOPLEFT", reason, "BOTTOMLEFT", 0, -SECTION_GAP)
     form:SetPoint("RIGHT")
     form:SetHeight(FORM_H)
     money = Parts.MoneyBox(form, PriceTyped)
     money:SetPoint("BOTTOMLEFT")
-    Label(form, TEXT_PRICE, form)
+    Label(form, TEXT_PRICE)
     local count = CreateFrame("Frame", nil, form)
-    count:SetPoint("BOTTOMLEFT", money, "BOTTOMRIGHT", FIELD_GAP, 0)
+    count:SetPoint("BOTTOMLEFT", money.boxes[3], "BOTTOMRIGHT", FIELD_GAP, 0)
     count:SetSize(QTY_BOX_W, FORM_H)
-    Label(count, TEXT_QUANTITY, count)
+    Label(count, TEXT_QUANTITY)
     quantity = ns.NewEditBox(count)
     quantity:SetSize(QTY_BOX_W, money:GetHeight())
     quantity:SetPoint("BOTTOMLEFT")
@@ -540,51 +488,44 @@ local function BuildForm()
     quantityOf:SetPoint("LEFT", quantity, "RIGHT", OF_GAP, 0)
     local items = {}
     for i, duration in ipairs(C.DURATIONS) do items[i] = { key = duration, label = C.DURATION_LABELS[duration] } end
-    durations = Parts.Tabs(form, DURATION_W, items, DurationPicked, nil, nil, true)
-    durations:SetPoint("BOTTOMRIGHT")
-    local label = ns.Font(form, SMALL_SIZE, nil, T.muted)
-    label:SetPoint("TOPLEFT", durations, "TOPLEFT", 0, FIELD_LABEL_H)
+    durations = Parts.Tabs(content, DURATION_W, items, DurationPicked, nil, nil, true)
+    durations:SetPoint("TOPRIGHT", form, "BOTTOMRIGHT", 0, -SECTION_GAP)
+    local label = ns.Font(content, SMALL_SIZE, nil, T.muted)
+    label:SetPoint("LEFT", form, "BOTTOMLEFT", 0, -(SECTION_GAP + St.TAB_H / 2))
     label:SetText(TEXT_DURATION)
+    return durations
 end
 
-local function BuildChart()
-    chart = Chart.New(content)
-    chart:SetPoint("TOPLEFT", form, "BOTTOMLEFT", 0, -SECTION_GAP)
-    chart:SetPoint("BOTTOMRIGHT", 0, POST_H + SECTION_GAP)
-end
-
-local function BuildPostRow()
-    post = ns.Button(content, "", POST_W, BUTTON_H, DoPost)
+local function BuildPostRow(above)
+    post = ns.Button(content, "", 1, BUTTON_H, DoPost)
     ns.PrimaryButton(post)
-    post:SetPoint("BOTTOMRIGHT")
+    post:SetPoint("TOPRIGHT", above, "BOTTOMRIGHT", 0, -SECTION_GAP)
+    post:SetPoint("LEFT", content, "LEFT", SKIP_W + POST_GAP, 0)
     skip = ns.Button(content, TEXT_SKIP, SKIP_W, BUTTON_H, Skip)
     skip:SetPoint("RIGHT", post, "LEFT", -POST_GAP, 0)
-    netText = ns.Font(content, TEXT_SIZE, nil, T.muted)
-    netText:SetPoint("BOTTOMLEFT")
-    netText:SetPoint("RIGHT", skip, "LEFT", -GAP, 0)
+    netText = ns.Font(content, SMALL_SIZE, nil, T.muted)
+    netText:SetPoint("TOPLEFT", skip, "BOTTOMLEFT", 0, -NET_GAP)
+    netText:SetPoint("RIGHT")
     netText:SetJustifyH("LEFT")
-    depositText = ns.Font(content, TEXT_SIZE, nil, T.fg)
-    depositText:SetPoint("BOTTOMLEFT", netText, "TOPLEFT", 0, SUB_GAP)
-    depositText:SetPoint("RIGHT", skip, "LEFT", -GAP, 0)
-    depositText:SetJustifyH("LEFT")
 end
 
 local function BuildMessage()
-    message = CreateFrame("Frame", nil, pane)
+    message = CreateFrame("Frame", nil, focusPane)
     message:SetAllPoints()
     message.title = ns.Font(message, EMPTY_SIZE, nil, T.fg, true)
     message.title:SetPoint("BOTTOM", message, "CENTER", 0, EMPTY_GAP / 2)
-    message.sub = ns.Font(message, TEXT_SIZE, nil, T.muted)
+    message.title:SetWidth(DURATION_W)
+    message.sub = ns.Font(message, SMALL_SIZE, nil, T.muted)
     message.sub:SetPoint("TOP", message, "CENTER", 0, -EMPTY_GAP / 2)
+    message.sub:SetWidth(DURATION_W)
 end
 
-local function BuildQueue()
+local function BuildQueue(top)
     queuePane = CreateFrame("Frame", nil, page)
-    queuePane:SetPoint("TOPRIGHT")
-    queuePane:SetPoint("BOTTOMRIGHT", 0, BAR_H + PANE_GAP)
-    queuePane:SetWidth(QUEUE_W)
+    queuePane:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, -SECTION_GAP)
+    queuePane:SetPoint("BOTTOMRIGHT", 0, BAR_H + SECTION_GAP)
     Panel(queuePane)
-    local title = ns.Font(queuePane, TEXT_SIZE + 2, nil, T.fg, true)
+    local title = ns.Font(queuePane, TEXT_SIZE, nil, T.fg, true)
     title:SetPoint("TOPLEFT", ROW_IN, -ROW_IN)
     title:SetText(TEXT_UP_NEXT)
     queuePane.sub = ns.Font(queuePane, SMALL_SIZE, nil, T.muted)
@@ -593,9 +534,9 @@ local function BuildQueue()
     scroll:SetPoint("TOPLEFT", 0, -QUEUE_HEAD_H)
     scroll:SetPoint("BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
     list = CreateFrame("Frame", nil, scroll)
-    list:SetWidth(QUEUE_W - St.SCROLLBAR - SCROLL_IN)
     list:SetHeight(1)
     scroll:SetScrollChild(list)
+    scroll:HookScript("OnSizeChanged", function(_, width) list:SetWidth(width) end)
 end
 
 local function BuildBar()
@@ -603,37 +544,29 @@ local function BuildBar()
     bar:SetPoint("BOTTOMLEFT")
     bar:SetPoint("BOTTOMRIGHT")
     bar:SetHeight(BAR_H)
-    bar.total = ns.Font(bar, TEXT_SIZE, nil, T.fg)
+    bar.total = ns.Font(bar, SMALL_SIZE, nil, T.fg)
     bar.total:SetPoint("LEFT")
-    local hints = ns.Font(bar, SMALL_SIZE, nil, T.muted)
-    hints:SetPoint("RIGHT")
-    hints:SetWidth(HINT_W)
-    hints:SetJustifyH("RIGHT")
-    hints:SetText(TEXT_KEYS)
-    bar.hints = hints
     bar.progress = Parts.ProgressLine(bar, PROGRESS_H)
     bar.progress:SetPoint("LEFT", bar.total, "RIGHT", PROGRESS_GAP, 0)
-    bar.progress:SetPoint("RIGHT", hints, "LEFT", -PROGRESS_GAP, 0)
+    bar.progress:SetPoint("RIGHT")
     bar.progress:Paint(St.GOLD_RGB)
 end
 
 function Page.Build(parent)
     page = CreateFrame("Frame", nil, parent)
     page:SetAllPoints()
-    BuildQueue()
-    BuildBar()
-    pane = CreateFrame("Frame", nil, page)
-    pane:SetPoint("TOPLEFT")
-    pane:SetPoint("BOTTOMRIGHT", -(QUEUE_W + PANE_GAP), BAR_H + PANE_GAP)
-    content = CreateFrame("Frame", nil, pane)
+    focusPane = CreateFrame("Frame", nil, page)
+    focusPane:SetPoint("TOPLEFT")
+    focusPane:SetPoint("TOPRIGHT")
+    focusPane:SetHeight(FOCUS_H)
+    content = CreateFrame("Frame", nil, focusPane)
     content:SetAllPoints()
     BuildHead()
-    BuildLadder()
     BuildReason()
-    BuildForm()
-    BuildChart()
-    BuildPostRow()
+    BuildPostRow(BuildForm())
     BuildMessage()
+    BuildBar()
+    BuildQueue(focusPane)
     Post.onDone = Posted
     events = CreateFrame("Frame")
     events:SetScript("OnEvent", OnEvent)
@@ -641,7 +574,7 @@ end
 
 function Page.Show()
     page:Show()
-    bar.hints:SetShown(S.Get("postKeys"))
+    list:SetWidth(scroll:GetWidth())
     if not active then
         active, failed = true, false
         Listings.Start()

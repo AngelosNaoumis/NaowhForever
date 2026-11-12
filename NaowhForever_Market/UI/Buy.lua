@@ -1,4 +1,4 @@
--- Buy.lua: the Buy page: your Shopping List, a search by name and category, the listings of what you pick, and buying it.
+-- Buy.lua: the panel's Buy page: your watch list, and any item in your scans to add to it.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -6,734 +6,87 @@ local Market = ns.Market
 local St = Market.Style
 local Parts = ns.Shared.Parts
 local Items = ns.Shared.Items
-local Buy, Listings, Ladder, Chart = Market.Buy, Market.Listings, Market.Ladder, Market.Chart
-local Columns = Market.Columns
+local Finder, Watch = Market.Finder, Market.Watch
 
-local GAP, TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.GAP, St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
-local PANE_GAP, SECTION_GAP = 12, 12
-local SHOP_W, SHOP_HEAD_H, SHOP_ROW_H, SHOP_ICON, SHOP_NOTE_H = 250, 36, 36, 24, 28
-local RESULT_ROW_H, RESULT_ICON, LOWEST_W, LISTED_W = 28, 20, 120, 70
-local ROW_IN, ICON_GAP, TITLE_SIZE, SUB_GAP = 8, 8, 14, 4
-local SEARCH_H, NAME_SIZE, NAME_H = St.SEARCH_H, 16, 24
-local QTY_W, QTY_LETTERS, BUY_W = 70, 5, 260
-local SCROLL_IN = 4
-local CATEGORY_ROW_H, CATEGORY_INDENT, MORE_ROWS = 28, 14, 10
-local FAV_HEAD_H, FAV_ROW_H, FAV_ROWS, STAR, CHART_W = 30, 30, 5, 18, 280
-local SAVED_ICON = 13
-local FAV_H = FAV_HEAD_H + FAV_ROWS * FAV_ROW_H
-local DETAIL_H = NAME_H + SECTION_GAP + Ladder.HEIGHT + SECTION_GAP + BUTTON_H
-local TEXT_SHOP = ns.L("Shopping List")
-local TEXT_SHOP_SUB = ns.L("From Professions, what you still need")
-local TEXT_SHOP_EMPTY = ns.L("Nothing on your Shopping List.")
-local TEXT_SHOP_OFF = ns.L("Turn on Professions for its Shopping List.")
-local TEXT_MORE = ns.L("%d more")
-local TEXT_SEARCH = ns.L("Search the auction house")
-local TEXT_SEARCHING = ns.L("Searching")
-local TEXT_HINT = ns.L("Type a name and press Enter, or pick a category.")
-local TEXT_NOTHING = ns.L("Nothing found.")
-local TEXT_ALL_CATEGORIES = ns.L("All Categories")
-local TEXT_PATH = ns.L("%s / %s")
-local TEXT_SAVED = "%s  %s"
-local TEXT_LADDER = ns.L("Listings now, cheapest first")
-local TEXT_LISTED = ns.L("%s listed")
-local TEXT_NONE = ns.L("Nobody is selling this")
-local TEXT_YOURS = ns.L(" yours")
-local TEXT_TAKE = ns.L("%d of %d")
-local TEXT_BUY = ns.L("Buy %d for %s")
-local TEXT_BUY_ONE = ns.L("Buy for %s")
-local TEXT_CONFIRM = ns.L("Confirm %s")
-local TEXT_QUOTING = ns.L("Getting the price")
-local TEXT_BUYING = ns.L("Buying")
-local TEXT_PICK = ns.L("Pick something to buy")
-local TEXT_AVERAGE = ns.L("Average %s each")
-local TEXT_SHORT = ns.L("Only %d listed.")
-local TEXT_QUOTED = ns.L("The price is %s each. Confirm to buy.")
-local TEXT_OVER = ns.L("The price went up to %s each. Confirm only if you still want it.")
-local TEXT_BOUGHT = ns.L("Bought %d.")
-local TEXT_FAILED = ns.L("The purchase did not go through.")
-local TEXT_UNAVAILABLE = ns.L("Not enough is left at that price. Pick it again for new listings.")
-local TEXT_ITEM, TEXT_LOWEST, TEXT_LISTED_HEAD = ns.L("Item"), ns.L("Lowest"), ns.L("Listed")
-local TEXT_FAVOURITES = ns.L("Favourites")
-local TEXT_FAV_EMPTY = ns.L("Star an item you buy often and it stays here.")
-local TEXT_STAR = ns.L("Favourite")
-local TEXT_STAR_TIP = ns.L("Keeps this item under Favourites, one click from its listings.")
-local TEXT_SAVE = ns.L("Save Search")
-local TEXT_SAVE_TIP = ns.L("Keeps this search and its category under Favourites, one click from running again.")
-local TEXT_REMOVE = ns.L("Remove")
+local HEAD_H, HEAD_ICON, NAME_SIZE, NAME_GAP, SUB_GAP, GAP = 40, 32, 15, 8, 3, 10
+local BUTTON_W, BUTTON_H = 86, 24
+local TEXT_LIST = ns.L("Watch List: %d, %d at or under your price")
+local TEXT_EMPTY = ns.L("Nothing on your watch list. Search an item to watch it.")
+local TEXT_SCAN_SUB = ns.L("Your last scan: %s each")
+local TEXT_NO_SCAN_SUB = ns.L("Not in your scans yet")
 
-local page, shopPane, shopHead, shopScroll, shopList, shopNote, main, search, resultsScroll, resultsList, resultsNote
-local detail, nameText, ladder, quantity, buyButton, statusText, star, chart, sorter
-local favPane, favScroll, favList, favNote, itemEvents, saveStar
-local shopRows, categoryRows, resultRows, rungs, favRows, favourites, results = {}, {}, {}, {}, {}, {}, {}
-local searchRows, saved = {}, {}
-local categories, shown = {}, {}
-local active, watching, shopOpen = false, false, false
+local page, head, watch, finder
+local watched = {}
 
 local Page = {}
 Market.Pages.buy = Page
 
-local function Coins(copper)
-    return Parts.Coins(copper)
+local function FromList(found)
+    wipe(found)
+    for _, id in ipairs(Watch.Items(watched)) do found[#found + 1] = id end
+    if #found == 0 then return TEXT_EMPTY end
+    return TEXT_LIST:format(#found, Watch.UnderCount())
 end
 
-local function Quantity()
-    return math.max(1, tonumber(quantity:GetText()) or 1)
-end
-
-local function KeyLook(itemKey)
-    local info = C_AuctionHouse.GetItemKeyInfo(itemKey)
-    if not info then return Items.Name(itemKey.itemID), T.fg, nil end
-    return info.itemName, ITEM_QUALITY_COLORS[info.quality] or T.fg, info.iconFileID
-end
-
-local function CategoryLabel(c)
-    if not c.parent then return c.name end
-    return TEXT_PATH:format(c.parent.name, c.name)
-end
-
-local Enable = St.Enable
-
-local function Panel(frame)
-    ns.Solid(frame, "BACKGROUND", T.fg, St.PANEL_FILL):SetAllPoints()
-    ns.Border(frame, St.BORDER_RGB)
-end
-
-local function Rows(list, count, pool, new, paint, height, top)
-    local y = top or 0
-    for i = 1, count do
-        local row = pool[i] or new()
-        pool[i] = row
-        paint(row, i)
-        row:ClearAllPoints()
-        row:SetPoint("TOPLEFT", 0, -y)
-        row:SetPoint("RIGHT", list, "RIGHT")
-        row:Show()
-        y = y + height
-    end
-    for i = count + 1, #pool do pool[i]:Hide() end
-    list:SetHeight(math.max(1, y))
-end
-
-local function ItemTip(row)
-    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
-    local key = row.itemKey
-    local link = key and C_AuctionHouse.GetItemKeySampleLink(key)
-    if link then
-        GameTooltip:SetHyperlink(link)
-    elseif key then
-        GameTooltip:SetItemKey(key.itemID, key.itemLevel, key.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(key))
-    else
-        GameTooltip:SetItemByID(row.item)
-    end
-    GameTooltip:Show()
-end
-
-local function RowEnter(row)
-    row.hover:Show()
-    ItemTip(row)
-end
-
-local function RowLeave(row)
-    row.hover:Hide()
-    GameTooltip:Hide()
-end
-
-local function NewListRow(parent, icon, onClick)
-    local row = CreateFrame("Button", nil, parent)
-    Parts.RowBands(row, 0)
-    row.picked = ns.Solid(row, "BACKGROUND", T.accent, St.PICKED_FILL)
-    row.picked:SetAllPoints()
-    row.icon = Parts.ItemIcon(row, icon)
-    row.icon:SetPoint("LEFT", ROW_IN, 0)
-    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.name:SetJustifyH("LEFT")
-    row.name:SetWordWrap(false)
-    row:SetScript("OnClick", onClick)
-    row:SetScript("OnEnter", RowEnter)
-    row:SetScript("OnLeave", RowLeave)
-    return row
-end
-
-local function ShopClicked(row)
-    Page.PickItem(row.item, row.qty)
-end
-
-local function NewShopRow()
-    local row = NewListRow(shopList, SHOP_ICON, ShopClicked)
-    row:SetHeight(SHOP_ROW_H)
-    row.name:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", ICON_GAP, 0)
-    row.name:SetPoint("RIGHT", -ROW_IN, 0)
-    row.sub = ns.Font(row, SMALL_SIZE, nil, T.muted)
-    row.sub:SetPoint("BOTTOMLEFT", row.icon, "BOTTOMRIGHT", ICON_GAP, 0)
-    return row
-end
-
-local function IsCategory(c)
-    return Buy.category == c
-end
-
-local function ShopToggled()
-    shopOpen = not shopOpen
-    Page.Draw()
-end
-
-local function CategoryClicked(row)
-    local c = row.category
-    local chosen = not IsCategory(c) and c or c.parent
-    Buy.SetCategory(chosen)
-    Buy.Search(search:GetText() or "")
-    Page.Draw()
-end
-
-local function NewCategoryRow()
-    local row = CreateFrame("Button", nil, shopList)
-    row:SetHeight(CATEGORY_ROW_H)
-    row.picked = ns.Solid(row, "BACKGROUND", T.accent, St.PICKED_FILL)
-    row.picked:SetAllPoints()
-    row.hover = ns.Solid(row, "BACKGROUND", T.fg, St.TAB_HOVER_FILL)
-    row.hover:SetAllPoints()
-    row.hover:Hide()
-    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row:SetScript("OnClick", CategoryClicked)
-    row:SetScript("OnEnter", function(self) self.hover:Show() end)
-    row:SetScript("OnLeave", function(self) self.hover:Hide() end)
-    return row
-end
-
-local function FavClicked(row)
-    Buy.Pick(Buy.FavouriteKey(row.item))
-    quantity:SetText(1)
-    Page.Draw()
-end
-
-local function NewFavRow()
-    local row = NewListRow(favList, SHOP_ICON, FavClicked)
-    row:SetHeight(FAV_ROW_H)
-    row.price = ns.Font(row, SMALL_SIZE, nil, T.muted)
-    row.price:SetPoint("RIGHT", -ROW_IN, 0)
-    row.name:SetPoint("LEFT", row.icon, "RIGHT", ICON_GAP, 0)
-    row.name:SetPoint("RIGHT", row.price, "LEFT", -ICON_GAP, 0)
-    return row
-end
-
-local function PaintFavRow(row, i)
-    local item = favourites[i]
-    row.item = item
-    row.stripe:SetShown((#saved + i) % 2 == 0)
-    row.picked:SetShown(Buy.picked.itemID == item)
-    row.icon.texture:SetTexture(C_Item.GetItemIconByID(item))
-    local color = Items.QualityColor(item) or T.fg
-    row.name:SetTextColor(color.r, color.g, color.b)
-    row.name:SetText(Items.Name(item))
-    local scan = ns.AuctionPrice and ns.AuctionPrice(item)
-    row.price:SetText(scan and Parts.Coins(scan, true) or "")
-end
-
-local DrawFavourites
-
-local function SearchEnter(row)
-    row.hover:Show()
-end
-
-local function SearchLeave(row)
-    if row:IsMouseOver() then return end
-    row.hover:Hide()
-end
-
-local function RemoveLeave(button)
-    SearchLeave(button:GetParent())
-end
-
-local function SearchClicked(row)
-    local entry = Buy.RunSearch(row.index)
-    search:SetText(entry.text)
-    Page.Draw()
-end
-
-local function RemoveClicked(button)
-    Buy.DeleteSearch(button:GetParent().index)
-    DrawFavourites()
-    Page.Draw()
-end
-
-local function NewSearchRow()
-    local row = CreateFrame("Button", nil, favList)
-    row:SetHeight(FAV_ROW_H)
-    Parts.RowBands(row, 0)
-    local icon = row:CreateTexture(nil, "ARTWORK")
-    icon:SetTexture(St.SEARCH)
-    icon:SetSize(SAVED_ICON, SAVED_ICON)
-    icon:SetPoint("CENTER", row, "LEFT", ROW_IN + SHOP_ICON / 2, 0)
-    icon:SetVertexColor(T.muted.r, T.muted.g, T.muted.b, 1)
-    row.remove = Parts.IconButton(row, RemoveClicked, St.CROSS, 0, TEXT_REMOVE)
-    row.remove:SetPoint("RIGHT", -ROW_IN, 0)
-    row.remove:HookScript("OnLeave", RemoveLeave)
-    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.name:SetPoint("LEFT", ROW_IN + SHOP_ICON + ICON_GAP, 0)
-    row.name:SetPoint("RIGHT", row.remove, "LEFT", -ICON_GAP, 0)
-    row.name:SetJustifyH("LEFT")
-    row.name:SetWordWrap(false)
-    row:SetScript("OnClick", SearchClicked)
-    row:SetScript("OnEnter", SearchEnter)
-    row:SetScript("OnLeave", SearchLeave)
-    return row
-end
-
-local function PaintSearchRow(row, i)
-    local entry = saved[i]
-    local c = Buy.SearchCategory(entry)
-    local label = c and CategoryLabel(c)
-    row.index = i
-    row.stripe:SetShown(i % 2 == 0)
-    if entry.text == "" then
-        row.name:SetText(label or TEXT_ALL_CATEGORIES)
-    else
-        row.name:SetText(label and TEXT_SAVED:format(entry.text, ns.Color("muted", label)) or entry.text)
-    end
-end
-
-local function ResultClicked(row)
-    Buy.Pick(row.itemKey)
-    quantity:SetText(1)
-    Page.Draw()
-end
-
-local function NewResultRow()
-    local row = NewListRow(resultsList, RESULT_ICON, ResultClicked)
-    row:SetHeight(RESULT_ROW_H)
-    row.listed = ns.Font(row, TEXT_SIZE, nil, T.muted)
-    row.listed:SetPoint("RIGHT", -ROW_IN, 0)
-    row.listed:SetWidth(LISTED_W)
-    row.listed:SetJustifyH("RIGHT")
-    row.lowest = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.lowest:SetPoint("RIGHT", row.listed, "LEFT", -GAP, 0)
-    row.lowest:SetWidth(LOWEST_W)
-    row.lowest:SetJustifyH("RIGHT")
-    row.name:SetPoint("LEFT", row.icon, "RIGHT", ICON_GAP, 0)
-    row.name:SetPoint("RIGHT", row.lowest, "LEFT", -GAP, 0)
-    return row
-end
-
-local shopping
-
-local function PaintShopRow(row, i)
-    local m = shopping[i]
-    row.item, row.qty = m.item, m.qty
-    row.stripe:SetShown(i % 2 == 0)
-    row.picked:SetShown(Buy.picked.itemID == m.item)
-    row.icon.texture:SetTexture(C_Item.GetItemIconByID(m.item))
-    local color = Items.QualityColor(m.item) or T.fg
-    row.name:SetTextColor(color.r, color.g, color.b)
-    row.name:SetText(m.name ~= "" and m.name or Items.Name(m.item))
-    row.sub:SetText(TEXT_MORE:format(m.qty))
-end
-
-local function PaintResultRow(row, i)
-    local result = results[i]
-    row.itemKey = result.itemKey
-    row.stripe:SetShown(i % 2 == 0)
-    row.picked:SetShown(Buy.picked.itemKey == result.itemKey)
-    local name, color, icon = KeyLook(result.itemKey)
-    row.icon.texture:SetTexture(icon or C_Item.GetItemIconByID(result.itemKey.itemID))
-    row.name:SetTextColor(color.r, color.g, color.b)
-    row.name:SetText(name)
-    row.lowest:SetText(Coins(result.minPrice))
-    row.listed:SetText(BreakUpLargeNumbers(result.totalQuantity))
-end
-
-local function IsOpen(c)
-    local at = Buy.category
-    while at do
-        if at == c then return true end
-        at = at.parent
-    end
-    return false
-end
-
-local function ShownCategories()
-    local out = wipe(shown)
-    local function Add(list)
-        for _, c in ipairs(list) do
-            out[#out + 1] = c
-            if c.subCategories and IsOpen(c) then Add(c.subCategories) end
-        end
-    end
-    Add(Buy.Categories(categories))
-    return out
-end
-
-local function PaintCategoryRow(row, i)
-    local c = shown[i]
-    local depth = 0
-    local at = c.parent
-    while at do
-        depth = depth + 1
-        at = at.parent
-    end
-    row.category = c
-    row.name:ClearAllPoints()
-    row.name:SetPoint("LEFT", ROW_IN + depth * CATEGORY_INDENT, 0)
-    row.name:SetText(c.name)
-    row.picked:SetShown(IsCategory(c))
-end
-
-local function DrawShopping()
-    shopping = Buy.ShoppingList()
-    local count = shopOpen and shopping and #shopping or 0
-    shopHead.count:SetText(shopping and #shopping > 0 and #shopping or "")
-    Rows(shopList, count, shopRows, NewShopRow, PaintShopRow, SHOP_ROW_H)
-    local noted = shopOpen and count == 0
-    shopNote:SetShown(noted)
-    shopNote:SetText(shopping and TEXT_SHOP_EMPTY or TEXT_SHOP_OFF)
-    ShownCategories()
-    local top = noted and math.max(SHOP_NOTE_H, math.ceil(shopNote:GetStringHeight()) + SUB_GAP * 4)
-        or count * SHOP_ROW_H
-    Rows(shopList, #shown, categoryRows, NewCategoryRow, PaintCategoryRow, CATEGORY_ROW_H, top)
-end
-
-function DrawFavourites()
-    saved = Buy.SavedSearches()
-    Rows(favList, #saved, searchRows, NewSearchRow, PaintSearchRow, FAV_ROW_H)
-    Buy.Favourites(favourites)
-    Rows(favList, #favourites, favRows, NewFavRow, PaintFavRow, FAV_ROW_H, #saved * FAV_ROW_H)
-    favNote:SetShown(#saved + #favourites == 0)
-end
-
-local function DrawResults()
-    wipe(results)
-    for i, result in ipairs(Buy.results) do results[i] = result end
-    Columns.Sort(sorter, results)
-    local count = #results
-    Rows(resultsList, count, resultRows, NewResultRow, PaintResultRow, RESULT_ROW_H)
-    resultsNote:SetShown(count == 0)
-    resultsNote:SetText(Buy.searching and TEXT_SEARCHING or Buy.searched and TEXT_NOTHING or TEXT_HINT)
-end
-
-local function LadderRungs(want)
-    local n, left = 0, want
-    for i = 1, math.min(Listings.count, Ladder.ROWS) do
-        local row = Listings.rows[i]
-        local take = math.min(left, row.quantity - row.own)
-        n = n + 1
-        local rung = Ladder.Rung(rungs, n)
-        rung.price, rung.count = row.price, row.quantity
-        rung.label = row.own > 0 and TEXT_YOURS or nil
-        if take > 0 then
-            rung.lit, rung.countText = true, TEXT_TAKE:format(take, row.quantity)
-            left = left - take
-        end
-    end
-    return n
-end
-
-local function Status(picked, purchase, count)
-    local state = purchase.state
-    if state == "quoted" then
-        return (purchase.over and TEXT_OVER or TEXT_QUOTED):format(Coins(purchase.unit)), purchase.over and St.WARN_RGB
-    end
-    if state == "bought" then return TEXT_BOUGHT:format(purchase.quantity), St.HAVE_RGB end
-    if state == "failed" then return TEXT_FAILED, St.RED_RGB end
-    if state == "unavailable" then return TEXT_UNAVAILABLE, St.WARN_RGB end
-    if not picked.commodity or Listings.state ~= "listed" then return "" end
-    local cost, short = Buy.Cost(count)
-    if short > 0 then return TEXT_SHORT:format(count - short), St.WARN_RGB end
-    return TEXT_AVERAGE:format(Coins(math.floor(cost / count + 0.5)))
-end
-
-local function BuyLabel(picked, purchase, count)
-    local state = purchase.state
-    if state == "quoting" then return TEXT_QUOTING, false end
-    if state == "buying" then return TEXT_BUYING, false end
-    if state == "quoted" then return TEXT_CONFIRM:format(Coins(purchase.total)), true end
-    if Listings.state ~= "listed" then return TEXT_PICK, false end
-    if picked.commodity then
-        local cost, short = Buy.Cost(count)
-        return TEXT_BUY:format(count, Coins(cost)), short == 0 and cost > 0 and cost <= GetMoney()
-    end
-    local row = Buy.Cheapest()
-    if not row then return TEXT_PICK, false end
-    return TEXT_BUY_ONE:format(Coins(row.price)), row.price <= GetMoney()
-end
-
-local function DrawDetail()
-    local picked, purchase = Buy.picked, Buy.purchase
-    detail:SetShown(picked.itemID ~= nil)
-    if not picked.itemID then return end
-    local name, color = KeyLook(picked.itemKey)
-    nameText:SetTextColor(color.r, color.g, color.b)
-    nameText:SetText(name)
-    local tint = Buy.IsFavourite(picked.itemID) and St.GOLD_RGB or T.muted
-    star.icon:SetVertexColor(tint.r, tint.g, tint.b)
-    chart:Paint(picked.itemID)
-    local total = 0
-    for i = 1, Listings.count do total = total + Listings.rows[i].quantity end
-    if Listings.state == "listed" then
-        ladder:SetStatus(total > 0 and TEXT_LISTED:format(BreakUpLargeNumbers(total)) or TEXT_NONE)
-    else
-        ladder:SetStatus(Listings.state == "noanswer" and "" or TEXT_SEARCHING)
-    end
-    local count = picked.commodity and Quantity() or 1
-    ladder:Paint(rungs, LadderRungs(count))
-    quantity:SetShown(picked.commodity == true)
-    local text, shade = Status(picked, purchase, count)
-    shade = shade or T.muted
-    statusText:SetTextColor(shade.r, shade.g, shade.b)
-    statusText:SetText(text)
-    local label, on = BuyLabel(picked, purchase, count)
-    ns.SetButtonText(buyButton, label)
-    Enable(buyButton, on)
-end
-
-local function DrawSaveStar()
-    local text = search:GetText() or ""
-    local tint = Buy.SavedSearch(text, Buy.category) and St.GOLD_RGB or T.muted
-    saveStar.icon:SetVertexColor(tint.r, tint.g, tint.b)
-    Enable(saveStar, text ~= "" or Buy.category ~= nil)
+local function DrawHead(itemID)
+    head:SetShown(itemID ~= nil)
+    Finder.PaintWatch(watch, itemID)
+    if not itemID then return end
+    head.icon.texture:SetTexture(C_Item.GetItemIconByID(itemID))
+    local color = Items.QualityColor(itemID) or T.fg
+    head.name:SetTextColor(color.r, color.g, color.b)
+    head.name:SetText(Items.Name(itemID))
+    local scan = Finder.Scan(itemID)
+    head.sub:SetText(scan and TEXT_SCAN_SUB:format(Parts.Coins(scan)) or TEXT_NO_SCAN_SUB)
 end
 
 function Page.Draw()
-    if not active then return end
-    DrawShopping()
-    for _, row in ipairs(favRows) do
-        if row:IsShown() then row.picked:SetShown(Buy.picked.itemID == row.item) end
-    end
-    DrawResults()
-    DrawDetail()
-    DrawSaveStar()
+    Finder.Draw(finder)
+    DrawHead(finder.picked)
 end
 
-local function StarClicked()
-    Buy.ToggleFavourite(Buy.picked.itemKey)
-    DrawFavourites()
-    Page.Draw()
-end
-
-local function SaveClicked()
-    local text = search:GetText() or ""
-    local index = Buy.SavedSearch(text, Buy.category)
-    if index then
-        Buy.DeleteSearch(index)
-    else
-        Buy.SaveSearch(text, Buy.category)
-    end
-    DrawFavourites()
-    Page.Draw()
-end
-
-local function SearchTyped()
-    if active then DrawSaveStar() end
-end
-
-local function ItemLoaded(_, _, itemID)
-    if Buy.IsFavourite(itemID) then DrawFavourites() end
-end
-
-local function ShoppingChanged()
-    if active then DrawShopping() end
-end
-
-local function BuyClicked()
-    if Buy.Purchase(Buy.picked.commodity and Quantity() or 1) then Page.Draw() end
-end
-
-local function QuantityTyped(_, userInput)
-    if not userInput then return end
-    if Buy.purchase.state == "quoted" or Buy.purchase.state == "quoting" then Buy.Reset() end
-    Page.Draw()
-end
-
-local function SearchEntered(box)
-    Buy.Search(box:GetText() or "")
-    Page.Draw()
-end
-
-local function ResultsScrolled(scroll, offset)
-    if offset >= scroll:GetVerticalScrollRange() - MORE_ROWS * RESULT_ROW_H then Buy.More() end
-end
-
-local function BuildShopping()
-    shopPane = CreateFrame("Frame", nil, page)
-    shopPane:SetPoint("TOPLEFT")
-    shopPane:SetPoint("BOTTOMLEFT")
-    shopPane:SetWidth(SHOP_W)
-    Panel(shopPane)
-    shopHead = CreateFrame("Button", nil, shopPane)
-    shopHead:SetPoint("TOPLEFT")
-    shopHead:SetPoint("TOPRIGHT")
-    shopHead:SetHeight(SHOP_HEAD_H)
-    shopHead.hover = ns.Solid(shopHead, "BACKGROUND", T.fg, St.TAB_HOVER_FILL)
-    shopHead.hover:SetAllPoints()
-    shopHead.hover:Hide()
-    shopHead.rule = ns.Solid(shopHead, "ARTWORK", St.BORDER_RGB, 1)
-    shopHead.rule:SetPoint("BOTTOMLEFT")
-    shopHead.rule:SetPoint("BOTTOMRIGHT")
-    shopHead.rule:SetHeight(1)
-    shopHead.title = ns.Font(shopHead, TITLE_SIZE, nil, St.GOLD_RGB, true)
-    shopHead.title:SetPoint("LEFT", ROW_IN, 0)
-    shopHead.title:SetText(TEXT_SHOP)
-    shopHead.count = ns.Font(shopHead, SMALL_SIZE, nil, T.muted)
-    shopHead.count:SetPoint("RIGHT", -ROW_IN, 0)
-    shopHead:SetScript("OnClick", ShopToggled)
-    shopHead:SetScript("OnEnter", function(self) self.hover:Show() end)
-    shopHead:SetScript("OnLeave", function(self) self.hover:Hide() end)
-    ns.Tooltip(shopHead, TEXT_SHOP, TEXT_SHOP_SUB)
-    favPane = CreateFrame("Frame", nil, shopPane)
-    favPane:SetPoint("BOTTOMLEFT")
-    favPane:SetPoint("BOTTOMRIGHT")
-    favPane:SetHeight(FAV_H)
-    local rule = ns.Solid(favPane, "ARTWORK", St.BORDER_RGB, 1)
-    rule:SetPoint("TOPLEFT")
-    rule:SetPoint("TOPRIGHT")
-    rule:SetHeight(1)
-    local favTitle = ns.Font(favPane, TITLE_SIZE, nil, T.fg, true)
-    favTitle:SetPoint("TOPLEFT", ROW_IN, -ROW_IN)
-    favTitle:SetText(TEXT_FAVOURITES)
-    favScroll = ns.UI.SlimScroll(favPane)
-    favScroll:SetPoint("TOPLEFT", 0, -FAV_HEAD_H)
-    favScroll:SetPoint("BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
-    favList = CreateFrame("Frame", nil, favScroll)
-    favList:SetWidth(SHOP_W - St.SCROLLBAR - SCROLL_IN)
-    favList:SetHeight(1)
-    favScroll:SetScrollChild(favList)
-    favNote = ns.Font(favPane, SMALL_SIZE, nil, T.muted)
-    favNote:SetPoint("TOPLEFT", ROW_IN, -FAV_HEAD_H)
-    favNote:SetPoint("RIGHT", -ROW_IN, 0)
-    favNote:SetJustifyH("LEFT")
-    favNote:SetText(TEXT_FAV_EMPTY)
-    shopScroll = ns.UI.SlimScroll(shopPane)
-    shopScroll:SetPoint("TOPLEFT", 0, -SHOP_HEAD_H)
-    shopScroll:SetPoint("BOTTOMRIGHT", favPane, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
-    shopList = CreateFrame("Frame", nil, shopScroll)
-    shopList:SetWidth(SHOP_W - St.SCROLLBAR - SCROLL_IN)
-    shopList:SetHeight(1)
-    shopScroll:SetScrollChild(shopList)
-    shopNote = ns.Font(shopPane, SMALL_SIZE, nil, T.muted)
-    shopNote:SetPoint("TOPLEFT", ROW_IN, -(SHOP_HEAD_H + SUB_GAP * 2))
-    shopNote:SetPoint("RIGHT", -ROW_IN, 0)
-    shopNote:SetJustifyH("LEFT")
-end
-
-local function NewStar(parent, onClick, title, tip)
-    local button = CreateFrame("Button", nil, parent)
-    button:SetSize(STAR, STAR)
-    button.icon = button:CreateTexture(nil, "ARTWORK")
-    button.icon:SetAllPoints()
-    button.icon:SetTexture(St.STAR)
-    button:SetScript("OnClick", onClick)
-    ns.Tooltip(button, title, tip)
-    return button
-end
-
-local function BuildDetail()
-    detail = CreateFrame("Frame", nil, main)
-    detail:SetPoint("BOTTOMLEFT")
-    detail:SetPoint("BOTTOMRIGHT")
-    detail:SetHeight(DETAIL_H)
-    star = NewStar(detail, StarClicked, TEXT_STAR, TEXT_STAR_TIP)
-    star:SetPoint("TOPRIGHT")
-    nameText = ns.Font(detail, NAME_SIZE, nil, T.fg, true)
-    nameText:SetPoint("TOPLEFT")
-    nameText:SetPoint("RIGHT", star, "LEFT", -PANE_GAP, 0)
-    nameText:SetJustifyH("LEFT")
-    nameText:SetWordWrap(false)
-    ladder = Ladder.New(detail, TEXT_LADDER)
-    ladder:SetPoint("TOPLEFT", 0, -(NAME_H + SECTION_GAP))
-    ladder:SetPoint("RIGHT", -(CHART_W + PANE_GAP), 0)
-    chart = Chart.New(detail)
-    chart:SetSize(CHART_W, Ladder.HEIGHT)
-    chart:SetPoint("TOPRIGHT", 0, -(NAME_H + SECTION_GAP))
-    buyButton = ns.Button(detail, "", BUY_W, BUTTON_H, BuyClicked)
-    ns.PrimaryButton(buyButton)
-    buyButton:SetPoint("BOTTOMRIGHT")
-    quantity = ns.NewEditBox(detail)
-    quantity:SetSize(QTY_W, BUTTON_H)
-    quantity:SetPoint("BOTTOMLEFT")
-    quantity:SetNumeric(true)
-    quantity:SetMaxLetters(QTY_LETTERS)
-    quantity:SetJustifyH("CENTER")
-    quantity:SetText(1)
-    quantity:SetScript("OnTextChanged", QuantityTyped)
-    quantity:SetScript("OnEnterPressed", quantity.ClearFocus)
-    quantity:SetScript("OnEscapePressed", quantity.ClearFocus)
-    statusText = ns.Font(detail, TEXT_SIZE, nil, T.muted)
-    statusText:SetPoint("LEFT", quantity, "RIGHT", PANE_GAP, 0)
-    statusText:SetPoint("RIGHT", buyButton, "LEFT", -PANE_GAP, 0)
-    statusText:SetJustifyH("LEFT")
-end
-
-local function BuildResults()
-    local head = CreateFrame("Frame", nil, main)
-    head:SetPoint("TOPLEFT", search, "BOTTOMLEFT", 0, -SECTION_GAP)
-    head:SetPoint("RIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
-    head:SetHeight(SMALL_SIZE)
-    sorter = Columns.New(head, Market.Settings, "sortBuy", "lowest", Page.Draw)
-    Columns.Add(sorter, { key = "item", text = TEXT_ITEM, left = ROW_IN + RESULT_ICON + ICON_GAP, up = true,
-        value = function(result) return ((KeyLook(result.itemKey)) or ""):lower() end })
-    Columns.Add(sorter, { key = "lowest", text = TEXT_LOWEST, right = ROW_IN + LISTED_W + GAP, width = LOWEST_W,
-        up = true, value = function(result) return result.minPrice end })
-    Columns.Add(sorter, { key = "listed", text = TEXT_LISTED_HEAD, right = ROW_IN, width = LISTED_W,
-        value = function(result) return result.totalQuantity end })
-    resultsScroll = ns.UI.SlimScroll(main)
-    resultsScroll:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -SUB_GAP)
-    resultsScroll:SetPoint("BOTTOMRIGHT", detail, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), SECTION_GAP)
-    resultsList = CreateFrame("Frame", nil, resultsScroll)
-    resultsList:SetHeight(1)
-    resultsScroll:SetScrollChild(resultsList)
-    resultsScroll:HookScript("OnSizeChanged", function(_, width) resultsList:SetWidth(width) end)
-    resultsScroll:HookScript("OnVerticalScroll", ResultsScrolled)
-    resultsNote = ns.Font(main, TEXT_SIZE, nil, T.muted)
-    resultsNote:SetPoint("TOP", resultsScroll, "TOP", 0, -SECTION_GAP)
+local function BuildHead()
+    head = CreateFrame("Frame", nil, page)
+    head:SetPoint("TOPLEFT")
+    head:SetPoint("TOPRIGHT")
+    head:SetHeight(HEAD_H)
+    head.icon = Parts.ItemIcon(head, HEAD_ICON)
+    head.icon:SetPoint("LEFT")
+    head.name = ns.Font(head, NAME_SIZE, nil, T.fg, true)
+    head.name:SetPoint("TOPLEFT", head.icon, "TOPRIGHT", NAME_GAP, 0)
+    head.name:SetPoint("RIGHT")
+    head.name:SetJustifyH("LEFT")
+    head.name:SetWordWrap(false)
+    head.sub = ns.Font(head, St.SMALL_SIZE, nil, T.muted)
+    head.sub:SetPoint("TOPLEFT", head.name, "BOTTOMLEFT", 0, -SUB_GAP)
+    watch = Finder.Watch(page, BUTTON_W, BUTTON_H, Page.Draw)
+    watch:SetPoint("TOPLEFT", head, "BOTTOMLEFT", 0, -GAP)
+    watch:SetPoint("RIGHT")
 end
 
 function Page.Build(parent)
     page = CreateFrame("Frame", nil, parent)
     page:SetAllPoints()
-    BuildShopping()
-    main = CreateFrame("Frame", nil, page)
-    main:SetPoint("TOPLEFT", SHOP_W + PANE_GAP, 0)
-    main:SetPoint("BOTTOMRIGHT")
-    search = Parts.SearchBox(main, TEXT_SEARCH, SearchTyped)
-    search:SetHeight(SEARCH_H)
-    search:SetPoint("TOPLEFT")
-    search:SetPoint("TOPRIGHT", -(STAR + GAP), 0)
-    search:HookScript("OnEnterPressed", SearchEntered)
-    saveStar = NewStar(main, SaveClicked, TEXT_SAVE, TEXT_SAVE_TIP)
-    saveStar:SetPoint("LEFT", search, "RIGHT", GAP, 0)
-    BuildDetail()
-    BuildResults()
-end
-
-function Page.PickItem(itemID, qty)
-    Buy.PickItem(itemID, qty)
-    quantity:SetText(qty)
-    Page.Draw()
+    BuildHead()
+    finder = Finder.New(page, St.DOCK_W - St.DOCK_PAD * 2, FromList, Page.Draw, true)
+    finder.frame:SetPoint("TOPLEFT", watch, "BOTTOMLEFT", 0, -GAP)
+    finder.frame:SetPoint("BOTTOMRIGHT")
 end
 
 function Page.Show()
     page:Show()
-    resultsList:SetWidth(resultsScroll:GetWidth())
-    if not active then
-        active = true
-        Buy.onChange = Page.Draw
-        Buy.Open()
-        Listings.Start()
-        Listings.onChange = Page.Draw
-        if not itemEvents then
-            itemEvents = CreateFrame("Frame")
-            itemEvents:SetScript("OnEvent", ItemLoaded)
-        end
-        itemEvents:RegisterEvent("GET_ITEM_INFO_RECEIVED")
-        if not watching then watching = Buy.WatchShopping(ShoppingChanged) end
-        DrawFavourites()
-    end
     Page.Draw()
+end
+
+function Page.Refresh()
+    Page.Draw()
+end
+
+function Page.ShowList()
+    if not finder then return end
+    Finder.Reset(finder)
 end
 
 function Page.Hide()
     page:Hide()
-    if not active then return end
-    active = false
-    itemEvents:UnregisterAllEvents()
-    Buy.Close()
-    Listings.Stop()
 end

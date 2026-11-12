@@ -68,6 +68,11 @@ local function KeptRows()
         KeptRow("mana", "NF Mana", "Your best mana potion."),
         KeptRow("food", "NF Food", "Your best food and drink, conjured first."),
         KeptRow("drink", "NF Drink", "Your best drink alone, conjured first."),
+        { label = "Conjured First", toggle = true, needs = On, why = MACROS_OFF,
+          help = "NF Food and NF Drink use a mage's conjured food and drink before what you bought or cooked. "
+              .. "Off, they wait until the rest is gone.",
+          get = function() return ns.QoLSettings.Get("foodBarConjuredFirst") end,
+          set = function(v) ns.QoLSettings.Set("foodBarConjuredFirst", v) end },
         KeptRow("bandage", "NF Bandage", "Your best bandage, on yourself."),
         KeptRow("trinket1", "NF Trinket 1", "Uses your top trinket."),
         KeptRow("trinket2", "NF Trinket 2", "Uses your bottom trinket."),

@@ -15,7 +15,7 @@ local function check(label, value) assert(value, label); checks = checks + 1 end
 local function Width(text, size) return #text * size * 0.5 end
 
 local function Fixture(saved)
-    local state = { frames = {}, named = {}, movers = {} }
+    local state = { frames = {}, named = {}, movers = {}, legacyConfigReads = 0, legacyCurrencyReads = 0 }
     local NOTHING = function() end
     local Frame
     local METHODS = {
@@ -67,7 +67,7 @@ local function Fixture(saved)
         accent = { r = 0, g = 0.5, b = 0.9 }, accentSoft = { r = 0.3, g = 0.7, b = 0.9 },
         line = { r = 0.2, g = 0.2, b = 0.2 }, panel = { r = 0.1, g = 0.1, b = 0.1 },
         bg = { r = 0.05, g = 0.05, b = 0.05 }, grey = { r = 0.2, g = 0.2, b = 0.2 } }
-    local values, defaults = saved or {}, {}
+    local values, defaults, listeners = saved or {}, {}, {}
     local S = {
         DB = function() return values end,
         Get = function(k)
@@ -78,7 +78,11 @@ local function Fixture(saved)
         Raw = function(k) return values[k] end,
         Default = function(k) return defaults[k] end,
     }
-    function S.Set(k, v) values[k] = v end
+    function S.Set(k, v)
+        values[k] = v
+        for _, fn in ipairs(listeners) do fn(k, v) end
+    end
+    function S.OnChange(fn) listeners[#listeners + 1] = fn end
     local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
         QoLConstants = dofile("Tools/regression/qol_constants.lua"),
         THEME = T,
@@ -138,7 +142,7 @@ local function Fixture(saved)
         wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
         RAID_CLASS_COLORS = { WARRIOR = { r = 0.78, g = 0.61, b = 0.43 } },
         UnitClass = function() return "Warrior", "WARRIOR" end,
-        UnitAffectingCombat = function() return false end,
+        UnitAffectingCombat = function() return state.inCombat == true end,
         UnitIsDeadOrGhost = function() return false end,
         UnitOnTaxi = function() return false end,
         IsMounted = function() return false end,
@@ -151,6 +155,25 @@ local function Fixture(saved)
         GetInventoryItemDurability = function() return nil end,
         C_Timer = { After = NOTHING, NewTicker = function() return { Cancel = NOTHING } end },
         C_ClassTalents = { HasUnspentTalentPoints = function() return false end },
+        Constants = { LegacyConsts = { LEGACY_TREE_PROFESSIONS_ID = 1187,
+            LEGACY_POINTS_TRAIT_CURRENCY_ID = 4225, LEGACY_REWARD_TRACK_FACTION_ID = 2802 } },
+        C_MajorFactions = { GetCurrentRenownLevel = function(faction)
+            assert(faction == 2802)
+            return state.legacyRenown or 1
+        end },
+        C_Traits = {
+            GetConfigIDByTreeID = function(tree)
+                assert(tree == 1187, "read the shared balance from one Legacy tree")
+                state.legacyConfigReads = state.legacyConfigReads + 1
+                return state.legacyConfig
+            end,
+            GetTreeCurrencyInfo = function(config, tree, excludeStaged)
+                assert(config == state.legacyConfig and tree == 1187 and excludeStaged == false,
+                    "the Legacy balance includes staged spending")
+                state.legacyCurrencyReads = state.legacyCurrencyReads + 1
+                return state.legacyCurrencies
+            end,
+        },
         C_CurveUtil = { CreateCurve = function()
             return setmetatable({}, { __index = function() return NOTHING end })
         end },
@@ -175,6 +198,7 @@ local function Fixture(saved)
     for _, path in ipairs({ "Core/Features.lua", "Core/Settings.lua", "Core/AlertStack.lua",
         "NaowhForever_QoL/Combat/CombatAlert.lua", "NaowhForever_QoL/Combat/CombatTimer.lua",
         "NaowhForever_QoL/Combat/StealthReminder.lua", "NaowhForever_QoL/Questing/TalentPoints.lua",
+        "NaowhForever_QoL/Questing/LegacyPoints.lua",
         "NaowhForever_QoL/Loot/LootCard.lua", "NaowhForever_QoL/Loot/Durability.lua", "NaowhForever_QoL/Loot/Restock.lua",
         "NaowhForever_QoL/Combat/PetTracker.lua", "NaowhForever_QoL/Travel/FlightPoint.lua" }) do
         files[#files + 1] = path
@@ -198,7 +222,7 @@ local function Fixture(saved)
     return state
 end
 
-local ON = { combatAlert = true, combatTimer = true, stealthReminder = true, talentPoints = true,
+local ON = { combatAlert = true, combatTimer = true, stealthReminder = true, talentPoints = true, legacyPoints = true,
     durability = true, restock = true, petTracker = true, flightPoint = true }
 
 local function Shown(saved)
@@ -221,6 +245,8 @@ local ELEMENTS = {
       "QoL/Combat", "stealthReminder" },
     { "Talent Points", "talentPoints", function(s) return s.named.NaowhForeverTalentPoints end, 22, 300, 10,
       "QoL/XP", "talentPoints" },
+    { "Unspent Legacy Points", "legacyPoints", function(s) return s.named.NaowhForeverLegacyPoints end, 22, 300, 10,
+      "QoL/XP", "legacyPoints" },
     { "Durability", "durability", function(s) return s.named.NaowhForeverDurability end, 22, 300, 10,
       "QoL/Combat", "durability" },
     { "Pet Tracker", "pet", function(s) return s.named.NaowhForeverPetTracker end, 20, 220, 16,
@@ -370,7 +396,96 @@ do
         listed[#listed + 1] = choice.page == page and s.ns.Shared.Settings.pages[page].cards[id] ~= nil and choice.name
     end
     check("its Settings lists each loaded alert, each opening a card that exists",
-        table.concat(listed, ",") == "Talent Points,Durability,Restock Reminder,Pet Tracker,Flight Point Reminder")
+        table.concat(listed, ",") == "Talent Points,Unspent Legacy Points,Durability,Restock Reminder,Pet Tracker,Flight Point Reminder")
+end
+
+do
+    local s = Fixture()
+    s.ns.Apply()
+    s.fire("PLAYER_LOGIN")
+    check("Legacy Points: off by default without a frame or trait reads", s.S.Default("legacyPoints") == false
+        and s.named.NaowhForeverLegacyPoints == nil and s.legacyConfigReads == 0)
+    local listening = false
+    for _, f in ipairs(s.frames) do listening = listening or f.events.TRAIT_CONFIG_CREATED end
+    check("Legacy Points: no trait events registered while off", not listening)
+    s.S.Set("legacyPoints", true)
+    local alert = s.named.NaowhForeverLegacyPoints
+    check("Legacy Points: enabling before Legacy is unlocked stays hidden", alert and not alert:IsShown()
+        and s.legacyCurrencyReads == 0)
+    s.legacyConfig = 101
+    s.legacyCurrencies = { { traitCurrencyID = 1, quantity = 99 }, { traitCurrencyID = 4225, quantity = 3 } }
+    s.legacyRenown = 0
+    local lockedReads = s.legacyConfigReads
+    s.fire("TRAIT_CONFIG_LIST_UPDATED")
+    check("Legacy Points: a config alone does not bypass the Legacy unlock", not alert:IsShown()
+        and s.legacyConfigReads == lockedReads)
+    s.legacyRenown = 1
+    s.fire("MAJOR_FACTION_RENOWN_LEVEL_CHANGED")
+    check("Legacy Points: unlocking Legacy refreshes it", alert:IsShown()
+        and alert.text.text == "3 Unspent Legacy Points")
+    local reads = s.legacyCurrencyReads
+    s.fire("TRAIT_CONFIG_CREATED")
+    check("Legacy Points: config creation shows the shared balance once", alert:IsShown()
+        and alert.text.text == "3 Unspent Legacy Points" and s.legacyCurrencyReads == reads + 1)
+    s.legacyCurrencies[2].quantity = 1
+    s.fire("TRAIT_TREE_CURRENCY_INFO_UPDATED")
+    check("Legacy Points: a point spent updates the singular text", alert.text.text == "1 Unspent Legacy Point")
+    s.legacyCurrencies[2].quantity = 0
+    s.fire("TRAIT_CONFIG_UPDATED")
+    check("Legacy Points: spending the last point hides it", not alert:IsShown())
+    s.legacyCurrencies[2].quantity = 4
+    s.fire("CURRENCY_DISPLAY_UPDATE")
+    check("Legacy Points: earning or refunding points shows it again", alert.text.text == "4 Unspent Legacy Points"
+        and alert:IsShown())
+    s.inCombat = true
+    reads = s.legacyConfigReads
+    s.fire("PLAYER_REGEN_DISABLED")
+    s.fire("TRAIT_TREE_CURRENCY_INFO_UPDATED")
+    check("Legacy Points: combat hides it and stops trait reads", not alert:IsShown()
+        and s.legacyConfigReads == reads)
+    s.legacyCurrencies[2].quantity = 2
+    s.inCombat = false
+    s.fire("PLAYER_REGEN_ENABLED")
+    check("Legacy Points: leaving combat refreshes the balance", alert:IsShown()
+        and alert.text.text == "2 Unspent Legacy Points")
+    s.S.Set("legacyPointsTheme", true)
+    check("Legacy Points: its theme setting applies independently", alert.text.r == s.T.accent.r
+        and alert.text.g == s.T.accent.g and s.S.Get("talentPointsTheme") == false)
+    s.legacyCurrencies = nil
+    s.fire("TRAIT_CONFIG_UPDATED")
+    check("Legacy Points: temporarily unavailable currency data stays hidden", not alert:IsShown())
+    s.legacyCurrencies = { { traitCurrencyID = 1, quantity = 99 } }
+    s.fire("TRAIT_CONFIG_UPDATED")
+    check("Legacy Points: other trait currencies are ignored", not alert:IsShown())
+    s.ns.ShowUnlockMode()
+    check("Legacy Points: HUD Editor previews it without an available balance", alert:IsShown()
+        and alert.text.text == "2 Unspent Legacy Points")
+    s.ns.HideUnlockMode()
+    check("Legacy Points: leaving HUD Editor restores the real state", not alert:IsShown())
+    s.S.Set("legacyPoints", false)
+    reads = s.legacyConfigReads
+    s.fire("TRAIT_CONFIG_CREATED")
+    s.fire("CURRENCY_DISPLAY_UPDATE")
+    check("Legacy Points: disabling unregisters its events and stops reads", not alert:IsShown()
+        and s.legacyConfigReads == reads)
+    for _, f in ipairs(s.frames) do
+        check("Legacy Points: no polling is installed", f.scripts.OnUpdate == nil)
+    end
+    s.S.Set("legacyPoints", true)
+    s.S.Set("enabled", false)
+    reads = s.legacyConfigReads
+    s.fire("PLAYER_ENTERING_WORLD")
+    check("Legacy Points: disabling QoL also stops reads", not alert:IsShown() and s.legacyConfigReads == reads)
+end
+
+do
+    local s = Fixture({ legacyPoints = true })
+    s.legacyConfig = 101
+    s.legacyCurrencies = { { traitCurrencyID = 4225, quantity = 5 } }
+    s.ns.Apply()
+    check("Legacy Points: a saved enabled setting works on login or reload", s.named.NaowhForeverLegacyPoints:IsShown()
+        and s.named.NaowhForeverLegacyPoints.text.text == "5 Unspent Legacy Points")
+    check("Legacy Points: its toggle does not require the normal talent reminder", s.S.Get("talentPoints") == false)
 end
 
 print(checks .. " text alert look checks passed")

@@ -43,6 +43,7 @@ local ns = {
     Shared = { Parts = { HudFont = Noop } },
     UI = { TexturePath = function() return "" end },
     Solid = function() return Frame() end, Border = Noop, Font = function() return Frame() end, Apply = Noop,
+    Hairline = function(tex) return tex end,
     Professions = {
         Settings = { Get = function(k) return settings[k] end, Set = Noop },
         Style = { BORDER_RGB = color },

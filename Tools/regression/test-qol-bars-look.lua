@@ -50,6 +50,7 @@ local function Load(path, ns, globals)
     ns.Font = function(parent) return Widget("FontString", parent) end
     ns.Solid = function(parent) return Widget("Texture", parent) end
     ns.Border, ns.PixelInset = Noop, Noop
+    ns.Hairline = function(tex, axis) tex.hairline = axis; return tex end
     ns.L, ns.Upper, ns.Lower = ns.L or dofile("Tools/regression/locale_stub.lua").L, string.upper, string.lower
     ns.Apply, ns.ShowUnlockMode, ns.HideUnlockMode = Noop, Noop, Noop
     ns.QoLConstants = dofile("Tools/regression/qol_constants.lua")
@@ -126,6 +127,7 @@ do -- Total Craft Timer, drawn on its card's preview
         and preview.time.font == " 18 OUTLINE")
     check("craft timer default: the background at 90%", preview.bg.color[4] == 0.9)
     check("craft timer preview: a pip between each sample craft", #preview.pips == 9)
+    check("craft timer preview: each pip is one pixel wide", preview.pips[1].hairline == "v")
     S.Set("craftTimerTexture", "Smooth")
     S.Set("craftTimerFont", "Arial")
     S.Set("craftTimerFontSize", 12)

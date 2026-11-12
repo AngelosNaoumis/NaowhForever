@@ -10,6 +10,7 @@ local function check(label, value) assert(value, label); checks = checks + 1 end
 
 local HOGGER, BROKEN_TOOTH, RAGNAROS, RAZORMANE_MYSTIC, SPRINGVALE, BOAR = 448, 2850, 11502, 3271, 4278, 3098
 local VULDREN = 250868
+local CLATTERING_SCORPID = 3125
 local PIERCE_ARMOR, HEAD_BUTT, MEATHOOK, DAZED = 6016, 6730, 403233, 1604
 local CAMP_BENEFITS, BOOSTED_REST = 1229741, 1229451
 local ARMOR, SCHOOLS_IMMUNE, MECHANICS_IMMUNE, FIRE_SCHOOL, STUN_BIT, FEAR_BIT = 1, 2, 3, 4, 12, 5
@@ -83,14 +84,16 @@ check("a spell is listed once for each name: Frost Armor's ranks are one spell",
 end)())
 
 local tame = Unpack(ns.ScoutTameablePacked)
-check("the tameable beasts unpack under key 0", type(tame) == "table" and tame[1] == 0 and type(tame[2]) == "table")
-local tameable = {}
-for _, npc in ipairs(tame[2]) do tameable[npc] = true end
-check(("many beasts can be tamed (%d)"):format(#tame[2]), #tame[2] >= MIN_TAMEABLE)
-check("Broken Tooth can be tamed", tameable[BROKEN_TOOTH])
+check("the tameable beasts unpack to a creature ID and its attack time, pair by pair",
+    type(tame) == "table" and #tame % 2 == 0)
+local tameable, tamed = {}, 0
+for i = 1, #tame, 2 do tameable[tame[i]] = tame[i + 1]; tamed = tamed + 1 end
+check(("many beasts can be tamed (%d)"):format(tamed), tamed >= MIN_TAMEABLE)
+check("Broken Tooth can be tamed, and attacks every 1.00 sec", tameable[BROKEN_TOOTH] == 1000)
+check("a Clattering Scorpid every 2.00 sec", tameable[CLATTERING_SCORPID] == 2000)
 check("Hogger and Ragnaros cannot", not tameable[HOGGER] and not tameable[RAGNAROS])
 check("a boar can", tameable[BOAR])
-check("so can a beast Forever adds", tameable[VULDREN])
+check("so can a beast Forever adds, its attack time unknown", tameable[VULDREN] == 0)
 
 local numbers = Unpack(ns.ScoutStatsPacked)
 check("the stats unpack to a creature ID and its numbers, pair by pair", type(numbers) == "table" and #numbers % 2 == 0)

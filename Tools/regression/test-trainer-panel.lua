@@ -35,6 +35,7 @@ local values = { enabled = true, trainerPanel = true }
 local trainer = Stub()
 local COLOR = { r = 1, g = 1, b = 1 }
 local gamepad = false
+local asked
 
 local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.upper, Lower = string.lower,
     GamepadStandDown = function() return gamepad end,
@@ -57,6 +58,7 @@ local ns = { L = dofile("Tools/regression/locale_stub.lua").L, Upper = string.up
     Button = function(_, text, _, _, onClick) local b = Stub(); b.text, b.onClick = text, onClick; return b end,
     AccentBorder = function(button) return button end,
     SetButtonText = function(button, text) button.text = text end,
+    Confirm = function(text, onYes) asked = { text = text, yes = onYes } end,
     Apply = NOTHING,
 }
 
@@ -122,7 +124,10 @@ end
 local function Learn()
     for i = #bought, 1, -1 do bought[i] = nil end
     local learn = assert(LearnButton(), "the Learn Selected button")
+    asked = nil
     learn.onClick()
+    assert(asked and #bought == 0, "Learn Selected asks before it buys anything")
+    asked.yes()
     table.sort(bought)
     return table.concat(bought, ", ")
 end
@@ -133,6 +138,7 @@ check("a row per spell to train", #rows == 3)
 check("the spell skipped in the planner starts unticked, the rest ticked",
     rows[1].tick.shown and not rows[2].tick.shown and rows[3].tick.shown)
 check("Learn Selected leaves the skipped spell out", Learn() == "Arcane Intellect, Fireball")
+check("and asks for the count and cost it buys", asked.text == "Learn 2 spells for 200?")
 
 rows[2].scripts.OnClick(rows[2])
 check("ticked by hand: ticked", rows[2].tick.shown)

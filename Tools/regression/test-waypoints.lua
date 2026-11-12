@@ -599,10 +599,13 @@ mapOpen, tracked = true, {}
 events.scripts.OnEvent(events, "USER_WAYPOINT_UPDATED")
 Check(#tracked == 0 and mapHide ~= nil, "placed with the map open: nothing yet")
 mapOpen = false
+trackTimers = #timers
 mapHide()
-Check(tracked[1] == true and #tracked == 1, "tracked as the map closes")
+Check(#tracked == 0 and #timers == trackTimers + 1, "the map closing: not tracked inside the game's close")
+timers[#timers].fn()
+Check(tracked[1] == true and #tracked == 1, "tracked once the map has closed")
 mapHide()
-Check(#tracked == 1, "once")
+Check(#timers == trackTimers + 1 and #tracked == 1, "once")
 tracking, tracked = 1, {}
 events.scripts.OnEvent(events, "USER_WAYPOINT_UPDATED")
 timers[#timers].fn()

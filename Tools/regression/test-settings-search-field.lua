@@ -42,6 +42,8 @@ planner.tabs = pages
 function UI.SearchPages() return pages end
 ---@diagnostic disable-next-line: duplicate-set-field
 function UI.SearchOffPages() return {} end
+---@diagnostic disable-next-line: duplicate-set-field
+function UI.SearchOffCards() return {} end
 
 local list = UI.Search.Collect()
 local function Names(query)

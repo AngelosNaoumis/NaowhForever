@@ -1,4 +1,4 @@
--- ConsoleVariables.lua: the Console Variables window (ns.OpenConsoleVariables): every console variable with its value and default, to change, export and import.
+-- ConsoleVariables.lua: the Console Variables window (ns.OpenConsoleVariables): every console variable with its value and default, to change, export, import and pin to put back at login.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -10,6 +10,8 @@ local GetCVarInfo, SetCVar = C_CVar.GetCVarInfo, C_CVar.SetCVar
 
 local PAGE = "QoL/Interface"
 local SWITCH = "consoleVariables"
+local PIN_SWITCH = "pinnedCVars"
+local PINS = "pinnedCVars"
 local CARD_ORDER = 75
 local WIDTH, HEIGHT = 640, 600
 local HEADER, PAD, FOOTER, SCROLLBAR = St.WINDOW_HEADER, St.WINDOW_PAD, St.WINDOW_FOOTER, St.SCROLLBAR
@@ -21,11 +23,14 @@ local SCROLL_GAP = 4
 local VIEW_SPARE = 8
 local VIEW_W = WIDTH - INSET - SCROLLBAR - PAD - VIEW_SPARE
 local TABS_W = 160
+local PINNED_TABS_W = 240
 local HEAD_H = 20
 local ROW_H = 20
 local SUMMARY_H = 16
 local VALUE_W = 150
-local DEFAULT_RIGHT = ACTION + GAP
+local UNPINNED_ALPHA = 0.35
+local RESET_RIGHT = ACTION + GAP
+local DEFAULT_RIGHT = RESET_RIGHT * 2
 local VALUE_RIGHT = DEFAULT_RIGHT + VALUE_W + GAP
 local SHOWN_MAX = 150
 local LISTED_MAX = 8
@@ -50,12 +55,13 @@ local NOT_SHARED = {
     sound_voicechatoutputdrivername = true, sound_voicechatoutputdriverindex = true,
     sound_voicechatinputdrivername = true, sound_voicechatinputdriverindex = true,
 }
-local CHANGED, ALL = "changed", "all"
+local CHANGED, ALL, PINNED = "changed", "all", "pinned"
 local EVENTS = { "CVAR_UPDATE" }
 local TABS = {
     { key = CHANGED, label = "Changed", tip = "The ones you changed from their default." },
     { key = ALL, label = "All", tip = "Every one you can change." },
 }
+local PINNED_TABS = { TABS[1], TABS[2], { key = PINNED, label = "Pinned", tip = "The ones put back as you log in." } }
 
 local TEXT_TITLE = ns.L("Console Variables")
 local TEXT_SUBTITLE = ns.L("The game's settings by their console names. Click one to change it.")
@@ -87,6 +93,11 @@ local TEXT_CHANGED_SOME = ns.L("Changed %d of %d console variables; the game ref
 local TEXT_NOTHING_TO_EXPORT = ns.L("Nothing in the list to export.")
 local TEXT_TOO_MANY = ns.L("The list has %d; search until it has %d or fewer to export it.")
 local TEXT_EXPORT_TITLE = ns.L("Console Variables (%d)")
+local TEXT_PIN, TEXT_PIN_HINT = ns.L("Pin"), ns.L("Its value now is put back each time you log in.")
+local TEXT_UNPIN, TEXT_PINNED_AT = ns.L("Unpin"), ns.L("Pinned at %s.")
+local TEXT_NONE_PINNED = ns.L("Nothing is pinned: the pin beside one puts its value back each time you log in.")
+local TEXT_PUT_BACK_ONE = ns.L("Put back %d pinned console variable.")
+local TEXT_PUT_BACK = ns.L("Put back %d pinned console variables.")
 local TEXT_BLANK = "\"\""
 local TEXT_CUT = "..."
 
@@ -94,6 +105,22 @@ local window, view, tabs, summary
 local names, lowered, about, byLower
 local values, defaults = {}, {}
 local filter, shownTab = "", CHANGED
+local restored, combatWait
+
+local function PinsOn()
+    return S.Get(SWITCH) and S.Get(PIN_SWITCH)
+end
+
+local function Pins()
+    local account = ns.AccountSettings()
+    if type(account[PINS]) ~= "table" then account[PINS] = {} end
+    return account[PINS]
+end
+
+local function Pinned(name)
+    local pins = ns.AccountSettings()[PINS]
+    return pins and pins[name]
+end
 
 local function ByName(a, b)
     return lowered[a] < lowered[b]
@@ -139,6 +166,7 @@ local function Listed(name)
     local value, default = values[name], defaults[name]
     if value == nil or (filter ~= "" and not lowered[name]:find(filter, 1, true)) then return nil end
     if shownTab == CHANGED and Same(value, default) then return nil end
+    if shownTab == PINNED and not Pinned(name) then return nil end
     return value, default
 end
 
@@ -169,8 +197,10 @@ end
 
 local function Set(name, value)
     if InCombatLockdown() then return ns.Print(TEXT_COMBAT) end
-    if not SetCVar(name, value) then ns.Print(TEXT_REFUSED:format(name)) end
+    local taken = SetCVar(name, value)
+    if not taken then ns.Print(TEXT_REFUSED:format(name)) end
     Cache(name)
+    if taken and Pinned(name) and values[name] then Pins()[name] = values[name] end
     view:QueueRedraw()
 end
 
@@ -184,6 +214,26 @@ local function ResetClicked(button)
     local row = button:GetParent()
     local name, default = row.cvar, row.default
     ns.Confirm(TEXT_RESET_ASK:format(name, Shown(default)), function() Set(name, default) end)
+end
+
+local function PinClicked(button)
+    local name = button:GetParent().cvar
+    local pins = Pins()
+    if pins[name] then
+        pins[name] = nil
+    else
+        pins[name] = values[name]
+    end
+    GameTooltip:Hide()
+    view:QueueRedraw()
+end
+
+local function PaintPin(pin, name)
+    local pinned = Pinned(name)
+    pin:SetShown(PinsOn())
+    pin.icon:SetAlpha(pinned and 1 or UNPINNED_ALPHA)
+    pin.tip = pinned and TEXT_UNPIN or TEXT_PIN
+    pin.hint = pinned and TEXT_PINNED_AT:format(Shown(pinned)) or TEXT_PIN_HINT
 end
 
 local function RowEnter(row)
@@ -216,8 +266,11 @@ local function NewRow(parent)
     row.hover = ns.Solid(row, "BACKGROUND", T.fg, HOVER)
     row.hover:SetAllPoints()
     row.hover:Hide()
+    row.pin = Parts.IconButton(row, PinClicked, St.PIN, 0, TEXT_PIN)
+    row.pin:SetPoint("RIGHT")
+    row.pin:HookScript("OnLeave", PartLeave)
     row.reset = Parts.IconButton(row, ResetClicked, St.RESET, 0, TEXT_RESET)
-    row.reset:SetPoint("RIGHT")
+    row.reset:SetPoint("RIGHT", -RESET_RIGHT, 0)
     row.reset:HookScript("OnLeave", PartLeave)
     row.defaultText = Column(row, DEFAULT_RIGHT, T.muted)
     row.valueText = Column(row, VALUE_RIGHT, T.fg)
@@ -242,6 +295,7 @@ local function SetRow(row, name, value, default)
     local color = changed and T.accent or T.fg
     row.valueText:SetTextColor(color.r, color.g, color.b)
     row.reset:SetShown(changed)
+    PaintPin(row.pin, name)
     return ROW_H
 end
 
@@ -264,7 +318,10 @@ function Draw:Redraw()
             if matched <= SHOWN_MAX then self:Add("cvar", name, value, default) end
         end
     end
-    if matched == 0 then self:Note((filter == "" and shownTab == CHANGED) and TEXT_NONE_CHANGED or TEXT_NO_MATCH) end
+    if matched == 0 then
+        local empty = shownTab == PINNED and TEXT_NONE_PINNED or TEXT_NONE_CHANGED
+        self:Note((filter == "" and shownTab ~= ALL) and empty or TEXT_NO_MATCH)
+    end
     if matched > SHOWN_MAX then
         summary:SetText(TEXT_FIRST_OF:format(SHOWN_MAX, matched))
     else
@@ -313,8 +370,10 @@ local function Apply(cvars, changes)
     if InCombatLockdown() then return ns.Print(TEXT_COMBAT) end
     local refused = {}
     for _, name in ipairs(changes) do
-        if not SetCVar(name, cvars[name]) then refused[#refused + 1] = name end
+        local taken = SetCVar(name, cvars[name])
+        if not taken then refused[#refused + 1] = name end
         Cache(name)
+        if taken and Pinned(name) and values[name] then Pins()[name] = values[name] end
     end
     local done = #changes - #refused
     if #refused == 0 then
@@ -363,8 +422,20 @@ local function OnSearch(text)
     if view then view:Redraw() end
 end
 
+local function ShowTabs()
+    local on = PinsOn()
+    if not on and shownTab == PINNED then shownTab = CHANGED end
+    tabs:SetWidth(on and PINNED_TABS_W or TABS_W)
+    Parts.SetTabs(tabs, on and PINNED_TABS or TABS)
+    Parts.PaintTabs(tabs, shownTab)
+end
+
 local function OnSettingChanged(key)
     if key == SWITCH and not S.Get(SWITCH) then window:Hide() end
+    if key == PIN_SWITCH and window:IsShown() then
+        ShowTabs()
+        view:Redraw()
+    end
 end
 
 local function HeadLabel(head, text)
@@ -413,9 +484,8 @@ local function Build()
     local top = HEADER + PAD + SEARCH_DROP
     tabs = Parts.Tabs(window, TABS_W, TABS, OnTab)
     tabs:SetPoint("TOPLEFT", INSET, -top)
-    Parts.PaintTabs(tabs, shownTab)
     local search = Parts.SearchBox(window, TEXT_SEARCH, OnSearch)
-    search:SetPoint("TOPLEFT", INSET + TABS_W + GAP, -top)
+    search:SetPoint("TOPLEFT", tabs, "TOPRIGHT", GAP, 0)
     search:SetPoint("TOPRIGHT", -INSET, -top)
     search:SetHeight(SEARCH_H)
     top = top + TAB_H + PAD
@@ -429,9 +499,47 @@ function ns.OpenConsoleVariables()
     window:SetScale(ns.UIScale())
     window:Show()
     window.backdrop:Paint(1)
+    ShowTabs()
     CacheAll()
     view:Redraw()
 end
+
+local PutBack
+
+local function OnApply()
+    if not restored and PinsOn() then PutBack() end
+end
+
+local function OnCombatEnd(self)
+    self:UnregisterAllEvents()
+    OnApply()
+end
+
+function PutBack()
+    if InCombatLockdown() then
+        if not combatWait then
+            combatWait = CreateFrame("Frame")
+            combatWait:SetScript("OnEvent", OnCombatEnd)
+        end
+        combatWait:RegisterEvent("PLAYER_REGEN_ENABLED")
+        return
+    end
+    restored = true
+    local done = 0
+    for name, value in pairs(Pins()) do
+        local current = Usable(name)
+        if current ~= nil and not Same(current, value) then
+            if SetCVar(name, value) then
+                done = done + 1
+            else
+                ns.Print(TEXT_REFUSED:format(name))
+            end
+        end
+    end
+    if done > 0 then ns.Print((done == 1 and TEXT_PUT_BACK_ONE or TEXT_PUT_BACK):format(done)) end
+end
+
+hooksecurefunc(ns, "Apply", OnApply)
 
 ns.Shared.Settings.Page(PAGE, S):Card({
     id = "consoleVariables", name = "Console Variables", order = CARD_ORDER, switch = SWITCH,
@@ -441,5 +549,8 @@ ns.Shared.Settings.Page(PAGE, S):Card({
           buttonText = "Open",
           help = "Search them and see each one's value beside its default.",
           search = "cvar cvars console" },
+        { key = PIN_SWITCH, label = "Pinned Console Variables", toggle = true,
+          help = "Puts the ones you pin in the window back each time you log in.",
+          search = "pin pinned keep restore cvar sensitivity" },
     },
 })

@@ -103,6 +103,11 @@ function Farm.Skill(kind)
     return G and G.Target and G.Target.Skill(kind) or 0
 end
 
+local function Planned(kind)
+    if S.Get("farmPlan") then return math.huge end
+    return Farm.Skill(kind)
+end
+
 function Farm.NodeValue(objectID)
     local G = ns.Glimmer
     local node = G and G.NODES[objectID]
@@ -259,7 +264,7 @@ local function Key()
     local at = ns.AuctionScanTime and ns.AuctionScanTime() or 0
     return table.concat({ at, Farm.Skill("herb"), Farm.Skill("ore"), Farm.Skill("skin"), Farm.Skill("fish"),
         tostring(S.Get("farmHerbs")), tostring(S.Get("farmVeins")), tostring(S.Get("farmSkins")),
-        tostring(S.Get("farmFish")) }, ":")
+        tostring(S.Get("farmFish")), tostring(S.Get("farmPlan")) }, ":")
 end
 
 function Farm.Zones()
@@ -270,8 +275,8 @@ function Farm.Zones()
     if key == cachedZones then return zones end
     cachedZones = key
     for i = #zones, 1, -1 do zonePool[#zonePool + 1] = table.remove(zones, i) end
-    local skill = { herb = Farm.Skill("herb"), ore = Farm.Skill("ore"), skin = Farm.Skill("skin"),
-        fish = Farm.Skill("fish") }
+    local skill = { herb = Planned("herb"), ore = Planned("ore"), skin = Planned("skin"),
+        fish = Planned("fish") }
     local camps = Camps() or EMPTY
     for mapID, all in pairs(byMap) do ReadZone(G, mapID, all, camps[mapID] or EMPTY, skill) end
     for mapID, list in pairs(camps) do
@@ -316,7 +321,7 @@ local function Tour(mapID, width, height)
     wipe(loop)
     local left = {}
     for _, spot in ipairs(spots) do
-        if spot.can and spot.wanted then left[#left + 1] = spot end
+        if spot.reach and spot.wanted then left[#left + 1] = spot end
     end
     if #left == 0 then return 0 end
     if #left > C.LOOP_STOPS then
@@ -358,6 +363,7 @@ local function GatherZone(mapID)
     local picked, scale = Gathered(G, mapID), G.C.SPOT_SCALE
     local now = time()
     local skill = { herb = Farm.Skill("herb"), ore = Farm.Skill("ore"), skin = Farm.Skill("skin") }
+    local plan = S.Get("farmPlan")
     local most = 0
     for i = 1, #all, 3 do
         local id = all[i]
@@ -371,6 +377,7 @@ local function GatherZone(mapID)
             spot.value = Value(id, kind, spot.item)
             spot.gain, spot.work, spot.count = spot.value * C.OCCUPANCY, C.OCCUPANCY * C.GATHER_SECONDS, nil
             spot.can, spot.wanted = skill[kind] >= node[NEED], Wanted(kind)
+            spot.reach = plan or spot.can
             local last = picked[id .. ":" .. all[i + 1] .. ":" .. all[i + 2]]
             spot.picked = last and now - last < C.PICKED_FADE and last or nil
             most = math.max(most, spot.value)
@@ -388,6 +395,7 @@ local function GatherZone(mapID)
             spot.item, spot.value, spot.count = item, each * count, count
             spot.gain, spot.work = spot.value, count * C.SKIN_SECONDS
             spot.can, spot.wanted, spot.picked = skill.skin >= spot.need, Wanted("skin"), nil
+            spot.reach = plan or spot.can
             most = math.max(most, spot.value)
             spots[#spots + 1] = spot
         end
@@ -401,7 +409,8 @@ local function FishZone(mapID)
     local skill = Farm.Skill("fish")
     local worth, items = Catch(mapID)
     Farm.catchItem, Farm.catchWorth, Farm.catchNeed = items[1] and items[1].item, worth, low
-    local value = worth * CatchRate(skill, low, high) * C.CATCHES_PER_HOUR * C.POOL_SECONDS / SECONDS_PER_HOUR
+    local value = worth * CatchRate(Planned("fish"), low, high) * C.CATCHES_PER_HOUR * C.POOL_SECONDS
+        / SECONDS_PER_HOUR
     local now = time()
     for _, pool in ipairs(Runs.Pools(mapID)) do
         local spot = table.remove(spotPool) or {}
@@ -409,6 +418,7 @@ local function FishZone(mapID)
         spot.item, spot.value, spot.count = Farm.catchItem, value, nil
         spot.gain, spot.work = value, C.POOL_SECONDS
         spot.can, spot.wanted = skill >= low, Wanted("fish")
+        spot.reach = S.Get("farmPlan") or spot.can
         spot.picked = now - pool.last < C.PICKED_FADE and pool.last or nil
         spots[#spots + 1] = spot
     end

@@ -1,5 +1,5 @@
--- Run with Lua 5.1 from the repository root: The Market's tab bar: Buy, Sell and My Auctions dim away from an
--- auctioneer, and Sell and My Auctions show their counts.
+-- Run with Lua 5.1 from the repository root: The Market's tab bars: one per window, each painting its picked page,
+-- with Buy's, Sell's and My Auctions' counts.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -7,31 +7,27 @@ local function Button(key)
     local b = { key = key }
     b.count = { SetTextColor = function(_, ...) b.color = { ... } end, SetPoint = function() end,
         SetText = function(_, t) b.counted = t end }
-    function b:SetAlpha(a) self.alpha = a end
     return b
 end
 
-local pages = {
-    { key = "buy", auction = true }, { key = "sell", auction = true }, { key = "mine", auction = true },
-    { key = "farm" }, { key = "reagents" },
-}
-local left, undercut = 3, 0
-local painted
+local left, undercut, under = 3, 0, 0
+local painted = {}
 local WARN = { r = 1, g = 0.5, b = 0 }
+local HAVE = { r = 0, g = 1, b = 0 }
 local ns = {
     THEME = { muted = { r = 1, g = 1, b = 1 } },
-    Font = function() return nil end,
     Shared = { Parts = {
-        Tabs = function(_, _, items)
-            local bar = { buttons = {} }
+        Tabs = function(_, width, items)
+            local bar = { buttons = {}, width = width }
             for i, item in ipairs(items) do bar.buttons[i] = Button(item.key) end
             return bar
         end,
-        PaintTabs = function(_, key) painted = key end,
+        PaintTabs = function(bar, key) painted[bar] = key end,
     } },
 }
 ns.Market = {
-    Style = { WARN_RGB = WARN },
+    Style = { WARN_RGB = WARN, HAVE_RGB = HAVE },
+    Watch = { UnderCount = function() return under end },
     Sell = { Left = function() return left end },
     Auctions = { Counts = function() return undercut end, list = { 1, 2, 3, 4, 5 } },
 }
@@ -41,27 +37,32 @@ setfenv(fn, setmetatable({ _G = { NaowhForever = ns } }, { __index = _G }))
 ns.Font = function(button) return button.count end
 fn()
 
-local bar = ns.Market.Tabs.Build({}, pages, function() end)
+local Tabs = ns.Market.Tabs
+local dock = Tabs.Build({}, 360, { { key = "buy" }, { key = "sell" }, { key = "mine" } }, function() end)
+local window = Tabs.Build({}, 450, { { key = "farm" }, { key = "reagents" }, { key = "prices" } }, function() end)
 local by = {}
-for _, b in ipairs(bar.buttons) do by[b.key] = b end
-check("one button per page", #bar.buttons == 5)
-check("each page keeps its auction flag", by.buy.auction and by.sell.auction and by.mine.auction
-    and not by.farm.auction and not by.reagents.auction)
+for _, bar in ipairs({ dock, window }) do
+    for _, b in ipairs(bar.buttons) do by[b.key] = b end
+end
+check("each bar has a button per page, at its own width", #dock.buttons == 3 and #window.buttons == 3
+    and dock.width == 360 and window.width == 450)
 
-ns.Market.Tabs.Paint("buy", false)
-check("the picked page is painted", painted == "buy")
-check("auction tabs dim away from an auctioneer", by.buy.alpha < 1 and by.sell.alpha < 1 and by.mine.alpha < 1)
-check("Farm and Reagents stay lit", by.farm.alpha == 1 and by.reagents.alpha == 1)
-check("a dimmed tab shows no count", by.sell.counted == "" and by.mine.counted == "")
-
-ns.Market.Tabs.Paint("sell", true)
-check("auction tabs light at an auctioneer", by.buy.alpha == 1 and by.sell.alpha == 1)
+Tabs.Paint(dock, "sell")
+check("the picked page is painted on its own bar", painted[dock] == "sell" and painted[window] == nil)
 check("Sell shows what is left to post", by.sell.counted == 3)
 check("My Auctions shows its total", by.mine.counted == 5)
-check("Buy and Farm show no count", by.buy.counted == "" and by.farm.counted == "")
+check("Buy shows nothing while no watched item is at or under your price", by.buy.counted == "")
+under = 2
+Tabs.Paint(dock, "sell")
+check("Buy counts the watched items at or under your price, in green", by.buy.counted == 2 and by.buy.color[1] == HAVE.r)
+under = 0
+
+Tabs.Paint(window, "prices")
+check("Farm, Reagents and Prices show no count", by.farm.counted == "" and by.reagents.counted == ""
+    and by.prices.counted == "")
 
 left, undercut = 0, 2
-ns.Market.Tabs.Paint("mine", true)
+Tabs.Paint(dock, "mine")
 check("Sell shows nothing once posted", by.sell.counted == "")
 check("an undercut count shows in the warning colour", by.mine.counted == 2 and by.mine.color[1] == WARN.r)
 

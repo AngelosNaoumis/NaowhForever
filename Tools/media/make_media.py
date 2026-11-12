@@ -940,3 +940,34 @@ GLIMMER_TEXTURES = {
 os.makedirs(GLIMMER_OUT, exist_ok=True)
 for name, pixel in GLIMMER_TEXTURES.items():
     write_tga(os.path.join(GLIMMER_OUT, name + ".tga"), 128, pixel)
+
+
+QUEST_AREA_OUT = os.path.join(paths.ROOT, "NaowhForever_QoL", "Media", "QuestArea")
+QUEST_AREA_COLOURS = {
+    "blue": (70, 125, 255), "violet": (150, 90, 255), "green": (60, 220, 100),
+    "gold": (255, 200, 40), "red": (255, 65, 65),
+}
+QUEST_AREA_SIZE = 16
+# As in the game's UI-QuestBlob-Outside, the edge is strongest on the top row and fades down.
+QUEST_EDGE_FADE = 0.75
+QUEST_EDGE_FALLOFF = 1.6
+QUEST_EDGE_WHITE = 0.45
+
+
+def quest_fill(colour):
+    return lambda x, y, size: colour + (255,)
+
+
+def quest_edge(colour):
+    def pixel(x, y, size):
+        a = max(0.0, 1.0 - y / (QUEST_EDGE_FADE * size)) ** QUEST_EDGE_FALLOFF
+        white = QUEST_EDGE_WHITE * a
+        rgb = tuple(int(round(c + (255 - c) * white)) for c in colour)
+        return rgb + (int(round(255 * a)),)
+    return pixel
+
+
+os.makedirs(QUEST_AREA_OUT, exist_ok=True)
+for name, colour in QUEST_AREA_COLOURS.items():
+    write_tga(os.path.join(QUEST_AREA_OUT, name + "_fill.tga"), QUEST_AREA_SIZE, quest_fill(colour))
+    write_tga(os.path.join(QUEST_AREA_OUT, name + "_edge.tga"), QUEST_AREA_SIZE, quest_edge(colour))

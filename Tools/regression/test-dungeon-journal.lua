@@ -2045,6 +2045,12 @@ do
     check("on the Journal's page, Relic Guardian is the third", rawget(Card("Relic Guardian").number, "text") == 3)
     check("and Highland Horror tagged QUEST, with no number", rawget(Card("Highland Horror").rare, "text") == "QUEST"
         and rawget(Card("Highland Horror").badge, "shown") == false)
+    check("its level on its card", tostring(rawget(Card("Highland Horror").stats, "text")):find("Level", 1, true)
+        and tostring(rawget(Card("Highland Horror").stats, "text")):find("28", 1, true))
+    check("a boss with no known level shows none", J.BossInfo[260322] and J.BossInfo[260322][1] == nil
+        and rawget(Card("Saltspine").stats, "text") == "")
+    check("?? only for the game's skull level", J.View.Parts.BossLevel(J.BossInfo[10184]) == "??"
+        and J.View.Parts.BossLevel({ 24, 26, 1 }) == "24-26" and J.View.Parts.BossLevel({ nil, nil, 1 }) == nil)
     J.OpenDungeonMap(J.Get("Deadmines"))
     local vancleef = RowFor("Edwin VanCleef")
     vancleef.scripts.OnClick(vancleef)

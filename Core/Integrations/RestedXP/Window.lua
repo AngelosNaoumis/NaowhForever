@@ -10,7 +10,7 @@ local WINDOW_NAME = "NaowhRXPWindow"
 local STRATA = "MEDIUM"
 local PERCENT = 100
 local PAD, BOX_PAD, FOLD_W, PROGRESS_W = 10, 7, 16, 120
-local HEAD_PAD, LIST_PAD = 10, 6
+local HEAD_PAD, LIST_PAD, SUBTITLE_GAP = 10, 6, 2
 local BOX_TITLE_TEXT, BOX_TITLE_HEIGHT, BOX_TITLE_ROOM = 9, 19, 10
 local BAR_W, ICON_GAP, GRIP_SIZE = 2, 5, 16
 local FIRST_GROW, FIRST_ICON_GROW, LOGO_SIZE, BAR_HEIGHT, INDENT, ICON_SIZE = 2, 2, 24, 5, 12, 18
@@ -518,6 +518,8 @@ local function Build()
     end)
     f.title = Text(f, "rxpWindowTitleSize")
     f.title:SetWordWrap(false)
+    f.subtitle = Text(f, "rxpWindowTextSize")
+    f.subtitle:SetWordWrap(false)
     f.progress = Text(f, "rxpWindowTextSize", "RIGHT")
     f.rule = ns.Solid(f, "ARTWORK", T.fg, 1)
     ns.Hairline(f.rule, "h")
@@ -797,6 +799,15 @@ local function DrawHeader(model, folded, width, headH)
         window.progress:SetText("")
     end
     window.progress:SetTextColor(1, 1, 1, 1)
+    local subtitle = window.subtitle
+    subtitle:SetShown(model.subheading ~= nil)
+    if not model.subheading then return -PAD - headH end
+    subtitle:ClearAllPoints()
+    subtitle:SetPoint("TOPLEFT", window.title, "BOTTOMLEFT", 0, -SUBTITLE_GAP)
+    subtitle:SetWidth(width - PAD * 2 - FOLD_W - Spacing())
+    Coloured(subtitle, "muted")
+    subtitle:SetText(model.subheading)
+    return -PAD - headH - SUBTITLE_GAP - ns.RXPWindowOption("rxpWindowTextSize")
 end
 
 local function DrawLine(model, y)
@@ -926,8 +937,7 @@ function Draw()
     local listH = ns.RXPWindowOption("rxpWindowListSize") + LIST_PAD
     if not sizing then window:SetWidth(width) end
     DrawPanel()
-    DrawHeader(model, folded, width, headH)
-    local y = DrawLine(model, -PAD - headH)
+    local y = DrawLine(model, DrawHeader(model, folded, width, headH))
     window.track:Hide()
     window.thumb:Hide()
     window.wheel:Hide()

@@ -68,6 +68,8 @@ local pages = {
 function UI.SearchPages() return pages end
 ---@diagnostic disable-next-line: duplicate-set-field
 function UI.SearchOffPages() return {} end
+---@diagnostic disable-next-line: duplicate-set-field
+function UI.SearchOffCards() return {} end
 
 local list = UI.Search.Collect()
 Check(frames == 0, "collecting builds no frames")
@@ -101,8 +103,8 @@ Check(Names("ize") == "", "but not its middle")
 Check(Names("sound") == "Timer Sound|Alert Sound", "matches come in window order")
 Check(Names("ping") == "Timer Sound", "a setting's help counts")
 Check(Names("look") == "Bar Size|Timer Sound", "and its group")
-Check(Names("parry") == "Timer Sound|Parry Alert|Alert Sound|Alert Color",
-    "a card's name finds the card and the settings in it")
+Check(Names("parry") == "Parry Alert|Timer Sound|Alert Sound|Alert Color",
+    "a card's name finds the card, first since it is named by what was typed, and the settings in it")
 Check(Names("meter") == "[Bars]|[Other]", "a category's name finds its pages")
 Check(Names("bars ping") == "Timer Sound" and Names("meter naowh") == "Naowh's Tips",
     "a category or page name narrows the settings under it")

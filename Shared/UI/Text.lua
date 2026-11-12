@@ -44,18 +44,21 @@ end
 
 function Cells:SetText(text)
     text = tostring(text)
-    local n, widths = #text, self.widths
+    local n, widths, width = #text, self.widths, 0
     for i = 1, #self do
         local cell = self[i]
         if i <= n then
             local char = text:sub(n - i + 1, n - i + 1)
-            cell:SetWidth(widths[char] or widths.digit)
+            local w = widths[char] or widths.digit
+            cell:SetWidth(w)
+            width = width + w
             cell:SetText(char)
             cell:Show()
         else
             cell:Hide()
         end
     end
+    self.width = width
     return self[math.max(1, math.min(n, #self))]
 end
 

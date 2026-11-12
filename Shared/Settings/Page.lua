@@ -14,7 +14,7 @@ local TEXT_NO_MATCH = ns.L("Nothing on this page matches the search.")
 
 local Draw = {}
 local watched = {}
-local findLabel, findCard
+local findLabel, findCard, findRow
 local cog
 local CogDraw = {}
 
@@ -179,7 +179,19 @@ local function OpenCog(icon, setting)
 end
 
 local function IsSetting(row)
+    if findRow then return row.setting == findRow end
     return row.setting.label == findLabel and (not findCard or row.setting.card.uid == findCard)
+end
+
+local function RowIn(card, label, group)
+    local inGroup
+    for _, row in ipairs(Settings.Rows(card)) do
+        if row.kind == "group" then
+            inGroup = row.group
+        elseif row.label == label and inGroup == group then
+            return row
+        end
+    end
 end
 
 local function IsHead(head)
@@ -330,7 +342,7 @@ function Settings.Render(parent, pageKey, onResize, filter)
     return view:GetHeight() + ns.UI.CONTENT_PAD
 end
 
-function Settings.FindRow(parent, label, cardUid)
+function Settings.FindRow(parent, label, cardUid, group)
     local view = parent.settingsView
     if not view then return nil end
     local card = cardUid and label and Settings.CardOf(cardUid)
@@ -340,8 +352,9 @@ function Settings.FindRow(parent, label, cardUid)
         view:OpenCogOn(card, owner)
     end
     findLabel, findCard = label, cardUid
+    findRow = not owner and group and card and RowIn(card, label, group)
     local row = (label and view:Find("setting", IsSetting)) or view:Find("cardHead", IsHead)
-    findLabel, findCard = nil, nil
+    findLabel, findCard, findRow = nil, nil, nil
     if not row then return nil end
     return row, row.top + ns.UI.CONTENT_PAD / 2
 end

@@ -1,4 +1,4 @@
--- BossCards.lua: a boss card's header: its kill order, name, Naowh's tip, kill count and what its filters hide.
+-- BossCards.lua: a boss card's header: its kill order, name, Naowh's tip, level, kill count and what its filters hide.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -10,7 +10,7 @@ local St = J.Style
 local TIP_RGB, INFO, BORDER_RGB = St.TIP_RGB, St.INFO, St.BORDER_RGB
 local BADGE, CARD_HEADER_H, CARD_NAME_SIZE = St.BADGE, St.CARD_HEADER_H, St.CARD_NAME_SIZE
 local TIP_ICON, SMALL_SIZE, TINY_SIZE, TIP_X = St.TIP_ICON, St.SMALL_SIZE, St.TINY_SIZE, St.CURSOR_TIP_X
-local RULE_ALPHA, BADGE_ALPHA = St.RULE_ALPHA, St.BADGE_ALPHA
+local RULE_ALPHA, BADGE_ALPHA, PLACE_DOT = St.RULE_ALPHA, St.BADGE_ALPHA, St.PLACE_DOT
 
 local NAME_TOP = 11
 local BADGE_LIFT = 2
@@ -27,6 +27,7 @@ local NOTE_MIN = 40
 
 local TEXT_MENU_HINT = ns.L("Right-click: Wowhead Link")
 local TEXT_FILTERED = ns.L("+%d filtered")
+local TEXT_LEVEL = ns.L("Level ")
 local TEXT_FILTERED_LINE = ns.L("%d of its items hidden by your filters (top right).")
 local TEXT_SHOW_ALL = ns.L("Click to show all its loot again")
 local TEXT_SHOW_BEST = ns.L("Click to show only its BiS and upgrades")
@@ -124,6 +125,15 @@ local function NewRule(row)
     return rule
 end
 
+local function StatsText(boss, hidden)
+    local info = boss.npc and J.BossInfo[boss.npc]
+    local level = info and Parts.BossLevel(info)
+    local filtered = hidden > 0 and TEXT_FILTERED:format(hidden) or nil
+    if not level then return filtered and ns.Color("muted", filtered) or "" end
+    level = ns.Color("muted", TEXT_LEVEL) .. ns.Color("fg", level)
+    return filtered and ns.Color("muted", filtered .. PLACE_DOT) .. level or level
+end
+
 local function SetKills(row, boss, view)
     local kills = row.kills
     local showKills = view.showKills and not boss.trash and not boss.chest
@@ -199,7 +209,7 @@ Kinds.boss = {
         row.rare:SetText(tag or "")
         row.rare:SetShown(tag ~= nil)
         row.stats:SetWidth(0)
-        row.stats:SetText(row.hidden > 0 and ns.Color("muted", TEXT_FILTERED:format(row.hidden)) or "")
+        row.stats:SetText(StatsText(boss, row.hidden))
         local right = SetKills(row, boss, view)
         local tip = SetTipButton(row, boss, view, tag)
         local after = (tag and TAG_GAP + math.ceil(row.rare:GetStringWidth()) or 0) + (tip and TIP_ICON + TIP_ROOM or 0)

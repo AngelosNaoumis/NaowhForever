@@ -1,4 +1,4 @@
--- Auctions.lua: the My Auctions page: your auctions with the cheapest listing that is not yours, and cancelling the undercut ones.
+-- Auctions.lua: the dock's My Auctions page: your auctions against the cheapest listing that is not yours, undercut first, and cancelling them.
 local ns = _G.NaowhForever
 
 local GetItemInfo = C_Item.GetItemInfo
@@ -12,25 +12,16 @@ local Items = ns.Shared.Items
 local Auctions, Columns = Market.Auctions, Market.Columns
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
-local HEAD_H, TITLE_SIZE, SUB_GAP = 44, 16, 4
-local COLUMNS_H, ROW_H, ROW_ICON, ROW_IN, ICON_GAP = 24, 36, 24, 8, 8
-local COLUMN_GAP, CANCEL_W, TIME_W, STATUS_W, MONEY_W, QTY_W = 16, 70, 70, 150, 110, 40
-local ROW_BUTTON_H, PILL_SIZE = 22, 11
+local HEAD_H, SUB_GAP, HEAD_GAP = 46, 4, 6
+local COLUMNS_H, ROW_H, ROW_ICON, ROW_IN, ICON_GAP, LINE_IN = 22, 38, 24, 6, 6, 4
+local CANCEL_W, ROW_BUTTON_H, PILL_SIZE, PILL_GAP = 56, 20, 11, 6
 local UNDERCUT_SMALL = 0.03
 local PERCENT = 100
 local SECONDS_PER_HOUR, SECONDS_PER_MINUTE = 3600, 60
--- Time Left sorts a band-only auction at the band's longest.
-local BAND_SECONDS = { [0] = 1800, 7200, 43200, 172800 }
 local STATUS_ORDER = { undercut = 1, checking = 2, noanswer = 3, lowest = 4, sold = 5 }
-local NEXT_W, SCROLL_IN = 220, 4
-local TIME_RIGHT = ROW_IN + CANCEL_W + COLUMN_GAP
-local STATUS_LEFT = TIME_RIGHT + TIME_W + COLUMN_GAP + STATUS_W
-local LOWEST_RIGHT = STATUS_LEFT + COLUMN_GAP
-local PRICE_RIGHT = LOWEST_RIGHT + MONEY_W + COLUMN_GAP
-local QTY_RIGHT = PRICE_RIGHT + MONEY_W + COLUMN_GAP
-local NAME_RIGHT = QTY_RIGHT + QTY_W + COLUMN_GAP
+local SCROLL_IN = 4
 local NAME_LEFT = ROW_IN + ROW_ICON + ICON_GAP
-local TEXT_TITLE = ns.L("My Auctions")
+local STATUS_RIGHT = ROW_IN + CANCEL_W + PILL_GAP
 local TEXT_SUB = ns.L("%d auctions, %d undercut, %s listed")
 local TEXT_SOLD = ns.L(", %s sold in the last %d days")
 local TEXT_NONE = ns.L("You have no auctions up.")
@@ -38,8 +29,11 @@ local TEXT_NEXT = ns.L("Cancel Undercut (%d)")
 local TEXT_CANCEL = ns.L("Cancel")
 local TEXT_CANCEL_ASK = ns.L("Cancel %s? It costs %s, and the items come back by mail.")
 local TEXT_CANCEL_FREE = ns.L("Cancel %s? The items come back by mail.")
-local TEXT_ITEM, TEXT_QTY, TEXT_PRICE = ns.L("Item"), ns.L("Qty"), ns.L("Your Price")
-local TEXT_LOWEST, TEXT_STATUS, TEXT_TIME = ns.L("Lowest Now"), ns.L("Status"), ns.L("Time Left")
+local TEXT_ITEM, TEXT_STATUS = ns.L("Item"), ns.L("Status")
+local TEXT_LINE = ns.L("Yours %s, lowest %s")
+local TEXT_LINE_ONLY = ns.L("Yours %s")
+local TEXT_LINE_TIME = "%s, %s"
+local TEXT_COUNT = "%s x%d"
 local TEXT_HOURS, TEXT_MINUTES = "%dh %02dm", "%dm"
 local TEXT_BANDS = { [0] = ns.L("Under 30m"), ns.L("30m to 2h"), ns.L("2h to 12h"), ns.L("12h to 48h") }
 local STATUS_TEXT = {
@@ -83,8 +77,11 @@ local function StatusLook(auction)
     return STATUS_TEXT[status], T.muted
 end
 
-local function CancelNow(auctionID)
-    Auctions.Cancel(auctionID)
+local function PriceLine(auction)
+    if not auction.price then return TimeLeft(auction) end
+    local _, low = Auctions.Status(auction)
+    local prices = low and TEXT_LINE:format(Coins(auction.price), Coins(low)) or TEXT_LINE_ONLY:format(Coins(auction.price))
+    return TEXT_LINE_TIME:format(prices, TimeLeft(auction))
 end
 
 local function CancelClicked(row)
@@ -92,7 +89,7 @@ local function CancelClicked(row)
     if not auction then return end
     local id, name, cost = auction.auctionID, row.name:GetText(), Auctions.CancelCost(auction)
     local text = cost and cost > 0 and TEXT_CANCEL_ASK:format(name, Coins(cost)) or TEXT_CANCEL_FREE:format(name)
-    ns.Confirm(text, function() CancelNow(id) end)
+    ns.Confirm(text, function() Auctions.Cancel(id) end)
 end
 
 local function NextClicked()
@@ -113,15 +110,6 @@ local function RowLeave(row)
     GameTooltip:Hide()
 end
 
-local function Cell(parent, right, width, color)
-    local text = ns.Font(parent, TEXT_SIZE, nil, color or T.fg)
-    text:SetPoint("RIGHT", parent, "RIGHT", -right, 0)
-    text:SetWidth(width)
-    text:SetJustifyH("RIGHT")
-    text:SetWordWrap(false)
-    return text
-end
-
 local function NewRow()
     local row = CreateFrame("Frame", nil, list)
     row:SetHeight(ROW_H)
@@ -129,19 +117,20 @@ local function NewRow()
     Parts.RowBands(row, 0)
     row.icon = Parts.ItemIcon(row, ROW_ICON)
     row.icon:SetPoint("LEFT", ROW_IN, 0)
-    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
-    row.name:SetPoint("LEFT", NAME_LEFT, 0)
-    row.name:SetPoint("RIGHT", row, "RIGHT", -NAME_RIGHT, 0)
-    row.name:SetJustifyH("LEFT")
-    row.name:SetWordWrap(false)
-    row.qty = Cell(row, QTY_RIGHT, QTY_W)
-    row.price = Cell(row, PRICE_RIGHT, MONEY_W)
-    row.lowest = Cell(row, LOWEST_RIGHT, MONEY_W, T.muted)
-    row.status = Parts.Pill(row, PILL_SIZE, T.muted)
-    row.status:SetPoint("LEFT", row, "RIGHT", -STATUS_LEFT, 0)
-    row.time = Cell(row, TIME_RIGHT, TIME_W, T.muted)
     row.cancel = ns.Button(row, TEXT_CANCEL, CANCEL_W, ROW_BUTTON_H, function() CancelClicked(row) end)
     row.cancel:SetPoint("RIGHT", -ROW_IN, 0)
+    row.status = Parts.Pill(row, PILL_SIZE, T.muted)
+    row.status:SetPoint("TOPRIGHT", -STATUS_RIGHT, -LINE_IN)
+    row.name = ns.Font(row, TEXT_SIZE, nil, T.fg)
+    row.name:SetPoint("TOPLEFT", NAME_LEFT, -LINE_IN)
+    row.name:SetPoint("RIGHT", row.status, "LEFT", -PILL_GAP, 0)
+    row.name:SetJustifyH("LEFT")
+    row.name:SetWordWrap(false)
+    row.line = ns.Font(row, SMALL_SIZE, nil, T.muted)
+    row.line:SetPoint("BOTTOMLEFT", NAME_LEFT, LINE_IN)
+    row.line:SetPoint("RIGHT", row.cancel, "LEFT", -PILL_GAP, 0)
+    row.line:SetJustifyH("LEFT")
+    row.line:SetWordWrap(false)
     row:SetScript("OnEnter", RowEnter)
     row:SetScript("OnLeave", RowLeave)
     return row
@@ -153,15 +142,12 @@ local function PaintRow(row, auction, index)
     row.icon.texture:SetTexture(C_Item.GetItemIconByID(auction.itemID))
     local color = Items.QualityColor(auction.itemID) or T.fg
     row.name:SetTextColor(color.r, color.g, color.b)
-    row.name:SetText(auction.link and GetItemInfo(auction.link) or Items.Name(auction.itemID))
-    row.qty:SetText(auction.quantity)
-    row.price:SetText(auction.price and Coins(auction.price) or "")
-    local _, low = Auctions.Status(auction)
-    row.lowest:SetText(low and Coins(low) or "")
+    local name = auction.link and GetItemInfo(auction.link) or Items.Name(auction.itemID)
+    row.name:SetText(auction.quantity > 1 and TEXT_COUNT:format(name, auction.quantity) or name)
+    row.line:SetText(PriceLine(auction))
     local text, tint = StatusLook(auction)
     Parts.ColorPill(row.status, tint)
     Parts.SetPill(row.status, text)
-    row.time:SetText(TimeLeft(auction))
     row.cancel:SetShown(Auctions.CanCancel(auction))
 end
 
@@ -200,39 +186,28 @@ local function AuctionName(auction)
     return (auction.link and GetItemInfo(auction.link) or Items.Name(auction.itemID) or ""):lower()
 end
 
-local function Lowest(auction)
-    local _, low = Auctions.Status(auction)
-    return low or nil
-end
-
 local function BuildHeader()
     header = CreateFrame("Frame", nil, page)
     header:SetPoint("TOPLEFT")
     header:SetPoint("TOPRIGHT")
     header:SetHeight(HEAD_H)
-    local title = ns.Font(header, TITLE_SIZE, nil, T.fg, true)
-    title:SetPoint("TOPLEFT")
-    title:SetText(TEXT_TITLE)
-    header.sub = ns.Font(header, SMALL_SIZE, nil, T.muted)
-    header.sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -SUB_GAP)
-    nextButton = ns.Button(header, "", NEXT_W, BUTTON_H, NextClicked)
+    nextButton = ns.Button(header, "", 1, BUTTON_H, NextClicked)
     ns.PrimaryButton(nextButton)
-    nextButton:SetPoint("RIGHT")
+    nextButton:SetPoint("TOPLEFT")
+    nextButton:SetPoint("TOPRIGHT")
+    header.sub = ns.Font(header, SMALL_SIZE, nil, T.muted)
+    header.sub:SetPoint("TOPLEFT", nextButton, "BOTTOMLEFT", 0, -HEAD_GAP)
+    header.sub:SetPoint("RIGHT")
+    header.sub:SetJustifyH("LEFT")
+    header.sub:SetWordWrap(false)
     local columns = CreateFrame("Frame", nil, page)
-    columns:SetPoint("TOPLEFT", header, "BOTTOMLEFT")
-    columns:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
+    columns:SetPoint("TOPLEFT", header, "BOTTOMLEFT", 0, -SUB_GAP)
+    columns:SetPoint("TOPRIGHT", header, "BOTTOMRIGHT", -(St.SCROLLBAR + SCROLL_IN), -SUB_GAP)
     columns:SetHeight(COLUMNS_H)
-    sorter = Columns.New(columns, Market.Settings, "sortMine", "item", Page.Draw)
+    sorter = Columns.New(columns, Market.Settings, "sortMine", "status", Page.Draw)
     Columns.Add(sorter, { key = "item", text = TEXT_ITEM, left = NAME_LEFT, up = true, value = AuctionName })
-    Columns.Add(sorter, { key = "qty", text = TEXT_QTY, right = QTY_RIGHT, width = QTY_W,
-        value = function(auction) return auction.quantity end })
-    Columns.Add(sorter, { key = "price", text = TEXT_PRICE, right = PRICE_RIGHT, width = MONEY_W,
-        value = function(auction) return auction.price end })
-    Columns.Add(sorter, { key = "lowest", text = TEXT_LOWEST, right = LOWEST_RIGHT, width = MONEY_W, value = Lowest })
-    Columns.Add(sorter, { key = "status", text = TEXT_STATUS, left = -STATUS_LEFT, up = true,
+    Columns.Add(sorter, { key = "status", text = TEXT_STATUS, right = STATUS_RIGHT, width = CANCEL_W, up = true,
         value = function(auction) return STATUS_ORDER[Auctions.Status(auction)] end })
-    Columns.Add(sorter, { key = "time", text = TEXT_TIME, right = TIME_RIGHT, width = TIME_W, up = true,
-        value = function(auction) return auction.seconds or BAND_SECONDS[auction.band] end })
     return columns
 end
 

@@ -5,10 +5,12 @@ local Market = ns.Market
 local S = Market.Settings
 local Settings = ns.Shared.Settings
 
-local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_KEYS = 10, 20, 30, 80
+local ORDER_SELLING, ORDER_BAGS, ORDER_PRICES, ORDER_WATCH, ORDER_KEYS = 10, 20, 30, 40, 80
 local TEXT_OFF = ns.L("Turn on The Market")
 local TEXT_PROFESSIONS_OFF = "Turn on Professions"
 local TEXT_NEEDS_TOOLTIP = ns.L("Needs Tooltip Lines")
+local TEXT_NEEDS_BEST = ns.L("Needs Best Way to Sell")
+local MARGIN_RANGE = { 0, 100, 1 }
 local DURATIONS = { Market.C.DURATION_LABELS, Market.C.DURATIONS }
 local UNDERCUTS = { { match = "Match the Cheapest", step = "Smallest Step", silver = "One Silver" },
     { "match", "step", "silver" } }
@@ -32,6 +34,15 @@ local function TooltipWhy()
     return TEXT_NEEDS_TOOLTIP
 end
 
+local function BestOn()
+    return TooltipOn() and S.Get("tooltipBest")
+end
+
+local function BestWhy()
+    if not TooltipOn() then return TooltipWhy() end
+    return TEXT_NEEDS_BEST
+end
+
 local function ProfessionsOn()
     local P = ns.Professions
     return P ~= nil and P.On() == true
@@ -50,29 +61,8 @@ local function DealTooltipsOn()
     return DealsOn() and Deal("disenchantDealsTooltip")
 end
 
-local function ShareFree()
-    return ns.PriceShareFree == nil or ns.PriceShareFree()
-end
-
 local function PriceRows()
-    local qol = ns.QoLSettings
-    local rows = {
-        { key = "ahPrices", label = "Scan Prices Button", toggle = true, store = qol,
-          needs = ns.GamepadFree, why = ns.GamepadWhy,
-          help = "A Scan Prices button on the auction house. It reads every listing and keeps the "
-              .. "lowest buyout for each item, for this realm and faction. Blizzard allows one full "
-              .. "scan every 15 minutes." },
-        { key = "ahTooltip", label = "Auction House Price", toggle = true, store = qol,
-          help = "Item tooltips show an item's auction house price and how old it is." },
-        { key = "ahCrates", label = "Waylaid Crate Prices", toggle = true, store = qol,
-          help = "Waylaid Crate tooltips show what each filling costs on the auction house." },
-        { key = "ahCapture", label = "Capture Other Addons' Scans", toggle = true, store = qol,
-          help = "Also keeps the prices from full auction house scans that other addons start, "
-              .. "such as Auctionator or TSM." },
-        { key = "ahShare", label = "Prices for Other Addons", toggle = true, store = qol,
-          needs = ShareFree, why = "Auctionator is installed",
-          help = "Addons that read Auctionator's prices get these prices while Auctionator is not installed." },
-    }
+    local rows = {}
     local deals = ns.ProfessionSettings
     if not deals then return rows end
     rows[#rows + 1] = { key = "disenchantDeals", label = "Disenchant Deals", toggle = true, store = deals,
@@ -104,8 +94,6 @@ page:Card({
     help = "How The Market posts your items at an auctioneer.",
     summary = DurationSummary,
     rows = {
-        { key = "openAtAuctioneer", label = "Open at the Auctioneer", toggle = true, needs = On, why = Why,
-          help = "Talking to an auctioneer opens The Market instead of Blizzard's window." },
         { key = "postKeys", label = "Post With Keys", toggle = true, needs = On, why = Why,
           help = "Space posts the item in front of you, S skips it, Up and Down step its price." },
         { key = "duration", label = "Duration", choice = DURATIONS, needs = On, why = Why,
@@ -131,14 +119,27 @@ page:Card({
           help = "On a stack in your bags, prices read for each item, the whole stack, or both." },
         { key = "tooltipBest", label = "Best Way to Sell", toggle = true, needs = TooltipOn, why = TooltipWhy,
           help = "Says whether the auction house, a vendor or disenchanting pays you the most." },
+        { key = "tooltipBestMargin", label = "Auction Margin", slider = MARGIN_RANGE, unit = "s",
+          scale = Market.C.SILVER, needs = BestOn, why = BestWhy,
+          help = "A vendor stays best unless the auction house pays more than this over it, per item." },
     },
 })
 
 page:Card({
-    id = "prices", name = "Prices & Deals", order = ORDER_PRICES,
-    help = "Auction prices and Disenchant Deals, the same settings as on Bags, Loot & Mail and Professions.",
-    search = "auction house scan prices tooltip waylaid crate capture disenchant deals enchanting",
+    id = "prices", name = "Disenchant Deals", order = ORDER_PRICES,
+    help = "Disenchant Deals, the same settings as on Professions.",
+    search = "disenchant deals enchanting",
     rows = PriceRows,
+})
+
+page:Card({
+    id = "watch", name = "Watch List", order = ORDER_WATCH,
+    help = "Items you watch on the Buy tab beside the auction house, and when you hear about them.",
+    search = "watch list price alert cheap below under",
+    rows = {
+        { key = "watchAlerts", label = "Watch Alerts", toggle = true, needs = On, why = Why,
+          help = "A chat line after each scan for every watched item at or under your price." },
+    },
 })
 
 page:Card({

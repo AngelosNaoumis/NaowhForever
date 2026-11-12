@@ -162,6 +162,7 @@ end
 
 local function NearestFirst(a, b)
     if a.dist ~= b.dist then return a.dist < b.dist end
+    if a.capital ~= b.capital then return a.capital end
     return a.npc[NPC_NAME] < b.npc[NPC_NAME]
 end
 
@@ -181,7 +182,9 @@ local function Nearest(npcs, n)
     if here then cont, pos = WorldPos(map, here:GetXY()) end
     local out = {}
     for _, npc in ipairs(npcs) do
-        if ForMe(npc[NPC_FACTION]) then out[#out + 1] = { npc = npc, dist = Distance(npc, cont, pos) } end
+        if ForMe(npc[NPC_FACTION]) then
+            out[#out + 1] = { npc = npc, dist = Distance(npc, cont, pos), capital = ns.TownCapitals[npc[NPC_MAP]] == true }
+        end
     end
     table.sort(out, NearestFirst)
     local picked = {}

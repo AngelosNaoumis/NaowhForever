@@ -3,7 +3,8 @@
 -- and never twice over gear or a lure the game would not take; it reels in only while the bobber is the soft
 -- target, with the soft target settings raised for the channel alone; noted gear follows what you wear and
 -- comes back after combat; double right-click casts with a pole equipped; Louder Splash raises the sound for
--- the channel only, and a /reload never leaves it loud.
+-- the channel only, and a /reload never leaves it loud; Auto Loot While Fishing holds auto loot on from the
+-- cast until the catch is looted.
 local checks = 0
 local function Check(label, got, want)
     if got ~= want then error(("%s: got %s, want %s"):format(label, tostring(got), tostring(want)), 2) end
@@ -47,7 +48,8 @@ local state = {
     levels = { [6256] = 5, [6365] = 20, [6367] = 35 }, needs = { [6367] = 40 }, enchants = {}, soft = nil,
     gamepad = false,
     cvars = { SoftTargetInteract = "1", SoftTargetInteractArc = "0", SoftTargetInteractRange = "10",
-        Sound_MasterVolume = "0.5", Sound_SFXVolume = "0.5", Sound_MusicVolume = "0.4", Sound_AmbienceVolume = "0.6" },
+        Sound_MasterVolume = "0.5", Sound_SFXVolume = "0.5", Sound_MusicVolume = "0.4", Sound_AmbienceVolume = "0.6",
+        autoLootDefault = "0" },
     temps = {}, overrides = {}, equipped = {}, printed = {}, foci = nil, mouseover = false, tooltip = false,
     timers = {},
     sets = { [7] = { name = "Fishing", equipped = false, ignored = { [16] = false, [1] = false } } },
@@ -178,6 +180,7 @@ local S = ns.QoLSettings
 
 Check("One-Key Fishing starts off", ns.FEATURES.qol.fishingKey, false)
 Check("Louder Splash starts off", ns.FEATURES.qol.fishingSounds, false)
+Check("Auto Loot While Fishing starts off", ns.FEATURES.qol.fishingAutoLoot, false)
 Check("double right-click starts off", S.Get("fishingDoubleClick"), false)
 Check("the lure step starts off", S.Get("fishingLure"), false)
 Check("the gear step starts off", S.Get("fishingGear"), false)
@@ -193,6 +196,9 @@ local keyEvents, keyBoot = frames[first + 1], frames[first + 2]
 first = #frames
 Load("NaowhForever_QoL/Loot/FishingSounds.lua")
 local loudEvents, loudBoot = frames[first + 1], frames[first + 2]
+first = #frames
+Load("NaowhForever_QoL/Loot/FishingLoot.lua")
+local lootEvents, lootBoot = frames[first + 1], frames[first + 2]
 
 local function Count(t)
     local n = 0
@@ -206,7 +212,7 @@ end
 
 local function FrameWith(event)
     for _, f in ipairs(frames) do
-        if f.events[event] and f ~= keyEvents and f ~= loudEvents then return f end
+        if f.events[event] and f ~= keyEvents and f ~= loudEvents and f ~= lootEvents then return f end
     end
 end
 
@@ -217,9 +223,11 @@ end
 gearBoot.scripts.OnEvent(gearBoot, "PLAYER_LOGIN")
 keyBoot.scripts.OnEvent(keyBoot, "PLAYER_LOGIN")
 loudBoot.scripts.OnEvent(loudBoot, "PLAYER_LOGIN")
+lootBoot.scripts.OnEvent(lootBoot, "PLAYER_LOGIN")
 Check("off, no secure button is built", named.NaowhForeverFish, nil)
 Check("off, the key listens to nothing", Count(keyEvents.events), 0)
 Check("off, Louder Splash listens to nothing", Count(loudEvents.events), 0)
+Check("off, Auto Loot While Fishing listens to nothing", Count(lootEvents.events), 0)
 Check("off, the gear listens to nothing", FrameWith("PLAYER_EQUIPMENT_CHANGED"), nil)
 Check("off, nothing is saved", Count(account), 0)
 Check("the key's card is on Loot & Items", cards.fishingKey.page, "QoL/Loot & Items")
@@ -229,6 +237,9 @@ Check("its first row is the key binding", cards.fishingKey.rows[1].binding, "CLI
 Check("Put Gear Back is the gear binding", cards.fishingKey.rows[6].binding, "NAOWHFOREVER_FISHING_GEAR")
 Check("Louder Splash has its own card and switch", cards.fishingSounds.switch, "fishingSounds")
 Check("beside it", cards.fishingSounds.page == "QoL/Loot & Items" and cards.fishingSounds.order == 57, true)
+Check("Auto Loot While Fishing has its own card and switch", cards.fishingAutoLoot.switch, "fishingAutoLoot")
+Check("after Louder Splash", cards.fishingAutoLoot.page == "QoL/Loot & Items" and cards.fishingAutoLoot.order == 58,
+    true)
 Check("the bindings exist", Read("Bindings.xml"):find('name="CLICK NaowhForeverFish:LeftButton"', 1, true) ~= nil
     and Read("Bindings.xml"):find("NaowhForever_FishingGearOff()", 1, true) ~= nil, true)
 Check("Gear Sets renames the fishing gear set with its own picks",
@@ -525,5 +536,66 @@ Check("a /reload mid-cast leaves it noted", account.fishingLoudTemps ~= nil, tru
 loudBoot.scripts.OnEvent(loudBoot, "PLAYER_LOGIN")
 Check("and the next login puts it back", next(state.temps), nil)
 Check("and forgets it", account.fishingLoudTemps, nil)
+
+S.Set("fishingSounds", false)
+state.timers = {}
+local function Timers()
+    local due = state.timers
+    state.timers = {}
+    for _, fn in ipairs(due) do fn() end
+end
+S.Set("fishingAutoLoot", true)
+Check("Auto Loot While Fishing hears the channel and the loot window",
+    lootEvents.events.UNIT_SPELLCAST_CHANNEL_START == "player" and lootEvents.events.LOOT_CLOSED == true, true)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-10", 12051)
+Check("not for other channels", state.temps.autoLootDefault, nil)
+Fire(lootEvents, "LOOT_OPENED", false, false)
+Fire(lootEvents, "LOOT_CLOSED")
+Check("nor for other loot", state.temps.autoLootDefault, nil)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-11", 7620)
+Check("the cast turns auto loot on", state.temps.autoLootDefault, "1")
+Check("your own setting is untouched", state.cvars.autoLootDefault, "0")
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_STOP", "player", "cast-11", 7620)
+Check("the bobber click leaves it on", state.temps.autoLootDefault, "1")
+Fire(lootEvents, "LOOT_OPENED", true, false)
+Timers()
+Check("while the catch is looted", state.temps.autoLootDefault, "1")
+Fire(lootEvents, "LOOT_CLOSED")
+Check("and the looted catch turns it off", state.temps.autoLootDefault, nil)
+Check("and forgets it", account.fishingAutoLootTemp, nil)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-12", 7620)
+Fire(lootEvents, "LOOT_OPENED", true, false)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_STOP", "player", "cast-12", 7620)
+Timers()
+Check("loot that comes before the channel ends still holds it", state.temps.autoLootDefault, "1")
+Fire(lootEvents, "LOOT_CLOSED")
+Check("until it closes", state.temps.autoLootDefault, nil)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-13", 7620)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_STOP", "player", "cast-13", 7620)
+Check("a fish that got away leaves it on a moment", state.temps.autoLootDefault, "1")
+Timers()
+Check("then turns it off", state.temps.autoLootDefault, nil)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-14", 7620)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_STOP", "player", "cast-14", 7620)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-15", 7620)
+Timers()
+Check("an old wait does not end a new cast", state.temps.autoLootDefault, "1")
+Check("a /reload mid-cast leaves it noted", account.fishingAutoLootTemp, true)
+lootBoot.scripts.OnEvent(lootBoot, "PLAYER_LOGIN")
+Check("and the next login puts it back", state.temps.autoLootDefault, nil)
+Check("and forgets it", account.fishingAutoLootTemp, nil)
+state.cvars.autoLootDefault = "1"
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-16", 7620)
+Check("auto loot already on is left alone", state.temps.autoLootDefault == nil and account.fishingAutoLootTemp == nil,
+    true)
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_STOP", "player", "cast-16", 7620)
+Fire(lootEvents, "LOOT_OPENED", true, false)
+Fire(lootEvents, "LOOT_CLOSED")
+Check("and stays on after the catch", state.cvars.autoLootDefault, "1")
+state.cvars.autoLootDefault = "0"
+Fire(lootEvents, "UNIT_SPELLCAST_CHANNEL_START", "player", "cast-17", 7620)
+S.Set("fishingAutoLoot", false)
+Check("turned off mid-cast, auto loot goes back", state.temps.autoLootDefault, nil)
+Check("and it listens to nothing", Count(lootEvents.events), 0)
 
 print(("PASS fishing: %d checks"):format(checks))

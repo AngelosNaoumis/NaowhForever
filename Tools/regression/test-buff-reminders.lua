@@ -787,15 +787,18 @@ do
     Check("follows the consumables' place switches", t.Shown(), "")
 end
 
--- The built-in item offered is the highest level one you can use, with every carried one in its menu.
+-- The built-in item offered is the highest level one you can use, with the carried ones of its stat in its menu.
 do
     local t = Fixture({ instance = "raid", bags = { 9187, 13452, 9264 }, levels = { [9187] = 38, [13452] = 46, [9264] = 40 },
         settings = { personalBuffs = false } })
     t.Login()
     Check("highest level elixir of each stat", t.Shown(), "item:13452 item:9264")
-    local cell
-    for _, f in ipairs(t.frames) do if rawget(f, "items") and f.shown then cell = f end end
-    Check("menu lists the carried elixirs, best first", table.concat(cell.items, " "), "13452 9187 9264")
+    local menus = {}
+    for _, f in ipairs(t.frames) do
+        if rawget(f, "items") and f.shown then menus[#menus + 1] = table.concat(f.items, " ") end
+    end
+    table.sort(menus)
+    Check("each elixir's menu lists only its own stat, best first", table.concat(menus, " | "), "13452 9187 | 9264")
     t.state.level = 40
     t.Fire("BAG_UPDATE_DELAYED"); t.Advance(0.5)
     Check("one too high for you is skipped", t.Shown(), "item:9264 item:9187")
@@ -1241,8 +1244,9 @@ end
 
 -- A full menu spreads out from the middle, each line centred under the hovered icon.
 do
-    local bags = { 13452, 9187, 13453, 9206, 13454, 9155, 9264, 21546, 6373 }
-    local t = Fixture({ instance = "raid", bags = bags })
+    local bags, spells = {}, {}
+    for i = 1, 9 do bags[i] = 249860 + i; spells[bags[i]] = 1249920 end
+    local t = Fixture({ instance = "raid", bags = bags, itemSpells = spells })
     t.Login()
     local cell
     for _, f in ipairs(t.frames) do if rawget(f, "items") then cell = f end end

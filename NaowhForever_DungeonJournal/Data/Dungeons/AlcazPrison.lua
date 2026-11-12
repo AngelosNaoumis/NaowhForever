@@ -8,10 +8,10 @@ ns.Journal.AddDungeon("AlcazPrison", {
     zone = "Dustwallow Marsh", area = 15, territory = "Contested",
     wings = {
         { bosses = {
-            { npc = 255391, name = "Overseer Wrex", encounters = { 3403 }, loot = { 276734 } },
-            { npc = 255997, name = "Tidemistress Ca'zass", encounters = { 3410 }, loot = { 276737 } },
-            { npc = 257016, name = "Katerina the Cleaner", encounters = { 3418 }, loot = { 276740 } },
-            { npc = 256236, name = "The Questioner", encounters = { 3415 }, loot = { 276741, 276742 } },
+            { npc = 255391, name = "Overseer Wrex", encounters = { 3403 }, loot = { 276734, 276732, 276733 } },
+            { npc = 255997, name = "Tidemistress Ca'zass", encounters = { 3410 }, loot = { 276737, 276735, 276736 } },
+            { npc = 257016, name = "Katerina the Cleaner", encounters = { 3418 }, loot = { 276740, 276738, 276739 } },
+            { npc = 256236, name = "The Questioner", encounters = { 3415 }, loot = { 276741, 276742, 276743 } },
             { npc = 255702, name = "Blazeroar", encounters = { 3409 } },
         } },
     },

@@ -43,7 +43,8 @@ NaowhForever_QoL/
     UnitNames.lua       Names Over Heads: guild names, guild titles and player titles with player names
     HDR.lua             HDR: the game's HDR and Peak Brightness
     ConsoleVariables.lua  Console Variables: every console variable with its value and default in a window
-                        (ns.OpenConsoleVariables), to change, export and import (ns.ImportConsoleVariables)
+                        (ns.OpenConsoleVariables), to change, export and import (ns.ImportConsoleVariables),
+                        and the pinned ones put back at login
     ChatZones.lua       Chat Zones
     ScoutData.lua       Scout's creature abilities and tameable beasts (packed) and armor by level, generated
     Scout.lua           Scout: abilities, armor and pet family on a creature's tooltip
@@ -58,6 +59,7 @@ NaowhForever_QoL/
     MapOverlays.lua     each zone map's explorable areas (ns.MapOverlays), generated
     Unexplored.xml      the unexplored pin template, then Unexplored.lua
     Unexplored.lua      Unexplored Areas on the world map
+    QuestAreaTint.lua   Quest Area Tint: the world map's quest objective areas in a chosen color
     ZoneLevelsData.lua  each zone's level range (ns.ZoneLevels), generated
     FishingLevelsData.lua  each zone's Fishing skill range (ns.FishingLevels)
     ZoneLevels.lua      Zone Levels and Fishing Levels on the world map
@@ -99,6 +101,7 @@ NaowhForever_QoL/
     QuestProgress.lua   Announce Quest Progress, your quest objective updates said in party chat
     FinderRoles.lua     Group Finder Roles, the role buttons on the Group Finder
     TalentPoints.lua    the unspent talent points reminder
+    LegacyPoints.lua    the optional unspent Legacy points reminder
     QuestAutomation.lua accept, hand in and share quests, saved reward picks (ns.QuestRewards)
     RewardList.lua      the Saved Quest Rewards window (ns.OpenQuestRewards)
     PlayerHistory.lua   Player History (ns.PlayerHistory), read by the Naowh Inspect panel
@@ -118,8 +121,9 @@ NaowhForever_QoL/
     Durability.lua      the low durability warning
     LootConfirm.lua     the retired loot confirmation skip, inert
     WaylaidCratesData.lua what each Waylaid Crate can be filled with (ns.WaylaidCrates), generated
+    WritRequestsData.lua the item each Craftsman's Writ asks for (ns.WritRequests), generated
     PriceShare.lua      Prices for Other Addons: Auctionator's price API (`Auctionator.API.v1`) answered from Auction Prices
-    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices
+    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices, Craftsman's Writ Prices
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
     DestroyCheapest.lua the bags-full offer, the state the scan, the popup and the delete share (ns.DestroyCheapest)
@@ -135,6 +139,7 @@ NaowhForever_QoL/
     FishingGear.lua     the fishing gear One-Key Fishing puts on first, and putting back what it replaced (ns.FishingGear)
     Fishing.lua         One-Key Fishing: the key, double right-click, the lure and gear steps
     FishingSounds.lua   Louder Splash
+    FishingLoot.lua     Auto Loot While Fishing
     ScrapMarker.lua     the Junk Marker (ns.ScrapMarker), read by Bag Space and the Junk List
     BankMarker.lua      bank marks, selective grey selling and character bank deposits (ns.BankMarker)
     ScrapList.lua       the Junk List window (ns.OpenScrapList, /nf junk)
@@ -166,6 +171,8 @@ NaowhForever_QoL/
     Flight/             the Flight Timer's Land Early and game button icons, drawn by
                         Tools/media/make_media.py
     TopBar/             the Top Bar's button icons and resting glyph
+    QuestArea/          Quest Area Tint's fill and edge in each color, drawn by
+                        Tools/media/make_media.py
   README.md           this file
 ```
 
@@ -357,8 +364,19 @@ NaowhForever_QoL/
   `EditBoxOnTextChanged` check is run straight after, which enables Yes when the text matches.
 - The delete dialog sizes itself to its text only on show, and the box sits under the text, so
   it is resized after the item link is added.
-- The Alerts group (Camp Nearby, Talent Points, Durability, Restock, Pet Tracker) is in the core
+- The Alerts group (Camp Nearby, Talent Points, Legacy Points, Durability, Restock, Pet Tracker) is in the core
   (`Core/AlertStack.lua`, see Core's README), since Aura Buffs' Camp Nearby uses it too.
+- Unspent Legacy Points is off by default, beside Talent Points in Leveling & Training > Spells & Talents
+  (the QoL/XP page), with its own look settings. Its frame and
+  event listener are built on first enable; disabling it unregisters every event. It uses the existing
+  core Apply lifecycle for login and reload, with no polling or startup event frame of its own.
+- Legacy's three trees share one balance. The reminder reads the Professions tree's config and finds
+  `LEGACY_POINTS_TRAIT_CURRENCY_ID` in `C_Traits.GetTreeCurrencyInfo`, once per update. It includes staged
+  changes so the number agrees with the Legacy window while allocating or refunding points.
+- A missing Legacy config or currency row hides the reminder until a trait or world event refreshes
+  it. The reward-track renown must be positive, matching the game's Legacy unlock check; renown
+  changes refresh it too. Combat hides it before any trait API reads; leaving combat refreshes the balance. HUD Editor
+  shows a two-point preview. `STACK_ORDER` 2.5 places it between Talent Points (2) and Durability (3).
 - The Pet Tracker skips Pet Missing for a hunter with Lone Wolf. `LONE_WOLF` (415370) is the
   talent node spell in the talent data; `LONE_WOLF_TAUGHT` (409979) is the spell it teaches,
   the one seen known in the Forever client. Either counts.
@@ -430,6 +448,11 @@ NaowhForever_QoL/
 - `ns.BestFoodAndDrink` (the bar's buttons and the Macros module's NF Food) and `ns.HEALTHSTONES`
   and `ns.HEALING_POTIONS` (NF Health and Aura Buffs' low health reminder) are in
   `Shared/Game/Consumables.lua`, so each works with QoL off.
+- Conjured First (`foodBarConjuredFirst`, on by default) ranks conjured food and drink above
+  everything else, or with it off below everything else. It is one setting for the bar, the
+  Consumable Bar's Food & Drink buttons and NF Food / NF Drink, shown on this card and on the
+  Macros page; the card's row stays usable while the bar is off or its buttons are on the
+  Consumable Bar.
 - The bar was on the Macros page until 0.5.24; a profile's settings for it move here once.
 - The Food & Drink buttons are secure, so the bar is built, shown, hidden and pointed at items
   only out of combat. Its key bindings (Bindings.xml) work once the bar is switched on, as that is
@@ -468,6 +491,8 @@ NaowhForever_QoL/
 - The Forever bank is the character bank tabs; a tab not bought has no slots.
 - The bank is scanned while Alt Item Counts or the Loot Feed's Count Bank Items is on, the bags only for
   Alt Item Counts: the Loot Feed counts the bags itself.
+- The bag and bank counts read each slot's item ID and stack count through one reused item location,
+  not `C_Container.GetContainerItemInfo`, which builds a new table per slot on every bag change.
 - The mail scan (attachments, letters waiting, the soonest expiry) waits a second for a burst of
   `MAIL_INBOX_UPDATE` to end, as Open All fires one per letter.
 - Alt Item Counts are added to a tooltip only when some of the item is somewhere other than the
@@ -521,10 +546,17 @@ NaowhForever_QoL/
   generated by `Tools/build/waylaid_crates.py` from each crate's Stock Crate spell, so they are IDs and read
   the same in every client language. The unlabelled Waylaid Crate takes nothing until its label is read,
   and each Waylaid Supplies takes one fixed item, so neither is in it.
-- Auction House Price and Waylaid Crate Prices share one item tooltip post-call, so a crate gets one Market Price
-  line: its own price when it has one and Auction House Price is on, else the prices' age, with the bundles
-  under it. The post-call goes on the first time either is on, at load, from a click or from a profile with
-  one on (`ns.Apply`), and stays inert while both are off (TooltipDataProcessor has no removal).
+- Craftsman's Writ Prices (`ahWrits`) adds, on a Craftsman's Writ's tooltip, the item the writ asks for and the
+  lowest buyout for one of it. An unpriced item gets no line. The writs are `WritRequestsData.lua`
+  (`ns.WritRequests`: writ item ID to requested item ID), generated by `Tools/build/writ_requests.py` from
+  `quest_entity_catalog.json`: each writ starts its quest, whose item objectives are the writ itself and the
+  requested item. The catalog has no counts, so the line prices one; how many a writ asks for is only known
+  once its quest is accepted, and has not been checked in game.
+- Auction House Price, Waylaid Crate Prices and Craftsman's Writ Prices share one item tooltip post-call, so a
+  crate or a writ gets one Market Price line: its own price when it has one and Auction House Price is on, else
+  the prices' age, with the bundles or the requested item under it. The post-call goes on the first time any of
+  them is on, at load, from a click or from a profile with one on (`ns.Apply`), and stays inert while all are off
+  (TooltipDataProcessor has no removal).
 - Auction House Price leaves its line off while The Market's tooltip carries the item's price itself (its
   Compact style, or Whole Stack on a stack), asked through `ns.Market.ShowsPrice` only when The Market is
   loaded, so the price shows once. A crate then keeps its bundles, under the prices' age.
@@ -836,6 +868,9 @@ NaowhForever_QoL/
   settings a scan reads for every slot are read once at its start. Scan entries are pooled and
   reused; a scan runs after every loot and must not leave tables behind. The row's buttons point
   into those pooled entries, so a scan always redraws the row too.
+- Bag Space reads each slot through one reused item location (`C_Item.IsLocked`, `GetStackCount`,
+  `GetItemQuality`, `GetItemIcon`) into one reused table, not `C_Container.GetContainerItemInfo`, which
+  builds a new table per slot: with full bags, the scan after every craft made about 50 KB of garbage.
 - Never offered, whatever they are worth: reagents (class reagents such as Flash Powder and
   candles), projectiles, quivers, quest items and keys (item classes 5, 6, 11, 12 and 13), items
   in an equipment set and BiS items. You need them, or they free no bag space.
@@ -1046,6 +1081,9 @@ NaowhForever_QoL/
 - A string is `!NFCV1!` and `{ v = 1, cvars = { [name] = value } }`, written by `Shared.Encode` and read by `Shared.Decode.String` with its size and bomb caps, one level deep and at most `MAX_CVARS` (1000) of them. A name that is not one word of at most 64 letters, a value that is not a string of at most 255, or a control character or `|` in either refuses the whole string. A name that is not a console variable this client lets you change is left out and counted in the confirmation. Nothing in a string is run: its names and values only ever reach `C_CVar.SetCVar`.
 - The console variables that name this account, client or computer (`NOT_SHARED`) are never exported or imported, and an import counts them as left out; the window still lists them to change by hand. They are the character picked at login (`lastCharacterIndex`), the realm and Battle.net portal (`plunderstormRealm`, `portal`), the client's languages (`locale`, `textLocale`, `audioLocale`), and this computer's devices: the monitor, graphics card and API and resolutions (`GxMonitor`, `GxAdapter`, `GxApi`, `GxWindowedResolution`, `GxFullscreenResolution`, `GxNewResolution`) and the sound and voice chat devices (`Sound_OutputDriverName`, `Sound_OutputDriverIndex` and their `Sound_VoiceChat` output and input pairs). A shared string is for settings; these would point another player's client at a realm, language or device of the sharer's. Matched in any case, as the game names console variables. Forever has no `accountName`, `accountList`, `realmName` or `realmList`, and a name the client does not list is left out anyway. Graphics quality and camera settings are shared as before.
 - Export writes what the list holds, its tab and search included, leaving out a value a string could not carry; past 1000 it asks for a search first. The import's confirmation lists the first `LISTED_MAX` (8) changes, from what to what, and counts the rest and what is left out.
+- Pinned Console Variables (`pinnedCVars`, off by default) adds a pin to each row and a Pinned tab. A pin keeps the value the console variable had when pinned, or the one last set for it in the window; a change made anywhere else is put back. The pins are in the account store (`pinnedCVars` there), not the profile: most console variables are per install or account, a profile switch should not change them, and a profile string must not carry them.
+- They are put back once a session, from `ns.Apply` after login, only where the value differs, and only while both switches are on: nothing is registered for it otherwise. In combat it waits for `PLAYER_REGEN_ENABLED`, as the window's own edits refuse combat. One chat line counts what was put back, only when something was; a value the game refuses is named. A pin whose console variable this client does not have, or no longer lets you change, is skipped and kept.
+- `VARIABLES_LOADED` has no fixed order against `PLAYER_LOGIN`; console variables stored on the server could load after the put-back. The controller's camera speeds (`GamePadCameraYawSpeed`, `GamePadCameraPitchSpeed`) are stored with the install, so they are read before any addon loads.
 - Console variables stay out of profile strings: the game saves them itself, per install, account or character, not per profile, so a profile switch or import would change graphics, sound and camera settings with no list of what changes.
 
 ### Stealth Reminder
@@ -1058,6 +1096,7 @@ NaowhForever_QoL/
 - Auras cannot be read in combat, so the camp check pauses there rather than reading a missing aura as having walked away.
 - A dismiss with no reason is the close button; one with a reason closes only what that reason opened, so landing never shuts a quiz opened by hand.
 - In `QuizData.lua` the first answer is the right one; the quiz shuffles them before showing.
+- Asked questions are kept per account by their text (`quizSeen`), so none comes back until the whole bank has been asked, across sessions, and new questions join the unasked ones.
 
 ### Daily Word
 - Everyone gets the same word on the same day without any server: the day is the one the next
@@ -1354,7 +1393,7 @@ NaowhForever_QoL/
 - `townMinimap` is the minimap's mailboxes and `townMinimapSpirit` its spirit healers: `townMinimap` once held both, so existing profiles keep their mailboxes.
 - On OpenMap's seamless map the town pins of the zones beside the map underneath show too (Shared/README.md, Why), but its zone exits only the map underneath's: on one seamless map the neighbours' exits only doubled the arrows at every border. A town pin keeps its own map, which its flight-master tooltip asks about.
 - Which town pins show is chosen on the map itself, from the Town Pins button (`MapPinsPanel.lua`), and only there: the long list of town pin types is what you pick while looking at the map. Everything else is on QoL's Map & Pins tab and only there: a Map Options card (id `mapOptions`) and a Map Pins card (id `townMap`: Town Pin Size, then each module's pins under its title). No setting is in both places but Town Pin Size. The Map Pins card's search words include every town pin's name, so the options search still leads there. The keys stay in the QoL store, so saved settings carry over. The button shows whenever QoL is on, since the drawer is also where a switch that is off is turned back on.
-- Map & Pins is the home of every map pin and map option: the town pins, QoL's own Unexplored Areas, Zone Levels, Fishing Levels and Skyborne Spots, Discovery's quests, rares, library books and Sleeping Bag steps, and the Dungeon Journal's entrances. Each of the last adds a section to `ns.Shared.MapPins` (`{ title, order, store, switch, rows, map }`), and `ns.Shared.MapPinSections()` hands them back by `order` (10 to 13 the map options, then the sections with no `order`, which count as 50, in load order, and Skyborne last at 60). A section's `title` is its group; one with no title continues the group above. Sections marked `map` (Unexplored Areas, Zone Levels, Fishing Levels) are the Map Options card's rows, the rest follow Town Pin Size on Map Pins under their titles. Rows of another module's store are `lent`, so a card's Reset and changed count leave them to their module. A module that is not loaded adds nothing, and a section whose `hidden` says so is left off (Skyborne Spots for anyone not Skyborne). Drawer rows dim and lock while their `needs` fails: the town rows while Town Pins is off. A town row with a `class` shows only for that class (Stable Masters, hunters). The drawer has its own Town Pins switch, so the town pins can be turned back on from the map.
+- Map & Pins is the home of every map pin and map option: the town pins, QoL's own Unexplored Areas, Zone Levels, Fishing Levels and Skyborne Spots, Discovery's quests, rares, library books and Sleeping Bag steps, and the Dungeon Journal's entrances. Each of the last adds a section to `ns.Shared.MapPins` (`{ title, order, store, switch, rows, map }`), and `ns.Shared.MapPinSections()` hands them back by `order` (10 to 14 the map options, then the sections with no `order`, which count as 50, in load order, and Skyborne last at 60). A section's `title` is its group; one with no title continues the group above. Sections marked `map` (Unexplored Areas, Zone Levels, Fishing Levels, Quest Area Tint) are the Map Options card's rows, the rest follow Town Pin Size on Map Pins under their titles. Rows of another module's store are `lent`, so a card's Reset and changed count leave them to their module. A module that is not loaded adds nothing, and a section whose `hidden` says so is left off (Skyborne Spots for anyone not Skyborne). Drawer rows dim and lock while their `needs` fails: the town rows while Town Pins is off. A town row with a `class` shows only for that class (Stable Masters, hunters). The drawer has its own Town Pins switch, so the town pins can be turned back on from the map.
 - The Town Pins button sits in the map's top right corner, left of the buttons the map keeps there and at their size, so they read as one row. Those are found by where they sit, not by name, so a map with more, fewer or none of them still gets a free spot.
 - The drawer is the options window's look: a header strip in the panel color, small accent group titles and ruled rows with the switch on the right. It is the map's child, so it opens, closes and scales with the map, `PANEL_LEVEL` over the map's pins as the Dungeon Journal's drawer.
 - The drawer sits against the map window's left side (the Dungeon Journal takes the right), `GAP` -1 putting its border on the map's so the two read as one window; with no room there, the right. It is the map's height, as wide as the quest log beside the map (`PANEL_W` where there is none), and its rows shrink to fit a small map, down to `ROW_MIN_H`; past that they scroll, so the drawer never runs off the map. The scroll bar sits inside the rows' right margin, raised over them so its grip takes the mouse.
@@ -1453,7 +1492,7 @@ NaowhForever_QoL/
 - The pin sits on BACKGROUND strata, as the game's own marker does, so where it does reach the minimap or a bar it goes under it. On LOW it shared the minimap's strata, and the card's border, a frame one level above the card, drew over the map while the card went under it.
 - Behind you is the game's clamped spot within `BEHIND` of straight down, not the oval's: a spot low on screen past the oval is in front of you.
 - `BEHIND` is the angle either side of straight down that counts as behind you. `FAR` is the distance at which the pin is smallest (`FAR_SCALE`), and `FADE_FLOOR` its alpha at your feet with Fade Up Close on.
-- The game places a waypoint you click on the map without tracking it (its map code calls `SetSuperTrackedUserWaypoint(false)` right after `SetUserWaypoint`), and the pin only follows what is tracked, so on `USER_WAYPOINT_UPDATED` it tracks the new waypoint itself: one frame later with the map closed (the game's own untracking has run by then), or as the map closes (`trackOnMapClose`), as `Core/Waypoint.lua` holds its own placements, since setting one with the map open taints it. Already tracked, it leaves it.
+- The game places a waypoint you click on the map without tracking it (its map code calls `SetSuperTrackedUserWaypoint(false)` right after `SetUserWaypoint`), and the pin only follows what is tracked, so on `USER_WAYPOINT_UPDATED` it tracks the new waypoint itself: one frame later with the map closed (the game's own untracking has run by then), or one frame after the map closes (`trackOnMapClose`), since setting one with the map open taints it. Not inside the map's OnHide: in the Gamepad interface style the controller's Back closes the map from secure code, which then removes the map's gamepad bindings, so tracking from Naowh's hook there got that secure code blocked (`SetPreferredGamepadInteractTarget`, then again at the next radial). Already tracked, it leaves it.
 - A waypoint you set has no held arrival: reaching it plays the sound and the pin, cue and bar go at once. A quest, the corpse and a route's stop hold the arrival where the pin last stood for `ARRIVED_HOLD` (a route's names the next stop). The game clears a waypoint you set as you reach it, its navigation frame going too, before or after NAVIGATION_DESTINATION_REACHED; that event's `isWaypoint` is a stop on the way (a zone's exit), not the spot itself. A waypoint you set does not wait for it: on the waypoint's map or one inside it (a waypoint placed on a continent still counts in its zones; the game routes a waypoint on another map through stops on the way, such as a zone's exit, which are not the spot), within Arrival Distance of its spot once the pin has seen you more than `LEAVE_MARGIN` past it, or within `REACHED` (5 yards) once it has seen you more than `LEAVE_MARGIN` past that, since the waypoint was attached or placed (a new waypoint can report no distance at first, and one placed under you has nothing to reach; other tracking changes on the way do not reset it), the pin shows the arrival and clears the waypoint itself, so it goes even when the game sends no arrival, or sends it as a stop. The game's event, when it does come first, clears it before the pin does. It does this once per waypoint (`selfCleared`: with the world map open the clear is held, and the pin must not arrive again every hold), and never on a route's stop, which moves on by the game's arrival event: clearing it would end the route. The `REACHED` fallback keeps a waypoint placed inside a long Arrival Distance from clearing at once.
 - Nothing tracked means cleared or reached. A clear can leave the navigation frame up with no NAVIGATION_FRAME_DESTROYED, which used to leave the navigator showing.
 - The game's own marker keeps setting its frame's alpha, so Hide the Game's Marker fades its parts (`GAME_PARTS`) instead.
@@ -1528,6 +1567,11 @@ NaowhForever_QoL/
 - The pin is one for the whole map, holding every unexplored area's tiles. Its `CheckMouseButtonPassthrough` is left empty: the map calls it on every acquired pin, its SetPassThroughButtons is protected in combat, and this pin takes no clicks.
 - On OpenMap's seamless map (`ns.Shared.OpenMap.On()`) nothing is drawn: OpenMap's art covers the map's exploration layer, where the pin sits, so its tiles could not show. OpenMap has its own choice for unexplored areas (shown as they are, its default, dimmed or hidden).
 
+### Quest Area Tint
+- The quest objective areas are one pin of the world map's `QuestBlobDataProviderMixin` (template `QuestBlobPinTemplate`, Blizzard_SharedMapDataProviders). Forever's blob frame has no color setter, only `SetFillTexture`, `SetBorderTexture`, `SetFillAlpha` and `SetBorderAlpha` (0 to 255), so each color is its own pair of textures in `Media/QuestArea`: a flat fill, and an edge that fades from a whitened line like the game's `UI-QuestBlob-Outside`. That is why the color is a list and not a picker.
+- Only those four methods are called on the pin, from our own settings change, `ns.Apply` and PLAYER_LOGIN. Nothing is written into the pin's table and none of its Blizzard functions is called or replaced: the pin redraws itself, so a change shows the next time the map draws the area (opening the map, changing zone or zoom, hovering a quest).
+- Turning it off puts back the game's own textures and alphas from its `QuestBlobPinMixin:OnLoad` (fill 128, edge 192), with no reload. A player who never turns it on has the pin left untouched.
+
 ### Zone Levels and Fishing Levels
 - Forever's client tables give no outdoor zone a level range (no ContentTuningID on UiMap or AreaTable), so `C_Map.GetMapLevels` has nothing and the game's own map label never shows one. The ranges come from Wowhead's Forever world map instead, written to `ZoneLevelsData.lua` by `Tools/build/zone_levels.py`; Moonglade, Mount Hyjal and Shen'dralas have none there.
 - The range is our own text under the game's area label (its Description), so nothing is written into Blizzard's label. The colour follows the game's rule for a range: the low end's colour below it, the high end less `BELOW_RANGE` above it, yellow inside.
@@ -1583,6 +1627,10 @@ NaowhForever_QoL/
 - The line said is the game's own objective message (`UI_INFO_MESSAGE`), in your client's language. Its
   type is matched by name through `GetGameMessageInfo` (`PROGRESS`), never by its text.
 - "Objective Complete." (`ERR_QUEST_UNKNOWN_COMPLETE`) is left out: it does not say which objective.
+- Only Finished Objectives reads the count from the line itself: the last two numbers, equal once the
+  objective is done, in whatever order the language puts them. `UI_INFO_MESSAGE` carries no quest ID to look
+  the objective up with. A named objective's "(Complete)" line (`ERR_QUEST_OBJECTIVE_COMPLETE_S`) has no
+  count and is always said.
 - Raids are left alone: party chat there reaches only your subgroup.
 - Nothing is said while `C_ChatInfo.InChatMessagingLockdown()` is true.
 - The type and the line are checked with `issecretvalue` before anything reads them: `GetGameMessageInfo`
@@ -1852,6 +1900,11 @@ NaowhForever_QoL/
 - Louder Splash turns game sound volume up to full and music and ambience to 0 while the channel runs, with
   temp values as well, so your own volume settings are never rewritten. Master volume and the sound
   switches are left as you set them: a muted game stays muted.
+- Auto Loot While Fishing turns `autoLootDefault` on with a temp value as the channel starts, so your own
+  setting is never rewritten. It stays on past the channel's end until the catch's loot window closes, so the
+  loot that follows the bobber click is covered whichever event comes first. A channel that ends with nothing
+  to loot (the fish got away, you moved) puts it back after `LOOT_WAIT` seconds. Your auto loot key still
+  loots by hand while it is on.
 - Check it offline: `lua Tools/regression/test-fishing.lua`.
 
 ### QoL defaults (Core/Settings.lua)

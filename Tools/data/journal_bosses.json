@@ -186,12 +186,12 @@
     { "key": "DrownedCity", "name": "The Drowned City", "foreverchanges": "the-drowned-city", "new": true, "open": true,
       "npcs": { "Zul'Alai": 270882, "Var'Taka": 270883, "Captain Dreadrise": 270884,
                 "Deathless Marrow": 270885, "Primeval Elemental": 270887, "Min'loth the Serpent": 270886,
-                "Gill": 270888 },
+                "Gill": 270888, "Umbra": 264172 },
       "entranceZone": 33, "entrance": { "map": 1434, "x": 21.4, "y": 27.9, "source": "the game's terrain, build 1.60.1.70124: the underwater instance portal in The Vile Reef" },
       "add": { "Zul'Alai": [274598, 274599, 274600], "Var'Taka": [274601, 274602, 274613, 271718],
                "Captain Dreadrise": [274603, 274604, 274605], "Deathless Marrow": [274606, 274607, 274614],
                "Primeval Elemental": [274611, 274612, 274615, 271718], "Min'loth the Serpent": [274608, 274609, 274610, 271718],
-               "Gill": [286646, 286649] },
+               "Gill": [286646, 286649], "Umbra": [286658, 286662] },
       "counts": {
         "Zul'Alai": {"274599": [29, 69], "274598": [23, 69], "274600": [17, 69]},
         "Var'Taka": {"274601": [19, 52], "274613": [17, 52], "274602": [16, 52], "271718": [1, 52]},
@@ -201,7 +201,7 @@
       "wings": [
       { "bosses": ["Zul'Alai", "Var'Taka", "Captain Dreadrise", "Deathless Marrow", "Primeval Elemental",
                    "Min'loth the Serpent"],
-        "rare": ["Gill"] } ] },
+        "rare": ["Gill", "Umbra"] } ] },
     { "key": "Uldaman", "name": "Uldaman", "wowsrc": "uldaman", "foreverchanges": "uldaman", "zone": 1337, "open": false,
       "entranceZone": 3, "entrance": { "map": 1418, "x": 44.0, "y": 12.0, "source": "Warcraft Tavern classic guide, front entrance; back entrance (65.2, 43.5)" },
       "add": { "Obsidian Sentinel": [251400, 274425, 274428, 274430, 274485] },
@@ -216,7 +216,8 @@
       "entranceZone": 16591,
       "add": { "Slavecrusher Grox": [274995, 274996, 274997], "Twilight Commander Zarmok": [274998, 274999, 275000],
                "War Handler Ashka": [275001, 275002, 275003], "Nar'gurk": [275004, 275005, 275006],
-               "Overlord Mugg": [275007, 275008, 275009], "Bossman Toof": [286428, 286429, 286430] },
+               "Overlord Mugg": [275007, 275008, 275009, 275010], "Bossman Toof": [286428, 286429, 286430],
+               "Trash": [287013] },
       "wings": [
       { "bosses": ["Slavecrusher Grox", "Twilight Commander Zarmok", "War Handler Ashka", "Nar'gurk",
                    "Overlord Mugg"],
@@ -244,8 +245,8 @@
       "npcs": { "Overseer Wrex": 255391, "Tidemistress Ca'zass": 255997, "Katerina the Cleaner": 257016,
                 "The Questioner": 256236, "Blazeroar": 255702 },
       "entranceZone": 15,
-      "add": { "Overseer Wrex": [276734], "Tidemistress Ca'zass": [276737], "Katerina the Cleaner": [276740],
-               "The Questioner": [276741, 276742] },
+      "add": { "Overseer Wrex": [276734, 276732, 276733], "Tidemistress Ca'zass": [276737, 276735, 276736],
+               "Katerina the Cleaner": [276740, 276738, 276739], "The Questioner": [276741, 276742, 276743] },
       "wings": [
       { "bosses": ["Overseer Wrex", "Tidemistress Ca'zass", "Katerina the Cleaner", "The Questioner", "Blazeroar"] } ] },
     { "key": "BlackrockDepths", "name": "Blackrock Depths", "wowsrc": "blackrock-depths", "wowsrcNames": { "Doom'rel": "Chest of The Seven", "Anger'rel": "Chest of The Seven" }, "foreverchanges": "blackrock-depths", "zone": 1584,
@@ -323,7 +324,7 @@
       "entranceZone": 16,
       "add": { "Withermaw": [280062, 280064], "Impaan the Imprisoner": [280058, 280057],
                "Elder Shaman Bloodmane": [280068, 280070], "Bonesnout the Unbroken": [280059, 280060],
-               "Varrox Bleakhoof": [280074, 280075], "Blackmaw Behemoth": [280065, 280066], "Unbound Spirit": [280071, 280073],
+               "Varrox Bleakhoof": [280074, 280075, 280076], "Blackmaw Behemoth": [280065, 280066], "Unbound Spirit": [280071, 280073, 280072],
                "Moontouched Wanderer": [280080], "Trash": [287036] },
       "wings": [
       { "bosses": ["Withermaw", "Impaan the Imprisoner", "Elder Shaman Bloodmane", "Bonesnout the Unbroken",

@@ -67,7 +67,12 @@ local env = setmetatable({
     C_Container = {
         GetContainerNumSlots = function(bag) return BAGS[bag] and #BAGS[bag] or 0 end,
         GetContainerItemInfo = function(bag, slot) return BAGS[bag][slot] or nil end,
+        GetContainerItemID = function(bag, slot) return BAGS[bag][slot] and BAGS[bag][slot].itemID or nil end,
     },
+    ItemLocation = { CreateEmpty = function()
+        return { SetBagAndSlot = function(self, bag, slot) self.bag, self.slot = bag, slot end }
+    end },
+    C_Item = { GetStackCount = function(at) return BAGS[at.bag][at.slot].stackCount or 1 end },
     C_ClassColor = { GetClassColor = function(class) return COLORS[class] end },
     TooltipDataProcessor = { AddTooltipPostCall = function(_, fn) post = fn end },
 }, { __index = _G })

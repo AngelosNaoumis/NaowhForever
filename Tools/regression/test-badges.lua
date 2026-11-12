@@ -129,7 +129,7 @@ local function fixture(withChatUtil, settings, flag)
         TooltipDataProcessor = { AddTooltipPostCall = function(_, fn)
             state.postCalls[#state.postCalls + 1] = fn
         end },
-        Enum = { TooltipDataType = { Unit = 2 } },
+        Enum = { TooltipDataType = { Unit = 2 }, ClubMemberPresence = { Online = 1, Offline = 3 } },
         EventUtil = { ContinueOnAddOnLoaded = function(name, fn) state.onLoaded[name] = fn end },
         ScrollBoxListMixin = { Event = { OnInitializedFrame = "OnInitializedFrame" } },
         bit = dofile("Tools/regression/bit_stub.lua"),
@@ -865,6 +865,20 @@ do  -- limits, lockdown and the other faction
     u.postCalls[1](tooltip, { guid = "Player-1-ALLY" })
     check("confirm: a same-faction tooltip asks by the unit's full name", #lines == 0 and u.sent[1]
         and u.sent[1].target == "Anna Smith")
+end
+
+do  -- an offline guild member or friend is never whispered
+    local s = fixture(true)
+    s.patron("Player-1-AWAY", "2026-01", nil, nil, true, "abcd")
+    s.players["Player-1-AWAY"] = { race = "Human", name = "Barry" }
+    local scroll = s.communities({ "Player-1-AWAY" })
+    scroll.rows[1].memberInfo.presence = 3
+    s.onLoaded.Blizzard_Communities()
+    check("offline: the guild list does not ask an offline patron", #s.sent == 0)
+    s.roster[1](nil, "Player-1-AWAY", { guid = "Player-1-AWAY", presence = 3 }, {}, nil)
+    check("offline: nor does hovering them in the guild or friends list", #s.sent == 0)
+    s.roster[1](nil, "Player-1-AWAY", { guid = "Player-1-AWAY", presence = 1 }, {}, nil)
+    check("offline: once they are online, they are asked", #s.sent == 1 and s.sent[1].target == "Barry")
 end
 
 local DIE, DIE_CLAIM, DIE_HASH = "Player-4613-006EB819", "K7P2-9XQM", "8c39fddd"

@@ -351,4 +351,7 @@ events:SetScript("OnEvent", OnEvent)
 events:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 hooksecurefunc(S, "Set", SettingChanged)
+hooksecurefunc(ns.QoLSettings, "Set", function(key)
+    if key == "foodBarConjuredFirst" then Update() end
+end)
 hooksecurefunc(ns, "Apply", Reapply)

@@ -11,6 +11,7 @@
     <Script file="Loot\Lockboxes.lua"/>
     <Script file="Loot\Durability.lua"/>
     <Script file="Questing\TalentPoints.lua"/>
+    <Script file="Questing\LegacyPoints.lua"/>
     <Script file="Questing\BuffThanks.lua"/>
     <Script file="Combat\CombatAlert.lua"/>
     <Script file="Questing\QuestAutomation.lua"/>
@@ -50,6 +51,7 @@
     <Script file="Combat\SpellQueue.lua"/>
     <Script file="Loot\LootFeed.lua"/>
     <Script file="Loot\WaylaidCratesData.lua"/>
+    <Script file="Loot\WritRequestsData.lua"/>
     <Script file="Loot\PriceShare.lua"/>
     <Script file="Loot\AuctionPrices.lua"/>
     <Script file="XP\XPTicker.lua"/>
@@ -63,6 +65,7 @@
     <Script file="Loot\FishingGear.lua"/>
     <Script file="Loot\Fishing.lua"/>
     <Script file="Loot\FishingSounds.lua"/>
+    <Script file="Loot\FishingLoot.lua"/>
     <Script file="Loot\FoodBar.lua"/>
     <Script file="Loot\BagSpace.lua"/>
     <Script file="Loot\DestroyCheapest.lua"/>
@@ -83,6 +86,7 @@
     <Script file="Interface\MapSize.lua"/>
     <Script file="Interface\MapOverlays.lua"/>
     <Include file="Interface\Unexplored.xml"/>
+    <Script file="Interface\QuestAreaTint.lua"/>
     <Script file="Interface\ZoneLevelsData.lua"/>
     <Script file="Interface\FishingLevelsData.lua"/>
     <Script file="Interface\ZoneLevels.lua"/>

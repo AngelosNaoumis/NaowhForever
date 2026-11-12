@@ -168,11 +168,11 @@ local function Ask(guid, who)
     C_ChatInfo.SendAddonMessage(PREFIX, ASK, "WHISPER", who)
 end
 
-function Confirm.Shows(guid, who, unit)
+function Confirm.Shows(guid, who, unit, offline)
     if guid == Me() then return Confirm.Mine() end
     if confirmed[guid] then return true end
     if Enemy(guid, unit) then return true end
-    Ask(guid, who)
+    if not offline then Ask(guid, who) end
     return false
 end
 

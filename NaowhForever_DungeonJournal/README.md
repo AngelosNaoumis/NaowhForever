@@ -51,7 +51,7 @@ NaowhForever_DungeonJournal/
   View/                drawing a page on the shared row engine; used by the window, the map panel and the popups
     Style.lua          what only the Journal draws: colors, icons, sizes (J.Style, over Shared/Style.lua)
     View.lua           the view: per-draw answers, its events and redraws (J.View)
-    Parts.lua          a fight's length, a row's band to its card's edges, side panels
+    Parts.lua          a fight's length, a boss's level, a row's band to its card's edges, side panels
     DungeonPage.lua    a dungeon's page: header, quests, each wing's boss cards, trash, the folded bosses
     BossPage.lua       a boss's own page: stacked (Boss Loot at Cursor) or compact (the dungeon map)
     FactionPage.lua    a faction's page and the PvP rank's
@@ -60,7 +60,7 @@ NaowhForever_DungeonJournal/
     QuestRows.lua      your quests: marks, hover card, right-click menu
     BossTips.lua       Naowh's tips: tooltip lines, sharing one in chat, the tip row
     KillCount.lua      the skull and a boss's kill count, its tooltip and the history it opens
-    BossCards.lua      a boss card's header
+    BossCards.lua      a boss card's header, with its level
     BossChips.lua      the bosses with nothing for you, as chips
     ItemRows.lua       one item of a boss's loot, or a faction's reward with its price
     BossHeader.lua     a boss page's top: name, kill count, level and kind
@@ -93,7 +93,7 @@ NaowhForever_DungeonJournal/
     EntrancePins.xml   loads EntrancePins.lua, then the pin's template
     EntrancePins.lua   the dungeon and raid entrances as pins on the world map
     Popup.lua          Boss Loot at Cursor (a key binding)
-    QuestTracker.lua   a dungeon's quests in a small window, one line each
+    QuestTracker.lua   a dungeon's quests in a small window, one row each
     GameTrackerFade.lua Hide the Game's Quest Tracker
     TrackerAuto.lua    Open Tracker in Dungeons and Show Outside Dungeons
     MapView.lua        a dungeon's map drawn into a frame: art, pins, entrance, floor switch (J.DungeonMap)
@@ -384,9 +384,10 @@ in the pull request it opens.
 - Upper Blackrock Spire keeps screenshots of Blizzard's later map (Wowhead screenshots
   852258 and 852257) for floors 8 and 9. Its order is Dragonspire Hall (9), Emberseer and
   Solakar (8), then Rend and Drakkisath (7); floor 7 is now a bundled picture in Media/Maps.
-- `Data/BossInfo.lua`: NPC ID -> `{ lowest level, highest level (-1: ??), classification (0
-  normal, 1 elite, 2 rare elite, 3 boss, 4 rare), creature type (Wowhead's number: 7 is
-  Humanoid), title or nil }`.
+- `Data/BossInfo.lua`: NPC ID -> `{ lowest level, highest level (-1: ??; both nil where its
+  page has no level), classification (0 normal, 1 elite, 2 rare elite, 3 boss, 4 rare), creature
+  type (Wowhead's number: 7 is Humanoid), title or nil }`. A boss with no level shows none, on its
+  card or its page: ?? is only the game's own skull level.
 - `Data/Tips.lua`: one short sentence each about the classic fight, from warcraft.wiki.gg's
   classic pages, the Warcraft Tavern and Almar's classic guides, and Wowhead Forever for
   Forever's own dungeons. Bosses with no NPC ID yet have none.
@@ -634,6 +635,10 @@ in the pull request it opens.
   (`ManagedFrameContainerMixin:AnimInManagedFrames`, run whenever UIParent is shown again), so
   `Show` and `SetAlpha` are both hooked; `GetAlpha` stops the hook from re-entering itself.
 - The quest tracker scrolls past 70% of the screen's height at its scale, and 420 at the least.
+- The quest tracker is 290 wide, set rather than fitted to its longest quest name: fitted, it
+  reached 640 and covered too much of the screen. A name takes up to two lines in its smaller
+  font, 12, before it is cut short, and ends where its count does when that count (21/29) is
+  wider than its column.
   After a `/reload` its auto-open runs inside that loading screen's `PLAYER_ENTERING_WORLD`, too
   late to hear it, so it also looks where you are as it is switched on.
 - `/nf mapcheck` asks the client for each floor's first tile: `SetTexture` answers true either

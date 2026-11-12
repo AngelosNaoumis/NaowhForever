@@ -262,6 +262,9 @@ end
 local ANCHOR = { store = S, prefix = PREFIX, name = BAR_NAME, on = On, frame = function() return bar end }
 
 local rows = {
+    { key = "foodBarConjuredFirst", label = "Conjured First", toggle = true, always = true,
+      help = "Uses a mage's conjured food and drink before what you bought or cooked. Off, they wait until "
+          .. "the rest is gone. Sets the Consumable Bar's buttons and NF Food and NF Drink too." },
     { key = "foodBarSize", label = "Icon Size", slider = ICON_RANGE,
       help = "How big each button is." },
     { key = "foodBarGrow", label = "Growth Direction", choice = ItemBar.GrowChoice(),

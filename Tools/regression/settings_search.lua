@@ -24,6 +24,7 @@ return function(pages)
     end
     ns.UI.SearchPages = function() return list end
     ns.UI.SearchOffPages = function() return {} end
+    ns.UI.SearchOffCards = ns.UI.SearchOffPages
     local found = ns.UI.Search.Collect()
     return function(query)
         return ns.UI.Search.Find(found, query)

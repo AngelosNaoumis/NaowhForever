@@ -74,6 +74,22 @@ local stops = F.Stops("Map 1 loop")
 Check("the loop's waypoints are named for their node, in percent", #stops == 2 and stops[1][2] == 1
     and math.abs(stops[1][3] - 20) < 1e-9 and stops[1][1] == "Peacebloom")
 
+t.ns.MarketSettings.Set("farmPlan", true)
+local planned = {}
+for _, zone in ipairs(F.Zones()) do planned[zone.map] = zone end
+Check("planning at max skill ranks every node, veins and higher herbs too", planned[1].stops == 3
+    and planned[2].stops == 2)
+F.Zone(1)
+local vein
+for _, spot in ipairs(F.spots) do
+    if spot.kind == "ore" then vein = spot end
+end
+Check("and loops a vein you cannot mine, still marked as one you cannot", #F.loop == 3
+    and not vein.can and vein.reach)
+t.ns.MarketSettings.Set("farmPlan", false)
+zones = F.Zones()
+Check("turning it off goes back to your own skills", zones[1].map == 1 and zones[1].stops == 2)
+
 t.sameMap, t.playerMap = { [99] = 1 }, 99
 F.Zone(1)
 Check("on a map that is the zone's under another ID, the loop still starts nearest you", F.loop[1].id == PEACEBLOOM)
@@ -163,6 +179,11 @@ skill.fish = 0
 F.Changed()
 local gatherRows, fishRows = Rows()
 Check("water is left out until you can fish there", next(fishRows) == nil and gatherRows[1] ~= nil)
+t.ns.MarketSettings.Set("farmPlan", true)
+fishRows = select(2, Rows())
+Check("planning at max skill lists every water, with nothing getting away", fishRows[1] and fishRows[4]
+    and fishRows[1].rate == 1 and fishRows[4].rate == 1)
+t.ns.MarketSettings.Set("farmPlan", false)
 skill.fish = 1
 F.Changed()
 gatherRows, fishRows = Rows()

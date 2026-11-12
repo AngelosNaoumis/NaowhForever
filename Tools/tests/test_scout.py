@@ -28,12 +28,13 @@ TEMPLATE = (
     "  `ResistanceHoly` int(10),\n  `ResistanceFire` int(10),\n  `ResistanceNature` int(10),\n"
     "  `ResistanceFrost` int(10),\n  `ResistanceShadow` int(10),\n  `ResistanceArcane` int(10),\n"
     "  `MechanicImmuneMask` int(10),\n  `SchoolImmuneMask` int(10),\n  `CreatureTypeFlags` int(10),\n"
-    "  `SpellList` int(10),\n  `ScriptName` varchar(100),\n  PRIMARY KEY (`Entry`)\n) ENGINE=InnoDB;\n"
-    "INSERT INTO `creature_template` VALUES (448,'Hogger',538,0,0,0,0,0,0,0,0,0,0,''),"
-    "(2850,'Broken, Tooth',1593,0,0,0,0,0,0,0,0,1,0,''),"
-    "(11502,'Ragnaros',4691,0,0,0,-40,0,0,116097015,4,108,0,'boss_ragnaros'),"
-    "(1001,'Spell\\'s List',100,0,60,0,20,0,0,0,0,0,7,''),"
-    "(1003,'It''s',50,0,0,0,0,0,0,0,0,0,0,'');\n"
+    "  `MeleeBaseAttackTime` int(10),\n  `SpellList` int(10),\n  `ScriptName` varchar(100),\n"
+    "  PRIMARY KEY (`Entry`)\n) ENGINE=InnoDB;\n"
+    "INSERT INTO `creature_template` VALUES (448,'Hogger',538,0,0,0,0,0,0,0,0,0,2000,0,''),"
+    "(2850,'Broken, Tooth',1593,0,0,0,0,0,0,0,0,1,1000,0,''),"
+    "(11502,'Ragnaros',4691,0,0,0,-40,0,0,116097015,4,108,2000,0,'boss_ragnaros'),"
+    "(1001,'Spell\\'s List',100,0,60,0,20,0,0,0,0,0,2000,7,''),"
+    "(1003,'It''s',50,0,0,0,0,0,0,0,0,0,2000,0,'');\n"
 )
 AI = (
     "CREATE TABLE `creature_ai_scripts` (\n  `creature_id` int(10),\n  `event_type` int(10),\n"
@@ -176,6 +177,10 @@ class Database(unittest.TestCase):
         self.assertFalse(self.stats[448]["tameable"])
         self.assertFalse(self.stats[11502]["tameable"])
 
+    def test_reads_a_creatures_melee_attack_time(self):
+        self.assertEqual(self.stats[2850]["speed"], 1000)
+        self.assertEqual(self.stats[448]["speed"], 2000)
+
     def test_a_creature_casts_what_its_scripts_and_its_spell_list_say(self):
         self.assertEqual(self.casts[448], {6016, 6730, 6268})
         self.assertEqual(self.casts[1001], {20565, 17257})
@@ -189,7 +194,7 @@ class Database(unittest.TestCase):
         self.assertNotIn(403233, self.casts[448])
 
     def test_a_row_with_the_wrong_number_of_fields_is_an_error(self):
-        short = DUMP.replace("(1003,'It''s',50,0,0,0,0,0,0,0,0,0,0,'')", "(1003,'It''s',50,0)")
+        short = DUMP.replace("(1003,'It''s',50,0,0,0,0,0,0,0,0,0,2000,0,'')", "(1003,'It''s',50,0)")
         with self.assertRaises(ValueError):
             list(scout.rows(short, "creature_template"))
 

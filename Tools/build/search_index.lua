@@ -49,12 +49,26 @@ env.LOCALIZED_CLASS_NAMES_MALE = setmetatable({}, { __index = function(_, class)
     return class:sub(1, 1) .. class:sub(2):lower()
 end })
 
+-- Which file declared each card, so a card one addon puts on another's page can be checked.
+local declaredBy = {}
+local function Attribute(path)
+    local ns = rawget(env, "NaowhForever")
+    local Settings = ns and ns.Shared and rawget(ns.Shared, "Settings")
+    if not Settings then return end
+    for _, page in pairs(Settings.pages) do
+        for _, item in ipairs(page.items) do
+            if item.uid and not declaredBy[item.uid] then declaredBy[item.uid] = path end
+        end
+    end
+end
+
 for _, path in ipairs(TocFiles("%.lua$")) do
     local skip = path:find("^Libs/") or path:find("SearchIndex%.lua$") or (path:find("Locales/") and path ~= "Core/Locales/enUS.lua")
     if not skip then
         local chunk = assert(loadfile(path))
         setfenv(chunk, env)
         chunk(path:match("^(NaowhForever_[^/]+)/") or "NaowhForever", rawget(env, "NaowhForever"))
+        Attribute(path)
     end
 end
 
@@ -100,4 +114,4 @@ if arg and arg[0] and arg[0]:find("search_index%.lua$") then
     f:close()
     print(("%s: %d lines"):format(OUT, #out))
 end
-return text
+return text, declaredBy

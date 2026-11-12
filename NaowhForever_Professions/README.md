@@ -408,9 +408,9 @@ Each layer uses only the ones above it, or reads a later one's table at call tim
   answering after its timeout still went through. A live price 25% over the last scan is warned
   about. Skip and Cancel are off while a purchase pays, or it would be spent but not counted.
 - Search Favorites AH, Disenchant Deals and the Shopping List stack beside the auction house from one
-  edge (`P.AH.Edge`): Blizzard's window, or The Market's while it covers it (`ns.MarketAuctionWindow`).
-  The Market is wider than Blizzard's window and covers it at alpha 0, so panels on Blizzard's edge sat
-  on top of The Market. The Market calls `ns.AuctionWindowChanged` when it covers or steps aside.
+  edge (`P.AH.Edge`): Blizzard's window, or The Market's panel docked to its right while it shows
+  (`ns.MarketAuctionWindow`), so panels on Blizzard's edge do not sit on top of it. The Market calls
+  `ns.AuctionWindowChanged` when its panel shows or hides.
 - At a merchant only plain gold purchases are bought, never extended costs; items sold several to a
   purchase round up to whole purchases, and limited stock caps the amount.
 - Walking up to an anvil changes whether a recipe's requirements are met: SPELL_UPDATE_USABLE is

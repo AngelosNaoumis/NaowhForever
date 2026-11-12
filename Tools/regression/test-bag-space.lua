@@ -192,6 +192,8 @@ local function Fixture(opts)
                 return n, 0
             end,
             GetContainerItemInfo = Info,
+            GetContainerItemID = function(bag, slot) local it = Item(bag, slot); return it and it.id end,
+            GetContainerItemLink = function(bag, slot) return Info(bag, slot).hyperlink end,
             PickupContainerItem = function(bag, slot)
                 if cursor then return Place(bag, slot) end
                 cursor, bags[bag][slot] = bags[bag][slot], nil
@@ -209,7 +211,14 @@ local function Fixture(opts)
                 return d[1], nil, d[2], nil, d[3], nil, nil, d[4], nil, nil, d[5]
             end,
             GetItemInfoInstant = function(id) return id, nil, nil, nil, nil, ITEMS[id][6] end,
+            IsLocked = function(at) return Info(at.bag, at.slot).isLocked end,
+            GetStackCount = function(at) return Info(at.bag, at.slot).stackCount end,
+            GetItemQuality = function(at) return Info(at.bag, at.slot).quality end,
+            GetItemIcon = function(at) return Info(at.bag, at.slot).iconFileID end,
         },
+        ItemLocation = { CreateEmpty = function()
+            return { SetBagAndSlot = function(self, bag, slot) self.bag, self.slot = bag, slot end }
+        end },
         C_QuestLog = {
             GetNumQuestLogEntries = function() return opts.quests and #opts.quests or 0 end,
             GetInfo = function(i) return { questID = i, title = opts.quests[i].title, isHeader = false } end,

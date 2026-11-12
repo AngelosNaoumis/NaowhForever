@@ -30,6 +30,7 @@ local TEXT_BETTER = { vendor = ns.L("Better: Vendor"), auction = ns.L("Better: A
     disenchant = ns.L("Better: Disenchant") }
 local TEXT_MARGIN = { vendor = ns.L("+%s over Vendor"), auction = ns.L("+%s over Auction"),
     disenchant = ns.L("+%s over Disenchant") }
+local TEXT_UNDER_MARGIN = ns.L("Auction only +%s")
 local TEXT_MADE_BY = ns.L("Made by")
 local TEXT_YOU = ns.L("You")
 local TEXT_WHO = "%s, %s"
@@ -107,8 +108,8 @@ local function AddBest(info, each, vendor, disenchant, required, stack)
     local best, margin, second, complete = Worth.Best(vendor, auction, yours)
     if not best then return end
     if stack > 1 and S.Get("tooltipStack") ~= EACH then margin = margin * stack end
-    Add((complete and TEXT_BEST or TEXT_BETTER)[best], TEXT_MARGIN[second]:format(Coins(margin)),
-        St.HAVE_RGB, T.accent)
+    local right = margin < 0 and TEXT_UNDER_MARGIN:format(Coins(-margin)) or TEXT_MARGIN[second]:format(Coins(margin))
+    Add((complete and TEXT_BEST or TEXT_BETTER)[best], right, St.HAVE_RGB, T.accent)
 end
 
 local function ProfessionName(id)
