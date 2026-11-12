@@ -96,7 +96,8 @@ local function Setup(buttonOn, captureOn, withFrame, cratesOn, tooltipOn, feed, 
         Enum = { TooltipDataType = { Item = 0 } },
     }, { __index = _G })
     env._G = env
-    Load({ "NaowhForever_QoL/Loot/WaylaidCratesData.lua", "NaowhForever_QoL/Loot/AuctionPrices.lua" }, env)
+    Load({ "NaowhForever_QoL/Loot/WaylaidCratesData.lua", "NaowhForever_QoL/Loot/WritRequestsData.lua",
+        "NaowhForever_QoL/Loot/AuctionPrices.lua" }, env)
     local t = { ns = ns, settings = S, messages = messages, card = card }
     function t.Fire(event)
         if registered[event] then frame.handler(frame, event) end
@@ -226,7 +227,8 @@ t.Fire("AUCTION_HOUSE_SHOW")
 Check("disabled defaults install no hook", t.ReplicateHooks() == 0 and not t.Listening())
 Check("Auction Prices is a card of its own, placed on Auction House", t.card.id == "auctionPrices" and t.card.into == nil)
 Check("crate prices sit under the item price", t.card.rows[2].key == "ahTooltip" and t.card.rows[3].key == "ahCrates")
-local capture = t.card.rows[4]
+Check("and writ prices under them", t.card.rows[4].key == "ahWrits")
+local capture = t.card.rows[5]
 Check("capture row always shown", capture.key == "ahCapture" and capture.label == "Capture Other Addons' Scans" and capture.hidden == nil)
 t.settings.Set("ahCapture", true)
 Check("first enable installs hook without arming results", t.ReplicateHooks() == 1 and not t.Listening() and not t.Button().shown)
@@ -320,6 +322,31 @@ Check("a crate's bundles stay, headed by the prices' age", #lines == 4 and lines
 t.ns.Market.ShowsPrice = function() return false end
 lines = t.Tooltip(PEACEBLOOM)
 Check("otherwise the item price shows as before", #lines == 1 and lines[1].right == "10c |cff808080each, 5m ago|r")
+
+local WRIT, FIREWATER = 264124, 246948
+t = Setup(true, false, true)
+t.Priced({ [WRIT] = 30, [FIREWATER] = 250 }, 300)
+t.settings.Set("ahWrits", true)
+Check("writ prices alone hook the item tooltip", t.PostCalls() == 1)
+lines = t.Tooltip(WRIT)
+Check("a writ shows the item it asks for and what one costs, headed by the prices' age", #lines == 2
+    and Headers(lines) == 1 and lines[1].right == "Last scan 5m ago"
+    and lines[2].left == "Requested: item246948" and lines[2].right == "250c")
+t.settings.Set("ahTooltip", true)
+lines = t.Tooltip(WRIT)
+Check("with the item price on, the writ's own price heads it", #lines == 2
+    and lines[1].right == "30c |cff808080each, 5m ago|r" and lines[2].right == "250c")
+Check("an item that is no writ gets no requested line", #t.Tooltip(FIREWATER) == 1)
+t.settings.Set("ahTooltip", false)
+t.settings.Set("ahWrits", false)
+Check("writ prices off leave the writ alone", #t.Tooltip(WRIT) == 0)
+t.settings.Set("ahWrits", true)
+t.Priced({ [WRIT] = 30 }, 300)
+Check("a writ whose item has no price gets nothing from writ prices alone", #t.Tooltip(WRIT) == 0)
+t = Setup(true, false, true)
+t.Profile("ahWrits", true)
+t.ns.Apply()
+Check("a profile with writ prices on hooks it on apply", t.PostCalls() == 1)
 
 local function Base36(n)
     local digits, text = "0123456789abcdefghijklmnopqrstuvwxyz", ""

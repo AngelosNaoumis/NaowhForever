@@ -52,6 +52,7 @@ ns.FEATURES = {
         ahCapture = false,
         ahTooltip = true,
         ahCrates = false,
+        ahWrits = false,
         ahShare = false,
         altCounts = false,
         mailAlts = false,
