@@ -2,7 +2,7 @@
 ## Title: |cff0091edNaowh|r Forever: The Market
 ## Notes: A panel beside the auction house to post your bags and check your auctions, and a window for farming, reagents and prices.
 ## Author: Naowh
-## Version: 1.2.27
+## Version: 1.2.28
 ## Dependencies: NaowhForever
 ## Group: NaowhForever
 ## IconTexture: Interface\AddOns\NaowhForever\Core\Media\LogoAddon.tga
