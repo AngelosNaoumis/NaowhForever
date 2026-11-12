@@ -469,12 +469,10 @@ in the pull request it opens.
   set, is never written over. The Journal's windows have no opacity setting: they are always solid.
 - `J.OPTION_GROUPS` is the one list the Filters menu and the settings page are built from, so
   both offer the same switches in the same words, and either changes the other.
-- Dungeons sharing one instance (Scarlet Monastery's wings, and Blackrock Spire) are told apart
-  by the subzone you stand in, by classic's subzone names (`SUBZONES`); one Forever names
-  otherwise falls back to the data's order, the first wing first. Hall of Blackhand and
-  Hordemar City are in both Spire wings, so they do not pick one. The subzone may only be known
-  after the loading screen, so the quest tracker also listens for `ZONE_CHANGED` and
-  `ZONE_CHANGED_INDOORS`.
+- Dungeons sharing one instance (Scarlet Monastery's wings) are told apart by the subzone you
+  stand in, by classic's subzone names (`SUBZONES`); one Forever names otherwise falls back to
+  the data's order, the first wing first. The subzone may only be known after the loading
+  screen, so the quest tracker also listens for `ZONE_CHANGED` and `ZONE_CHANGED_INDOORS`.
 - Factions here walk the map up to its zone: a cave's or a town's map counts as its zone's. In
   a battleground only your side's factions count.
 - A creature's NPC ID comes from its GUID (`J.NpcID`), and a GUID the game keeps secret (enemies

@@ -13,7 +13,7 @@ local TO_ENTRANCE_SCALE = 1 / ns.Shared.Style.PIN_SIZE_DEFAULT
 local TO_FRACTION = J.Style.PERCENT_SCALE
 local PERCENT = J.C.PERCENT
 local ROUND_HALF = J.C.ROUND_HALF
-local ORDER_FIRST, ORDER_OPEN, ORDER_THIRD, ORDER_FOURTH, ORDER_LAST = 10, 15, 20, 30, 90
+local ORDER_FIRST, ORDER_THIRD, ORDER_FOURTH, ORDER_LAST = 10, 20, 30, 90
 
 local TEXT_JOURNAL_OFF = ns.L("Turn on the Dungeon Journal")
 local TEXT_BIS_OFF = ns.L("Needs the BiS List")
@@ -248,17 +248,6 @@ local function DeclareMap()
                 "dungeon map on the world map quest log fold"),
             Toggle("mapFactions", "Factions Beside the Map",
                 "Shows the factions earned where you are beside the world map."),
-        },
-    })
-    map:Card({
-        id = "open", name = "Opening the Map", order = ORDER_OPEN,
-        help = "Right-click on a dungeon entrance.",
-        search = "right click entrance",
-        rows = {
-            Toggle("entranceJournal", "Right-click entrance to open the dungeon map",
-                "Right-click a dungeon or raid entrance to show its map and dungeon journal on the world map, "
-                    .. "the same ones as Bosses and Loot in Dungeons.",
-                "right click entrance"),
         },
     })
     map:Card({

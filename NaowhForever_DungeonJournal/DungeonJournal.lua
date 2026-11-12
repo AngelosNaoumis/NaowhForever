@@ -22,19 +22,6 @@ local SUBZONES = {
     ["Hall of Champions"] = "ScarletMonasteryArmory",
     ["Chapel Gardens"] = "ScarletMonasteryCathedral",
     ["Crusader's Chapel"] = "ScarletMonasteryCathedral",
-    ["Chamber of Battle"] = "LowerBlackrockSpire",
-    ["Halycon's Lair"] = "LowerBlackrockSpire",
-    ["Mok'Doom"] = "LowerBlackrockSpire",
-    ["Skitterweb Tunnels"] = "LowerBlackrockSpire",
-    ["The Storehouse"] = "LowerBlackrockSpire",
-    ["Tazz'Alor"] = "LowerBlackrockSpire",
-    ["Blackrock Stadium"] = "UpperBlackrockSpire",
-    ["Dragonspire Hall"] = "UpperBlackrockSpire",
-    ["The Furnace"] = "UpperBlackrockSpire",
-    ["Hall of Binding"] = "UpperBlackrockSpire",
-    ["The Molten Span"] = "UpperBlackrockSpire",
-    ["The Rookery"] = "UpperBlackrockSpire",
-    ["Spire Throne"] = "UpperBlackrockSpire",
 }
 
 local TEXT_TURNED_ON = ns.L("Dungeon Journal turned on. Turn it off in its settings page.")
@@ -108,7 +95,7 @@ local newBosses = {}
 local byNpc, dungeonOf
 local byMap, byName
 local factions = { reputation = {}, pvp = {} }
-local byZone, byBattleground, byInstance
+local byZone, byBattleground
 local inFront = {}
 
 local function Localize(dungeon)
@@ -178,19 +165,12 @@ local function JoinQuests()
     end
 end
 
-local function JoinInstances()
-    for _, dungeon in ipairs(ordered) do
-        if dungeon.instance then AddTo(byInstance, dungeon.instance, dungeon) end
-    end
-end
-
 local function Join()
-    byMap, byName, byZone, byBattleground, byInstance = {}, {}, {}, {}, {}
+    byMap, byName, byZone, byBattleground = {}, {}, {}, {}
     for _, tab in ipairs(FACTION_TABS) do
         for _, faction in ipairs(factions[tab]) do JoinFaction(faction) end
     end
     JoinQuests()
-    JoinInstances()
 end
 
 local function Joined()
@@ -217,12 +197,6 @@ local function InFront(key, list)
     end
     inFront[key] = front
     return front
-end
-
-local function Listed(list, dungeon)
-    for i = 1, #list do
-        if list[i] == dungeon then return true end
-    end
 end
 
 local function ZoneHere()
@@ -323,15 +297,10 @@ function J.Current()
     if not (inInstance and (kind == "party" or kind == "raid")) then return end
     Joined()
     local name, _, _, _, _, _, _, id = GetInstanceInfo()
-    local list = byInstance[id] or byMap[id] or byName[name]
+    local list = byMap[id] or byName[name]
     if not list or not list[2] then return list end
     local subzone = GetSubZoneText()
     local key = SUBZONES[J.Names and J.Names.subzones[subzone] or subzone]
-    if not (key and byKey[key]) then
-        local named = byName[name]
-        local dungeon = named and named[1]
-        if dungeon and Listed(list, dungeon) then key = dungeon.key end
-    end
     if not key or list[1].key == key then return list end
     return InFront(key, list)
 end
