@@ -24,6 +24,10 @@ local TEXT_LEARN = "Learn"
 local TEXT_LEARN_ALL = ns.L("Learn All")
 local TEXT_LEARN_ALL_COST = ns.L("Learn All (%s)")
 local TEXT_MORE = ns.L("+%d more")
+local TEXT_ASK_ONE = ns.L("Learn %d recipe for %s?")
+local TEXT_ASK = ns.L("Learn %d recipes for %s?")
+local TEXT_YES = ns.L("Learn")
+local TEXT_CANCEL = ns.L("Cancel")
 
 local trainer
 local trainerOpen
@@ -39,11 +43,20 @@ local function LearnClick(row)
     Patterns.Learn({ row.offer })
 end
 
+local function LearnAll()
+    Patterns.Learn(trainer.offers)
+end
+
+local function AskLearnAll()
+    local offers, total = trainer.offers, 0
+    for _, o in ipairs(offers) do total = total + o.cost end
+    ns.Confirm((#offers == 1 and TEXT_ASK_ONE or TEXT_ASK):format(#offers, Text.Short(total)), LearnAll, nil,
+        TEXT_YES, TEXT_CANCEL)
+end
+
 local function Build()
     trainer = Popup.New(TEXT_TITLE)
-    trainer.all = ns.AccentBorder(ns.Button(trainer, TEXT_LEARN_ALL, LEARN_ALL_W, LEARN_ALL_H, function()
-        Patterns.Learn(trainer.offers)
-    end))
+    trainer.all = ns.AccentBorder(ns.Button(trainer, TEXT_LEARN_ALL, LEARN_ALL_W, LEARN_ALL_H, AskLearnAll))
     trainer.all:SetPoint("BOTTOMRIGHT", -LEARN_ALL_RIGHT, LEARN_ALL_BOTTOM)
 end
 
