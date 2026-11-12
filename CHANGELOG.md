@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+### The Market at the auction house
+
+Thank you to everyone who has tried The Market and told us on Discord what worked and what didn't.
+This release is built from that feedback, and we'll keep going: keep telling us.
+- Blizzard's auction house is back as the game draws it. The Market is a panel on its right with
+  Buy, Sell, My Auctions and Shopping List, and Farm, Price Graph and Reagents are tabs under
+  Blizzard's own. Shift + drag moves the lot.
+- Prices keep themselves up to date as you browse, search and post, and Scan Prices now always
+  gives you an answer, even inside the fast scan's 15 minutes.
+- Sell shows the item's listings and where your price lands, asks before a post that would lose
+  you money, and remembers your favourites, hidden items, quantities and past posts.
+- Buy keeps lists of searches to run in Blizzard's window, and the Shopping List tab has your alts'
+  materials beside your own.
+- My Auctions shows how many items are listed ahead of yours, and a key can cancel the next
+  undercut auction.
+- New and off by default, under The Market's settings: the price at the other auction house
+  (Blackwater or your faction's), an average price and a mailbox total on tooltips, your bank in
+  Bag Worth, and scanning when you open the auction house.
+
 ## 1.2.27
 
 ### Fixed
