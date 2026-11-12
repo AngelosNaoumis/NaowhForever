@@ -1,4 +1,4 @@
--- BagWorth.lua: Bag Worth, a card on your bags with what they would fetch and their most valuable items, numbered on their slots.
+-- BagWorth.lua: Bag Worth, a card on your bags with what they and, if you ask, your bank would fetch and their most valuable items, numbered on their slots.
 local ns = _G.NaowhForever
 
 local T = ns.THEME
@@ -9,6 +9,7 @@ local C = Market.C
 local Parts = ns.Shared.Parts
 local Bags = ns.Shared.Bags
 local Worth = Market.Worth
+local Bank = Market.Bank
 
 local CARD_W, PAD, HEAD_H, ROW_H, ICON, GAP, CARD_GAP = 260, 8, 20, 22, 18, 6, 4
 local BADGE, BADGE_OUT, BADGE_LEVEL, BADGE_SIZE = 15, 3, 5, 10
@@ -20,8 +21,12 @@ local TEXT_SCANNED = ns.L("At your scan %s ago, after the auction house's cut")
 local TEXT_NO_SCAN = ns.L("At vendor prices: no auction house scan yet")
 local TEXT_SELL = ns.L("Click to sell it")
 local TEXT_COUNT = "%s |cff808080x%d|r"
+local TEXT_BANK = ns.L("Bank as of %s")
+local TEXT_BANK_UNSEEN = ns.L("Bank not seen yet: open it once")
+local TEXT_BOTH = ns.L("Bags and bank")
 
-local card, title, total, note
+local card, title, total, note, bank, both
+local bankWorth, bankAt
 local rows, badges = {}, {}
 local dirty, pending, registered = true, false, false
 local events
@@ -33,6 +38,8 @@ end
 local function Read()
     if dirty then
         Worth.Read()
+        bankWorth, bankAt = nil, nil
+        if S.Get("bagWorthBank") then bankWorth, bankAt = Bank.Worth() end
         dirty = false
     end
 end
@@ -52,7 +59,7 @@ local function RowEnter(row)
     row.hover:Show()
     GameTooltip:SetOwner(row, "ANCHOR_LEFT")
     GameTooltip:SetBagItem(row.entry.bag, row.entry.slot)
-    if Market.Dock.Shown() then
+    if Market.Dock.AtAuction() then
         local c = T.accentSoft
         GameTooltip:AddLine(TEXT_SELL, c.r, c.g, c.b)
     end
@@ -101,6 +108,44 @@ local function NewRow(i)
     return row
 end
 
+local function NewLine()
+    local line = CreateFrame("Frame", nil, card)
+    line:SetHeight(ROW_H)
+    line:SetPoint("RIGHT", -PAD, 0)
+    line.label = ns.Font(line, St.TEXT_SIZE, nil, T.muted)
+    line.label:SetPoint("LEFT")
+    line.worth = ns.Font(line, St.TEXT_SIZE, nil, T.fg)
+    line.worth:SetPoint("RIGHT")
+    return line
+end
+
+local function PlaceLine(line, index)
+    line:SetPoint("TOPLEFT", PAD, -(PAD + HEAD_H + index * ROW_H))
+    line:Show()
+end
+
+local function DrawBank(shown)
+    if not S.Get("bagWorthBank") then
+        if bank then
+            bank:Hide()
+            both:Hide()
+        end
+        return 0
+    end
+    if not bank then
+        bank, both = NewLine(), NewLine()
+        both.label:SetText(TEXT_BOTH)
+    end
+    PlaceLine(bank, shown)
+    bank.label:SetText(bankAt and TEXT_BANK:format(ns.Shared.Ago(bankAt)) or TEXT_BANK_UNSEEN)
+    bank.worth:SetText(bankAt and Parts.Coins(bankWorth) or "")
+    both:SetShown(bankAt ~= nil)
+    if not bankAt then return 1 end
+    PlaceLine(both, shown + 1)
+    both.worth:SetText(Parts.Coins(Worth.total + bankWorth))
+    return 2
+end
+
 local function Build()
     card = CreateFrame("Frame", nil, UIParent)
     card:SetWidth(CARD_W)
@@ -125,7 +170,7 @@ local function PaintRow(row, entry, i)
     row.name:SetTextColor(color.r, color.g, color.b)
     local name = C_Item.GetItemNameByID(entry.itemID) or ""
     row.name:SetText(entry.count > 1 and TEXT_COUNT:format(name, entry.count) or name)
-    row.worth:SetText(Parts.Coins(entry.worth, true))
+    row.worth:SetText(Parts.Coins(entry.worth))
     row:Show()
 end
 
@@ -140,11 +185,12 @@ local function Draw()
     local shown = math.min(C.WORTH_TOP, #Worth.items)
     for i = 1, shown do PaintRow(rows[i] or NewRow(i), Worth.items[i], i) end
     for i = shown + 1, #rows do rows[i]:Hide() end
-    total:SetText(TEXT_TOTAL:format(Parts.Coins(Worth.total, true)))
+    total:SetText(TEXT_TOTAL:format(Parts.Coins(Worth.total)))
     local at = ns.AuctionScanTime and ns.AuctionScanTime()
     local age = ns.AuctionAge
     note:SetText(at and age and TEXT_SCANNED:format(age(GetServerTime() - at)) or TEXT_NO_SCAN)
-    card:SetHeight(PAD + HEAD_H + shown * ROW_H + GAP + St.SMALL_SIZE + PAD)
+    local lines = shown + DrawBank(shown)
+    card:SetHeight(PAD + HEAD_H + lines * ROW_H + GAP + St.SMALL_SIZE + PAD)
     card:SetParent(host)
     card:SetFrameStrata(host:GetFrameStrata())
     card:ClearAllPoints()
@@ -258,8 +304,9 @@ local function Apply()
 end
 
 Market.BagWorth = { Changed = Changed }
+Bank.onChange = Changed
 
 S.OnChange(function(key)
-    if key == "enabled" or key == "bagWorth" then Apply() end
+    if key == "enabled" or key == "bagWorth" or key == "bagWorthBank" then Apply() end
 end)
 hooksecurefunc(ns, "Apply", Apply)

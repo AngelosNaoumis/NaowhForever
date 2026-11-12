@@ -20,9 +20,9 @@ local offers, scores = {}, {}
 local Worth = { items = items, total = 0, auction = 0 }
 Market.Worth = Worth
 
-local function Each(info)
-    local vendor = select(VENDOR_PRICE, GetItemInfo(info.hyperlink)) or 0
-    local scan = not info.isBound and ns.AuctionPrice and ns.AuctionPrice(info.itemID)
+local function Each(item, itemID, bound)
+    local vendor = select(VENDOR_PRICE, GetItemInfo(item)) or 0
+    local scan = not bound and ns.AuctionPrice and ns.AuctionPrice(itemID)
     local net = scan and Market.AfterCut(scan)
     if net and net > vendor then return net, true end
     return vendor, false
@@ -34,7 +34,7 @@ local function Entry(info, bag, slot)
     entry = table.remove(spare) or {}
     entry.itemID, entry.link, entry.icon, entry.quality = info.itemID, info.hyperlink, info.iconFileID, info.quality
     entry.bag, entry.slot, entry.count, entry.worth = bag, slot, 0, 0
-    entry.each, entry.auction = Each(info)
+    entry.each, entry.auction = Each(info.hyperlink, info.itemID, info.isBound)
     byID[info.itemID] = entry
     items[#items + 1] = entry
     return entry
@@ -75,6 +75,10 @@ function Worth.Read()
     for i = 1, math.min(C.WORTH_TOP, #items) do ranks[items[i].itemID] = i end
     Worth.total, Worth.auction = total, auction
     return items
+end
+
+function Worth.Each(itemID, bound)
+    return (Each(itemID, itemID, bound))
 end
 
 function Worth.Rank(itemID)

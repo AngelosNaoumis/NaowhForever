@@ -52,14 +52,15 @@ env.GameTooltip = tip
 env.CreateFrame = function() return Stub() end
 env.GetCursorPosition = function() return cursorX, 0 end
 env.GetServerTime = function() return now end
+env.BreakUpLargeNumbers = function(n) return (tostring(n):reverse():gsub("(%d%d%d)", "%1,"):reverse():gsub("^,", "")) end
 Load({ "NaowhForever_Market/View/Chart.lua" }, env)
 
 local History = ns.Market.History
 local chart = ns.Market.Chart.New(Stub())
 local plot = chart.plot
 
-local function Scan(day, prices)
-    t.scan, t.scanAt = prices, START + day * DAY
+local function Scan(day, prices, listed)
+    t.scan, t.listed, t.scanAt = prices, listed, START + day * DAY
     History.Record()
     now = t.scanAt
 end
@@ -124,5 +125,17 @@ Check("a price that never moved is one line across the middle", plot.shown and c
 Scan(6, { [2770] = 75 })
 chart:Paint(2770)
 Check("a fall is red", chart.status.text == "Over 6 days  -25%" and chart.status.color.r == 1)
+
+Scan(7, { [2770] = 80 }, { [2770] = 1234 })
+chart:Paint(2770)
+plot.scripts.OnEnter(plot)
+cursorX = 13 * step
+plot.scripts.OnUpdate(plot)
+Check("hovering a day says how many were listed, under its price", tip.lines[1] == "Today" and tip.lines[2] == "80c"
+    and tip.lines[3] == "1,234 listed")
+cursorX = 12 * step
+plot.scripts.OnUpdate(plot)
+Check("and nothing more for a day whose count is not known", tip.lines[2] == "75c" and tip.lines[3] == nil)
+plot.scripts.OnLeave(plot)
 
 print(("test-market-chart: %d checks passed"):format(checks))

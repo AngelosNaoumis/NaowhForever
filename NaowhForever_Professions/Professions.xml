@@ -65,6 +65,7 @@
     <Script file="UI\ReagentList.lua"/>
     <Script file="UI\ReagentsWindow.lua"/>
     <Script file="UI\Alts.lua"/>
+    <Script file="UI\Link.lua"/>
     <Script file="UI\CraftQueue.lua"/>
     <Script file="UI\TrainFavorites.lua"/>
     <Script file="UI\FavoriteMarks.lua"/>

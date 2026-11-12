@@ -241,7 +241,9 @@ NaowhForever_Combat/AuraBuffs/
   Minutes Left and Hide While Resting apply as for consumables.
 - No event fires when the bag's hour-long cooldown ends or Well-Rested drops under 15 minutes, so both are a
   wake (`Wake`). One of `GCD` (1.5 s) or less is the global cooldown, not the bag's; a secret cooldown shows
-  nothing. Using the bag starts its cooldown: `BAG_UPDATE_COOLDOWN` fires on every global cooldown, so it
+  nothing. A cooldown's start is 32-bit milliseconds, so one from before a PC restart reads `TIME_WRAP`
+  (2^32 ms) ahead of `GetTime()` and is brought back by that much; unfixed, the wake's timer was refused as
+  too long, an error on every refresh. Using the bag starts its cooldown: `BAG_UPDATE_COOLDOWN` fires on every global cooldown, so it
   refreshes the row only while the bag shows and is now on cooldown (`R.BagBusy`). Level 60
   (`PLAYER_LEVEL_UP`, through `WatchesLevel`) and dying or coming back (`PLAYER_DEAD`, `PLAYER_ALIVE`,
   `PLAYER_UNGHOST`) refresh it too, registered only while it is on.

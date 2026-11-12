@@ -1,4 +1,4 @@
--- Window.lua: The Market's own window: its title bar with the scan line, and the Farm, Reagents and Prices pages (ns.Market.Window).
+-- Window.lua: The Market's own window: its title bar with the scan line, and the Farm, Reagents and Price Graph pages, free or docked beside the auction house (ns.Market.Window).
 local ns = _G.NaowhForever
 
 local Market = ns.Market
@@ -16,6 +16,8 @@ local DOT, DOT_GAP = 7, 8
 local DOT_TEXTURE = "Interface\\AddOns\\NaowhForever\\Core\\Media\\circle_mask.tga"
 local COG = "Interface\\AddOns\\NaowhForever\\Core\\Media\\Navigation\\settings.tga"
 local POSITION = "marketWindow"
+local FREE_STRATA = "HIGH"
+local DOCK_MIN_W = 700
 local PAGE = "The Market"
 local TEXT_TITLE = "The Market"
 local TEXT_ABOUT = ns.L("Where to farm, what your reagents make, and every item's price over time.")
@@ -25,15 +27,16 @@ local TEXT_OFF = ns.L("Turn on The Market in its settings to open it.")
 local PAGES = {
     { key = "farm", label = "Farm", tip = "Where your skills gather the most, priced from your last scan, and a loop through it." },
     { key = "reagents", label = "Reagents", tip = "What the reagents in your bags make, and whether to craft or sell them." },
-    { key = "prices", label = "Prices", tip = "Any item's lowest price each day over the past two weeks." },
+    { key = "prices", label = "Price Graph", tip = "Any item's lowest price each day over the past two weeks." },
 }
 
-local window, body, tabs, ticker
+local window, body, tabs, ticker, freeStop
+local dockedTo, dockGap, dockPicked, dockClosed
 local shown = "farm"
 local built = {}
 
 Market.Pages = {}
-local Window = {}
+local Window = { PAGES = PAGES }
 Market.Window = Window
 
 local function ScanLine()
@@ -56,6 +59,27 @@ local function ShowPage(key)
         built[key] = true
     end
     page.Show()
+    if dockedTo then dockPicked(key) end
+end
+
+local function Chrome()
+    if ns.foreverSkin then return St.FOREVER_TITLE_H, St.FOREVER_SIDE end
+    return 0, 0
+end
+
+local function DockWidth()
+    local _, side = Chrome()
+    local room = (UIParent:GetRight() * UIParent:GetEffectiveScale()
+        - dockedTo:GetRight() * dockedTo:GetEffectiveScale()) / window:GetEffectiveScale() - dockGap - side * 2
+    return math.max(DOCK_MIN_W, math.min(W, math.floor(room)))
+end
+
+local function Release()
+    dockedTo = nil
+    window:SetSize(W, H)
+    window:SetFrameStrata(FREE_STRATA)
+    window:ClearAllPoints()
+    Parts.Place(window, POSITION)
 end
 
 local function OnHidden()
@@ -64,6 +88,23 @@ local function OnHidden()
         ticker = nil
     end
     if built[shown] then Market.Pages[shown].Hide() end
+    if not dockedTo then return end
+    Release()
+    if dockClosed then dockClosed() end
+end
+
+local function OnSized(self)
+    if dockedTo then self:SetClampRectInsets(0, 0, 0, 0) end
+end
+
+local function DragStart(self)
+    if dockedTo then return Market.Move.Start() end
+    self:StartMoving()
+end
+
+local function DragStop(self)
+    if dockedTo then return Market.Move.Stop() end
+    freeStop(self)
 end
 
 local function OpenSettings()
@@ -72,7 +113,11 @@ end
 
 local function Build()
     window = Parts.Window(W, H, POSITION)
+    freeStop = window:GetScript("OnDragStop")
+    window:SetScript("OnDragStart", DragStart)
+    window:SetScript("OnDragStop", DragStop)
     window:HookScript("OnHide", OnHidden)
+    window:HookScript("OnSizeChanged", OnSized)
     local close = Parts.TitleBar(window, TEXT_TITLE, TEXT_ABOUT, PAGE)
     window.cog = Parts.BarButton(window, COG, TEXT_SETTINGS, TEXT_SETTINGS_TIP, OpenSettings)
     window.cog:SetPoint("RIGHT", close, "LEFT", -BAR_GAP, 0)
@@ -91,14 +136,55 @@ local function Build()
     Parts.FooterBrand(window, PAGE)
 end
 
-function Window.Open(page)
-    if not window then Build() end
+local function Present(page)
     window:SetScale(ns.UIScale())
     window.backdrop:Paint(1)
     window:Show()
     ScanLine()
     if not ticker then ticker = C_Timer.NewTicker(SCAN_TICK, ScanLine) end
     ShowPage(page or shown)
+end
+
+function Window.Open(page)
+    if not window then Build() end
+    if dockedTo then
+        local closed = dockClosed
+        Release()
+        closed()
+    end
+    Present(page)
+end
+
+function Window.DockTo(ah, page, gap, onPick, onClose)
+    if not window then Build() end
+    dockedTo, dockGap, dockPicked, dockClosed = ah, gap, onPick, onClose
+    window:SetScale(ns.UIScale())
+    window:SetFrameStrata(ah:GetFrameStrata())
+    local top, side = Chrome()
+    window:ClearAllPoints()
+    window:SetPoint("TOPLEFT", ah, "TOPRIGHT", gap + side, -top)
+    window:SetPoint("BOTTOMLEFT", ah, "BOTTOMRIGHT", gap + side, side)
+    window:SetWidth(DockWidth())
+    window:SetClampRectInsets(0, 0, 0, 0)
+    Present(page)
+end
+
+function Window.FitDock()
+    if not dockedTo then return end
+    local width = DockWidth()
+    if width == window:GetWidth() then return end
+    window:SetWidth(width)
+    Window.Refresh()
+end
+
+function Window.Undock()
+    if not dockedTo then return end
+    dockClosed = nil
+    window:Hide()
+end
+
+function Window.Docked()
+    if dockedTo then return window end
 end
 
 function ns.ToggleMarketWindow()
@@ -133,4 +219,12 @@ function ns.MarketRefresh()
     end
     Window.Refresh()
     Market.Dock.Refresh()
+end
+
+function ns.MarketPricesSeen(ids, count)
+    if not Market.On() then return end
+    Market.History.Seen(ids, count)
+    Market.BagWorth.Changed()
+    Market.Crafts.Changed()
+    Market.Farm.Changed()
 end

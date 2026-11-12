@@ -2,6 +2,143 @@
 
 ## Unreleased
 
+## 1.2.28
+
+### The Market at the auction house
+
+Thank you to everyone who has tried The Market and told us on Discord what worked and what didn't.
+This release is built from that feedback, and we'll keep going: keep telling us.
+- Blizzard's auction house is back as the game draws it. The Market is a panel on its right with
+  Buy, Sell, My Auctions and Shopping List, and Farm, Price Graph and Reagents are tabs under
+  Blizzard's own. Shift + drag moves the lot.
+- Prices keep themselves up to date as you browse, search and post, and Scan Prices now always
+  gives you an answer, even inside the fast scan's 15 minutes.
+- Sell shows the item's listings and where your price lands, asks before a post that would lose
+  you money, and remembers your favourites, hidden items, quantities and past posts.
+- Buy keeps lists of searches to run in Blizzard's window, and the Shopping List tab has your alts'
+  materials beside your own.
+- My Auctions shows how many items are listed ahead of yours, and a key can cancel the next
+  undercut auction.
+- New and off by default, under The Market's settings: the price at the other auction house
+  (Blackwater or your faction's), an average price and a mailbox total on tooltips, your bank in
+  Bag Worth, and scanning when you open the auction house.
+
+### Added
+- The Market: a Price Graph page (a tab under the auction house, or /market) that finds any scanned
+  item by name and shows its lowest price each day over two weeks.
+- The Market: a Watch List on the Buy tab beside the auction house; give an item a price and each
+  scan tells you in chat when it is at or under it. The panel follows the auction house's Buy, Sell
+  and Auctions tabs.
+- Undermine Real Reminder: choose the text's font, size, outline, and whether it sits below, above,
+  left or right of the icon (Bags, Loot & Mail > Loot).
+- Dungeon Journal: boss cards and boss pages show each boss's level.
+- RestedXP window: the current guide's name shows under its group in the header.
+- Professions: the recipe icon shows how many items a craft makes, such as 4 or 2-4.
+- Quest Area Tint (QoL, Map & Pins): colours the world map's quest objective areas, with five
+  colours and a fill opacity.
+- Unspent Legacy Points reminder in Leveling & Training > Spells & Talents, with its own toggle and
+  appearance settings. Hidden in combat and off by default.
+- Pinned Console Variables (QoL, Console Variables card): pin console variables in the Console
+  Variables window and they're put back each time you log in.
+- Announce Quest Progress: Only Finished Objectives announces an objective only when it's done.
+- The Market: Auction Margin, so Best Way to Sell recommends the auction house only when it beats a
+  vendor by at least that much.
+- Food & Drink Bar, Consumable Bar and NF Food / NF Drink: Conjured First can be switched off to use
+  your bought or cooked food and drink before a mage's conjured ones.
+- Auction Prices: Craftsman's Writ Prices shows, on a Craftsman's Writ's tooltip, the item it asks
+  for and what one costs on the auction house. Off by default; turn it on under Bags, Loot & Mail >
+  Auction Prices.
+- The Market: Price Graph has a filter that lists only Craftsman's Writs, all of them or one
+  profession's, with their prices from your scans.
+- Creature Abilities (Scout): hunters see a tameable beast's attack speed under its pet family.
+- Auto Loot While Fishing (Professions > Fishing): auto loot turns on when you cast and back off
+  once your catch is looted, without changing your own auto loot setting.
+- The Market: Farm's Plan at max skill filter ranks zones and builds loops as if your gathering
+  skills were maxed, so you can compare professions before learning one or look ahead to higher
+  routes.
+- The Market: a Shopping List tab on the auction house panel with your materials still to buy and
+  your alts', counted as you buy them.
+- The Market: Shift + drag moves the auction house, with The Market's panel, and it stays where you
+  put it.
+- The Market: auction prices update as you browse, search and post, without waiting for a scan.
+- The Market: Blackwater Price (off by default) shows the price at the other auction house on
+  tooltips, and Price Graph shows it under the item with which house pays more.
+- The Market: Price Graph shows how many were listed each day, and lists the items whose price
+  dropped or rose most.
+- The Market: Average Price, Shift Swaps Stack Prices and Mailbox Total tooltip lines, and Include
+  Bank for Bag Worth (all off by default).
+- The Market: Sell asks before a post that makes no more than a vendor pays or is far under the
+  going price (Ask Before a Bad Post, on by default).
+- The Market: Sell lists the item's listings with where your price lands; click one to take its
+  price, or Buy and Cancel from a row.
+- The Market: on Sell, right-click an item in Up Next to favourite or hide it, pick 1, a number or
+  All as the quantity for that type of item, and see your past posts of the item.
+- The Market: Undercut by a percent or a fixed amount, and an optional Starting Bid.
+- The Market: Searches on the Buy tab keeps lists of searches and your last 30, runs them in
+  Blizzard's Buy tab, and shares a list as a string.
+- The Market: My Auctions has a name filter, shows how many items are listed ahead of yours, and a
+  key binding cancels the next undercut auction.
+
+### Changed
+- Professions: the dividers between crafts on the Total Craft Timer are a thin 1px line.
+- Dungeon Journal: the Dungeon Quest Tracker is 40% narrower; long quest names take two lines.
+- Character Panel: your Gear Score card no longer has the coloured bar, and your stats list gets
+  that room.
+- The Market: Blizzard's auction house is back as the game draws it, with The Market as a panel on
+  its right: Sell posts your bags a click at a time against the cheapest listing, and My Auctions
+  cancels undercut auctions.
+- The Market: its own window now holds Farm, Reagents and Price Graph; The Market's first Buy page
+  and the Open at the Auctioneer setting are removed.
+- Settings search finds singular names when you type a plural, such as "reminders".
+- Undermine Real Reminder: its settings are now under Bags, Loot & Mail > Loot, and searching
+  "reals" or "coin" finds them.
+- Options: Auction Prices (auction house tooltip prices, Waylaid Crate Prices and the Scan Prices
+  button) has its own card on Auction House > Prices & Tooltips, shown while The Market is off too.
+- Undermine Real Reminder: the text now says "Loot Real" and is a little bigger.
+- Quiz: 343 new questions (502 in all), and you won't get the same question again until you've seen
+  them all, even after logging out.
+- Learn Selected at a class trainer and Learn All at a profession trainer ask before spending your
+  gold.
+- The Market: Farm, Price Graph (was Prices) and Reagents are tabs under Blizzard's auction house
+  tabs and dock beside it; the "The Market" button above the auction house is gone, and the panel's
+  X closes it until your next visit.
+- Scan Prices: a scan inside the fast scan's 15 minutes now reads the auction house page by page
+  instead of doing nothing. Scan on Opening (QoL, Auction Prices, off by default) scans when you
+  open the auction house.
+- Auction prices are kept per auction house, so a scan at Blackwater no longer replaces your
+  faction's prices.
+- The Market: prices and totals on Sell, My Auctions and Bag Worth are exact to the copper.
+
+### Fixed
+- Dungeon Journal: 13 more boss drops in the Drowned City, Blackmaw Hold, Krol'dok Stronghold and
+  Alcaz Prison, and Umbra, a Drowned City rare.
+- Bag Space and Alt Item Counts no longer pile up memory while you craft or loot.
+- Dungeon Journal: a long quest name no longer runs under its hand-in count, such as 21/29.
+- Settings search: typing a setting's name lists it first, each result appears once, and a result
+  names its group or module when two would read the same.
+- Settings search: clicking a result for a setting that appears in two groups of a card goes to the
+  one you picked.
+- Professions: from another continent, the next-rank trainer waypoint now points to a capital city's
+  trainer (e.g. Undercity for Expert Tailoring) instead of an outlying town.
+- Options: an Overview page no longer shows a turned-off module's card twice.
+- Settings: the Undermine Real Reminder, Racial and Class Tracking and Food & Drink Bar cards show
+  on their page and are found by search while their module is off, with a switch to turn it on.
+- Settings: the Food & Drink Bar card shows on Buffs & Consumables > Consumable Bars while the
+  Consumable Bar is off.
+- Professions: the Expert Tailoring trainer waypoint for Horde points to Josef Gregorian in
+  Undercity instead of Tarren Mill.
+- The Market: an item right-clicked from your bags at the auction house now posts from Sell.
+- Waypoints: closing the world map with a gamepad after a waypoint or guide step changed on it no
+  longer causes blocked-action errors, there or at the next radial menu. (thanks neopterygii)
+- Search boxes: a long hint, such as the Quest List's "Search quests or quest givers", stops at the
+  edge of the box instead of running past it.
+- Badges: opening the guild list no longer prints "No player named ... is currently playing" for
+  offline guild members.
+- Professions: a Link button on the profession window's title bar posts a link to your profession in
+  Trade, party, raid or guild chat, or whispers it to your target.
+- Buff Reminders: the Sleeping Bag Reminder no longer throws an error on every refresh when the bag
+  was used before a PC restart and is still on cooldown.
+
 ## 1.2.27
 
 ### Fixed

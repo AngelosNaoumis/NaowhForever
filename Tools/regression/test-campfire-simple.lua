@@ -1557,6 +1557,12 @@ do
     check("bag: used, it greys with a countdown", bag.tex.desaturated and bag.cooldown.shown
         and bag.cooldown.cooldownStart == s.now and bag.cooldown.cooldownDuration == 600
         and not bag.cooldown.hideNumbers)
+    s.bagCooldown = { start = s.now + 2 ^ 32 / 1000 - 300, duration = 600 }
+    s.fire("BAG_UPDATE_COOLDOWN")
+    check("bag: a cooldown from before a PC restart counts from its real start",
+        bag.cooldown.shown and math.abs(bag.cooldown.cooldownStart - (s.now - 300)) < 0.001)
+    s.bagCooldown = { start = s.now, duration = 600 }
+    s.fire("BAG_UPDATE_COOLDOWN")
     local reads = s.reads[CAMP] or 0
     s.fire("BAG_UPDATE_COOLDOWN")
     check("bag: a bag event updates only the bag, not the whole campfire",

@@ -21,6 +21,7 @@ local function Frame(kind, parent)
         end end
         if k == "GetText" then return function(self) return self.text end end
         if k == "SetTextColor" then return function(self, r) self.r = r end end
+        if k == "SetHeight" then return function(self, height) self.height = height end end
         if k == "HasFocus" then return function() return false end end
         if type(k) == "string" and k:find("^%u") then return function() end end
     end })
@@ -38,6 +39,10 @@ local bags = { { itemID = 104 }, { itemID = 102 } }
 local account = {}
 local refreshed, buttons, moneyBoxes = 0, {}, {}
 local GREEN, WHITE = { r = 0, g = 1, b = 0 }, { r = 1, g = 1, b = 1 }
+local others, NOW = {}, 100000
+local houseKnown = true
+local tabBars, movers = {}, nil
+local RED = { r = 1, g = 0, b = 0 }
 
 local ns = {
     THEME = { fg = WHITE, muted = WHITE, accent = WHITE },
@@ -45,8 +50,12 @@ local ns = {
     AccountSettings = function() return account end,
     AuctionPrice = function(id) return prices[id] end,
     AuctionPriceList = function() return prices end,
+    AuctionOtherPrice = function(id) return others[id], NOW - 3600, houseKnown end,
+    AuctionOtherHouse = function() return "Blackwater" end,
+    AuctionAge = function(seconds) return math.floor(seconds / 3600) .. "h" end,
     L = function(text, ...) if select("#", ...) > 0 then return text:format(...) end return text end,
     Lower = string.lower,
+    Color = function(token, text) return (token == RED and "<red>" or token == GREEN and "<green>" or "") .. text end,
     Font = function(parent) return Text(parent) end,
     Solid = function(parent) return Frame("Texture", parent) end,
     Border = function() end,
@@ -90,6 +99,13 @@ ns.Shared = {
             return icon
         end,
         Coins = function(copper) return tostring(copper) end,
+        Tabs = function(parent, _, items, onPick)
+            local bar = Frame("Frame", parent)
+            bar.items, bar.onPick = items, onPick
+            tabBars[#tabBars + 1] = bar
+            return bar
+        end,
+        PaintTabs = function(bar, key) bar.painted = key end,
         MoneyBox = function(parent)
             local money = Frame("Frame", parent)
             money.boxes = {}
@@ -103,12 +119,15 @@ ns.Shared = {
 }
 ns.Market = {
     C = { SILVER = 100 },
+    AfterCut = function(price) return math.floor(price * 0.95) end,
     Style = { TEXT_SIZE = 12, SMALL_SIZE = 11, SEARCH_H = 24, SCROLLBAR = 6, PANEL_FILL = 0.1, PICKED_FILL = 0.2,
-        BORDER_RGB = WHITE, HAVE_RGB = GREEN, DOCK_W = 380, DOCK_PAD = 10 },
+        BORDER_RGB = WHITE, HAVE_RGB = GREEN, RED_RGB = RED, DOCK_W = 380, DOCK_PAD = 10 },
+    History = { Movers = function() return movers end },
     Settings = { Get = function() return true end },
     Pages = {},
     WRITS = { [ALCHEMY] = { 201, 203, 204 }, [TAILORING] = { 202, 203 } },
     Dock = { Refresh = function() refreshed = refreshed + 1 end },
+    Searches = { Watch = function() end, Stop = function() end },
     Worth = { Read = function() return bags end },
     Chart = { New = function(parent)
         local chart = Frame("Frame", parent)
@@ -125,9 +144,11 @@ local env = setmetatable({
         GetItemIconByID = function() return 1 end, GetItemInfo = function() return nil end },
     C_TradeSkillUI = { GetTradeSkillDisplayName = function(id) return professionNames[id] end },
     GameTooltip = Frame("GameTooltip"),
+    GetServerTime = function() return NOW end,
+    UnitFactionGroup = function() return "Horde", "Horde" end,
     wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
 }, { __index = _G })
-for _, path in ipairs({ "NaowhForever_Market/Watch.lua", "NaowhForever_Market/View/Finder.lua",
+for _, path in ipairs({ "NaowhForever_Market/Houses.lua", "NaowhForever_Market/Watch.lua", "NaowhForever_Market/View/Finder.lua",
     "NaowhForever_Market/UI/Buy.lua", "NaowhForever_Market/UI/Prices.lua" }) do
     local fn = assert(loadfile(path))
     setfenv(fn, env)
@@ -262,5 +283,82 @@ check("so an item outside it is not found", IDs() == "")
 pricesSearch:SetText("")
 Pick("All Items")
 check("All Items goes back to your bags", IDs() == "104,102" and filter.label == "All Items")
+
+local views = tabBars[#tabBars]
+local labels = {}
+for i, item in ipairs(views.items) do labels[i] = item.label end
+check("Price Graph's list has a switch over it: Items, Dropped and Rose, on Items",
+    table.concat(labels, ",") == "Items,Dropped (price),Rose (price)" and views.painted == "items")
+local function Notes()
+    local notes = {}
+    for _, row in ipairs(RowsOf(window)) do notes[#notes + 1] = row.itemID .. "=" .. row.price.text end
+    return table.concat(notes, ";")
+end
+local note = pricesSearch.parent.children[2]
+views.onPick("dropped")
+check("with one day of prices, Dropped lists nothing and says what it needs", IDs() == ""
+    and note.text == "Needs prices on two days." and views.painted == "dropped")
+check("and the filter, which is for Items, is put away", not filter.shown)
+movers = { dropped = { 102, 101 }, rose = { 103 }, price = { [101] = 450, [102] = 1000, [103] = 180 },
+    change = { [101] = -10, [102] = -50, [103] = 100 } }
+Prices.Draw()
+check("Dropped lists the biggest drops first, each with today's price and its change in red",
+    Notes() == "102=1000  <red>-50%;101=450  <red>-10%" and note.text == "Biggest drops, last two days")
+check("the first is picked for the chart, as on any list", lastChart.painted == 102)
+local dropped = RowsOf(window)
+dropped[2].scripts.OnClick(dropped[2])
+check("and picking a row draws its chart", lastChart.painted == 101)
+views.onPick("rose")
+check("Rose lists the rises, in green", Notes() == "103=180  <green>+100%" and lastChart.painted == 103
+    and note.text == "Biggest rises, last two days")
+movers.rose = {}
+Prices.Draw()
+check("a day when nothing rose says so", IDs() == "" and note.text == "No item's price moved.")
+pricesSearch:SetText("lotus")
+check("typing still searches your scans by name", IDs() == "101,103")
+pricesSearch:SetText("")
+views.onPick("items")
+check("Items is your bags again, with the filter back and scan prices on its rows", IDs() == "104,102"
+    and filter.shown and Notes() == "104=70;102=2000")
+
+local function Line(start)
+    local found
+    local function Walk(f)
+        if f.kind == "FontString" and f.shown and type(f.text) == "string" and f.text:find(start, 1, true) == 1 then
+            found = f
+        end
+        for _, child in ipairs(f.children) do Walk(child) end
+    end
+    Walk(window)
+    return found
+end
+local HEAD_H, LINE_H = 48, 15
+local sub = Line("Your last scan:")
+local head = sub.parent
+check("with no price at the other house, the picked item's header is as it was", Line("Blackwater:") == nil
+    and head.height == HEAD_H)
+others[104] = 73
+Prices.Draw()
+check("with one, a line under the header gives the other house's price to the copper and its age",
+    Line("Blackwater:").text == "Blackwater: 73 each, 1h ago" and head.height == HEAD_H + LINE_H)
+check("prices within a tenth of each other after the cut say no more", Line("After the cut") == nil)
+others[104] = 80
+Prices.Draw()
+check("clearly more there says how much one makes after the cut each way",
+    Line("After the cut").text == "After the cut, one sells for 10 more at Blackwater."
+    and head.height == HEAD_H + 2 * LINE_H)
+others[104] = 40
+Prices.Draw()
+check("and clearly less says that", Line("After the cut").text == "After the cut, one sells for 28 less at Blackwater.")
+houseKnown = false
+Prices.Draw()
+check("until the house is known to be this realm's, the price shows with no word on which sells for more",
+    Line("Blackwater:").text == "Blackwater: 40 each, 1h ago" and Line("After the cut") == nil
+    and head.height == HEAD_H + LINE_H)
+houseKnown = true
+others[104] = nil
+Prices.Draw()
+check("the lines go when the price does", Line("Blackwater:") == nil and Line("After the cut") == nil
+    and head.height == HEAD_H)
 
 print(("test-market-buy-watch: %d checks passed"):format(checks))

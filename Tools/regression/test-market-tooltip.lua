@@ -1,5 +1,5 @@
--- Run with Lua 5.1 from the repository root: The Market's tooltip lines, their Compact style, stack prices and the
--- best way to sell.
+-- Run with Lua 5.1 from the repository root: The Market's tooltip lines, their Compact style, stack prices, Shift
+-- swapping them and the best way to sell.
 local World = dofile("Tools/regression/market_world.lua")
 local Load = dofile("Tools/regression/load_files.lua")
 
@@ -11,6 +11,7 @@ local t = World.Setup({ vendor = { [CLOTH] = 10, [GREEN] = 20, [BOUND] = 20 } })
 local ns, env, S = t.ns, t.env, t.ns.MarketSettings
 local post
 local skill, dust = 0, 1000
+local shift = false
 ns.THEME = { accent = { r = 0, g = 0.57, b = 0.93 }, fg = { r = 1, g = 1, b = 1 }, muted = { r = 0.5, g = 0.5, b = 0.5 } }
 ns.Market.Style = { HAVE_RGB = { r = 0.3, g = 0.82, b = 0.48 }, RED_RGB = { r = 0.97, g = 0.44, b = 0.44 } }
 ns.Professions = {
@@ -27,6 +28,7 @@ env.TooltipDataProcessor = { AddTooltipPostCall = function(_, fn) post = fn end 
 env.TooltipUtil = { GetDisplayedItem = function(tooltip) return nil, tooltip.link end }
 env.C_CurrencyInfo = { GetCoinTextureString = function(copper) return copper .. "c" end }
 env.C_Item.GetDetailedItemLevelInfo = function() return 30 end
+env.IsShiftKeyDown = function() return shift end
 Load({ "NaowhForever_Market/UI/Tooltip.lua" }, env)
 
 t.scan, t.scanAt = { [CLOTH] = 100, [GREEN] = 900 }, 1
@@ -118,6 +120,81 @@ Check("under the Auction Margin the vendor is best, and the line says what the a
 S.Set("tooltipBestMargin", 0)
 S.Set("tooltipBest", false)
 Check("and back to today's lines with it off", Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c")
+
+t.other = { [CLOTH] = 240 }
+Check("the other house's price stays off the tooltip until Blackwater Price is on", S.Get("tooltipOther") == false
+    and Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c")
+S.Set("tooltipOther", true)
+Check("on, Blackwater's price follows the stack's worth, read as the stack prices are",
+    Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c\nBlackwater | 240c each, 4800c")
+Check("an item with no price there gets no line", Hover(GREEN, 2) == "The Market\nDisenchant | about 950c")
+Check("one item away from your bags reads plain, to the copper", Hover(CLOTH) == "The Market\nBlackwater | 240c")
+S.Set("tooltipStyle", "compact")
+Check("Compact puts it under the Auction line",
+    Hover(CLOTH, 1) == "Auction x20 | 100c each, 2000c\nBlackwater | 240c each, 4800c\nVendor x20 | 10c each, 200c")
+t.otherHouse = "Horde"
+Check("at Blackwater the other house is your faction's, by the game's name for it",
+    Hover(CLOTH) == "Auction | 100c\nThe Horde | 240c\nVendor | 10c")
+t.otherHouse = nil
+S.Set("tooltipStyle", "detailed")
+S.Set("tooltipOther", false)
+
+local DAY = 86400
+local FIRST = 20000 * DAY + 3600
+local History = ns.Market.History
+local function Scan(day, each)
+    t.scan[CLOTH], t.scanAt = each, FIRST + day * DAY
+    History.Record()
+end
+Scan(0, 104)
+Scan(1, 101)
+S.Set("tooltipAverage", true)
+Check("with two days of prices there is no average line, only the change",
+    Hover(CLOTH, 1) == "The Market\nStack of 20 | 2020c\nSince yesterday | -3%")
+Scan(2, 100)
+Check("with three days the average follows the change line, to the copper",
+    Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c\nOver 2 days | -4%\n7-day average | 102c")
+S.Set("tooltipAverage", false)
+Check("off, its default, the line is gone", ns.Market.Settings.Get("tooltipAverage") == false
+    and Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c\nOver 2 days | -4%")
+S.Set("tooltipAverage", true)
+S.Set("tooltipStyle", "compact")
+Check("Compact shows it under the Auction line", Hover(CLOTH, 1)
+    == "Auction x20 | 100c each, 2000c\n7-day average | 102c\nVendor x20 | 10c each, 200c")
+Check("an item with no history has none", Hover(BOUND, 3) == "Vendor | 20c\nDisenchant | about 950c")
+S.Set("tooltipStyle", "detailed")
+S.Set("tooltipAverage", false)
+t.account.marketHistory = nil
+
+shift = true
+Check("Shift changes nothing until Shift Swaps Stack Prices is on", S.Get("tooltipShift") == false
+    and Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c" and not Shows(CLOTH, 1))
+S.Set("tooltipShift", true)
+Check("on, Both is the same with Shift held", Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c"
+    and not Shows(CLOTH, 1))
+S.Set("tooltipStack", "each")
+Check("Each Item with Shift held reads as Whole Stack, and takes the price from Auction Prices",
+    Hover(CLOTH, 1) == "The Market\nStack of 20 | 2000c" and Shows(CLOTH, 1))
+shift = false
+Check("and as Each Item again once Shift is let go, on the tooltip's next build", Hover(CLOTH, 1) == ""
+    and not Shows(CLOTH, 1))
+S.Set("tooltipStack", "stack")
+shift = true
+Check("Whole Stack with Shift held reads as Each Item, and hands the price back", Hover(CLOTH, 1) == ""
+    and not Shows(CLOTH, 1))
+Check("a single item reads the same either way", Hover(GREEN, 2) == "The Market\nDisenchant | about 950c"
+    and not Shows(GREEN, 2))
+S.Set("tooltipStyle", "compact")
+Check("Compact swaps too: Whole Stack with Shift held is each item", Hover(CLOTH, 1) == "Auction | 100c each\nVendor | 10c each")
+S.Set("tooltipStack", "each")
+Check("and Each Item is the stack", Hover(CLOTH, 1) == "Auction x20 | 2000c\nVendor x20 | 200c")
+S.Set("tooltipBest", true)
+Check("the verdict's lead follows what the prices read for", Hover(CLOTH, 1):find("^Best: Auction | %+1700c over Vendor\n") ~= nil)
+shift = false
+Check("and is for one item again without Shift", Hover(CLOTH, 1):find("^Best: Auction | %+85c over Vendor\n") ~= nil)
+S.Set("tooltipBest", false)
+S.Set("tooltipShift", false)
+S.Set("tooltipStack", "both")
 
 S.Set("tooltipStyle", "compact")
 S.Set("tooltip", false)

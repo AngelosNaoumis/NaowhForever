@@ -21,7 +21,7 @@ local function Done(ok)
     if not waiting then return end
     waiting, confirm = false, nil
     gen = gen + 1
-    if Post.onDone then Post.onDone(sent.key, sent.quantity, sent.price, ok) end
+    if Post.onDone then Post.onDone(sent.key, sent.quantity, sent.price, ok, sent.itemID, sent.duration) end
 end
 
 local function TimedOut(postGen)
@@ -41,7 +41,7 @@ local function Confirm()
     if args.commodity then
         C_AuctionHouse.ConfirmPostCommodity(args.location, args.duration, args.quantity, args.price)
     else
-        C_AuctionHouse.ConfirmPostItem(args.location, args.duration, args.quantity, nil, args.price)
+        C_AuctionHouse.ConfirmPostItem(args.location, args.duration, args.quantity, args.bid, args.price)
     end
     Wait()
 end
@@ -91,7 +91,7 @@ function Post.Deposit(entry, quantity, duration)
     return deposit
 end
 
-function Post.Send(entry, quantity, price, duration)
+function Post.Send(entry, quantity, price, duration, bid)
     if not Post.Ready() then return false end
     local location = Market.Bags.Location(entry, true)
     if not location then return false end
@@ -99,14 +99,15 @@ function Post.Send(entry, quantity, price, duration)
     if entry.commodity then
         needsConfirm = C_AuctionHouse.PostCommodity(location, duration, quantity, price)
     else
-        needsConfirm = C_AuctionHouse.PostItem(location, duration, quantity, nil, price)
+        needsConfirm = C_AuctionHouse.PostItem(location, duration, quantity, bid, price)
     end
     sent.key, sent.quantity, sent.price = entry.key, quantity, price
+    sent.itemID, sent.duration = entry.itemID, duration
     sent.multisell = not entry.commodity and quantity > 1
     waiting = true
     if needsConfirm then
         confirm = { commodity = entry.commodity, location = location, duration = duration, quantity = quantity,
-            price = price }
+            price = price, bid = bid }
         HookWarning()
     else
         Wait()

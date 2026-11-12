@@ -17,7 +17,8 @@ local PIN_MIN, PIN_GROW, PIN_RING = 10, 12, 2
 local LINE_THICK, LINE_ALPHA, LOCKED_ALPHA, PICKED_ALPHA = 2, 0.55, 0.35, 0.3
 local LAYER = 1
 local OPEN_W, LOOP_W = 110, 120
-local KV_W = 150
+local KV_W, KV_NARROW_W = 150, 130
+local STRIP_FULL_W = 680
 local TEXT_BEST = ns.L("Best for You")
 local TEXT_SKILLS = ns.L("Herbalism %d, Mining %d, Skinning %d, Fishing %d")
 local TEXT_HOUR = ns.L("about %s an hour")
@@ -207,7 +208,7 @@ local function PinEnter(pin)
     local need = (spot.can and TEXT_NEEDS or TEXT_REQUIRES)[spot.kind]:format(spot.need)
     local c = spot.can and T.muted or St.RED_RGB
     GameTooltip:AddLine(need, c.r, c.g, c.b)
-    if spot.value > 0 then GameTooltip:AddLine(TEXT_NODE:format(Parts.Coins(spot.value, true)), 1, 1, 1) end
+    if spot.value > 0 then GameTooltip:AddLine(TEXT_NODE:format(Parts.Coins(spot.value)), 1, 1, 1) end
     if spot.picked then
         local m = T.muted
         GameTooltip:AddLine(TEXT_PICKED:format(ns.Shared.Ago(spot.picked)), m.r, m.g, m.b)
@@ -314,11 +315,16 @@ function Page.DrawStrip()
     strip.priceNote:SetText(scan and TEXT_SCAN_PRICE or TEXT_NO_PRICE)
     local have = C_Item.GetItemCount(item)
     strip.have:SetText(have)
-    strip.worth:SetText(Parts.Coins(Market.AfterCut(scan or 0) * have, true))
-    strip.node:SetText(Parts.Coins(value, true))
+    strip.worth:SetText(Parts.Coins(Market.AfterCut(scan or 0) * have))
+    strip.node:SetText(Parts.Coins(value))
     strip.node.key:SetText(TEXT_A[kind] or TEXT_A_NODE)
-    strip.spark:Paint(item)
-    strip.sell:SetShown(Market.Dock.Shown() and have > 0)
+    local full = main:GetWidth() >= STRIP_FULL_W
+    strip.kv:SetWidth(full and KV_W or KV_NARROW_W)
+    strip.name:SetPoint("RIGHT", full and strip.spark or strip.kv, "LEFT", -PANE_GAP, 0)
+    strip.priceNote:SetShown(full)
+    strip.spark:SetShown(full)
+    if full then strip.spark:Paint(item) else strip.spark.label:Hide() end
+    strip.sell:SetShown(Market.Dock.AtAuction() and have > 0)
     ns.SetButtonText(strip.sell, TEXT_SELL:format(have))
     strip.sell.item = item
 end
@@ -481,6 +487,8 @@ local function BuildStrip()
     ItemTip(strip.icon)
     strip.name = ns.Font(strip, TEXT_SIZE, nil, T.fg, true)
     strip.name:SetPoint("TOPLEFT", strip.icon, "TOPRIGHT", ROW_IN, 0)
+    strip.name:SetJustifyH("LEFT")
+    strip.name:SetWordWrap(false)
     strip.need = ns.Font(strip, SMALL_SIZE, nil, T.muted)
     strip.need:SetPoint("TOPLEFT", strip.name, "BOTTOMLEFT", 0, -SUB_GAP)
     strip.price = ns.Font(strip, TEXT_SIZE, nil, T.fg)
@@ -493,6 +501,7 @@ local function BuildStrip()
     local kv = CreateFrame("Frame", nil, strip)
     kv:SetSize(KV_W, STRIP_H - ROW_IN * 2)
     kv:SetPoint("RIGHT", strip.sell, "LEFT", -PANE_GAP, 0)
+    strip.kv = kv
     strip.have = KV(kv, TEXT_HAVE, 1)
     strip.worth = KV(kv, TEXT_WORTH, 2)
     strip.node = KV(kv, TEXT_A_NODE, 3)

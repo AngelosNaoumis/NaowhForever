@@ -25,11 +25,17 @@ local function CharacterData(store, create)
     account[store][playerGUID] = mine
     return mine, true, false
 end
+local function CopyTable(t)
+    local copy = {}
+    for k, v in pairs(t) do copy[k] = type(v) == "table" and CopyTable(v) or v end
+    return copy
+end
 local env = {
     UnitName = function() return playerName end,
     UnitGUID = function() return playerGUID end,
     GetRealmName = function() return "Realm" end,
     wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
+    CopyTable = CopyTable,
     C_Item = { GetItemNameByID = function(id) return "item" .. id end, RequestLoadItemDataByID = function() end },
     GetSpellBaseCooldown = function(id) return cooldownBase[id] or 0, 0 end,
     GetProfessions = function() local t = {} for i = 1, #myLines do t[i] = i end return unpack(t) end,
@@ -396,5 +402,67 @@ SL.Step(21, -1)
 SL.Remove(21)
 check("rows without a queue part keep their old floor and never touch the queue",
     SL.List()[21] == nil and queueRemoved == nil)
+
+-- Another character's list, read and bought for from this one. Its store is the same account table,
+-- keyed by that character's GUID; a list saved before GUIDs is copied under its GUID on first use.
+Reset(); Learned({})
+local changes = 0
+SL.OnChange(function() changes = changes + 1 end)
+Craft(30, { [ORE] = 4 })
+account.profShopping["Player-Bank"] = { [31] = { name = "c31", count = 2, need = { [BAR] = 3 } } }
+account.profShopItems = { ["Player-Bank"] = { [SWORD] = 1 } }
+local function Of(guid, name)
+    local wanted = {}
+    for _, m in ipairs((SL.MaterialsOf(guid, name))) do wanted[m.item] = m.qty end
+    return wanted
+end
+check("an alt with a list has one", SL.HasList("Player-Bank", "Bank"))
+check("an alt without one has none", not SL.HasList("Player-None", "None"))
+local alt = Of("Player-Bank", "Bank")
+check("an alt's list plans from its own crafts and items", alt[BAR] == 6 and alt[SWORD] == 1 and not alt[ORE])
+check("and this character's list is still its own afterwards", Only(Plan(), ORE, 4))
+changes = 0
+SL.BoughtFor("Player-Bank", "Bank", BAR, 4)
+check("buying for an alt counts on the alt's list", account.profShopHave["Player-Bank"][BAR] == 4
+    and Of("Player-Bank", "Bank")[BAR] == 2)
+check("and not on this character's", not (SL.Have()[BAR]) and Only(Plan(), ORE, 4))
+check("this character's list is not told of the alt's", changes == 0)
+SL.BoughtFor("Player-Bank", "Bank", BAR, 2)
+SL.BoughtFor("Player-Bank", "Bank", SWORD, 1)
+check("an alt's list bought in full is cleared", not SL.HasList("Player-Bank", "Bank")
+    and next(account.profShopping["Player-Bank"]) == nil)
+check("while this character's stays", SL.List()[30] ~= nil)
+
+account.profShopping["Old-Realm"] = { [32] = { name = "c32", count = 1, need = { [ORE] = 5 } } }
+check("a list saved before GUIDs is found by name and realm", SL.HasList("Player-Old", "Old")
+    and Of("Player-Old", "Old")[ORE] == 5)
+local copied = account.profShopping["Player-Old"]
+check("it is copied under the alt's GUID and the saved one is kept", copied and copied[32].count == 1
+    and copied ~= account.profShopping["Old-Realm"] and account.profShopping["Old-Realm"][32].count == 1)
+SL.BoughtFor("Player-Old", "Old", ORE, 2)
+account.profShopping["Old-Realm"][32].count = 9
+check("once copied, the GUID's list is the one read and bought for", account.profShopping["Player-Old"] == copied
+    and Of("Player-Old", "Old")[ORE] == 3)
+playerName, playerGUID = "Old", "Player-Old"
+check("logging in on the alt shows its list with what was bought for it", SL.List()[32].count == 1
+    and SL.Have()[ORE] == 2 and Only(Plan(), ORE, 3))
+playerName, playerGUID = "Grim", "Player-Grim"
+
+account.profShopping["Two-Realm"] = { [33] = { name = "c33", count = 1, need = { [BAR] = 7 } } }
+account.profShopping["Player-Two"] = { [34] = { name = "c34", count = 1, need = { [ORE] = 2 } } }
+local two = Of("Player-Two", "Two")
+check("with a list under both its GUID and its name, only the GUID's is read", two[ORE] == 2 and not two[BAR])
+account.profShopping["Player-Two"] = {}
+check("even when the GUID's is empty", not SL.HasList("Player-Two", "Two") and next(Of("Player-Two", "Two")) == nil)
+account.profShopping["Player-Two"] = { [34] = { name = "c34", count = 1, need = { [ORE] = 2 } } }
+SL.BoughtFor("Player-Two", "Two", ORE, 50)
+check("buying more than an alt needs clears its list and keeps no extra to count against the next",
+    not SL.HasList("Player-Two", "Two") and next(Of("Player-Two", "Two")) == nil
+    and account.profShopHave["Player-Two"][ORE] == nil)
+
+account.profShopping["Player-Bad"] = { [35] = { name = "c35", count = 1 } }
+check("an alt's list that cannot be planned says so", not pcall(SL.MaterialsOf, "Player-Bad", "Bad"))
+check("and this character's list is still read and written as its own", SL.List()[30] ~= nil and SL.List()[35] == nil
+    and Only(Plan(), ORE, 4))
 
 print(("test-shopping-list-plan: %d checks passed"):format(checks))

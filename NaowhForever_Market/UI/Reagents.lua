@@ -5,7 +5,7 @@ local T = ns.THEME
 local Market = ns.Market
 local St = Market.Style
 
-local HEAD_H, SUB_GAP, SEARCH_W, LIST_GAP = 44, 4, 260, 8
+local HEAD_H, SUB_GAP, SEARCH_W, LIST_GAP, SUB_LINES = 44, 4, 260, 8, 2
 local ROSTER = "marketCharacters"
 local TEXT_TITLE = ns.L("Reagents")
 local TEXT_SUB = ns.L("What the reagents in your bags make, and whether crafting beats selling them")
@@ -32,6 +32,9 @@ local function BuildHeader()
     title:SetText(TEXT_TITLE)
     local sub = ns.Font(page, St.SMALL_SIZE, nil, T.muted)
     sub:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -SUB_GAP)
+    sub:SetPoint("RIGHT", -(SEARCH_W + LIST_GAP), 0)
+    sub:SetJustifyH("LEFT")
+    sub:SetMaxLines(SUB_LINES)
     sub:SetText(TEXT_SUB)
 end
 

@@ -10,6 +10,7 @@ local MAX_AURAS = 40
 local MAX_ELIXIRS = 3
 local SECONDS = A.C.SECONDS
 local GCD = A.C.GCD
+local TIME_WRAP = A.C.TIME_WRAP
 local PARTY_UNITS = MAX_PARTY_MEMBERS or 4
 local RAID_UNITS_MAX = MAX_RAID_MEMBERS or 40
 local CATEGORY_ORDER = A.CATEGORY_ORDER
@@ -415,6 +416,7 @@ local function BagCooldown()
     local start, duration, enable = C_Container.GetItemCooldown(SLEEPING_BAG)
     if Secret(start) or Secret(duration) or Secret(enable) then return nil end
     if enable ~= 1 or not duration or duration <= GCD then return 0 end
+    if start > GetTime() then start = start - TIME_WRAP end
     return math.max(start + duration - GetTime(), 0)
 end
 

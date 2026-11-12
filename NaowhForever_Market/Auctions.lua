@@ -2,6 +2,7 @@
 local ns = _G.NaowhForever
 
 local Market = ns.Market
+local S = Market.Settings
 local Listings = Market.Listings
 
 local SOLD = Enum.AuctionStatus.Sold
@@ -9,9 +10,10 @@ local OWNED_SORTS = { { sortOrder = Enum.AuctionHouseSortOrder.Name, reverseSort
     { sortOrder = Enum.AuctionHouseSortOrder.Price, reverseSort = false } }
 local EVENTS = { "OWNED_AUCTIONS_UPDATED", "AUCTION_CANCELED", "AUCTION_HOUSE_THROTTLED_SYSTEM_READY",
     "ITEM_KEY_ITEM_INFO_RECEIVED" }
+local LADDER_STEP = 2
 
 local list, spare = {}, {}
-local lowest, checked, cancelled = {}, {}, {}
+local lowest, checked, cancelled, ladders = {}, {}, {}, {}
 local checking, checkingKey
 local wanted = false
 local events
@@ -33,8 +35,33 @@ local function Status(auction)
     local low = lowest[auction.key]
     if not checked[auction.key] then return "checking" end
     if low == false then return "noanswer" end
-    if not (low and auction.price) then return "lowest" end
-    return low < auction.price and "undercut" or "lowest"
+    if not (low and auction.price) or auction.ahead == 0 then return "lowest" end
+    return auction.ahead > S.Get("aheadAllowed") and "undercut" or "ahead"
+end
+
+local function Ahead(auction)
+    local ladder = ladders[auction.key]
+    if not (ladder and auction.price) then return 0 end
+    local ahead = 0
+    for i = 1, #ladder, LADDER_STEP do
+        if ladder[i] >= auction.price then break end
+        ahead = ahead + ladder[i + 1]
+    end
+    return ahead
+end
+
+local function KeepLadder(key)
+    local ladder = ladders[key] or {}
+    wipe(ladder)
+    for i = 1, Listings.count do
+        local row = Listings.rows[i]
+        local others = row.quantity - row.own
+        if others > 0 then
+            ladder[#ladder + 1] = row.price
+            ladder[#ladder + 1] = others
+        end
+    end
+    ladders[key] = ladder
 end
 
 local function Request()
@@ -63,6 +90,7 @@ local function Fill(auction)
     local keyInfo = C_AuctionHouse.GetItemKeyInfo(auction.itemKey)
     auction.commodity = keyInfo and keyInfo.isCommodity
     auction.key = keyInfo and KeyOf(auction.itemKey, keyInfo.isCommodity)
+    auction.ahead = Ahead(auction)
 end
 
 local function Read()
@@ -90,10 +118,14 @@ local function Checked()
     if not key or Listings.state == "searching" or Listings.state == "waiting" then return end
     if Listings.state == "listed" then
         lowest[key] = (Listings.Cheapest())
+        KeepLadder(key)
     else
-        lowest[key] = false
+        lowest[key], ladders[key] = false, nil
     end
     checked[key] = true
+    for _, auction in ipairs(list) do
+        if auction.key == key then auction.ahead = Ahead(auction) end
+    end
     NextCheck()
     Changed()
 end
@@ -127,9 +159,11 @@ function Auctions.Counts()
     return undercut, listed
 end
 
-function Auctions.NextUndercut()
+function Auctions.NextUndercut(match)
     for _, auction in ipairs(list) do
-        if Status(auction) == "undercut" and Auctions.CanCancel(auction) then return auction end
+        if Status(auction) == "undercut" and Auctions.CanCancel(auction) and (not match or match(auction)) then
+            return auction
+        end
     end
 end
 
@@ -156,6 +190,7 @@ function Auctions.Start()
     for _, event in ipairs(EVENTS) do events:RegisterEvent(event) end
     wipe(lowest)
     wipe(checked)
+    wipe(ladders)
     checking, checkingKey = nil, nil
     Listings.Start()
     Listings.onChange = Checked

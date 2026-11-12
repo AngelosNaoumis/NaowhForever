@@ -60,8 +60,10 @@ function Parts.ShareMenu(owner, title, message, copyTitle, copyText, trade, icon
         root:CreateButton(target and TEXT_WHISPER .. target or TEXT_WHISPER_TARGET, function()
             Send("WHISPER", target)
         end):SetEnabled(not locked and target ~= nil)
-        root:CreateDivider()
-        root:CreateButton(TEXT_COPY, function() ns.ShowCopyLine(copyTitle, copyText, icon) end)
+        if copyText then
+            root:CreateDivider()
+            root:CreateButton(TEXT_COPY, function() ns.ShowCopyLine(copyTitle, copyText, icon) end)
+        end
         if locked then root:CreateTitle(ns.Color("muted", TEXT_LOCKED)) end
         if trade and not tradeChannel then root:CreateTitle(ns.Color("muted", TEXT_NO_TRADE)) end
     end)

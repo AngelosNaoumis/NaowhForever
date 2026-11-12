@@ -82,7 +82,7 @@ end
 
 local function RowClicked(row)
     local finder = row.finder
-    finder.picked = row.itemID
+    finder.picked, finder.at = row.itemID, row.index
     finder.redraw()
 end
 
@@ -139,19 +139,23 @@ end
 
 local function DrawRows(finder)
     local found, rows, list = finder.found, finder.rows, finder.list
+    local at = finder.at
+    local one = at ~= nil and found[at] == finder.picked
+    local side = finder.listed and finder.side
     for i, id in ipairs(found) do
         local row = rows[i] or NewRow(finder)
         rows[i] = row
-        row.itemID = id
+        row.itemID, row.index = id, i
         row.stripe:SetShown(i % 2 == 0)
-        row.picked:SetShown(id == finder.picked)
+        row.picked:SetShown(id == finder.picked and (not one or at == i))
         row.icon.texture:SetTexture(C_Item.GetItemIconByID(id))
         local color = Items.QualityColor(id) or T.fg
         row.name:SetTextColor(color.r, color.g, color.b)
         row.name:SetText(finder.names[id] or Items.Name(id))
         local scan = Finder.Scan(id)
-        row.price:SetText(scan and Parts.Coins(scan) or "")
-        local pc = Watch.Under(id) and St.HAVE_RGB or T.fg
+        local note = side and side(i)
+        row.price:SetText(note or scan and Parts.Coins(scan) or "")
+        local pc = note and T.muted or Watch.Under(id) and St.HAVE_RGB or T.fg
         row.price:SetTextColor(pc.r, pc.g, pc.b)
         local watched = Watch.Target(id) ~= nil
         row.mark:SetShown(watched)
@@ -168,19 +172,20 @@ end
 function Finder.Draw(finder)
     local text = finder.search:GetText() or ""
     wipe(finder.names)
-    if #text >= MIN_LETTERS then
+    finder.listed = #text < MIN_LETTERS
+    if not finder.listed then
         finder.note:SetText(FromScans(finder, text))
     elseif finder.only then
         finder.note:SetText(FromOnly(finder))
     else
         finder.note:SetText(finder.empty(finder.found))
     end
-    if not finder.picked then finder.picked = finder.found[1] end
+    if not finder.picked then finder.picked, finder.at = finder.found[1], 1 end
     DrawRows(finder)
 end
 
 function Finder.Reset(finder)
-    finder.picked = nil
+    finder.picked, finder.at = nil, nil
     finder.search:SetText("")
 end
 

@@ -6,11 +6,16 @@ local REALM_JOIN = "-"
 local DURATION_CVAR = "auctionHouseDurationDropdown"
 
 local S = ns.UI.ModuleSettings("market", { enabled = F.enabled,
-    duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), postKeys = false,
-    bagWorth = false,
-    tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipBest = false, tooltipBestMargin = 0,
+    duration = tonumber(C_CVar.GetCVarDefault(DURATION_CVAR)), postKeys = false, askBadPost = true,
+    bagWorth = false, bagWorthBank = false,
+    aheadAllowed = 0,
+    tooltip = true, tooltipStyle = "detailed", tooltipStack = "both", tooltipShift = false, tooltipBest = false, tooltipBestMargin = 0,
+    tooltipOther = false, tooltipMail = false, tooltipAverage = false,
     farmHerbs = true, farmVeins = true, farmSkins = true, farmFish = true, farmLocked = false, farmPlan = false,
-    sortRun = "", sortCrafts = "", sortMine = "", undercut = "step", watchAlerts = true })
+    sortRun = "", sortCrafts = "", sortMine = "", undercut = "step", undercutPercent = 5, undercutAmount = 100,
+    startingBid = false, watchAlerts = true,
+    sellQuantityTrade = 0, sellQuantityConsumable = 0, sellQuantityRecipe = 0, sellQuantityOther = 0,
+    sellNumberTrade = 20, sellNumberConsumable = 20, sellNumberRecipe = 20, sellNumberOther = 20 })
 ns.MarketSettings = S
 
 local Market = { Settings = S }
@@ -36,7 +41,7 @@ function Market.HouseData(store, create)
         all = {}
         account[store] = all
     end
-    local key = Market.HouseKey()
+    local key = ns.AuctionHouseKey and ns.AuctionHouseKey() or Market.HouseKey()
     if not all[key] and create then all[key] = {} end
     return all[key]
 end

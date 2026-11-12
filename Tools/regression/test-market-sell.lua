@@ -187,7 +187,7 @@ M.Sell.Keep()
 t.results.commodity[2770] = {}
 t.Fire("COMMODITY_SEARCH_RESULTS_UPDATED", 2770)
 price, why = M.Sell.Price(M.Sell.Focus())
-Check("no listings and no scan: half again what a vendor pays, up to a silver", price == 100 and why == "vendor")
+Check("no listings and no scan: half again what a vendor pays, never rounded up", price == 10 and why == "vendor")
 
 t = Setup({ bags = { [0] = { Stack(2770, 20), Stack(4306, 3), Stack(5555, 2) } },
     status = { [2770] = COMMODITY, [4306] = COMMODITY, [5555] = COMMODITY }, scan = { [2770] = 60, [4306] = 100, [5555] = 10 },

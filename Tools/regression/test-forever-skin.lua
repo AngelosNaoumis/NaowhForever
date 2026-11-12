@@ -311,6 +311,24 @@ do
     tabs:SetWidth(800)
     Parts.SetTabs(tabs, items)
     check("Naowh: widening restores full labels", not a.cut and not b.cut and not tabs.buttons[3].cut)
+    items[1].note = " 5"
+    Parts.SetTabs(tabs, items)
+    check("Naowh: a tab's note follows its label and is measured with it", a.text.text == "A 5"
+        and a.want == #"A 5" * 7 + markRoom)
+    items[1].note = nil
+    Parts.SetTabs(tabs, items)
+    check("Naowh: and goes when cleared", a.text.text == "A")
+    local measured = { ["Buy 2"] = 33, ["Sell 32"] = 40, ["My Auctions 5"] = 87, ["Shopping List"] = 85 }
+    local dock = { { key = "buy", label = "Buy", note = " 2" }, { key = "sell", label = "Sell", note = " 32" },
+        { key = "mine", label = "My Auctions", note = " 5" }, { key = "shop", label = "Shopping List" } }
+    local panel = Parts.Tabs(New("Frame"), 360, dock, function() end, true)
+    for _, button in ipairs(panel.buttons) do
+        button.text.GetStringWidth = function(self) return measured[self.text] end
+    end
+    Parts.SetTabs(panel, dock)
+    local whole = true
+    for _, button in ipairs(panel.buttons) do whole = whole and not button.cut end
+    check("Naowh: The Market's four panel tabs, with counts, fit its 380-wide panel whole", whole)
     Parts.SetTabs(tabs, { items[2], items[1] })
     check("Naowh: reused buttons follow keys after reordering", not a.mark.shown and b.mark.shown and not tabs.buttons[3].shown)
     check("Naowh: a label moves back to the middle once its tab is no longer picked", TextX(a) == 0 and TextX(b) == markRoom / 2)
@@ -377,6 +395,10 @@ do
         and portrait.ringArt.h == portrait.ringArt.w)
     check("its title bar drags it, its close takes clicks", chrome.strip and chrome.strip.window == window
         and chrome.close.mouse == nil)
+    local dragged
+    window:SetScript("OnDragStart", function(w) dragged = w end)
+    chrome.strip.scripts.OnDragStart(chrome.strip)
+    check("its title bar drags through the window's own drag script", dragged == window)
     chrome.close.scripts.OnClick(chrome.close)
     check("the red close button closes the window", window.shown == false)
     check("the game's rock behind it", window.backdrop.pattern.texture == St.FOREVER_ROCK

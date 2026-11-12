@@ -123,7 +123,8 @@ NaowhForever_QoL/
     WaylaidCratesData.lua what each Waylaid Crate can be filled with (ns.WaylaidCrates), generated
     WritRequestsData.lua the item each Craftsman's Writ asks for (ns.WritRequests), generated
     PriceShare.lua      Prices for Other Addons: Auctionator's price API (`Auctionator.API.v1`) answered from Auction Prices
-    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans or the release's prices, Waylaid Crate Prices, Craftsman's Writ Prices
+    AuctionPrices.lua   Auction Prices (ns.AuctionPrice, ns.AuctionListed, ns.AuctionOtherPrice, ns.AuctionAge, ns.AuctionScanSummary, ns.AuctionScan), from your scans (fast, or page by page), the listings you see (ns.AuctionSeen) or the release's prices, Scan on Opening, Waylaid Crate Prices, Craftsman's Writ Prices
+    AuctionSeen.lua     Auction Prices kept as you go: the browse list, an item's listings and your own posts, read as the game sends them
     FoodBar.lua         the Food & Drink Bar (its food and potion lists are Shared/Game/Consumables.lua)
     BagSpace.lua        Bag Space (ns.BagSpaceRescan; ns.BagSpace for its ignore list)
     DestroyCheapest.lua the bags-full offer, the state the scan, the popup and the delete share (ns.DestroyCheapest)
@@ -499,9 +500,29 @@ NaowhForever_QoL/
   bags you are looking at.
 - Auction Prices keeps one price table per auction house (realm and faction), as prices differ;
   the key is worked out once because it is read on every item tooltip.
+- The house is the one you are at: your faction's, or the realm's Blackwater house (`Realm-Blackwater`)
+  while the auction house is open at an auctioneer of neither faction. So a scan in Booty Bay is kept as
+  Blackwater's and never overwrites your faction's prices, and closing the auction house goes back to
+  your faction's house. The auctioneer is the `npc` unit at `AUCTION_HOUSE_SHOW`: `UnitFactionGroup`
+  names a faction only for an NPC of a faction allied with one, so a goblin auctioneer reads as neither.
+  With no `npc` unit the house stays your faction's. The zone must also not be your faction's territory
+  (`C_PvP.GetZonePVPInfo()` is not "friendly"), so a city auctioneer that read as neither faction would
+  still be your faction's house: a Blackwater scan kept as your faction's is how it was before, the
+  other way round would leave your tooltips stale. Unverified in game: both reads on Forever.
+- `ns.AuctionOtherPrice(itemID)` reads the other house you can reach the same way, Blackwater's from
+  your faction's and your faction's while at Blackwater: its price and when it was read, from your own
+  scan or sighting there or the release's prices, by the rules your own house's price follows. So until
+  a scan there finds this realm's house, it is the middle of the region's. `ns.AuctionOtherHouse()` is its tag in the
+  release's prices (Alliance, Horde or Blackwater) and `ns.AuctionHouseKey()` the key of the house you
+  are at. Nothing is asked of the game for it.
+- The release's Blackwater houses are kept beside your faction's and decoded only when a price there is
+  first asked for. Each side finds its own house and keeps its own middle (`feeds`), and letting one
+  side's decoded houses go never drops the other's, or two prices on one tooltip would decode a house
+  again on every hover.
 - Every release carries every Forever auction house's prices of its hour (`NaowhForever_AuctionData`),
   so tooltips, Waylaid Crates and Professions have prices before you ever scan. They load the first
-  time something asks for a price; only your region's houses of your faction are kept after that.
+  time something asks for a price; only your region's houses of your faction and its Blackwater houses
+  are kept after that.
 - Blizzard's data does not say which of your faction's houses is yours, so the house is the one
   with the most items within 1% of your own last scan (at least 20). A new scan of your own looks
   again. A price then comes from your scan or that house, whichever is newer. Until a house is
@@ -514,18 +535,55 @@ NaowhForever_QoL/
   has none, and reads as unknown.
 - Scans are stamped with `GetServerTime()`, as the release's prices carry Blizzard's time
   (Last-Modified), so a PC clock that is off still puts the newer one first.
+- Prices are also kept as you go (`AuctionSeen.lua`): whenever the game has already sent listings, the item's
+  lowest price goes into the same table a scan fills, so a price you just looked at is never hours old. It
+  reads Blizzard's browse list (`AUCTION_HOUSE_BROWSE_RESULTS_UPDATED` and `_ADDED`), an item's or commodity's
+  listings (`ITEM_SEARCH_RESULTS_UPDATED`, `COMMODITY_SEARCH_RESULTS_UPDATED`), whoever asked for them, so The
+  Market's Sell and My Auctions searches count too, and your own posts. It never sends a query of its own.
+- It is on while the Scan Prices button is on or The Market is on, and registers its five events only then;
+  with both off there is no frame, no event and no hook. It has no switch of its own: it changes nothing a
+  player sees except that prices are fresher, and costs nothing away from an auctioneer, where those events
+  never fire.
+- A price seen this way is dated on its own (`house.seen`: item ID to `GetServerTime()`), and the house's scan
+  time (`house.time`) does not move. So a tooltip reads "each, 2m ago" for that item, while "Last scan ... ago",
+  the Scan Prices cooldown and `ns.AuctionScanTime` still speak of the last full scan and never claim one
+  happened. A price seen since the release's prices comes before them, as a newer scan would, and is written
+  into the merged price list in hand, so `ns.AuctionPriceList` stays the same table. A full scan replaces the
+  table and forgets the dates.
+- A sighting replaces the price only when it shows the whole item: a browse row whose item key has no random
+  suffix, or listings read to the end or in rising price order. Anything else only ever lowers it: one "of the
+  Bear" variant, more than `SEEN_ROWS` (50) listings in another order (Blizzard's item list can be sorted by
+  time left), and your own post, which is the new lowest only when it is under the one known. A listing at a
+  price always proves the lowest is no higher.
+- The count is written only with the whole item: a browse row's `totalQuantity`, or the quantities of listings
+  read to the end. That is how many are up for sale, where a full scan counts auctions (a stack once); for
+  items that do not stack the two are the same. Otherwise the last count stays.
+- The lowest price is the house's, yours included, as a full scan reads it. Nothing undercuts from this
+  table: The Market undercuts only live listings that are not yours and at most matches a scan price, so
+  your own price here cannot chase itself down.
+- One event is one batch: every row is written straight into the table, and the others hear once at its end,
+  only when something changed (`ns.AuctionSeenDone`): `ns.MarketPricesSeen` with the item IDs, for The
+  Market's price history, Bag Worth, Crafts and Farm, and `ns.AuctionPricesChanged` for Prices for Other
+  Addons. No window is redrawn and no Watch List line printed; those follow a full scan.
+- A post is noted from post-hooks on `C_AuctionHouse.PostItem` and `PostCommodity` (the item from its
+  location, the buyout or unit price), which cover Blizzard's Sell tab and The Market's alike, and written on
+  `AUCTION_HOUSE_AUCTION_CREATED`. A post the game asks to confirm and you decline never gets that event,
+  and the next post replaces the note.
+- With neither a scan nor the release's prices for your region, a seen price still shows on its tooltip;
+  what needs a scan (`ns.AuctionScanTime`: crafting profit, Disenchant Deals) still asks for one.
 - Capture Other Addons' Scans hooks `C_AuctionHouse.ReplicateItems` the first time it is on, so a
   full scan another addon starts while the auction house is open is read like one from Scan Prices.
   A secure hook cannot be removed, so the hook checks the setting on each call and turning it off
   needs no reload. It works with the Scan Prices button hidden.
 - A captured scan updates the last-scan time and the Scan Prices cooldown, but never prints a
   timeout, empty or closed message: we did not start it.
-- Only `REPLICATE_ITEM_LIST_UPDATE` results are read; Auctionator's summary scans use browse
-  queries and are not captured. The reader stops listening before it reads, so later cache updates
-  do not repeat a scan.
-- The Scan Prices button sits after the last auction house tab added through LibAHTab
-  (Auctionator's Shopping, Selling, Cancelling and Auctionator), read from the library's
-  `internalState.Tabs`, which is not public API; without it the button sits next to Auctions.
+- Only `REPLICATE_ITEM_LIST_UPDATE` results are read as a captured scan; another addon's browse
+  queries are not, though their rows are kept as any browse list is. The reader stops listening
+  before it reads, so later cache updates do not repeat a scan.
+- The Scan Prices button sits after The Market's Farm, Price Graph and Reagents tabs while they show
+  (`ns.MarketAuctionTabs`, read only when The Market is loaded), else after the last auction house tab
+  added through LibAHTab (Auctionator's Shopping, Selling, Cancelling and Auctionator), read from the
+  library's `internalState.Tabs`, which is not public API; without either it sits next to Auctions.
   Those tabs can be made on the same AUCTION_HOUSE_SHOW, after us, so the button is placed again
   a frame later.
 - Blizzard allows one full replication scan every 15 minutes (`SCAN_COOLDOWN` 900s). The
@@ -533,10 +591,44 @@ NaowhForever_QoL/
   not stall; bid-only listings are skipped. The profession window's crafting profit reads these
   prices, so it is refreshed after a scan.
 - The game sends nothing back when it refuses a full scan, and there is no call that says whether
-  one is allowed. So the cooldown runs from the last request (`requested` on the house) as well as
-  the last finished scan: an unanswered click no longer leaves the button free to fail again
-  straight away. After `TIMEOUT` (60s) the "no answer" line prints, but the reader keeps listening
-  until the auction house closes, so an answer that arrives late is still read.
+  one is allowed. So the fast scan's cooldown is our own: 15 minutes from its last request or
+  answer (`requested` on the house), ours or one captured from another addon.
+- Scan Prices never refuses. With the fast scan free it asks for one (`ReplicateItems`): one
+  request, the whole house in seconds, and every auction counted. Inside its 15 minutes, or when
+  the game gives no answer in `TIMEOUT` (60s, a refusal we could not foresee), it reads the house
+  page by page instead and says which in chat. The fast scan stays first because it is the quicker
+  and fuller of the two; the page by page scan is what makes every click end in prices. After a
+  timeout the reader keeps listening, so a fast answer that arrives late is read and the pages
+  dropped, and so is a fast scan another addon starts meanwhile, with capture on.
+- The page by page scan sends what Blizzard's own Buy tab sends for an empty search with its
+  default filters (`AuctionHouseSearchBarMixin:StartSearch`): `SendBrowseQuery` with no name, no
+  category or level, the six quality filters of `AUCTION_HOUSE_DEFAULT_FILTERS` and its default
+  sort, price then name. Each results event that is not the last (`HasFullBrowseResults`) asks for
+  the next page with `RequestMoreBrowseResults`, as Blizzard's list does when scrolled.
+- Both calls go through the auction house's message throttle, so each waits for
+  `IsThrottledMessageSystemReady` and, when it is not, for `AUCTION_HOUSE_THROTTLED_SYSTEM_READY`:
+  the scan sends one message at a time and shares the throttle with Blizzard's window and The
+  Market's searches. A page or a turn that takes longer than `BROWSE_TIMEOUT` (30s) ends the scan
+  with a reason, as `AUCTION_HOUSE_BROWSE_FAILURE` does.
+- The button counts the item rows read so far ("1500 items"): the game does not say how many are
+  to come. On the last page the whole list is read once from `GetBrowseResults`, 1000 rows a frame
+  as the fast scan's is, each item at the lowest `minPrice` of its rows (a random-suffix item has
+  one row per variant) with their `totalQuantity` added up as its count: how many are for sale,
+  where the fast scan counts auctions.
+- The browse list is one per client, shown in Blizzard's Buy tab. The scan fills it, so that tab
+  lists every item while and after it runs. A search of your own, or a favourites search
+  (post-hooks on `SendBrowseQuery` and `SearchForFavorites`, installed with the first page by page
+  scan), takes the list back: the scan stops and says so rather than read your results as the
+  house. Results that arrive before our query was sent are not ours and are ignored.
+- A page by page scan that stops, closed auction house included, writes nothing as a scan: half a
+  house would drop every price it had not reached. With prices kept as you go on, the pages it
+  did read are already in the table as seen prices.
+- A page by page scan does not start the fast scan's 15 minutes, which Blizzard counts on its own
+  requests, and the button's line no longer says "next in": there is no wait to count down.
+- Scan on Opening (`ahAutoScan`, off, with `ahAutoScanMinutes`, 15) starts the same scan `AUTO_DELAY`
+  (1s) after the auction house opens when the last finished scan of this house is older than its
+  minutes, or there is none. The delay lets Blizzard's own favourites search, sent as its window
+  shows, go first instead of cutting ours off. Off, the open event starts no timer.
 - Waylaid Crate Prices (`ahCrates`) lists, on a labelled Waylaid Crate's tooltip, each bundle it takes at
   its count times the item's lowest buyout from the last scan, in the game's order, the cheapest in the
   accent and marked "cheapest". A bundle with no price gets no line, and a crate with none priced gets
