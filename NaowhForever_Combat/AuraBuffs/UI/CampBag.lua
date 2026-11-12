@@ -10,6 +10,7 @@ local D, Look, Secret = A.CampData, A.CampIcon, A.Camp.Secret
 
 local ITEM = ns.Shared.Items.SLEEPING_BAG
 local GCD = A.C.GCD
+local TIME_WRAP = A.C.TIME_WRAP
 local WAKE_PAD = 0.1
 local FALLBACK_ICON = St.CAMP_BAG_FALLBACK_ICON
 local NEARBY, SITTING, SITTING_CRAFT = D.CAMPFIRE_NEARBY, D.WELCOMING_CAMPFIRE, D.WELCOMING_CAMPFIRE_CRAFT
@@ -50,7 +51,9 @@ end
 local function Cooldown()
     local start, duration, enable = C_Container.GetItemCooldown(ITEM)
     if Secret(start) or Secret(duration) or Secret(enable) then return end
-    if enable == 1 and duration and duration > GCD and start + duration > GetTime() then return start, duration end
+    if enable ~= 1 or not duration or duration <= GCD then return end
+    if start > GetTime() then start = start - TIME_WRAP end
+    if start + duration > GetTime() then return start, duration end
 end
 
 local function Rested()

@@ -2062,6 +2062,14 @@ do
     t.Advance(3600)
     Check("back once the cooldown ends, with no event", t.Shown(), ICON)
 
+    -- A cooldown started before a PC restart: its start reads 2^32 ms ahead of GetTime().
+    t.state.cooldowns[BAG] = { t.state.now + 2 ^ 32 / 1000 - 2800, 3600 }
+    t.Fire("BAG_UPDATE_COOLDOWN")
+    t.Advance(0.5)
+    Check("a cooldown from before a restart hides it", t.Shown(), "")
+    t.Advance(801)
+    Check("and it is back when that cooldown really ends", t.Shown(), ICON)
+
     t.state.auras.player = { { RESTED, t.state.now - 1000 + 1800, 7200 } }
     t.Fire("UNIT_AURA", "player")
     t.Advance(0.5)
