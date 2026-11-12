@@ -1030,6 +1030,7 @@ NaowhForever_QoL/
 - Auras cannot be read in combat, so the camp check pauses there rather than reading a missing aura as having walked away.
 - A dismiss with no reason is the close button; one with a reason closes only what that reason opened, so landing never shuts a quiz opened by hand.
 - In `QuizData.lua` the first answer is the right one; the quiz shuffles them before showing.
+- Asked questions are kept per account by their text (`quizSeen`), so none comes back until the whole bank has been asked, across sessions, and new questions join the unasked ones.
 
 ### Daily Word
 - Everyone gets the same word on the same day without any server: the day is the one the next
