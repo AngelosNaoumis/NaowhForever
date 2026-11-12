@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## 1.2.28
 
 ### The Market at the auction house
