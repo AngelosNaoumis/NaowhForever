@@ -236,7 +236,9 @@ NaowhForever_Market/
   so Farm works without Glimmer's own pins.
 - A node is priced at its item's scan price after the cut, times `YIELD` (2 for a herb, 1.5 for a vein).
   Your skill is Glimmer's (`Target.Skill`): a node you cannot gather yet is drawn faded behind a filter
-  and left off the loop.
+  and left off the loop. Plan at max skill (`farmPlan`) ranks and loops every node as if each skill
+  were maxed, so a player can compare professions before learning one; its nodes stay faded and marked
+  Requires, since you still cannot gather them.
 - The loop is a nearest-neighbour tour of the zone's spots you can gather, starting at the one nearest
   you when you are in the zone, on its own map ID or one `Shared.Places.SameMap` reads as it. Its time is its length at `TRAVEL_SPEED` (10 yards a second, riding)
   plus `GATHER_SECONDS` a node, and its worth assumes `OCCUPANCY` (a third) of spots hold a node at a
@@ -473,3 +475,5 @@ Away from it again:
     Auction again. With Best Way to Sell off, Auction Margin is dimmed and says it needs it.
 51. Prices' filter: All Writs lists the Craftsman's Writs in your scans, by name; a profession, named in your
     client's language, lists only its own; typing searches within it; All Items goes back to your bags.
+52. On a character without Mining, tick Veins and Plan at max skill: Farm lists the vein zones, and a
+    zone's map shows its veins faded with a loop through them. Untick it and the list empties again.

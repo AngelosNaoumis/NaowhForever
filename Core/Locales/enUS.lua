@@ -8035,6 +8035,7 @@ L["Waypoints through the loop, nearest stop first, each placed when you reach th
 L["%s loop"] = true
 L["Veins"] = true
 L["Nodes I can't gather yet"] = true
+L["Plan at max skill"] = true
 L["Farm needs Quality of Life (Glimmer's herb and vein map) and Professions turned on."] = true
 L["Herbalism %d"] = true
 L["Mining %d"] = true

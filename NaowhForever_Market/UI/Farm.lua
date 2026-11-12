@@ -10,7 +10,7 @@ local Farm, Spark = Market.Farm, Market.Spark
 
 local TEXT_SIZE, SMALL_SIZE, BUTTON_H = St.TEXT_SIZE, St.SMALL_SIZE, St.BUTTON_H
 local ZONES_W, PANE_GAP, HEAD_H, ZONE_ROW_H, ZONE_ICON, ZONE_ICONS = 250, 12, 62, 52, 16, 5
-local FILTER_H, FILTERS_H, TICK = 20, 112, 12
+local FILTER_H, FILTERS_H, TICK = 20, 132, 12
 local MAP_HEAD_H, STRIP_H, STRIP_ICON, SPARK_W, SPARK_H = 44, 74, 40, 200, 40
 local ROW_IN, GAP, SUB_GAP, BAR_H, SCROLL_IN = 8, 6, 4, 3, 4
 local PIN_MIN, PIN_GROW, PIN_RING = 10, 12, 2
@@ -31,6 +31,7 @@ local TEXT_LOOP_TIP = ns.L("Waypoints through the loop, nearest stop first, each
 local TEXT_LOOP_TITLE = ns.L("%s loop")
 local TEXT_HERBS, TEXT_VEINS, TEXT_LOCKED = ns.L("Herbs"), ns.L("Veins"), ns.L("Nodes I can't gather yet")
 local TEXT_SKINS, TEXT_FISH = ns.L("Beasts to skin"), ns.L("Fishing")
+local TEXT_PLAN = ns.L("Plan at max skill")
 local TEXT_NOT_READY = ns.L("Farm needs Quality of Life (Glimmer's herb and vein map) and Professions turned on.")
 local TEXT_NO_ZONES = ns.L("No zone has anything for your skills. Learn Herbalism, Mining, Skinning or Fishing, or turn on what you gather below.")
 local TEXT_NEEDS = { herb = ns.L("Herbalism %d"), ore = ns.L("Mining %d"), skin = ns.L("Skinning %d"),
@@ -239,7 +240,7 @@ local function DrawPins(width, height)
     local n, most = 0, Farm.most or 0
     local showLocked = S.Get("farmLocked")
     for _, spot in ipairs(Farm.spots) do
-        if spot.wanted and (spot.can or showLocked) then
+        if spot.wanted and (spot.reach or showLocked) then
             n = n + 1
             local pin = pins[n] or NewPin()
             pins[n] = pin
@@ -445,6 +446,7 @@ local function BuildZones()
     NewFilter(box, "farmSkins", TEXT_SKINS, 3)
     NewFilter(box, "farmFish", TEXT_FISH, 4)
     NewFilter(box, "farmLocked", TEXT_LOCKED, 5)
+    NewFilter(box, "farmPlan", TEXT_PLAN, 6)
     zoneScroll = ns.UI.SlimScroll(zonePane)
     zoneScroll:SetPoint("TOPLEFT", 0, -HEAD_H)
     zoneScroll:SetPoint("BOTTOMRIGHT", box, "TOPRIGHT", -(St.SCROLLBAR + SCROLL_IN), 0)
