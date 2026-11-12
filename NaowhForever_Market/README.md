@@ -41,6 +41,7 @@ NaowhForever_Market/
   Data/
     Skinning.lua     the creatures you can skin, their loot and their camps, packed, from Tools/build/market_gather.py
     Fishing.lua      what each zone's water catches, and the fishing pools, from Tools/build/market_gather.py
+    Writs.lua        the Craftsman's Writs each profession can fill, from Tools/build/market_writs.py
   View/
     Style.lua        The Market's own look, over Shared/Style.lua (Market.Style)
     Spark.lua        an item's last two weeks of prices as a small line, for Farm (Market.Spark)
@@ -53,7 +54,7 @@ NaowhForever_Market/
     Sell.lua         the panel's Sell page: the item, its price against the listings, the post line, Up Next
     Auctions.lua     the panel's My Auctions page: your auctions, undercut first, Cancel and Cancel Undercut
     Reagents.lua     the Reagents page: Professions' Reagents list under a search
-    Prices.lua       the Prices page: any item in your scans by name, or from your bags, and its price chart
+    Prices.lua       the Prices page: any item in your scans by name, from your bags or a writ filter, and its price chart
     Buy.lua          the panel's Buy page: your Watch List, and any item in your scans to add to it
     Dock.lua         the panel docked beside Blizzard's auction house, and the button that brings it back (Market.Dock)
     BagWorth.lua     the Bag Worth card on your bags, and the numbers on their most valuable slots
@@ -174,6 +175,13 @@ NaowhForever_Market/
   (`C_Item.IsItemDataCachedByID`): asking for thousands of names at once would flood the game with
   item loads. It lists at most `MAX_RESULTS` (50). With nothing typed it lists the items in your bags
   that have a scan price, most valuable first.
+- Prices' filter beside the search lists only Craftsman's Writs: every one in your scans, or the ones a
+  profession fills, named by the client (`GetTradeSkillDisplayName`). A writ's profession is the one that
+  crafts what it asks for: `Tools/build/market_writs.py` reads each writ quest's asked-for item from the
+  quest catalog and finds the recipe that makes it in Professions' recipe data, so the addon reads IDs
+  only. An item two professions craft (the Gordok Ogre Suit) lists its writ under both. Typing searches
+  within the filter. The writs' item data is asked for when a filter is first picked, about 150 items
+  rather than thousands, and the list redraws as it arrives. The filter is not saved.
 - Bag Worth counts an item at what it makes on the auction house after the cut when that beats its
   vendor price, and at the vendor price otherwise; bound items count at the vendor price. Its card sits
   above the combined bags or EllesmereUI's bags, and left of the backpack when bags open one by one,
@@ -463,3 +471,5 @@ Away from it again:
 50. Best Way to Sell on, Auction Margin at 1s: a stack of cloth whose auction price beats its vendor price
     by under a silver each after the cut reads Best: Vendor and "Auction only +..."; at 0 it reads Best:
     Auction again. With Best Way to Sell off, Auction Margin is dimmed and says it needs it.
+51. Prices' filter: All Writs lists the Craftsman's Writs in your scans, by name; a profession, named in your
+    client's language, lists only its own; typing searches within it; All Items goes back to your bags.

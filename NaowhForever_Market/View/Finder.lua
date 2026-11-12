@@ -20,6 +20,7 @@ local TEXT_FOUND = ns.L("%d found")
 local TEXT_MORE = ns.L("The first %d found; type more to narrow it")
 local TEXT_NOTHING = ns.L("Nothing in your scans by that name.")
 local TEXT_NO_SCAN = ns.L("Scan prices at an auctioneer to fill this page.")
+local TEXT_NONE = ns.L("None of these are in your scans.")
 local TEXT_WATCH_BELOW = ns.L("Watch for This Price or Less")
 local TEXT_WATCH = ns.L("Watch")
 local TEXT_UPDATE = ns.L("Update")
@@ -42,14 +43,14 @@ local function Step(price)
 end
 
 local function FromScans(finder, text)
-    local found, names = finder.found, finder.names
+    local found, names, only = finder.found, finder.names, finder.only
     wipe(found)
     local prices = ns.AuctionPriceList and ns.AuctionPriceList()
     if not prices then return TEXT_NO_SCAN end
     local want = ns.Lower(text)
     local more = false
     for id in pairs(prices) do
-        local name = IsItemDataCachedByID(id) and GetItemNameByID(id)
+        local name = (not only or only[id]) and IsItemDataCachedByID(id) and GetItemNameByID(id)
         if name and ns.Lower(name):find(want, 1, true) then
             if #found >= MAX_RESULTS then
                 more = true
@@ -62,6 +63,21 @@ local function FromScans(finder, text)
     table.sort(found, finder.byName)
     if more then return TEXT_MORE:format(MAX_RESULTS) end
     return #found > 0 and TEXT_FOUND:format(#found) or TEXT_NOTHING
+end
+
+local function FromOnly(finder)
+    local found, names = finder.found, finder.names
+    wipe(found)
+    local prices = ns.AuctionPriceList and ns.AuctionPriceList()
+    if not prices then return TEXT_NO_SCAN end
+    for id in pairs(finder.only) do
+        if prices[id] then
+            found[#found + 1] = id
+            names[id] = Items.Name(id)
+        end
+    end
+    table.sort(found, finder.byName)
+    return #found > 0 and TEXT_FOUND:format(#found) or TEXT_NONE
 end
 
 local function RowClicked(row)
@@ -154,6 +170,8 @@ function Finder.Draw(finder)
     wipe(finder.names)
     if #text >= MIN_LETTERS then
         finder.note:SetText(FromScans(finder, text))
+    elseif finder.only then
+        finder.note:SetText(FromOnly(finder))
     else
         finder.note:SetText(finder.empty(finder.found))
     end

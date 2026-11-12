@@ -1,6 +1,7 @@
 -- Run with Lua 5.1 from the repository root: the panel's Buy page and The Market's Prices page share one search
 -- list and Watch box. Buy lists only the Watch List, under your price first; typing searches your scans; Watch,
--- a row's x and Stop Watching change the list. Prices lists your bags and keeps the Watch box.
+-- a row's x and Stop Watching change the list. Prices lists your bags and keeps the Watch box, and its filter lists
+-- only the Craftsman's Writs in your scans, all of them or one profession's.
 local checks = 0
 local function check(label, value) assert(value, label); checks = checks + 1 end
 
@@ -27,8 +28,12 @@ end
 
 local function Text(parent) return Frame("FontString", parent) end
 
-local prices = { [101] = 500, [102] = 2000, [103] = 90, [104] = 70 }
-local itemNames = { [101] = "Black Lotus", [102] = "Arcanite Bar", [103] = "Blue Lotus Petal", [104] = "Peacebloom" }
+local prices = { [101] = 500, [102] = 2000, [103] = 90, [104] = 70, [201] = 300, [202] = 400, [203] = 250 }
+local itemNames = { [101] = "Black Lotus", [102] = "Arcanite Bar", [103] = "Blue Lotus Petal", [104] = "Peacebloom",
+    [201] = "Writ: Mana Potion", [202] = "Writ: Runecloth Bag", [203] = "Writ: Ogre Suit", [204] = "Writ: Elixir" }
+local ALCHEMY, TAILORING = 171, 197
+local professionNames = { [ALCHEMY] = "Alchemy", [TAILORING] = "Tailoring" }
+local menu, lastChart
 local bags = { { itemID = 104 }, { itemID = 102 } }
 local account = {}
 local refreshed, buttons, moneyBoxes = 0, {}, {}
@@ -56,9 +61,19 @@ local ns = {
         return b
     end,
     UI = { SlimScroll = function(parent) return Frame("ScrollFrame", parent) end },
+    ContextMenu = function(owner, generator)
+        menu = { owner = owner, radios = {} }
+        function menu.CreateRadio(_, text, isSelected, setSelected, data)
+            menu.radios[#menu.radios + 1] = { text = text, isSelected = isSelected, setSelected = setSelected, data = data }
+        end
+        function menu.CreateTitle() end
+        function menu.CreateDivider() end
+        generator(owner, menu)
+    end,
 }
 ns.Shared = {
-    Items = { Name = function(id) return itemNames[id] end, QualityColor = function() return nil end },
+    Items = { Name = function(id) return itemNames[id] end, QualityColor = function() return nil end,
+        OnLoaded = function() end },
     Parts = {
         SearchBox = function(parent, _, onChange)
             local box = Frame("EditBox", parent)
@@ -92,10 +107,12 @@ ns.Market = {
         BORDER_RGB = WHITE, HAVE_RGB = GREEN, DOCK_W = 380, DOCK_PAD = 10 },
     Settings = { Get = function() return true end },
     Pages = {},
+    WRITS = { [ALCHEMY] = { 201, 203, 204 }, [TAILORING] = { 202, 203 } },
     Dock = { Refresh = function() refreshed = refreshed + 1 end },
     Worth = { Read = function() return bags end },
     Chart = { New = function(parent)
         local chart = Frame("Frame", parent)
+        lastChart = chart
         function chart.Paint(_, id) chart.painted = id end
         return chart
     end },
@@ -106,6 +123,7 @@ local env = setmetatable({
     CreateFrame = function(kind, _, parent) return Frame(kind, parent) end,
     C_Item = { GetItemNameByID = function(id) return itemNames[id] end, IsItemDataCachedByID = function() return true end,
         GetItemIconByID = function() return 1 end, GetItemInfo = function() return nil end },
+    C_TradeSkillUI = { GetTradeSkillDisplayName = function(id) return professionNames[id] end },
     GameTooltip = Frame("GameTooltip"),
     wipe = function(t) for k in pairs(t) do t[k] = nil end return t end,
 }, { __index = _G })
@@ -200,5 +218,49 @@ check("Prices keeps the Watch box for the item it shows", Watch.Target(104) == 6
 Buy.Draw()
 rows = RowsOf(root)
 check("and what it watches shows on Buy", #rows == 1 and rows[1].itemID == 104)
+
+local filter
+for _, b in ipairs(buttons) do if b.label == "All Items" then filter = b end end
+check("Prices has a filter beside its search, on All Items", filter ~= nil)
+local function Pick(text)
+    filter.click()
+    for _, radio in ipairs(menu.radios) do
+        if radio.text == text then return radio.setSelected(radio.data) end
+    end
+    error("no filter " .. text)
+end
+filter.click()
+local names = {}
+for _, radio in ipairs(menu.radios) do names[#names + 1] = radio.text end
+check("the filter offers all items, all writs, then each profession by its client name",
+    table.concat(names, ",") == "All Items,All Writs,Alchemy,Tailoring")
+check("All Items is the one picked at first", menu.radios[1].isSelected(menu.radios[1].data)
+    and not menu.radios[2].isSelected(menu.radios[2].data))
+
+local function IDs()
+    local ids = {}
+    for _, row in ipairs(RowsOf(window)) do ids[#ids + 1] = row.itemID end
+    return table.concat(ids, ",")
+end
+Pick("All Writs")
+check("All Writs lists every writ in your scans by name, each once", IDs() == "201,203,202")
+check("the button names the filter", filter.label == "All Writs")
+Pick("Tailoring")
+check("a profession lists only the writs it fills, a shared one too", IDs() == "203,202")
+check("and the button names the profession", filter.label == "Tailoring")
+check("the first of them is picked for the chart", lastChart.painted == 203)
+Pick("Alchemy")
+check("a writ that is not in your scans is left out", IDs() == "201,203")
+local pricesSearch
+for _, child in ipairs(window.children[1].children) do
+    for _, c in ipairs(child.children) do if c.kind == "EditBox" then pricesSearch = c end end
+end
+pricesSearch:SetText("mana")
+check("typing searches within the filter", IDs() == "201")
+pricesSearch:SetText("lotus")
+check("so an item outside it is not found", IDs() == "")
+pricesSearch:SetText("")
+Pick("All Items")
+check("All Items goes back to your bags", IDs() == "104,102" and filter.label == "All Items")
 
 print(("test-market-buy-watch: %d checks passed"):format(checks))

@@ -15,6 +15,7 @@
     <Script file="Runs.lua"/>
     <Script file="Data\Skinning.lua"/>
     <Script file="Data\Fishing.lua"/>
+    <Script file="Data\Writs.lua"/>
     <Script file="Farm.lua"/>
     <Script file="View\Style.lua"/>
     <Script file="View\Spark.lua"/>
