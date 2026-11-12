@@ -65,6 +65,7 @@
     <Script file="Loot\FishingGear.lua"/>
     <Script file="Loot\Fishing.lua"/>
     <Script file="Loot\FishingSounds.lua"/>
+    <Script file="Loot\FishingLoot.lua"/>
     <Script file="Loot\FoodBar.lua"/>
     <Script file="Loot\BagSpace.lua"/>
     <Script file="Loot\BagSpaceIgnore.lua"/>

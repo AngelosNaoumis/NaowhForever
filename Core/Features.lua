@@ -77,6 +77,7 @@ ns.FEATURES = {
         fishingPoleReminder = false,
         fishingKey = false,
         fishingSounds = false,
+        fishingAutoLoot = false,
         foodBar = false,
         consumableBar = false,
         bagSpace = false,

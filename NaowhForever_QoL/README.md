@@ -135,6 +135,7 @@ NaowhForever_QoL/
     FishingGear.lua     the fishing gear One-Key Fishing puts on first, and putting back what it replaced (ns.FishingGear)
     Fishing.lua         One-Key Fishing: the key, double right-click, the lure and gear steps
     FishingSounds.lua   Louder Splash
+    FishingLoot.lua     Auto Loot While Fishing
     ScrapMarker.lua     the Junk Marker (ns.ScrapMarker), read by Bag Space and the Junk List
     BankMarker.lua      bank marks, selective grey selling and character bank deposits (ns.BankMarker)
     ScrapList.lua       the Junk List window (ns.OpenScrapList, /nf junk)
@@ -1834,6 +1835,11 @@ NaowhForever_QoL/
 - Louder Splash turns game sound volume up to full and music and ambience to 0 while the channel runs, with
   temp values as well, so your own volume settings are never rewritten. Master volume and the sound
   switches are left as you set them: a muted game stays muted.
+- Auto Loot While Fishing turns `autoLootDefault` on with a temp value as the channel starts, so your own
+  setting is never rewritten. It stays on past the channel's end until the catch's loot window closes, so the
+  loot that follows the bobber click is covered whichever event comes first. A channel that ends with nothing
+  to loot (the fish got away, you moved) puts it back after `LOOT_WAIT` seconds. Your auto loot key still
+  loots by hand while it is on.
 - Check it offline: `lua Tools/regression/test-fishing.lua`.
 
 ### QoL defaults (Core/Settings.lua)
